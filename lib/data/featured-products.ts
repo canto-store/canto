@@ -17,7 +17,7 @@ export const FEATURED_PRODUCTS: Product[] = [
     brand: "ELI HOME",
     price: 49.99,
     image:
-      "https://images.unsplash.com/photo-1577918285901-8d0db4ab1fa7?auto=format&fit=crop&q=80&w=600&h=600",
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&q=80&w=600&h=600",
     translationKey: {
       name: "productItems.mugSet",
       brand: "brands.eliHome",
