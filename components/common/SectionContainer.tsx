@@ -6,7 +6,7 @@ interface SectionContainerProps {
   title?: string;
   className?: string;
   containerClassName?: string;
-  background?: "default" | "background" | "white";
+  background?: "default" | "background" | "white" | "tertiary";
 }
 
 export function SectionContainer({
@@ -22,6 +22,8 @@ export function SectionContainer({
         return "bg-background";
       case "white":
         return "bg-white";
+      case "tertiary":
+        return "bg-tertiary text-tertiary-foreground";
       default:
         return "";
     }
@@ -30,7 +32,16 @@ export function SectionContainer({
   return (
     <section className={cn("px-4 py-16", getBgColor(), className)}>
       <div className={cn("container mx-auto", containerClassName)}>
-        {title && <h2 className="mb-8 text-3xl font-bold">{title}</h2>}
+        {title && (
+          <h2
+            className={cn(
+              "mb-8 text-3xl font-bold",
+              background === "tertiary" ? "text-tertiary-foreground" : "",
+            )}
+          >
+            {title}
+          </h2>
+        )}
         {children}
       </div>
     </section>

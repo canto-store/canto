@@ -22,11 +22,6 @@ const footerNavigation = (t: any) => ({
     { label: t("footer.shippingReturns"), href: "#" },
     { label: t("footer.sizeGuide"), href: "#" },
   ],
-  legal: [
-    { label: t("footer.termsConditions"), href: "#" },
-    { label: t("footer.privacyPolicy"), href: "#" },
-    { label: t("footer.cookiePolicy"), href: "#" },
-  ],
 });
 
 const socialLinks = [
@@ -137,23 +132,6 @@ export function Footer() {
               </h3>
               <ul className="mt-4 space-y-2">
                 {navigation.support.map((item) => (
-                  <li key={item.label}>
-                    <a
-                      href={item.href}
-                      className="text-sm text-gray-600 transition-colors hover:text-gray-900"
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="mt-8">
-              <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
-                {t("footer.legal")}
-              </h3>
-              <ul className="mt-4 space-y-2">
-                {navigation.legal.map((item) => (
                   <li key={item.label}>
                     <a
                       href={item.href}

@@ -104,7 +104,11 @@ export function SearchBar({
           <Search className={cn("h-4 w-4 text-gray-500", iconClassName)} />
         </div>
       </div>
-      {showButton && <Button type="submit">{buttonText}</Button>}
+      {showButton && (
+        <Button type="submit" variant="secondary">
+          {buttonText}
+        </Button>
+      )}
     </form>
   );
 }
