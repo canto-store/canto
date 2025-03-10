@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "../ui/button";
 
 interface HeaderProps {
   cartCount: number;
@@ -65,6 +66,10 @@ export function Header({ cartCount, className }: HeaderProps) {
     router.replace(pathname, { locale: value });
   };
 
+  const handleNavigation = (href: string) => {
+    router.push(href);
+  };
+
   return (
     <header
       className={cn("fixed top-0 z-50 w-full bg-white shadow-sm", className)}
@@ -89,12 +94,13 @@ export function Header({ cartCount, className }: HeaderProps) {
           <ul className="flex items-center space-x-12">
             {navigationItems.map((item) => (
               <li key={item.label}>
-                <a
-                  href={item.href}
+                <Button
+                  variant="ghost"
+                  onClick={() => handleNavigation(item.href)}
                   className="text-base font-medium text-gray-600 transition-colors hover:text-black"
                 >
                   {item.label}
-                </a>
+                </Button>
               </li>
             ))}
           </ul>
