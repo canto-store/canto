@@ -114,5 +114,10 @@
     "vintage": "VINTAGE",
     "timeless": "TIMELESS",
     "luxeSteps": "LUXE STEPS"
+  },
+  "promo": {
+    "copiedToClipboard": "Copied to clipboard",
+    "promoBanner": "Exclusive products with promo code",
+    "promoPercent": "20%"
   }
 }

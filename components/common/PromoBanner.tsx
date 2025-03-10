@@ -2,13 +2,22 @@
 
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { useClipboard } from "react-haiku";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 interface PromoBannerProps {
   className?: string;
   onClose?: () => void;
 }
 
 export function PromoBanner({ className, onClose }: PromoBannerProps) {
+  const clipboard = useClipboard();
+  const t = useTranslations();
+  const handleCopy = () => {
+    clipboard.copy("SUMMER2024");
+    toast.success(t("promo.copiedToClipboard"));
+  };
+
   return (
     <div
       className={cn(
@@ -19,14 +28,16 @@ export function PromoBanner({ className, onClose }: PromoBannerProps) {
       <div className="flex items-center gap-2 font-medium">
         <span className="hidden sm:inline">🌟</span>
         <p>
-          Limited Time Offer! Free Shipping on Orders Over $50 + Extra{" "}
+          {t("promo.promoBanner")}
           <span className="mx-1 rounded-md bg-white/20 px-2 py-0.5 font-bold tracking-wide">
-            20% OFF
-          </span>{" "}
-          with Code:{" "}
-          <span className="font-mono font-bold tracking-wider text-yellow-300">
-            SUMMER2024
+            {t("promo.promoPercent")}
           </span>
+          <a
+            className="font-mono font-bold tracking-wider text-yellow-300 hover:cursor-pointer"
+            onClick={handleCopy}
+          >
+            SUMMER2024
+          </a>
         </p>
         <span className="hidden sm:inline">🌟</span>
       </div>

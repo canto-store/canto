@@ -114,5 +114,10 @@
     "vintage": "فينتاج",
     "timeless": "تايملس",
     "luxeSteps": "لوكس ستيبس"
+  },
+  "promo": {
+    "copiedToClipboard": "تم النسخ",
+    "promoBanner": "منتجات حصرية مع كود الخصم",
+    "promoPercent": "٢٠٪"
   }
 }

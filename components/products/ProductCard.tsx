@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
-
+import { useRouter } from "@/i18n/navigation";
 export interface Product {
   name: string;
   brand: string;
@@ -20,6 +20,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const t = useTranslations();
+  const router = useRouter();
 
   // Get translated product name and brand if translation keys are available
   const productName = product.translationKey?.name
@@ -30,21 +31,46 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     ? t(product.translationKey.brand)
     : product.brand;
 
+  const handleProductClick = (product: Product) => {
+    router.push(
+      `/product/${encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, "-"))}`,
+    );
+  };
+
+  const handleBrandClick = (product: Product) => {
+    router.push(`/browse?${product.brand}}`);
+  };
+
   return (
     <div className="group relative flex h-[400px] flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-300 hover:shadow-md">
       <div className="aspect-square w-full overflow-hidden">
-        <img
-          src={product.image}
-          alt={productName}
-          className="h-full w-full transform object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        <button
+          onClick={() => handleProductClick(product)}
+          className="hover:cursor-pointer"
+        >
+          <img
+            src={product.image}
+            alt={productName}
+            className="h-full w-full transform object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </button>
       </div>
       <div className="flex flex-1 flex-col justify-between p-4">
         <div>
-          <h3 className="line-clamp-2 min-h-[48px] font-semibold">
-            {productName}
-          </h3>
-          <p className="mb-2 line-clamp-1 text-sm text-gray-600">{brandName}</p>
+          <button
+            onClick={() => handleProductClick(product)}
+            className="hover:cursor-pointer"
+          >
+            <h3 className="line-clamp-2 min-h-[48px] font-semibold">
+              {productName}
+            </h3>
+          </button>
+          <button
+            onClick={() => handleBrandClick(product)}
+            className="mb-2 line-clamp-1 text-sm text-gray-600 hover:cursor-pointer"
+          >
+            <p>{brandName}</p>
+          </button>
         </div>
         <div>
           <div className="flex items-center justify-between">
@@ -66,13 +92,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               size="sm"
               className="flex-1 gap-1"
               asChild
+              onClick={() => handleProductClick(product)}
             >
-              <a
-                href={`/product/${encodeURIComponent(productName.toLowerCase().replace(/\s+/g, "-"))}`}
-              >
+              <div>
                 <Eye className="h-4 w-4" />
                 {t("products.view")}
-              </a>
+              </div>
             </Button>
           </div>
         </div>
