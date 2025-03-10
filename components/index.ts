@@ -1,0 +1,6 @@
+// Re-export all component modules
+// Note: If you encounter issues with barrel imports, consider importing directly from component files
+export * from "./layout";
+export * from "./home";
+export * from "./products";
+export * from "./common";

@@ -1,0 +1,36 @@
+import { ProductCard, type Product } from "@/components/products";
+import { SectionContainer } from "@/components/common";
+import { cn } from "@/lib/utils";
+
+interface ProductGridProps {
+  products: Product[];
+  onAddToCart: (productName: string) => void;
+  title?: string;
+  className?: string;
+}
+
+export function ProductGrid({
+  products,
+  onAddToCart,
+  title,
+  className,
+}: ProductGridProps) {
+  return (
+    <SectionContainer title={title}>
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4",
+          className,
+        )}
+      >
+        {products.map((product) => (
+          <ProductCard
+            key={product.name}
+            product={product}
+            onAddToCart={onAddToCart}
+          />
+        ))}
+      </div>
+    </SectionContainer>
+  );
+}
