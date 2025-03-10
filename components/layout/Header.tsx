@@ -72,14 +72,20 @@ export function Header({ cartCount, className }: HeaderProps) {
 
   return (
     <header
-      className={cn("fixed top-0 z-50 w-full bg-[var(--color-background)] border-b border-[var(--color-burgundy)]", className)}
+      className={cn(
+        "border-primary fixed top-0 z-50 w-full border-b bg-white",
+        className,
+      )}
     >
       <div className="container mx-auto flex h-18 items-center justify-between px-4">
         {/* Left Section: Logo */}
         <div className="flex items-center gap-3 md:w-1/5 md:flex-initial">
-          <Link href="/" className="shrink-0 text-2xl font-bold uppercase text-[var(--color-burgundy)]">
-            CANTO STORE
-          </Link>
+          <Image
+            src="/logo.svg"
+            alt="Canto Store Logo"
+            width={100}
+            height={100}
+          />
         </div>
 
         {/* Center Section: Desktop Navigation */}
@@ -90,7 +96,7 @@ export function Header({ cartCount, className }: HeaderProps) {
                 <Button
                   variant="ghost"
                   onClick={() => handleNavigation(item.href)}
-                  className="text-base font-medium text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                  className="text-primary hovers:bg-primary/10 text-base font-medium transition-colors"
                 >
                   {item.label}
                 </Button>
@@ -104,7 +110,7 @@ export function Header({ cartCount, className }: HeaderProps) {
           {/* Language Selector */}
           <div className="relative">
             <Select onValueChange={handleLanguageChange} defaultValue={locale}>
-              <SelectTrigger className="h-10 w-[120px] border-none text-[var(--color-burgundy)] hover:cursor-pointer hover:bg-[var(--color-burgundy)]/10 focus:ring-0">
+              <SelectTrigger className="text-primary h-10 w-[120px] border-none hover:cursor-pointer focus:ring-0">
                 <SelectValue placeholder={<Globe className="h-5 w-5" />} />
               </SelectTrigger>
               <SelectContent>
@@ -119,11 +125,11 @@ export function Header({ cartCount, className }: HeaderProps) {
           {/* Cart */}
           <a
             href="/cart"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-burgundy)] transition-all hover:bg-[var(--color-burgundy)]/10"
+            className="text-primary hover:bg-primary/10 relative flex h-10 w-10 items-center justify-center rounded-full transition-all"
           >
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-burgundy)] text-xs font-medium text-[var(--color-cream)]">
+              <span className="text-primary bg absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium">
                 {cartCount}
               </span>
             )}
@@ -133,39 +139,39 @@ export function Header({ cartCount, className }: HeaderProps) {
           <div className="relative hidden md:block" ref={dropdownRef}>
             <button
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-burgundy)] transition-all hover:cursor-pointer hover:bg-[var(--color-burgundy)]/10"
+              className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
             >
               <CircleUser className="h-6 w-6" />
             </button>
 
             {/* User Dropdown */}
             {userDropdownOpen && (
-              <div className="ring-opacity-5 absolute right-0 mt-2 w-56 rounded-md bg-[var(--color-cream)] py-2 shadow-lg ring-1 ring-[var(--color-burgundy)]">
+              <div className="ring-opacity-5 ring-primary absolute right-0 mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1">
                 <a
                   href="/account"
-                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <User className="mr-3 h-4 w-4" />
                   My Account
                 </a>
                 <a
                   href="/wishlist"
-                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <Heart className="mr-3 h-4 w-4" />
                   Wishlist
                 </a>
                 <a
                   href="/settings"
-                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <Settings className="mr-3 h-4 w-4" />
                   Settings
                 </a>
-                <div className="my-1 h-px bg-[var(--color-burgundy)]/20" />
+                <div className="bg-primary/20 my-1 h-px" />
                 <a
                   href="/logout"
-                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <LogOut className="mr-3 h-4 w-4" />
                   Logout
@@ -177,7 +183,7 @@ export function Header({ cartCount, className }: HeaderProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-burgundy)] transition-all hover:bg-[var(--color-burgundy)]/10 md:hidden"
+            className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all md:hidden"
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -190,14 +196,14 @@ export function Header({ cartCount, className }: HeaderProps) {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-[var(--color-burgundy)]/20 bg-[var(--color-cream)] shadow-lg md:hidden">
+        <div className="border-primary/20 border-t bg-[var(--color-cream)] shadow-lg md:hidden">
           <nav className="container mx-auto">
-            <ul className="divide-y divide-[var(--color-burgundy)]/10">
+            <ul className="divide-primary/10 divide-y">
               {navigationItems.map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="block px-4 py-3 text-base font-medium text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                    className="text-primary hover:bg-primary/10 block px-4 py-3 text-base font-medium transition-colors"
                   >
                     {item.label}
                   </a>
@@ -206,7 +212,7 @@ export function Header({ cartCount, className }: HeaderProps) {
               <li>
                 <a
                   href="/account"
-                  className="flex items-center px-4 py-3 text-base text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-3 text-base transition-colors"
                 >
                   <User className="mr-3 h-4 w-4" />
                   My Account
@@ -215,7 +221,7 @@ export function Header({ cartCount, className }: HeaderProps) {
               <li>
                 <a
                   href="/wishlist"
-                  className="flex items-center px-4 py-3 text-base text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
+                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-3 text-base transition-colors"
                 >
                   <Heart className="mr-3 h-4 w-4" />
                   Wishlist

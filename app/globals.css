@@ -31,7 +31,8 @@
 }
 
 @layer base {
-  * {
+  body {
+    @apply bg-white;
     @apply font-body;
     --radius: 0.625rem;
   }

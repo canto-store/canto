@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SliderButton } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { type HeroSlide } from "@/lib/data/hero-slides";
-
+import { useRouter } from "@/i18n/navigation";
 interface HeroSliderProps {
   slides: HeroSlide[];
   autoplayInterval?: number;
@@ -19,7 +19,7 @@ export function HeroSlider({
   className,
 }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-
+  const router = useRouter();
   useEffect(() => {
     if (autoplayInterval <= 0) return;
 
@@ -68,11 +68,12 @@ export function HeroSlider({
               </p>
               <Button
                 size="lg"
-                variant="secondary"
+                variant="default"
                 asChild
                 className="text-sm sm:text-base"
+                onClick={() => router.push("/browse")}
               >
-                <a href="/browse">Shop Now</a>
+                <span>Shop Now</span>
               </Button>
             </div>
           </div>
