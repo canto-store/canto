@@ -10,11 +10,21 @@ import {
   User,
   Settings,
   Heart,
+  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/navigation";
+import { useLocale } from "next-intl";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface HeaderProps {
   cartCount: number;
@@ -26,11 +36,14 @@ export function Header({ cartCount, className }: HeaderProps) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
 
   const navigationItems = [
     { label: t("home"), href: "/" },
-    { label: "Browse", href: "/browse" },
-    { label: "Sell", href: "#" },
+    { label: t("browse"), href: "/browse" },
+    { label: t("sell"), href: "#" },
   ];
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -47,6 +60,10 @@ export function Header({ cartCount, className }: HeaderProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLanguageChange = (value: string) => {
+    router.replace(pathname, { locale: value });
+  };
 
   return (
     <header
@@ -83,8 +100,21 @@ export function Header({ cartCount, className }: HeaderProps) {
           </ul>
         </nav>
 
-        {/* Right Section: Cart and User */}
-        <div className="flex items-center gap-1 md:w-1/5 md:justify-end md:gap-6">
+        {/* Right Section: Cart, Language Selector and User */}
+        <div className="flex items-center gap-1 md:w-1/5 md:justify-end md:gap-4">
+          {/* Language Selector */}
+          <div className="relative">
+            <Select onValueChange={handleLanguageChange} defaultValue={locale}>
+              <SelectTrigger className="h-10 w-[120px] border-none hover:bg-gray-100 focus:ring-0">
+                <SelectValue placeholder={<Globe className="h-5 w-5" />} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">🇺🇸 {t("en")}</SelectItem>
+                <SelectItem value="ar">🇪🇬 {t("ar")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Cart */}
           <a
             href="/cart"
@@ -207,6 +237,27 @@ export function Header({ cartCount, className }: HeaderProps) {
                   <LogOut className="mr-3 h-4 w-4" />
                   Logout
                 </a>
+              </li>
+
+              {/* Mobile Language Selector */}
+              <li>
+                <div className="px-4 py-3">
+                  <Select
+                    onValueChange={handleLanguageChange}
+                    defaultValue={locale}
+                  >
+                    <SelectTrigger className="w-full border-gray-200">
+                      <div className="flex items-center">
+                        <Globe className="mr-2 h-4 w-4" />
+                        <span>{t("language")}</span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">🇺🇸 {t("en")}</SelectItem>
+                      <SelectItem value="ar">🇸🇦 {t("ar")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </li>
             </ul>
           </nav>

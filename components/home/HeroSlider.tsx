@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { SliderButton } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { type HeroSlide } from "@/lib/data/hero-slides";
-import { useGesture } from "@use-gesture/react";
-import type { DragState } from "@use-gesture/react";
 
 interface HeroSliderProps {
   slides: HeroSlide[];
@@ -21,10 +19,9 @@ export function HeroSlider({
   className,
 }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    if (autoplayInterval <= 0 || isDragging) return;
+    if (autoplayInterval <= 0) return;
 
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -33,7 +30,7 @@ export function HeroSlider({
     return () => {
       clearInterval(timer);
     };
-  }, [slides.length, autoplayInterval, isDragging]);
+  }, [slides.length, autoplayInterval]);
 
   const handlePrevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
@@ -43,35 +40,9 @@ export function HeroSlider({
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
-  const bind = useGesture(
-    {
-      onDrag: (state: DragState) => {
-        const [mx] = state.movement;
-        const [xDir] = state.direction;
-        setIsDragging(state.active);
-        if (!state.active) {
-          if (Math.abs(mx) > 50) {
-            if (xDir < 0) {
-              handleNextSlide();
-            } else {
-              handlePrevSlide();
-            }
-          }
-        }
-      },
-    },
-    {
-      drag: {
-        bounds: { left: -100, right: 100 },
-        rubberband: true,
-      },
-    },
-  );
-
   return (
     <section
       className={cn("relative h-[calc(100vh-4rem)] min-h-[600px]", className)}
-      {...bind()}
     >
       {slides.map((slide, index) => (
         <div
@@ -108,17 +79,19 @@ export function HeroSlider({
         </div>
       ))}
       <SliderButton
-        icon={ChevronLeft}
+        direction="left"
         onClick={handlePrevSlide}
         className="absolute top-1/2 left-2 z-10 -translate-y-1/2 sm:left-4"
-        ariaLabel="Previous slide"
-      />
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </SliderButton>
       <SliderButton
-        icon={ChevronRight}
+        direction="right"
         onClick={handleNextSlide}
         className="absolute top-1/2 right-2 z-10 -translate-y-1/2 sm:right-4"
-        ariaLabel="Next slide"
-      />
+      >
+        <ChevronRight className="h-5 w-5" />
+      </SliderButton>
     </section>
   );
 }

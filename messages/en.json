@@ -10,7 +10,8 @@
     "en": "English",
     "ar": "Arabic",
     "search": "Search",
-    "placeholder": "Search for products..."
+    "placeholder": "Search for products...",
+    "language": "Language"
   },
   "products": {
     "addToCart": "Add to Cart",
@@ -33,10 +34,67 @@
     "brand": "Brand:",
     "category": "Category:",
     "sku": "SKU:",
-    "relatedProducts": "Related Products"
+    "relatedProducts": "Related Products",
+    "add": "Add",
+    "view": "View"
   },
   "cart": {
     "viewCart": "You can view your cart anytime."
   },
-  "search": {}
+  "search": {},
+  "footer": {
+    "shop": "Shop",
+    "newArrivals": "New Arrivals",
+    "bestSellers": "Best Sellers",
+    "collections": "Collections",
+    "sale": "Sale",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "careers": "Careers",
+    "press": "Press",
+    "sustainability": "Sustainability",
+    "support": "Support",
+    "contactUs": "Contact Us",
+    "faqs": "FAQs",
+    "shippingReturns": "Shipping & Returns",
+    "sizeGuide": "Size Guide",
+    "legal": "Legal",
+    "termsConditions": "Terms & Conditions",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "followUs": "Follow Us",
+    "newsletter": "Newsletter",
+    "subscribeText": "Subscribe to our newsletter for updates and exclusive offers",
+    "emailPlaceholder": "Your email",
+    "subscribe": "Subscribe",
+    "copyright": "© 2025 Canto. All rights reserved."
+  },
+  "heroSlider": {
+    "summerCollection": "Summer Collection 2025",
+    "summerSubtitle": "Discover the latest trends in luxury fashion",
+    "exclusiveBrands": "Exclusive Brands",
+    "exclusiveSubtitle": "Shop designer collections",
+    "newArrivals": "New Arrivals",
+    "newArrivalsSubtitle": "Be the first to shop new styles"
+  },
+  "categories": {
+    "streetwear": "Streetwear",
+    "accessories": "Accessories",
+    "sneakers": "Sneakers",
+    "denim": "Denim",
+    "basics": "Basics",
+    "luxury": "Luxury"
+  },
+  "productItems": {
+    "oversizedHoodie": "Oversized Cotton Hoodie",
+    "denimJacket": "Classic Denim Jacket",
+    "watch": "Minimalist Watch",
+    "sneakers": "Premium Leather Sneakers"
+  },
+  "brands": {
+    "essentials": "ESSENTIALS",
+    "vintage": "VINTAGE",
+    "timeless": "TIMELESS",
+    "luxeSteps": "LUXE STEPS"
+  }
 }

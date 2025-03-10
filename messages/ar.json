@@ -10,7 +10,8 @@
     "en": "الإنجليزية",
     "ar": "العربية",
     "search": "بحث",
-    "placeholder": "ابحث عن منتجات."
+    "placeholder": "ابحث عن منتجات.",
+    "language": "اللغة"
   },
   "products": {
     "addToCart": "أضف إلى السلة",
@@ -33,9 +34,67 @@
     "brand": "العلامة التجارية:",
     "category": "الفئة:",
     "sku": "رمز المنتج:",
-    "relatedProducts": "منتجات ذات صلة"
+    "relatedProducts": "منتجات ذات صلة",
+    "add": "إضافة",
+    "view": "عرض"
   },
   "cart": {
     "viewCart": "يمكنك عرض سلة التسوق في أي وقت."
+  },
+  "search": {},
+  "footer": {
+    "shop": "تسوق",
+    "newArrivals": "وصل حديثاً",
+    "bestSellers": "الأكثر مبيعاً",
+    "collections": "المجموعات",
+    "sale": "تخفيضات",
+    "company": "الشركة",
+    "aboutUs": "من نحن",
+    "careers": "وظائف",
+    "press": "الصحافة",
+    "sustainability": "الاستدامة",
+    "support": "الدعم",
+    "contactUs": "اتصل بنا",
+    "faqs": "الأسئلة الشائعة",
+    "shippingReturns": "الشحن والإرجاع",
+    "sizeGuide": "دليل المقاسات",
+    "legal": "قانوني",
+    "termsConditions": "الشروط والأحكام",
+    "privacyPolicy": "سياسة الخصوصية",
+    "cookiePolicy": "سياسة ملفات تعريف الارتباط",
+    "followUs": "تابعنا",
+    "newsletter": "النشرة الإخبارية",
+    "subscribeText": "اشترك في نشرتنا الإخبارية للحصول على التحديثات والعروض الحصرية",
+    "emailPlaceholder": "بريدك الإلكتروني",
+    "subscribe": "اشترك",
+    "copyright": "© 2025 كانتو. جميع الحقوق محفوظة."
+  },
+  "heroSlider": {
+    "summerCollection": "مجموعة صيف 2025",
+    "summerSubtitle": "اكتشف أحدث صيحات الموضة الفاخرة",
+    "exclusiveBrands": "علامات تجارية حصرية",
+    "exclusiveSubtitle": "تسوق مجموعات المصممين",
+    "newArrivals": "وصل حديثاً",
+    "newArrivalsSubtitle": "كن أول من يتسوق الأنماط الجديدة"
+  },
+  "categories": {
+    "streetwear": "ملابس الشارع",
+    "accessories": "إكسسوارات",
+    "sneakers": "أحذية رياضية",
+    "denim": "جينز",
+    "basics": "أساسيات",
+    "luxury": "فاخر"
+  },
+  "productItems": {
+    "oversizedHoodie": "هودي قطني كبير الحجم",
+    "denimJacket": "جاكيت جينز كلاسيكي",
+    "watch": "ساعة بسيطة",
+    "sneakers": "أحذية رياضية جلدية فاخرة"
+  },
+  "brands": {
+    "essentials": "إيسينشالز",
+    "vintage": "فينتاج",
+    "timeless": "تايملس",
+    "luxeSteps": "لوكس ستيبس"
   }
 }

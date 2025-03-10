@@ -9,13 +9,16 @@ import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { HERO_SLIDES } from "@/lib/data/hero-slides";
 import { CATEGORIES } from "@/lib/data/categories";
 import { FEATURED_PRODUCTS } from "@/lib/data/featured-products";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const [cartCount, setCartCount] = useState(0);
+  const t = useTranslations();
+
   const handleQuickAdd = (productName: string) => {
     setCartCount((prev) => prev + 1);
-    toast(`${productName} has been added to your cart.`, {
-      description: "You can view your cart anytime.",
+    toast(t("products.addedToCart", { productName }), {
+      description: t("cart.viewCart"),
     });
   };
 

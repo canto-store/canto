@@ -1,29 +1,30 @@
-import { LucideIcon } from "lucide-react";
+import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface SliderButtonProps {
-  icon: LucideIcon;
+  direction: "left" | "right";
   onClick: () => void;
   className?: string;
-  ariaLabel: string;
+  children: ReactNode;
 }
 
 export function SliderButton({
-  icon: Icon,
+  direction,
   onClick,
   className,
-  ariaLabel,
+  children,
 }: SliderButtonProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full bg-white/20 p-2 backdrop-blur-md transition-colors hover:bg-white/30",
+        "flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white shadow-md backdrop-blur-md transition-all hover:bg-white/40 focus:ring-2 focus:ring-white/50 focus:outline-none active:scale-95",
         className,
       )}
-      aria-label={ariaLabel}
+      aria-label={direction === "left" ? "Previous slide" : "Next slide"}
     >
-      <Icon className="h-6 w-6 text-white" />
+      {children}
     </button>
   );
 }

@@ -51,10 +51,16 @@ export default async function RootLayout({
   // Providing all messages to the client side
   const messages = await getMessages();
 
+  // Determine text direction based on locale
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
+  // Use the appropriate font class based on locale
+  const localeClass = locale === "ar" ? "font-arabic" : "font-latin";
+
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning>
       <body
-        className={`${spaceGrotesk.variable} ${opticianSans.variable} ${ibmPlexSansArabic.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${opticianSans.variable} ${ibmPlexSansArabic.variable} antialiased ${localeClass}`}
       >
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ThemeProvider

@@ -1,32 +1,33 @@
 "use client";
 
 import { siInstagram, siX, siFacebook, siYoutube } from "simple-icons";
+import { useTranslations } from "next-intl";
 
-const footerNavigation = {
+const footerNavigation = (t: any) => ({
   shop: [
-    { label: "New Arrivals", href: "#" },
-    { label: "Best Sellers", href: "#" },
-    { label: "Collections", href: "#" },
-    { label: "Sale", href: "#" },
+    { label: t("footer.newArrivals"), href: "#" },
+    { label: t("footer.bestSellers"), href: "#" },
+    { label: t("footer.collections"), href: "#" },
+    { label: t("footer.sale"), href: "#" },
   ],
   company: [
-    { label: "About Us", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Press", href: "#" },
-    { label: "Sustainability", href: "#" },
+    { label: t("footer.aboutUs"), href: "#" },
+    { label: t("footer.careers"), href: "#" },
+    { label: t("footer.press"), href: "#" },
+    { label: t("footer.sustainability"), href: "#" },
   ],
   support: [
-    { label: "Contact Us", href: "#" },
-    { label: "FAQs", href: "#" },
-    { label: "Shipping & Returns", href: "#" },
-    { label: "Size Guide", href: "#" },
+    { label: t("footer.contactUs"), href: "#" },
+    { label: t("footer.faqs"), href: "#" },
+    { label: t("footer.shippingReturns"), href: "#" },
+    { label: t("footer.sizeGuide"), href: "#" },
   ],
   legal: [
-    { label: "Terms & Conditions", href: "#" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Cookie Policy", href: "#" },
+    { label: t("footer.termsConditions"), href: "#" },
+    { label: t("footer.privacyPolicy"), href: "#" },
+    { label: t("footer.cookiePolicy"), href: "#" },
   ],
-};
+});
 
 const socialLinks = [
   {
@@ -56,136 +57,142 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const t = useTranslations();
+  const navigation = footerNavigation(t);
+
   return (
-    <footer className="bg-gray-100 pt-16 text-gray-800">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
-          {/* Shop Links */}
-          <div>
-            <h3 className="mb-4 text-sm font-bold tracking-wider uppercase">
-              Shop
-            </h3>
-            <ul className="space-y-2">
-              {footerNavigation.shop.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-gray-600 transition-colors hover:text-black"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company Links */}
-          <div>
-            <h3 className="mb-4 text-sm font-bold tracking-wider uppercase">
-              Company
-            </h3>
-            <ul className="space-y-2">
-              {footerNavigation.company.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-gray-600 transition-colors hover:text-black"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Support Links */}
-          <div>
-            <h3 className="mb-4 text-sm font-bold tracking-wider uppercase">
-              Support
-            </h3>
-            <ul className="space-y-2">
-              {footerNavigation.support.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-gray-600 transition-colors hover:text-black"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal Links */}
-          <div>
-            <h3 className="mb-4 text-sm font-bold tracking-wider uppercase">
-              Legal
-            </h3>
-            <ul className="space-y-2">
-              {footerNavigation.legal.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-gray-600 transition-colors hover:text-black"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            <h3 className="mb-4 text-sm font-bold tracking-wider uppercase">
-              Stay Updated
-            </h3>
-            <p className="mb-4 text-sm text-gray-600">
-              Subscribe to our newsletter for exclusive offers and updates.
+    <footer className="border-t border-gray-200 bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <div className="flex items-center">
+              <img
+                src="/logo.svg"
+                alt="Canto"
+                className="h-8 w-auto"
+                width={32}
+                height={32}
+              />
+              <span className="ml-2 text-xl font-bold">Canto</span>
+            </div>
+            <p className="mt-4 max-w-md text-sm text-gray-600">
+              {t("footer.subscribeText")}
             </p>
-            <form className="flex">
+            <form className="mt-4 flex max-w-md flex-col sm:flex-row">
               <input
                 type="email"
-                placeholder="Your email"
-                className="w-full rounded-l-md border border-gray-300 px-4 py-2 focus:border-black focus:outline-none"
+                placeholder={t("footer.emailPlaceholder")}
+                className="h-10 rounded-md border border-gray-300 px-4 focus:border-black focus:outline-none sm:max-w-xs"
+                required
               />
               <button
                 type="submit"
-                className="rounded-r-md bg-black px-4 py-2 text-white transition-colors hover:bg-gray-800"
+                className="mt-2 h-10 rounded-md bg-black px-6 text-sm font-medium text-white transition-colors hover:bg-gray-800 sm:mt-0 sm:ml-2"
               >
-                Subscribe
+                {t("footer.subscribe")}
               </button>
             </form>
           </div>
+
+          <div>
+            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
+              {t("footer.shop")}
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {navigation.shop.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
+              {t("footer.company")}
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {navigation.company.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <div>
+              <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
+                {t("footer.support")}
+              </h3>
+              <ul className="mt-4 space-y-2">
+                {navigation.support.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      className="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-8">
+              <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
+                {t("footer.legal")}
+              </h3>
+              <ul className="mt-4 space-y-2">
+                {navigation.legal.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      className="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
 
-        {/* Social Links */}
-        <div className="mt-12 flex flex-wrap items-center justify-between border-t border-gray-200 py-8">
-          <div className="mb-4 flex w-full justify-center space-x-6 md:mb-0 md:w-auto">
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                aria-label={social.label}
-                className="text-gray-600 transition-colors hover:text-black"
-              >
-                <svg
-                  role="img"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 fill-current"
+        <div className="mt-12 border-t border-gray-200 pt-8">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <p className="text-sm text-gray-500">{t("footer.copyright")}</p>
+            <div className="mt-4 flex space-x-6 md:mt-0">
+              <h3 className="sr-only">{t("footer.followUs")}</h3>
+              {socialLinks.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="text-gray-400 transition-colors hover:text-gray-600"
+                  aria-label={item.label}
                 >
-                  <title>{social.label}</title>
-                  <path d={social.icon.path} />
-                </svg>
-              </a>
-            ))}
-          </div>
-          <div className="w-full text-center md:w-auto">
-            <p className="text-sm text-gray-600">
-              &copy; {new Date().getFullYear()} CANTO. All rights reserved.
-            </p>
+                  <svg
+                    role="img"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 fill-current"
+                    style={{ color: item.color }}
+                  >
+                    <title>{item.label}</title>
+                    <path d={item.icon.path} />
+                  </svg>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>

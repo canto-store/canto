@@ -42,9 +42,20 @@
     @apply font-heading;
   }
 
-  .arabic {
-    @apply font-arabic;
-    direction: rtl;
-    text-align: right;
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  .font-arabic {
+    font-family: var(--font-arabic), system-ui, sans-serif;
+  }
+
+  .font-latin {
+    font-family: var(--font-body), var(--font-heading), system-ui, sans-serif;
   }
 }
