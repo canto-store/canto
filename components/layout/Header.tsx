@@ -105,7 +105,7 @@ export function Header({ cartCount, className }: HeaderProps) {
           {/* Language Selector */}
           <div className="relative">
             <Select onValueChange={handleLanguageChange} defaultValue={locale}>
-              <SelectTrigger className="h-10 w-[120px] border-none hover:bg-gray-100 focus:ring-0">
+              <SelectTrigger className="h-10 w-[120px] border-none hover:cursor-pointer hover:bg-gray-100 focus:ring-0">
                 <SelectValue placeholder={<Globe className="h-5 w-5" />} />
               </SelectTrigger>
               <SelectContent>
@@ -132,7 +132,7 @@ export function Header({ cartCount, className }: HeaderProps) {
           <div className="relative hidden md:block" ref={dropdownRef}>
             <button
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-all hover:bg-gray-100 hover:text-black"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-all hover:cursor-pointer hover:bg-gray-100 hover:text-black"
             >
               <CircleUser className="h-6 w-6" />
             </button>

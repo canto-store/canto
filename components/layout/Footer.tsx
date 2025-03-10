@@ -2,6 +2,7 @@
 
 import { siInstagram, siX, siFacebook, siYoutube } from "simple-icons";
 import { useTranslations } from "next-intl";
+import { Button } from "../ui/button";
 
 const footerNavigation = (t: any) => ({
   shop: [
@@ -80,12 +81,9 @@ export function Footer() {
                 className="h-10 rounded-md border border-gray-300 px-4 focus:border-black focus:outline-none sm:max-w-xs"
                 required
               />
-              <button
-                type="submit"
-                className="mt-2 h-10 rounded-md bg-black px-6 text-sm font-medium text-white transition-colors hover:bg-gray-800 sm:mt-0 sm:ml-2"
-              >
+              <Button type="submit" className="mt-2 sm:mt-0 sm:ml-2">
                 {t("footer.subscribe")}
-              </button>
+              </Button>
             </form>
           </div>
 
