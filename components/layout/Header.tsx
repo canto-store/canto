@@ -14,23 +14,24 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface HeaderProps {
   cartCount: number;
   className?: string;
 }
 
-const navigationItems = [
-  { label: "Home", href: "/" },
-  { label: "Browse", href: "/browse" },
-  { label: "Sell", href: "#" },
-];
-
 export function Header({ cartCount, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations("header");
 
+  const navigationItems = [
+    { label: t("home"), href: "/" },
+    { label: "Browse", href: "/browse" },
+    { label: "Sell", href: "#" },
+  ];
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (

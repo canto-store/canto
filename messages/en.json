@@ -1,18 +1,16 @@
 {
-  "nav": {
+  "header": {
     "home": "Home",
     "browse": "Browse",
-    "sell": "Sell"
-  },
-  "userMenu": {
+    "sell": "Sell",
     "myAccount": "My Account",
     "wishlist": "Wishlist",
     "settings": "Settings",
-    "logout": "Logout"
-  },
-  "language": {
+    "logout": "Logout",
     "en": "English",
-    "ar": "Arabic"
+    "ar": "Arabic",
+    "search": "Search",
+    "placeholder": "Search for products..."
   },
   "products": {
     "addToCart": "Add to Cart",
@@ -40,8 +38,5 @@
   "cart": {
     "viewCart": "You can view your cart anytime."
   },
-  "search": {
-    "search": "Search",
-    "placeholder": "Search for products..."
-  }
+  "search": {}
 }

@@ -1,18 +1,16 @@
 {
-  "nav": {
+  "header": {
     "home": "الرئيسية",
     "browse": "تصفح",
-    "sell": "بيع"
-  },
-  "userMenu": {
+    "sell": "بيع",
     "myAccount": "حسابي",
     "wishlist": "المفضلة",
     "settings": "الإعدادات",
-    "logout": "تسجيل خروج"
-  },
-  "language": {
+    "logout": "تسجيل خروج",
     "en": "الإنجليزية",
-    "ar": "العربية"
+    "ar": "العربية",
+    "search": "بحث",
+    "placeholder": "ابحث عن منتجات."
   },
   "products": {
     "addToCart": "أضف إلى السلة",
@@ -39,9 +37,5 @@
   },
   "cart": {
     "viewCart": "يمكنك عرض سلة التسوق في أي وقت."
-  },
-  "search": {
-    "search": "بحث",
-    "placeholder": "ابحث عن منتجات..."
   }
 }
