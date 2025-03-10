@@ -27,7 +27,7 @@ const spaceGrotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Canto Store",
+  title: "Canto",
   description: "",
 };
 
