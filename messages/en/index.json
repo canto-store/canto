@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "Home",
+    "browse": "Browse",
+    "sell": "Sell"
+  },
+  "userMenu": {
+    "myAccount": "My Account",
+    "wishlist": "Wishlist",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "language": {
+    "en": "English",
+    "ar": "Arabic"
+  },
+  "products": {
+    "addToCart": "Add to Cart",
+    "addedToCart": "{productName} has been added to your cart.",
+    "browseTitle": "Browse Products",
+    "filters": "Filters",
+    "categories": "Categories",
+    "brands": "Brands",
+    "priceRange": "Price Range",
+    "clearFilters": "Clear Filters",
+    "noProductsFound": "No products found",
+    "tryAdjusting": "Try adjusting your filters or search query",
+    "productsCount": "{count} products",
+    "grid": "Grid",
+    "list": "List",
+    "sortBy": "Sort by:",
+    "back": "Back",
+    "size": "Size",
+    "color": "Color",
+    "brand": "Brand:",
+    "category": "Category:",
+    "sku": "SKU:",
+    "relatedProducts": "Related Products"
+  },
+  "cart": {
+    "viewCart": "You can view your cart anytime."
+  },
+  "search": {
+    "search": "Search",
+    "placeholder": "Search for products..."
+  }
+}

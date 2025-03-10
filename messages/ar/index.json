@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "browse": "تصفح",
+    "sell": "بيع"
+  },
+  "userMenu": {
+    "myAccount": "حسابي",
+    "wishlist": "المفضلة",
+    "settings": "الإعدادات",
+    "logout": "تسجيل خروج"
+  },
+  "language": {
+    "en": "الإنجليزية",
+    "ar": "العربية"
+  },
+  "products": {
+    "addToCart": "أضف إلى السلة",
+    "addedToCart": "تمت إضافة {productName} إلى سلة التسوق الخاصة بك.",
+    "browseTitle": "تصفح المنتجات",
+    "filters": "الفلاتر",
+    "categories": "الفئات",
+    "brands": "العلامات التجارية",
+    "priceRange": "نطاق السعر",
+    "clearFilters": "مسح الفلاتر",
+    "noProductsFound": "لم يتم العثور على منتجات",
+    "tryAdjusting": "حاول تعديل الفلاتر أو البحث",
+    "productsCount": "{count} منتج",
+    "grid": "شبكة",
+    "list": "قائمة",
+    "sortBy": "الترتيب حسب:",
+    "back": "رجوع",
+    "size": "المقاس",
+    "color": "اللون",
+    "brand": "العلامة التجارية:",
+    "category": "الفئة:",
+    "sku": "رمز المنتج:",
+    "relatedProducts": "منتجات ذات صلة"
+  },
+  "cart": {
+    "viewCart": "يمكنك عرض سلة التسوق في أي وقت."
+  },
+  "search": {
+    "search": "بحث",
+    "placeholder": "ابحث عن منتجات..."
+  }
+}
