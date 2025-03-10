@@ -6,6 +6,7 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
+import { FeaturesBanner } from "@/components/home/FeaturesBanner";
 import { HERO_SLIDES } from "@/lib/data/hero-slides";
 import { CATEGORIES } from "@/lib/data/categories";
 import { FEATURED_PRODUCTS } from "@/lib/data/featured-products";
@@ -30,6 +31,7 @@ export default function Home() {
         products={FEATURED_PRODUCTS}
         onAddToCart={handleQuickAdd}
       />
+      <FeaturesBanner />
     </PageLayout>
   );
 }

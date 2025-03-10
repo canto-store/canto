@@ -41,6 +41,24 @@
   "cart": {
     "viewCart": "You can view your cart anytime."
   },
+  "features": {
+    "payment": {
+      "title": "PAYMENT & DELIVERY",
+      "description": "Free shipping for orders over $50"
+    },
+    "return": {
+      "title": "RETURN & REFUND",
+      "description": "Free 100% money back guarantee"
+    },
+    "support": {
+      "title": "QUALITY SUPPORT",
+      "description": "Always online feedback 24/7"
+    },
+    "newsletter": {
+      "title": "JOIN OUR NEWSLETTER",
+      "description": "10% off by subscribing to our newsletter"
+    }
+  },
   "search": {},
   "footer": {
     "shop": "Shop",
