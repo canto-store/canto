@@ -72,20 +72,13 @@ export function Header({ cartCount, className }: HeaderProps) {
 
   return (
     <header
-      className={cn("fixed top-0 z-50 w-full bg-white shadow-sm", className)}
+      className={cn("fixed top-0 z-50 w-full bg-[var(--color-background)] border-b border-[var(--color-burgundy)]", className)}
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-18 items-center justify-between px-4">
         {/* Left Section: Logo */}
         <div className="flex items-center gap-3 md:w-1/5 md:flex-initial">
-          <Link href="/" className="shrink-0">
-            <Image
-              src="/logo.svg"
-              alt="Logo"
-              width="100"
-              height="100"
-              priority
-              className="h-16 w-auto"
-            />
+          <Link href="/" className="shrink-0 text-2xl font-bold uppercase text-[var(--color-burgundy)]">
+            CANTO STORE
           </Link>
         </div>
 
@@ -97,7 +90,7 @@ export function Header({ cartCount, className }: HeaderProps) {
                 <Button
                   variant="ghost"
                   onClick={() => handleNavigation(item.href)}
-                  className="text-base font-medium text-gray-600 transition-colors hover:text-black"
+                  className="text-base font-medium text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                 >
                   {item.label}
                 </Button>
@@ -111,12 +104,14 @@ export function Header({ cartCount, className }: HeaderProps) {
           {/* Language Selector */}
           <div className="relative">
             <Select onValueChange={handleLanguageChange} defaultValue={locale}>
-              <SelectTrigger className="h-10 w-[120px] border-none hover:cursor-pointer hover:bg-gray-100 focus:ring-0">
+              <SelectTrigger className="h-10 w-[120px] border-none text-[var(--color-burgundy)] hover:cursor-pointer hover:bg-[var(--color-burgundy)]/10 focus:ring-0">
                 <SelectValue placeholder={<Globe className="h-5 w-5" />} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">🇺🇸 {t("en")}</SelectItem>
-                <SelectItem value="ar">🇪🇬 {t("ar")}</SelectItem>
+                <SelectItem value="en">🇺🇸 English</SelectItem>
+                <SelectItem value="ar" className="font-arabic">
+                  🇪🇬 العربية
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -124,11 +119,11 @@ export function Header({ cartCount, className }: HeaderProps) {
           {/* Cart */}
           <a
             href="/cart"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-all hover:bg-gray-100 hover:text-black"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-burgundy)] transition-all hover:bg-[var(--color-burgundy)]/10"
           >
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black text-xs font-medium text-white">
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-burgundy)] text-xs font-medium text-[var(--color-cream)]">
                 {cartCount}
               </span>
             )}
@@ -138,39 +133,39 @@ export function Header({ cartCount, className }: HeaderProps) {
           <div className="relative hidden md:block" ref={dropdownRef}>
             <button
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-all hover:cursor-pointer hover:bg-gray-100 hover:text-black"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-burgundy)] transition-all hover:cursor-pointer hover:bg-[var(--color-burgundy)]/10"
             >
               <CircleUser className="h-6 w-6" />
             </button>
 
             {/* User Dropdown */}
             {userDropdownOpen && (
-              <div className="ring-opacity-5 absolute right-0 mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1 ring-black">
+              <div className="ring-opacity-5 absolute right-0 mt-2 w-56 rounded-md bg-[var(--color-cream)] py-2 shadow-lg ring-1 ring-[var(--color-burgundy)]">
                 <a
                   href="/account"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                 >
                   <User className="mr-3 h-4 w-4" />
                   My Account
                 </a>
                 <a
                   href="/wishlist"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                 >
                   <Heart className="mr-3 h-4 w-4" />
                   Wishlist
                 </a>
                 <a
                   href="/settings"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                 >
                   <Settings className="mr-3 h-4 w-4" />
                   Settings
                 </a>
-                <div className="my-1 h-px bg-gray-200" />
+                <div className="my-1 h-px bg-[var(--color-burgundy)]/20" />
                 <a
                   href="/logout"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex items-center px-4 py-2.5 text-sm text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                 >
                   <LogOut className="mr-3 h-4 w-4" />
                   Logout
@@ -182,7 +177,7 @@ export function Header({ cartCount, className }: HeaderProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-all hover:bg-gray-100 hover:text-black md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-burgundy)] transition-all hover:bg-[var(--color-burgundy)]/10 md:hidden"
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -195,14 +190,14 @@ export function Header({ cartCount, className }: HeaderProps) {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-gray-200 bg-white shadow-lg md:hidden">
+        <div className="border-t border-[var(--color-burgundy)]/20 bg-[var(--color-cream)] shadow-lg md:hidden">
           <nav className="container mx-auto">
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-[var(--color-burgundy)]/10">
               {navigationItems.map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="block px-4 py-3 text-base font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+                    className="block px-4 py-3 text-base font-medium text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                   >
                     {item.label}
                   </a>
@@ -211,7 +206,7 @@ export function Header({ cartCount, className }: HeaderProps) {
               <li>
                 <a
                   href="/account"
-                  className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+                  className="flex items-center px-4 py-3 text-base text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                 >
                   <User className="mr-3 h-4 w-4" />
                   My Account
@@ -220,7 +215,7 @@ export function Header({ cartCount, className }: HeaderProps) {
               <li>
                 <a
                   href="/wishlist"
-                  className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+                  className="flex items-center px-4 py-3 text-base text-[var(--color-burgundy)] transition-colors hover:bg-[var(--color-burgundy)]/10"
                 >
                   <Heart className="mr-3 h-4 w-4" />
                   Wishlist

@@ -15,7 +15,7 @@ export function PageLayout({ children, cartCount }: PageLayoutProps) {
   const [showBanner, setShowBanner] = useState(true);
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-primary)]">
       <div
         className={cn(
           "fixed top-0 right-0 left-0 z-50 transition-all duration-300",
@@ -28,7 +28,7 @@ export function PageLayout({ children, cartCount }: PageLayoutProps) {
         cartCount={cartCount}
         className={cn(
           "fixed right-0 left-0 transition-all duration-300",
-          showBanner ? "top-12" : "top-0",
+          showBanner ? "top-10" : "top-0",
         )}
       />
       <main

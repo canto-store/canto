@@ -21,7 +21,7 @@ export function PromoBanner({ className, onClose }: PromoBannerProps) {
   return (
     <div
       className={cn(
-        "relative flex h-12 items-center justify-center bg-gradient-to-r from-purple-600 to-indigo-600 px-4 text-center text-sm text-white shadow-md transition-all duration-300",
+        "relative flex h-10 items-center justify-center bg-gradient-to-r from-purple-600 to-indigo-600 px-4 text-center text-sm text-white shadow-md transition-all duration-300",
         className,
       )}
     >
