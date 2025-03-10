@@ -105,13 +105,29 @@
     "oversizedHoodie": "هودي قطني كبير الحجم",
     "denimJacket": "جاكيت جينز كلاسيكي",
     "watch": "ساعة بسيطة",
-    "sneakers": "أحذية رياضية جلدية فاخرة"
+    "sneakers": "أحذية رياضية جلدية فاخرة",
+    "armchair": "كرسي بذراعين",
+    "mugSet": "طقم أكواب",
+    "colorfulHills": "تلال ملونة",
+    "spineTable": "طاولة جانبية ملتوية",
+    "snakePlant": "نبات الثعبان",
+    "beatsHeadphones": "سماعات بيتس",
+    "basicCrewneck": "سترة أساسية",
+    "pinkCouch": "أريكة وردية"
   },
   "brands": {
     "essentials": "إيسينشالز",
     "vintage": "فينتاج",
     "timeless": "تايملس",
-    "luxeSteps": "لوكس ستيبس"
+    "luxeSteps": "لوكس ستيبس",
+    "zoyaHome": "زويا هوم",
+    "eliHome": "إيلي هوم",
+    "mariamTawfik": "مريم توفيق",
+    "casaNovelle": "كاسا نوفيل",
+    "mashtalNabta": "مشتل نبتة",
+    "trojan": "تروجان",
+    "browntoast": "براون توست",
+    "walnut": "والنت"
   },
   "promo": {
     "copiedToClipboard": "تم النسخ",

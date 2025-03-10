@@ -105,13 +105,29 @@
     "oversizedHoodie": "Oversized Cotton Hoodie",
     "denimJacket": "Classic Denim Jacket",
     "watch": "Minimalist Watch",
-    "sneakers": "Premium Leather Sneakers"
+    "sneakers": "Premium Leather Sneakers",
+    "armchair": "Armchair",
+    "mugSet": "Mug Set",
+    "colorfulHills": "Colorful Hills",
+    "spineTable": "Spine Side Table",
+    "snakePlant": "Snake Plant",
+    "beatsHeadphones": "Beats Headphones",
+    "basicCrewneck": "Basic Crewneck",
+    "pinkCouch": "Pink Dreams Couch"
   },
   "brands": {
     "essentials": "ESSENTIALS",
     "vintage": "VINTAGE",
     "timeless": "TIMELESS",
-    "luxeSteps": "LUXE STEPS"
+    "luxeSteps": "LUXE STEPS",
+    "zoyaHome": "ZOYA HOME",
+    "eliHome": "ELI HOME",
+    "mariamTawfik": "MARIAM TAWFIK",
+    "casaNovelle": "CASA NOVELLE",
+    "mashtalNabta": "MASHTAL NABTA",
+    "trojan": "TROJAN",
+    "browntoast": "BROWNTOAST",
+    "walnut": "WALNUT"
   },
   "promo": {
     "copiedToClipboard": "Copied to clipboard",
