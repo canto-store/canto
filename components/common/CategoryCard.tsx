@@ -8,7 +8,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
   return (
     <a
       href={`/browse?category=${encodeURIComponent(category.name)}`}
-      className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg"
+      className="group relative aspect-square overflow-hidden rounded-lg hover:cursor-pointer"
     >
       <img
         src={category.image}

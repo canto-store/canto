@@ -9,7 +9,12 @@
     "logout": "Logout",
     "search": "Search",
     "placeholder": "Search for products...",
-    "language": "Language"
+    "language": "Language",
+    "cart": "Shopping Cart",
+    "yourCart": "Your Cart ({count} items)",
+    "total": "Total",
+    "viewCart": "View Cart",
+    "checkout": "Checkout"
   },
   "products": {
     "addToCart": "Add to Cart",
@@ -37,7 +42,30 @@
     "view": "View"
   },
   "cart": {
-    "viewCart": "You can view your cart anytime."
+    "viewCart": "You can view your cart anytime.",
+    "emptyCart": "Your cart is empty",
+    "startShopping": "Start shopping",
+    "itemsInCart": "{count} items in your cart",
+    "itemInCart": "1 item in your cart",
+    "yourCart": "Your Cart",
+    "yourCartIsEmpty": "Your cart is currently empty",
+    "continueShopping": "Continue shopping",
+    "removeItem": "Remove item",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax",
+    "orderTotal": "Order Total",
+    "quantity": "Quantity",
+    "updateCart": "Update Cart",
+    "applyCoupon": "Apply Coupon",
+    "estimateShipping": "Estimate Shipping",
+    "proceedToCheckout": "Proceed to Checkout",
+    "cartSummary": "Cart Summary",
+    "shippingAndTaxes": "Shipping & taxes calculated at checkout",
+    "freeShipping": "Free shipping on orders over $50",
+    "itemRemoved": "Item removed from cart",
+    "itemAdded": "Item added to cart",
+    "cartUpdated": "Cart updated successfully"
   },
   "features": {
     "payment": {

@@ -26,11 +26,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
+import { type Product } from "@/components/products/ProductCard";
+import { CartDropdown } from "../cart/CartDropdown";
 
 interface HeaderProps {
   cartCount: number;
   className?: string;
 }
+
+// Mock cart items for demonstration
+// In a real app, this would come from a cart context or state management
+const mockCartItems: (Product & { quantity: number })[] = [
+  {
+    name: "Oversized Cotton Hoodie",
+    brand: "ESSENTIALS",
+    price: 129.99,
+    image:
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=600&h=600",
+    quantity: 1,
+  },
+  {
+    name: "Classic Denim Jacket",
+    brand: "VINTAGE",
+    price: 189.99,
+    image:
+      "https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?auto=format&fit=crop&q=80&w=600&h=600",
+    quantity: 2,
+  },
+];
 
 export function Header({ cartCount, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -85,6 +108,8 @@ export function Header({ cartCount, className }: HeaderProps) {
             alt="Canto Store Logo"
             width={100}
             height={100}
+            onClick={() => handleNavigation("/")}
+            className="hover:cursor-pointer"
           />
         </div>
 
@@ -122,18 +147,8 @@ export function Header({ cartCount, className }: HeaderProps) {
             </Select>
           </div>
 
-          {/* Cart */}
-          <a
-            href="/cart"
-            className="text-primary hover:bg-primary/10 relative flex h-10 w-10 items-center justify-center rounded-full transition-all"
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {cartCount > 0 && (
-              <span className="text-primary bg absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium">
-                {cartCount}
-              </span>
-            )}
-          </a>
+          {/* Cart with Dropdown */}
+          <CartDropdown />
 
           {/* User Menu (Desktop) */}
           <div className="relative hidden md:block" ref={dropdownRef}>

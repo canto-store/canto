@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { toast } from "sonner";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { HeroSlider } from "@/components/home/HeroSlider";
@@ -11,20 +10,29 @@ import { HERO_SLIDES } from "@/lib/data/hero-slides";
 import { CATEGORIES } from "@/lib/data/categories";
 import { FEATURED_PRODUCTS } from "@/lib/data/featured-products";
 import { useTranslations } from "next-intl";
+import { useCart } from "@/components/cart";
 
 export default function Home() {
-  const [cartCount, setCartCount] = useState(0);
   const t = useTranslations();
+  const { addItem } = useCart();
 
   const handleQuickAdd = (productName: string) => {
-    setCartCount((prev) => prev + 1);
-    toast(t("products.addedToCart", { productName }), {
-      description: t("cart.viewCart"),
-    });
+    // Find the product in FEATURED_PRODUCTS
+    const product = FEATURED_PRODUCTS.find((p) => p.name === productName);
+
+    if (product) {
+      // Add the product to the cart
+      addItem(product, 1);
+
+      // Show a toast notification
+      toast(t("products.addedToCart", { productName }), {
+        description: t("cart.viewCart"),
+      });
+    }
   };
 
   return (
-    <PageLayout cartCount={cartCount}>
+    <PageLayout>
       <HeroSlider slides={HERO_SLIDES} />
       <CategoryGrid categories={CATEGORIES} />
       <FeaturedProducts

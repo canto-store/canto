@@ -9,7 +9,12 @@
     "logout": "تسجيل خروج",
     "search": "بحث",
     "placeholder": "ابحث عن منتجات.",
-    "language": "اللغة"
+    "language": "اللغة",
+    "cart": "سلة التسوق",
+    "yourCart": "سلة التسوق ({count} منتج)",
+    "total": "المجموع",
+    "viewCart": "عرض السلة",
+    "checkout": "إتمام الشراء"
   },
   "products": {
     "addToCart": "أضف إلى السلة",
@@ -37,7 +42,30 @@
     "view": "عرض"
   },
   "cart": {
-    "viewCart": "يمكنك عرض سلة التسوق في أي وقت."
+    "viewCart": "يمكنك عرض سلة التسوق في أي وقت.",
+    "emptyCart": "سلة التسوق فارغة",
+    "startShopping": "ابدأ التسوق",
+    "itemsInCart": "{count} منتج في سلة التسوق",
+    "itemInCart": "منتج واحد في سلة التسوق",
+    "yourCart": "سلة التسوق الخاصة بك",
+    "yourCartIsEmpty": "سلة التسوق الخاصة بك فارغة حالياً",
+    "continueShopping": "مواصلة التسوق",
+    "removeItem": "إزالة المنتج",
+    "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
+    "tax": "الضريبة",
+    "orderTotal": "إجمالي الطلب",
+    "quantity": "الكمية",
+    "updateCart": "تحديث السلة",
+    "applyCoupon": "تطبيق الكوبون",
+    "estimateShipping": "تقدير الشحن",
+    "proceedToCheckout": "المتابعة إلى الدفع",
+    "cartSummary": "ملخص السلة",
+    "shippingAndTaxes": "يتم احتساب الشحن والضرائب عند الدفع",
+    "freeShipping": "شحن مجاني للطلبات التي تزيد عن 50 دولار",
+    "itemRemoved": "تمت إزالة المنتج من السلة",
+    "itemAdded": "تمت إضافة المنتج إلى السلة",
+    "cartUpdated": "تم تحديث السلة بنجاح"
   },
   "features": {
     "payment": {

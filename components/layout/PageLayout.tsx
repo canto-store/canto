@@ -5,14 +5,15 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PromoBanner } from "@/components/common/PromoBanner";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/components/cart";
 
 interface PageLayoutProps {
   children: ReactNode;
-  cartCount: number;
 }
 
-export function PageLayout({ children, cartCount }: PageLayoutProps) {
+export function PageLayout({ children }: PageLayoutProps) {
   const [showBanner, setShowBanner] = useState(true);
+  const { count: cartCount } = useCart();
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-primary)]">

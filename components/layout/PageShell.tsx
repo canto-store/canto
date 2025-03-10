@@ -3,20 +3,17 @@
 import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { useCart } from "@/components/cart";
 
 interface PageShellProps {
   children: ReactNode;
-  cartCount?: number;
   title?: string;
   className?: string;
 }
 
-export function PageShell({
-  children,
-  cartCount = 0,
-  title,
-  className = "",
-}: PageShellProps) {
+export function PageShell({ children, title, className = "" }: PageShellProps) {
+  const { count: cartCount } = useCart();
+
   return (
     <div className="min-h-screen bg-white text-black">
       <Header cartCount={cartCount} />

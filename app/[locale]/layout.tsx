@@ -8,6 +8,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { CartProvider } from "@/components/cart";
 
 // Load IBM Plex Sans Arabic from Google Fonts
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
@@ -69,7 +70,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <CartProvider>{children}</CartProvider>
             <Toaster />
           </ThemeProvider>
         </NextIntlClientProvider>
