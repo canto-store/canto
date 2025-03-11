@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 interface PaginationProps {
   currentPage: number;
@@ -15,6 +17,10 @@ export function Pagination({
   onPageChange,
   className,
 }: PaginationProps) {
+  const t = useTranslations("pagination");
+  const params = useParams();
+  const isRTL = params.locale === "ar";
+
   // Don't render pagination if there's only one page
   if (totalPages <= 1) return null;
 
@@ -70,25 +76,52 @@ export function Pagination({
 
   const pageNumbers = getPageNumbers();
 
+  // Convert to Arabic numerals if needed
+  const formatNumber = (num: number): string => {
+    if (!isRTL) return num.toString();
+
+    // Convert to Arabic numerals
+    const arabicNumerals = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+    return num.toString().replace(/[0-9]/g, (d) => arabicNumerals[parseInt(d)]);
+  };
+
+  // Create navigation buttons with correct icons for RTL/LTR
+  const prevButton = (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => onPageChange(currentPage - 1)}
+      disabled={currentPage === 1}
+      aria-label={t("previous")}
+    >
+      <ChevronLeft className="h-4 w-4" />
+    </Button>
+  );
+
+  const nextButton = (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => onPageChange(currentPage + 1)}
+      disabled={currentPage === totalPages}
+      aria-label={t("next")}
+    >
+      <ChevronRight className="h-4 w-4" />
+    </Button>
+  );
+
   return (
     <nav
-      className={cn(
-        "flex items-center justify-center space-x-2 py-8",
-        className,
-      )}
+      className={cn("flex items-center justify-center gap-2 py-8", className)}
+      dir={isRTL ? "rtl" : "ltr"}
       aria-label="Pagination"
     >
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        aria-label="Previous page"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
+      {/* In RTL mode, we swap the positions of next and previous buttons */}
+      {isRTL ? nextButton : prevButton}
 
-      <div className="flex items-center space-x-2">
+      <div
+        className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}
+      >
         {pageNumbers.map((page, index) => {
           if (page === "ellipsis-start" || page === "ellipsis-end") {
             return (
@@ -101,30 +134,24 @@ export function Pagination({
             );
           }
 
+          const pageNum = page as number;
           return (
             <Button
-              key={page}
-              variant={currentPage === page ? "default" : "outline"}
+              key={pageNum}
+              variant={currentPage === pageNum ? "default" : "outline"}
               size="icon"
-              onClick={() => onPageChange(page as number)}
-              aria-label={`Page ${page}`}
-              aria-current={currentPage === page ? "page" : undefined}
+              onClick={() => onPageChange(pageNum)}
+              aria-label={`${t("page")} ${pageNum}`}
+              aria-current={currentPage === pageNum ? "page" : undefined}
             >
-              {page}
+              {formatNumber(pageNum)}
             </Button>
           );
         })}
       </div>
 
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        aria-label="Next page"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+      {/* In RTL mode, we swap the positions of next and previous buttons */}
+      {isRTL ? prevButton : nextButton}
     </nav>
   );
 }

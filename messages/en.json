@@ -39,7 +39,26 @@
     "sku": "SKU:",
     "relatedProducts": "Related Products",
     "add": "Add",
-    "view": "View"
+    "view": "View",
+    "currency": {
+      "symbol": "$",
+      "code": "USD",
+      "format": "${amount}"
+    }
+  },
+  "sort": {
+    "featured": "Featured",
+    "priceLow": "Price: Low to High",
+    "priceHigh": "Price: High to Low",
+    "nameAsc": "Name: A to Z",
+    "nameDesc": "Name: Z to A"
+  },
+  "pagination": {
+    "show": "Show",
+    "perPage": "per page",
+    "next": "Next",
+    "previous": "Previous",
+    "page": "Page"
   },
   "cart": {
     "viewCart": "You can view your cart anytime.",
@@ -161,5 +180,6 @@
     "copiedToClipboard": "Copied to clipboard",
     "promoBanner": "Exclusive products with promo code",
     "promoPercent": "20%"
-  }
+  },
+  "showing": "Showing {from} to {to} of {total}"
 }

@@ -6,6 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 export type SortOption =
   | "featured"
@@ -29,8 +31,15 @@ export function SortMenu({
   label = "Sort by:",
   width = "w-[180px]",
 }: SortMenuProps) {
+  const t = useTranslations();
+  const params = useParams();
+  const isRTL = params.locale === "ar";
+
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div
+      className={`flex items-center ${isRTL ? "flex-row-reverse gap-2" : "gap-2"} ${className}`}
+      dir={isRTL ? "rtl" : "ltr"}
+    >
       <ArrowUpDown className="h-4 w-4 text-gray-500" />
       {label && (
         <span className="text-sm font-medium text-gray-700">{label}</span>
@@ -40,14 +49,14 @@ export function SortMenu({
         onValueChange={(value) => onValueChange(value as SortOption)}
       >
         <SelectTrigger className={width}>
-          <SelectValue placeholder="Sort by" />
+          <SelectValue placeholder={t("products.sortBy")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="featured">Featured</SelectItem>
-          <SelectItem value="price-low">Price: Low to High</SelectItem>
-          <SelectItem value="price-high">Price: High to Low</SelectItem>
-          <SelectItem value="name-asc">Name: A to Z</SelectItem>
-          <SelectItem value="name-desc">Name: Z to A</SelectItem>
+          <SelectItem value="featured">{t("sort.featured")}</SelectItem>
+          <SelectItem value="price-low">{t("sort.priceLow")}</SelectItem>
+          <SelectItem value="price-high">{t("sort.priceHigh")}</SelectItem>
+          <SelectItem value="name-asc">{t("sort.nameAsc")}</SelectItem>
+          <SelectItem value="name-desc">{t("sort.nameDesc")}</SelectItem>
         </SelectContent>
       </Select>
     </div>

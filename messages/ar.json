@@ -39,7 +39,26 @@
     "sku": "رمز المنتج:",
     "relatedProducts": "منتجات ذات صلة",
     "add": "إضافة",
-    "view": "عرض"
+    "view": "عرض",
+    "currency": {
+      "symbol": "$",
+      "code": "USD",
+      "format": "{amount} $"
+    }
+  },
+  "sort": {
+    "featured": "مميز",
+    "priceLow": "السعر: من الأقل إلى الأعلى",
+    "priceHigh": "السعر: من الأعلى إلى الأقل",
+    "nameAsc": "الاسم: من أ إلى ي",
+    "nameDesc": "الاسم: من ي إلى أ"
+  },
+  "pagination": {
+    "show": "عرض",
+    "perPage": "لكل صفحة",
+    "next": "التالي",
+    "previous": "السابق",
+    "page": "صفحة"
   },
   "cart": {
     "viewCart": "يمكنك عرض سلة التسوق في أي وقت.",
@@ -161,5 +180,6 @@
     "copiedToClipboard": "تم النسخ",
     "promoBanner": "منتجات حصرية مع كود الخصم",
     "promoPercent": "٢٠٪"
-  }
+  },
+  "showing": "عرض {from} إلى {to} من {total}"
 }

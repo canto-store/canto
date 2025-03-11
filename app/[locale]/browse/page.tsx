@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import { PageShell } from "@/components/layout";
 import { ProductGrid, ProductList } from "@/components/products";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,8 @@ import { useTranslations } from "next-intl";
 
 export default function BrowsePage() {
   const searchParams = useSearchParams();
+  const params = useParams();
+  const isRTL = params.locale === "ar";
   const initialCategory = searchParams.get("category") || "All";
   const initialQuery = searchParams.get("q") || "";
   const initialTab = searchParams.get("tab") || "grid";
@@ -47,7 +49,11 @@ export default function BrowsePage() {
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [paginatedProducts, setPaginatedProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Get translations
   const t = useTranslations();
+  const productsT = useTranslations("products");
+
   // Update URL when filters or pagination change
   useEffect(() => {
     const params = new URLSearchParams();
@@ -128,8 +134,8 @@ export default function BrowsePage() {
 
   const handleQuickAdd = (productName: string) => {
     setCartCount((prev) => prev + 1);
-    toast(`${productName} has been added to your cart.`, {
-      description: "You can view your cart anytime.",
+    toast(productsT("addedToCart", { productName }), {
+      description: t("cart.viewCart"),
     });
   };
 
@@ -159,10 +165,19 @@ export default function BrowsePage() {
     setCurrentPage(1); // Reset to first page when changing items per page
   };
 
+  // Convert to Arabic numerals if needed
+  const formatNumber = (num: number): string => {
+    if (!isRTL) return num.toString();
+
+    // Convert to Arabic numerals
+    const arabicNumerals = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+    return num.toString().replace(/[0-9]/g, (d) => arabicNumerals[parseInt(d)]);
+  };
+
   return (
     <PageShell cartCount={cartCount}>
       <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-        <h1 className="text-3xl font-bold">Browse Products</h1>
+        <h1 className="text-3xl font-bold">{productsT("browseTitle")}</h1>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -171,7 +186,7 @@ export default function BrowsePage() {
             onClick={() => setShowFilters(!showFilters)}
           >
             <Filter className="h-4 w-4" />
-            Filters
+            {productsT("filters")}
           </Button>
         </div>
       </div>
@@ -180,12 +195,14 @@ export default function BrowsePage() {
         {/* Filters */}
         {showFilters && (
           <div className="mb-6 rounded-lg border bg-white p-4 shadow-sm">
-            <h3 className="mb-2 font-medium text-black">Filter by:</h3>
+            <h3 className="mb-2 font-medium text-black">
+              {productsT("filters")}:
+            </h3>
             <div className="grid gap-6 md:grid-cols-3">
               {/* Categories */}
               <div>
                 <h4 className="mb-2 text-sm font-medium text-gray-700">
-                  Categories
+                  {productsT("categories")}
                 </h4>
                 <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
                   {CATEGORIES.map((category) => (
@@ -206,7 +223,7 @@ export default function BrowsePage() {
               {/* Brands */}
               <div>
                 <h4 className="mb-2 text-sm font-medium text-gray-700">
-                  Brands
+                  {productsT("brands")}
                 </h4>
                 <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
                   {BRANDS.map((brand) => (
@@ -225,7 +242,7 @@ export default function BrowsePage() {
               {/* Price Ranges */}
               <div>
                 <h4 className="mb-2 text-sm font-medium text-gray-700">
-                  Price
+                  {productsT("priceRange")}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {PRICE_RANGES.map((range) => (
@@ -252,25 +269,30 @@ export default function BrowsePage() {
             defaultValue={searchQuery}
             onSubmit={handleSearch}
             className="border-light-gray border-2"
-            buttonText="Search"
+            buttonText={t("header.search")}
           />
         </div>
 
         {/* Results Count and Items Per Page */}
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="text-gray-600">
-            {filteredProducts.length}{" "}
-            {filteredProducts.length === 1 ? "product" : "products"} found
+          <p className="text-gray-600" dir={isRTL ? "rtl" : "ltr"}>
+            {productsT("productsCount", { count: filteredProducts.length })}
             {filteredProducts.length > 0 && (
-              <span className="ml-1 text-sm text-gray-500">
-                (Showing{" "}
-                {Math.min(
-                  (currentPage - 1) * itemsPerPage + 1,
-                  filteredProducts.length,
+              <span
+                className={`${isRTL ? "mr-1" : "ml-1"} text-sm text-gray-500`}
+              >
+                (
+                {formatNumber(
+                  Math.min(
+                    (currentPage - 1) * itemsPerPage + 1,
+                    filteredProducts.length,
+                  ),
                 )}{" "}
-                to{" "}
-                {Math.min(currentPage * itemsPerPage, filteredProducts.length)}{" "}
-                of {filteredProducts.length})
+                -{" "}
+                {formatNumber(
+                  Math.min(currentPage * itemsPerPage, filteredProducts.length),
+                )}{" "}
+                / {formatNumber(filteredProducts.length)})
               </span>
             )}
           </p>
@@ -290,13 +312,20 @@ export default function BrowsePage() {
           onValueChange={setActiveTab}
           className="mb-6"
           id="products-section"
+          dir={isRTL ? "rtl" : "ltr"}
         >
-          <div className="flex items-center justify-between">
+          <div
+            className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}
+          >
             <TabsList className="grid w-[200px] grid-cols-2">
-              <TabsTrigger value="grid">Grid</TabsTrigger>
-              <TabsTrigger value="list">List</TabsTrigger>
+              <TabsTrigger value="grid">{productsT("grid")}</TabsTrigger>
+              <TabsTrigger value="list">{productsT("list")}</TabsTrigger>
             </TabsList>
-            <SortMenu value={sortOption} onValueChange={setSortOption} />
+            <SortMenu
+              value={sortOption}
+              onValueChange={setSortOption}
+              label={productsT("sortBy")}
+            />
           </div>
 
           {/* Products Display */}
@@ -306,7 +335,7 @@ export default function BrowsePage() {
                 <ProductGrid
                   products={paginatedProducts}
                   onAddToCart={handleQuickAdd}
-                  className="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                  className={`grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ${isRTL ? "rtl" : ""}`}
                 />
               </TabsContent>
 
@@ -327,15 +356,16 @@ export default function BrowsePage() {
               />
             </>
           ) : (
-            <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+            <div
+              className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center"
+              dir={isRTL ? "rtl" : "ltr"}
+            >
               <p className="mb-2 text-xl font-medium text-black">
-                No products found
+                {productsT("noProductsFound")}
               </p>
-              <p className="text-gray-500">
-                Try adjusting your search or filters
-              </p>
+              <p className="text-gray-500">{productsT("tryAdjusting")}</p>
               <Button variant="outline" className="mt-4" onClick={clearFilters}>
-                Clear all filters
+                {productsT("clearFilters")}
               </Button>
             </div>
           )}

@@ -5,6 +5,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 interface ItemsPerPageProps {
   value: number;
@@ -19,10 +21,16 @@ export function ItemsPerPage({
   options,
   className,
 }: ItemsPerPageProps) {
+  const t = useTranslations("pagination");
+  const params = useParams();
+  const isRTL = params.locale === "ar";
+
   return (
     <div className={className}>
-      <div className="flex items-center space-x-2">
-        <span className="text-sm text-gray-500">Show</span>
+      <div
+        className={`flex items-center ${isRTL ? "space-x-2 space-x-reverse" : "space-x-2"}`}
+      >
+        <span className="text-sm text-gray-500">{t("show")}</span>
         <Select
           value={value.toString()}
           onValueChange={(val) => onChange(Number(val))}
@@ -38,7 +46,7 @@ export function ItemsPerPage({
             ))}
           </SelectContent>
         </Select>
-        <span className="text-sm text-gray-500">per page</span>
+        <span className="text-sm text-gray-500">{t("perPage")}</span>
       </div>
     </div>
   );

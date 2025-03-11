@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { useParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
@@ -16,12 +17,17 @@ function TabsList({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List>) {
+  const params = useParams();
+  const isRTL = params?.locale === "ar";
+
   return (
     <TabsPrimitive.List
       className={cn(
         "inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-600",
+        isRTL ? "flex-row-reverse" : "",
         className,
       )}
+      dir={isRTL ? "rtl" : "ltr"}
       {...props}
     />
   );
