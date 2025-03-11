@@ -35,6 +35,6 @@ jobs:
             docker rm canto-frontend-v2 || true
             docker run -d \
               --name canto-frontend-v2 \
-              -p 3030:3000 \
+              -p 3030:3030 \
               --restart unless-stopped \
               ghcr.io/soubky0/canto-frontend-v2:latest
