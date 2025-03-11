@@ -5,7 +5,6 @@ import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { PageShell } from "@/components/layout";
 import { ProductGrid, ProductList } from "@/components/products";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { Filter } from "lucide-react";
 import { CATEGORIES, BRANDS, PRICE_RANGES, Product } from "@/lib/data";
 import { filterProducts } from "@/lib/utils";
@@ -131,12 +130,6 @@ export default function BrowsePage() {
     const endIndex = startIndex + itemsPerPage;
     setPaginatedProducts(filteredProducts.slice(startIndex, endIndex));
   }, [filteredProducts, currentPage, itemsPerPage]);
-
-  const handleQuickAdd = (productName: string) => {
-    toast(productsT("addedToCart", { productName }), {
-      description: t("cart.viewCart"),
-    });
-  };
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
