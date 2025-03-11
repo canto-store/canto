@@ -5,7 +5,6 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PromoBanner } from "@/components/common/PromoBanner";
 import { cn } from "@/lib/utils";
-import { useCart } from "@/components/cart";
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -13,7 +12,6 @@ interface PageLayoutProps {
 
 export function PageLayout({ children }: PageLayoutProps) {
   const [showBanner, setShowBanner] = useState(true);
-  const { count: cartCount } = useCart();
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-primary)]">
@@ -26,7 +24,6 @@ export function PageLayout({ children }: PageLayoutProps) {
         <PromoBanner onClose={() => setShowBanner(false)} />
       </div>
       <Header
-        cartCount={cartCount}
         className={cn(
           "fixed right-0 left-0 transition-all duration-300",
           showBanner ? "top-10" : "top-0",

@@ -27,12 +27,14 @@ export default function CartPage() {
   if (count === 0) {
     return (
       <PageShell title={t("cart.yourCart")}>
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="mb-8 rounded-full bg-gray-100 p-6">
-            <ShoppingCart className="h-12 w-12 text-gray-400" />
+        <div className="flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+          <div className="mb-6 rounded-full bg-gray-100 p-6 sm:mb-8 sm:p-8">
+            <ShoppingCart className="h-14 w-14 text-gray-400 sm:h-16 sm:w-16" />
           </div>
-          <h2 className="mb-3 text-2xl font-bold">{t("cart.emptyCart")}</h2>
-          <p className="mb-8 max-w-md text-center text-gray-500">
+          <h2 className="mb-2 text-center text-xl font-bold sm:mb-3 sm:text-2xl">
+            {t("cart.emptyCart")}
+          </h2>
+          <p className="mb-6 max-w-md text-center text-sm text-gray-500 sm:mb-8 sm:text-base">
             {t("cart.yourCartIsEmpty")}
           </p>
           <Button size="lg" onClick={handleContinueShopping}>
@@ -45,32 +47,32 @@ export default function CartPage() {
 
   return (
     <PageShell title={t("cart.yourCart")}>
-      <div className="mb-8">
+      <div className="mb-4 sm:mb-8">
         <Button
           variant="ghost"
-          className="flex items-center text-gray-600"
+          className="flex items-center text-sm text-gray-600 sm:text-base"
           onClick={handleContinueShopping}
         >
           {isRTL ? (
             <>
               {t("cart.continueShopping")}
-              <ArrowLeft className="ml-2 h-4 w-4" />
+              <ArrowLeft className="ml-1 h-3 w-3 sm:ml-2 sm:h-4 sm:w-4" />
             </>
           ) : (
             <>
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
               {t("cart.continueShopping")}
             </>
           )}
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="rounded-lg border border-gray-200 bg-white">
-            <div className="border-b border-gray-200 p-6">
-              <h2 className="text-xl font-medium">
+            <div className="border-b border-gray-200 p-4 sm:p-6">
+              <h2 className="text-lg font-medium sm:text-xl">
                 {t("cart.itemsInCart", { count })}
               </h2>
             </div>
@@ -82,18 +84,30 @@ export default function CartPage() {
               )}
             >
               {items.map((item) => (
-                <div key={item.name} className="p-6">
+                <div key={item.name} className="p-4 sm:p-6">
                   {/* Custom wrapper with additional spacing for both LTR and RTL */}
                   <div className="cart-item-wrapper">
                     <style jsx>{`
                       /* LTR styles */
                       .cart-item-wrapper :global(.ml-8) {
-                        margin-left: 2.5rem !important;
+                        margin-left: 0 !important;
                       }
 
                       /* RTL styles */
                       .cart-item-wrapper :global(.mr-8) {
-                        margin-right: 2.5rem !important;
+                        margin-right: 0 !important;
+                      }
+
+                      @media (min-width: 640px) {
+                        /* LTR styles for small screens */
+                        .cart-item-wrapper :global(.ml-8) {
+                          margin-left: 2rem !important;
+                        }
+
+                        /* RTL styles for small screens */
+                        .cart-item-wrapper :global(.mr-8) {
+                          margin-right: 2rem !important;
+                        }
                       }
 
                       @media (min-width: 768px) {
@@ -121,7 +135,7 @@ export default function CartPage() {
         </div>
 
         {/* Cart Summary */}
-        <div className="lg:col-span-1">
+        <div className="mt-4 sm:mt-0 lg:col-span-1">
           <CartSummary
             showCheckoutButton={true}
             showContinueShoppingButton={true}

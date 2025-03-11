@@ -35,15 +35,20 @@ export function CartSummary({
     return (
       <div
         className={cn(
-          "rounded-lg border border-gray-200 bg-white p-6",
+          "rounded-lg border border-gray-200 bg-white p-4 sm:p-6",
           className,
         )}
       >
-        <h2 className="mb-4 text-lg font-medium text-gray-900">
+        <h2 className="mb-3 text-base font-medium text-gray-900 sm:mb-4 sm:text-lg">
           {t("cart.cartSummary")}
         </h2>
-        <p className="mb-4 text-gray-500">{t("cart.emptyCart")}</p>
-        <Button className="w-full" onClick={() => router.push("/browse")}>
+        <p className="mb-3 text-sm text-gray-500 sm:mb-4 sm:text-base">
+          {t("cart.emptyCart")}
+        </p>
+        <Button
+          className="w-full text-sm sm:text-base"
+          onClick={() => router.push("/browse")}
+        >
           {t("cart.startShopping")}
         </Button>
       </div>
@@ -53,21 +58,21 @@ export function CartSummary({
   return (
     <div
       className={cn(
-        "rounded-lg border border-gray-200 bg-white p-6",
+        "rounded-lg border border-gray-200 bg-white p-4 sm:p-6",
         className,
       )}
     >
-      <h2 className="mb-4 text-lg font-medium text-gray-900">
+      <h2 className="mb-3 text-base font-medium text-gray-900 sm:mb-4 sm:text-lg">
         {t("cart.cartSummary")}
       </h2>
 
-      <div className="space-y-4">
-        <div className="flex justify-between text-base">
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex justify-between text-sm sm:text-base">
           <p>{t("cart.subtotal")}</p>
           <p className="font-medium">${total.toFixed(2)}</p>
         </div>
 
-        <div className="flex justify-between text-base">
+        <div className="flex justify-between text-sm sm:text-base">
           <p>{t("cart.shipping")}</p>
           <p className="font-medium">
             {shippingCost === 0
@@ -76,24 +81,27 @@ export function CartSummary({
           </p>
         </div>
 
-        <div className="flex justify-between text-base">
+        <div className="flex justify-between text-sm sm:text-base">
           <p>{t("cart.tax")}</p>
           <p className="font-medium">${taxAmount.toFixed(2)}</p>
         </div>
 
-        <div className="border-t border-gray-200 pt-4">
-          <div className="flex justify-between text-base font-medium">
+        <div className="border-t border-gray-200 pt-3 sm:pt-4">
+          <div className="flex justify-between text-sm font-medium sm:text-base">
             <p className="text-gray-900">{t("cart.orderTotal")}</p>
             <p className="text-primary">${orderTotal.toFixed(2)}</p>
           </div>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-xs text-gray-500 sm:text-sm">
             {t("cart.shippingAndTaxes")}
           </p>
         </div>
 
-        <div className="mt-6 space-y-3">
+        <div className="mt-4 space-y-2 sm:mt-6 sm:space-y-3">
           {showCheckoutButton && (
-            <Button className="w-full" onClick={() => router.push("/checkout")}>
+            <Button
+              className="w-full text-sm sm:text-base"
+              onClick={() => router.push("/checkout")}
+            >
               {t("header.checkout")}
             </Button>
           )}
@@ -101,7 +109,7 @@ export function CartSummary({
           {showContinueShoppingButton && (
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full text-sm sm:text-base"
               onClick={() => router.push("/browse")}
             >
               {t("cart.continueShopping")}

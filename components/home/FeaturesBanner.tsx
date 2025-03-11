@@ -50,14 +50,14 @@ export function FeaturesBanner() {
   return (
     <section className="border-t border-gray-200 bg-white py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-4">
           {features.map((feature, index) => (
             <div key={index} className="flex flex-col items-center text-center">
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-sm font-medium tracking-wider text-gray-500 uppercase">
+              <div className="mb-3 sm:mb-4">{feature.icon}</div>
+              <h3 className="text-xs font-medium tracking-wider text-gray-500 uppercase sm:text-sm">
                 {feature.title}
               </h3>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-1 text-xs text-gray-600 sm:mt-2 sm:text-sm">
                 {feature.description}
               </p>
             </div>

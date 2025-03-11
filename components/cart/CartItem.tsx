@@ -13,7 +13,6 @@ interface CartItemProps {
   showControls?: boolean;
   className?: string;
   compact?: boolean;
-  showRemoveButton?: boolean;
 }
 
 export function CartItemComponent({
@@ -21,7 +20,6 @@ export function CartItemComponent({
   showControls = true,
   className,
   compact = false,
-  showRemoveButton = true,
 }: CartItemProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -62,9 +60,12 @@ export function CartItemComponent({
   if (compact) {
     return (
       <div
-        className={cn("group relative flex items-center gap-5 py-2", className)}
+        className={cn(
+          "group relative flex items-center gap-3 py-2 sm:gap-5",
+          className,
+        )}
       >
-        <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+        <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:h-12 sm:w-12">
           <img
             src={item.image}
             alt={getProductName()}
@@ -74,7 +75,7 @@ export function CartItemComponent({
           />
         </div>
         <div className="flex flex-1 flex-col">
-          <h4 className="text-primary line-clamp-1 text-sm font-medium">
+          <h4 className="text-primary line-clamp-1 text-xs font-medium sm:text-sm">
             {getProductName()}
           </h4>
           <p className="text-xs text-gray-500">{getBrandName()}</p>
@@ -82,57 +83,67 @@ export function CartItemComponent({
             <p className="text-xs font-medium">
               ${item.price.toFixed(2)} × {item.quantity}
             </p>
-            <p className="text-primary text-sm font-medium">
+            <p className="text-primary text-xs font-medium sm:text-sm">
               ${(item.price * item.quantity).toFixed(2)}
             </p>
           </div>
         </div>
 
-        {showRemoveButton && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute -top-1 -right-1 h-8 w-8 rounded-full"
-            onClick={handleRemove}
-            aria-label={t("cart.removeItem")}
-          >
-            <X className="h-4 w-4 text-gray-500 hover:text-red-500" />
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute -top-1 -right-1 h-6 w-6 rounded-full sm:h-8 sm:w-8"
+          onClick={handleRemove}
+          aria-label={t("cart.removeItem")}
+        >
+          <X className="h-3 w-3 text-gray-500 hover:text-red-500 sm:h-4 sm:w-4" />
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className={cn("flex border-b border-gray-200 py-4", className)}>
+    <div
+      className={cn(
+        "flex flex-col border-b border-gray-200 py-4 sm:flex-row",
+        className,
+      )}
+    >
       {/* Product Image */}
-      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+      <div className="mx-auto mb-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:mx-0 sm:mb-0 sm:h-24 sm:w-24">
         <img
           src={item.image}
           alt={getProductName()}
-          width={96}
-          height={96}
+          width={128}
+          height={128}
           className="h-full w-full object-cover object-center"
         />
       </div>
 
       {/* Product Details */}
-      <div className={cn("flex flex-1 flex-col", isRTL ? "mr-8" : "ml-8")}>
+      <div
+        className={cn(
+          "flex flex-1 flex-col",
+          isRTL ? "mr-0 sm:mr-8" : "ml-0 sm:ml-8",
+        )}
+      >
         <div>
-          <div className="flex justify-between">
-            <h3 className="text-base font-medium text-gray-900">
+          <div className="flex flex-col sm:flex-row sm:justify-between">
+            <h3 className="text-center text-base font-medium text-gray-900 sm:text-left">
               {getProductName()}
             </h3>
-            <p className="text-primary ml-4 text-base font-medium">
+            <p className="text-primary mt-1 text-center text-base font-medium sm:mt-0 sm:ml-4 sm:text-left">
               ${(item.price * item.quantity).toFixed(2)}
             </p>
           </div>
-          <p className="mt-1 text-sm text-gray-500">{getBrandName()}</p>
+          <p className="mt-1 text-center text-sm text-gray-500 sm:text-left">
+            {getBrandName()}
+          </p>
         </div>
 
-        <div className="mt-4 flex flex-1 items-end justify-between">
+        <div className="mt-4 flex flex-1 items-center justify-center sm:justify-start">
           {showControls ? (
-            <div className="flex items-center">
+            <div className="flex flex-col items-center sm:flex-row">
               <div className="flex items-center rounded-md border">
                 <Button
                   variant="ghost"
@@ -159,10 +170,18 @@ export function CartItemComponent({
               <Button
                 variant="ghost"
                 size="sm"
-                className={cn("text-sm text-gray-500", isRTL ? "mr-4" : "ml-4")}
+                className={cn(
+                  "mt-3 text-xs text-gray-500 sm:mt-0 sm:text-sm",
+                  isRTL ? "sm:mr-4" : "sm:ml-4",
+                )}
                 onClick={handleRemove}
               >
-                <Trash2 className={cn("h-4 w-4", isRTL ? "ml-1" : "mr-1")} />
+                <Trash2
+                  className={cn(
+                    "h-3 w-3 sm:h-4 sm:w-4",
+                    isRTL ? "ml-1" : "mr-1",
+                  )}
+                />
                 {t("cart.removeItem")}
               </Button>
             </div>

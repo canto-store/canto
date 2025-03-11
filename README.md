@@ -59,11 +59,10 @@ Application data is organized in the `lib/data/` directory:
 
 You can also use pnpm:
 
-1. Clone the repository 
+1. Clone the repository
 2. Install dependencies: `pnpm install`
 3. Run the development server: `pnpm dev`
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
 
 ## Technologies Used
 

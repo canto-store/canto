@@ -92,7 +92,6 @@ export function CartDropdown({ className }: CartDropdownProps) {
       onMouseLeave={handleMouseLeave}
     >
       <button
-        onClick={() => router.push("/cart")}
         className="text-primary hover:bg-primary/10 relative flex h-10 w-10 items-center justify-center rounded-full transition-all"
         aria-label={t("header.cart")}
       >
@@ -129,7 +128,6 @@ export function CartDropdown({ className }: CartDropdownProps) {
                     key={`${item.name}-${item.quantity}`}
                     item={item}
                     showControls={false}
-                    showRemoveButton={true}
                     compact
                     className="px-4 py-2 transition-colors hover:bg-gray-50"
                   />

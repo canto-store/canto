@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import {
-  ShoppingCart,
   Menu,
   X,
   CircleUser,
@@ -10,64 +9,37 @@ import {
   User,
   Settings,
   Heart,
-  Globe,
+  Home,
+  Search,
+  Store,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/navigation";
-import { useLocale } from "next-intl";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
-import { type Product } from "@/components/products/ProductCard";
 import { CartDropdown } from "../cart/CartDropdown";
+import { LanguageSelector } from "../language/LanguageSelector";
 
 interface HeaderProps {
-  cartCount: number;
   className?: string;
 }
 
-// Mock cart items for demonstration
-// In a real app, this would come from a cart context or state management
-const mockCartItems: (Product & { quantity: number })[] = [
-  {
-    name: "Oversized Cotton Hoodie",
-    brand: "ESSENTIALS",
-    price: 129.99,
-    image:
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=600&h=600",
-    quantity: 1,
-  },
-  {
-    name: "Classic Denim Jacket",
-    brand: "VINTAGE",
-    price: 189.99,
-    image:
-      "https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?auto=format&fit=crop&q=80&w=600&h=600",
-    quantity: 2,
-  },
-];
-
-export function Header({ cartCount, className }: HeaderProps) {
+export function Header({ className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
 
   const navigationItems = [
-    { label: t("home"), href: "/" },
-    { label: t("browse"), href: "/browse" },
-    { label: t("sell"), href: "#" },
+    { label: t("home"), href: "/", icon: <Home className="mr-3 h-4 w-4" /> },
+    {
+      label: t("browse"),
+      href: "/browse",
+      icon: <Search className="mr-3 h-4 w-4" />,
+    },
+    { label: t("sell"), href: "#", icon: <Store className="mr-3 h-4 w-4" /> },
   ];
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -84,10 +56,6 @@ export function Header({ cartCount, className }: HeaderProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const handleLanguageChange = (value: string) => {
-    router.replace(pathname, { locale: value });
-  };
 
   const handleNavigation = (href: string) => {
     router.push(href);
@@ -134,17 +102,7 @@ export function Header({ cartCount, className }: HeaderProps) {
         <div className="flex items-center gap-1 md:w-1/5 md:justify-end md:gap-4">
           {/* Language Selector */}
           <div className="relative">
-            <Select onValueChange={handleLanguageChange} defaultValue={locale}>
-              <SelectTrigger className="text-primary h-10 w-[120px] border-none hover:cursor-pointer focus:ring-0">
-                <SelectValue placeholder={<Globe className="h-5 w-5" />} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">🇺🇸 English</SelectItem>
-                <SelectItem value="ar" className="font-arabic">
-                  🇪🇬 العربية
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <LanguageSelector />
           </div>
 
           {/* Cart with Dropdown */}
@@ -211,15 +169,16 @@ export function Header({ cartCount, className }: HeaderProps) {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-primary/20 border-t bg-[var(--color-cream)] shadow-lg md:hidden">
+        <div className="border-primary/20 border-t shadow-lg md:hidden">
           <nav className="container mx-auto">
             <ul className="divide-primary/10 divide-y">
               {navigationItems.map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="text-primary hover:bg-primary/10 block px-4 py-3 text-base font-medium transition-colors"
+                    className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
                   >
+                    {item.icon}
                     {item.label}
                   </a>
                 </li>
@@ -259,27 +218,6 @@ export function Header({ cartCount, className }: HeaderProps) {
                   <LogOut className="mr-3 h-4 w-4" />
                   Logout
                 </a>
-              </li>
-
-              {/* Mobile Language Selector */}
-              <li>
-                <div className="px-4 py-3">
-                  <Select
-                    onValueChange={handleLanguageChange}
-                    defaultValue={locale}
-                  >
-                    <SelectTrigger className="w-full border-gray-200">
-                      <div className="flex items-center">
-                        <Globe className="mr-2 h-4 w-4" />
-                        <span>{t("language")}</span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">🇺🇸 {t("en")}</SelectItem>
-                      <SelectItem value="ar">🇸🇦 {t("ar")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </li>
             </ul>
           </nav>
