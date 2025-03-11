@@ -1,7 +1,4 @@
 import { type Category } from "@/lib/data/categories";
-import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
-import Image from "next/image";
 import { CategoryCard } from "../common";
 
 interface CategoryGridProps {

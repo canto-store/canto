@@ -5,9 +5,12 @@ import { HeroSlider } from "@/components/home/HeroSlider";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { HomeProducts } from "@/components/home/HomeProducts";
 import { FeaturesBanner } from "@/components/home/FeaturesBanner";
-import { HERO_SLIDES } from "@/lib/data/hero-slides";
-import { CATEGORIES } from "@/lib/data/categories";
-import { BEST_SELLERS, FEATURED_PRODUCTS, NEW_ARRIVALS } from "@/lib/products";
+import { HERO_SLIDES, CATEGORIES } from "@/lib/data";
+import {
+  BEST_SELLERS,
+  FEATURED_PRODUCTS,
+  NEW_ARRIVALS,
+} from "@/lib/data/products";
 import { useTranslations } from "next-intl";
 
 export default function Home() {

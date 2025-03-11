@@ -8,12 +8,8 @@ import { toast } from "sonner";
 import { ArrowLeft, Heart, ShoppingCart, Star } from "lucide-react";
 import { ProductGrid } from "@/components/products";
 import { notFound } from "next/navigation";
-import {
-  getProductBySlug,
-  getRelatedProducts,
-  SIZES,
-  COLORS,
-} from "@/lib/products";
+import { SIZES, COLORS } from "@/lib/data";
+import { getProductBySlug, getRelatedProducts } from "@/lib/utils";
 import Image from "next/image";
 
 interface ProductDetailPageProps {

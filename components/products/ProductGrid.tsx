@@ -1,4 +1,5 @@
-import { ProductCard, type Product } from "@/components/products";
+import { ProductCard } from "@/components/products";
+import { Product } from "@/lib/data";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 

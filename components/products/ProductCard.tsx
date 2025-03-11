@@ -6,17 +6,7 @@ import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useCart } from "../cart";
-
-export interface Product {
-  name: string;
-  brand: string;
-  price: number;
-  image: string;
-  translationKey?: {
-    name: string;
-    brand: string;
-  };
-}
+import { Product } from "@/lib/data";
 
 interface ProductCardProps {
   product: Product;
@@ -54,8 +44,6 @@ export function ProductCard({ product }: ProductCardProps) {
   const handleBrandClick = (product: Product) => {
     router.push(`/browse?brand=${encodeURIComponent(product.brand)}`);
   };
-
-  function handleAddToCart(product: Product): void {}
 
   return (
     <div

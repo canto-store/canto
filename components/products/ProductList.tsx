@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
-import { type Product } from "./ProductCard";
+import { Product } from "@/lib/data";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";

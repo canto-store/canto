@@ -7,13 +7,8 @@ import { ProductGrid, ProductList } from "@/components/products";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Filter } from "lucide-react";
-import {
-  CATEGORIES,
-  BRANDS,
-  PRICE_RANGES,
-  filterProducts,
-} from "@/lib/products";
-import { type Product } from "@/components/products";
+import { CATEGORIES, BRANDS, PRICE_RANGES, Product } from "@/lib/data";
+import { filterProducts } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SortMenu, type SortOption } from "@/components/common/SortMenu";
@@ -211,14 +206,16 @@ export default function BrowsePage() {
                 <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
                   {CATEGORIES.map((category) => (
                     <Button
-                      key={category}
+                      key={category.name}
                       variant={
-                        selectedCategory === category ? "default" : "outline"
+                        selectedCategory === category.name
+                          ? "default"
+                          : "outline"
                       }
                       size="sm"
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => setSelectedCategory(category.name)}
                     >
-                      {category}
+                      {category.name}
                     </Button>
                   ))}
                 </div>

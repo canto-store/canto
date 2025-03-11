@@ -7,7 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { type Product } from "@/components/products/ProductCard";
+import { Product } from "@/lib/data";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 

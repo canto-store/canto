@@ -1,3 +1,4 @@
 export * from "./hero-slides";
 export * from "./categories";
-export * from "./featured-products";
+export * from "./brands";
+export * from "./products";
