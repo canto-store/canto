@@ -27,7 +27,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 # Build the application with --no-lint flag
-RUN npm install -g pnpm@latest && pnpm exec next build
+RUN npm install -g pnpm@latest && pnpm build
 
 # Production image, copy all the files and run next
 FROM base AS runner
