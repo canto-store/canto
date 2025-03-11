@@ -5,6 +5,8 @@ import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 
 interface ProductListProps {
   products: Product[];
@@ -38,12 +40,16 @@ export function ProductList({
             className="flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md sm:flex-row"
           >
             <div
-              className={`h-48 w-full sm:h-auto sm:w-48 ${isRTL ? "sm:order-2" : ""}`}
+              className={`relative aspect-square h-auto w-full overflow-hidden sm:aspect-square sm:h-auto sm:w-48 md:w-56 lg:w-64 ${isRTL ? "sm:order-2" : ""}`}
             >
-              <img
+              <Image
                 src={product.image}
                 alt={product.name}
                 className="h-full w-full object-cover"
+                width={300}
+                height={300}
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 192px, (max-width: 1024px) 224px, 256px"
+                quality={85}
               />
             </div>
             <div
@@ -75,14 +81,14 @@ export function ProductList({
                     {t("add")}
                   </Button>
                   <Button variant="outline" size="sm" className="gap-1" asChild>
-                    <a
+                    <Link
                       href={`/product/${encodeURIComponent(
                         product.name.toLowerCase().replace(/\s+/g, "-"),
                       )}`}
                     >
                       <Eye className={cn("h-4 w-4", isRTL && "mr-0 ml-1")} />
                       {t("view")}
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               </div>

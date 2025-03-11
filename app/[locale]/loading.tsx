@@ -6,7 +6,7 @@ import { SectionContainer } from "@/components/common";
 
 export default function HomeLoading() {
   return (
-    <PageLayout cartCount={0}>
+    <PageLayout>
       {/* Hero Slider Skeleton */}
       <div className="relative h-[500px] w-full overflow-hidden">
         <Skeleton className="h-full w-full" />

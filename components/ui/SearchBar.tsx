@@ -91,11 +91,7 @@ export function SearchBar({
           value={searchTerm}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          {...(() => {
-            // Destructure defaultValue from props to prevent passing it to Input
-            const { defaultValue, ...restProps } = props;
-            return restProps;
-          })()}
+          {...props}
         />
         <div
           className="absolute top-1/2 left-3 -translate-y-1/2"

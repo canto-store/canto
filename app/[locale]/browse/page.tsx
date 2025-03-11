@@ -29,24 +29,18 @@ export default function BrowsePage() {
   const initialCategory = searchParams.get("category") || "All";
   const initialQuery = searchParams.get("q") || "";
   const initialTab = searchParams.get("tab") || "grid";
-  const initialSort = searchParams.get("sort") || "featured";
   const initialBrand = searchParams.get("brand") || "All";
-  const initialPage = Number(searchParams.get("page")) || 1;
-  const initialItemsPerPage = Number(searchParams.get("perPage")) || 10;
 
-  const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedBrand, setSelectedBrand] = useState(initialBrand);
   const [selectedPriceRange, setSelectedPriceRange] = useState(PRICE_RANGES[0]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOption>(
-    initialSort as SortOption,
-  );
+  const [sortOption, setSortOption] = useState("featured");
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [currentPage, setCurrentPage] = useState(initialPage);
-  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const [paginatedProducts, setPaginatedProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -133,7 +127,6 @@ export default function BrowsePage() {
   }, [filteredProducts, currentPage, itemsPerPage]);
 
   const handleQuickAdd = (productName: string) => {
-    setCartCount((prev) => prev + 1);
     toast(productsT("addedToCart", { productName }), {
       description: t("cart.viewCart"),
     });
@@ -175,7 +168,7 @@ export default function BrowsePage() {
   };
 
   return (
-    <PageShell cartCount={cartCount}>
+    <PageShell>
       <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <h1 className="text-3xl font-bold">{productsT("browseTitle")}</h1>
         <div className="flex items-center gap-2">
@@ -322,7 +315,7 @@ export default function BrowsePage() {
               <TabsTrigger value="list">{productsT("list")}</TabsTrigger>
             </TabsList>
             <SortMenu
-              value={sortOption}
+              value={sortOption as SortOption}
               onValueChange={setSortOption}
               label={productsT("sortBy")}
             />

@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export interface Product {
   name: string;
@@ -55,18 +56,23 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   return (
     <div
-      className="group relative flex h-[400px] flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+      className="group relative flex h-auto flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <div className="aspect-square w-full overflow-hidden">
+      <div className="relative aspect-square w-full overflow-hidden">
         <button
           onClick={() => handleProductClick(product)}
-          className="hover:cursor-pointer"
+          className="h-full w-full hover:cursor-pointer"
         >
-          <img
+          <Image
             src={product.image}
             alt={productName}
             className="h-full w-full transform object-cover transition-transform duration-300 group-hover:scale-105"
+            width={500}
+            height={500}
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
+            priority={false}
+            quality={85}
           />
         </button>
       </div>

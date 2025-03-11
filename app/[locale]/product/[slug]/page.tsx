@@ -14,13 +14,13 @@ import {
   SIZES,
   COLORS,
 } from "@/lib/products";
+import Image from "next/image";
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
-  const [cartCount, setCartCount] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -53,15 +53,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       toast.error("Please select a color");
       return;
     }
-
-    setCartCount((prev) => prev + quantity);
-    toast.success(`${product.name} has been added to your cart.`, {
-      description: `Size: ${selectedSize}, Color: ${selectedColor}, Quantity: ${quantity}`,
-    });
   };
 
   return (
-    <PageShell cartCount={cartCount}>
+    <PageShell>
       {/* Breadcrumb and Back Button */}
       <div className="mb-8">
         <Button
@@ -78,11 +73,15 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       {/* Product Detail */}
       <div className="grid gap-8 md:grid-cols-2">
         {/* Product Image */}
-        <div className="overflow-hidden rounded-lg bg-gray-100">
-          <img
+        <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 sm:aspect-[4/3] md:aspect-square lg:aspect-[4/3]">
+          <Image
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain object-center"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 50vw, (max-width: 1536px) 40vw, 33vw"
+            priority
+            quality={90}
           />
         </div>
 
@@ -220,7 +219,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       <ProductGrid
         products={relatedProducts}
         onAddToCart={(productName) => {
-          setCartCount((prev) => prev + 1);
           toast(`${productName} has been added to your cart.`);
         }}
         title="You May Also Like"

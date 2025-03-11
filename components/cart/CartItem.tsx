@@ -7,6 +7,7 @@ import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useCart, type CartItem } from "./CartContext";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface CartItemProps {
   item: CartItem;
@@ -66,7 +67,7 @@ export function CartItemComponent({
         )}
       >
         <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:h-12 sm:w-12">
-          <img
+          <Image
             src={item.image}
             alt={getProductName()}
             width={48}
@@ -111,7 +112,7 @@ export function CartItemComponent({
     >
       {/* Product Image */}
       <div className="mx-auto mb-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:mx-0 sm:mb-0 sm:h-24 sm:w-24">
-        <img
+        <Image
           src={item.image}
           alt={getProductName()}
           width={128}

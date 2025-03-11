@@ -3,8 +3,11 @@
 import { siInstagram, siX, siFacebook, siYoutube } from "simple-icons";
 import { useTranslations } from "next-intl";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
-const footerNavigation = (t: any) => ({
+type TranslationFunction = (key: string) => string;
+
+const footerNavigation = (t: TranslationFunction) => ({
   shop: [
     { label: t("footer.newArrivals"), href: "#" },
     { label: t("footer.bestSellers"), href: "#" },
@@ -62,7 +65,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex items-center">
-              <img
+              <Image
                 src="/logo.svg"
                 alt="Canto"
                 className="h-8 w-auto"

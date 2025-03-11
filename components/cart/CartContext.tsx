@@ -48,7 +48,7 @@ interface CartProviderProps {
 export function CartProvider({ children }: CartProviderProps) {
   // Initialize cart state from localStorage if available
   const [items, setItems] = useState<CartItem[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [, setIsInitialized] = useState(false);
 
   // Load cart from localStorage on mount
   useEffect(() => {

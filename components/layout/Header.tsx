@@ -20,6 +20,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { CartDropdown } from "../cart/CartDropdown";
 import { LanguageSelector } from "../language/LanguageSelector";
+import Link from "next/link";
 
 interface HeaderProps {
   className?: string;
@@ -120,35 +121,35 @@ export function Header({ className }: HeaderProps) {
             {/* User Dropdown */}
             {userDropdownOpen && (
               <div className="ring-opacity-5 ring-primary absolute right-0 mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1">
-                <a
+                <Link
                   href="/account"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <User className="mr-3 h-4 w-4" />
                   My Account
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/wishlist"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <Heart className="mr-3 h-4 w-4" />
                   Wishlist
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/settings"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <Settings className="mr-3 h-4 w-4" />
                   Settings
-                </a>
+                </Link>
                 <div className="bg-primary/20 my-1 h-px" />
-                <a
+                <Link
                   href="/logout"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
                   <LogOut className="mr-3 h-4 w-4" />
                   Logout
-                </a>
+                </Link>
               </div>
             )}
           </div>
@@ -174,50 +175,50 @@ export function Header({ className }: HeaderProps) {
             <ul className="divide-primary/10 divide-y">
               {navigationItems.map((item) => (
                 <li key={item.label}>
-                  <a
+                  <Link
                     href={item.href}
                     className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
                   >
                     {item.icon}
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
               <li>
-                <a
+                <Link
                   href="/account"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-3 text-base transition-colors"
                 >
                   <User className="mr-3 h-4 w-4" />
                   My Account
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/wishlist"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-3 text-base transition-colors"
                 >
                   <Heart className="mr-3 h-4 w-4" />
                   Wishlist
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/settings"
                   className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
                 >
                   <Settings className="mr-3 h-4 w-4" />
                   Settings
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/logout"
                   className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
                 >
                   <LogOut className="mr-3 h-4 w-4" />
                   Logout
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>

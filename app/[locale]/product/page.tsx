@@ -7,27 +7,21 @@ import { ProductGrid } from "@/components/products";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Search, SlidersHorizontal, X } from "lucide-react";
-import {
-  ALL_PRODUCTS,
-  CATEGORIES,
-  PRICE_RANGES,
-  filterProducts,
-} from "@/lib/products";
+import { Search } from "lucide-react";
+import { CATEGORIES, PRICE_RANGES, filterProducts } from "@/lib/products";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "All";
   const initialQuery = searchParams.get("q") || "";
 
-  const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedPriceRange, setSelectedPriceRange] = useState(PRICE_RANGES[0]);
   const [filteredProducts, setFilteredProducts] = useState(
     filterProducts(initialQuery, initialCategory, PRICE_RANGES[0]),
   );
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters] = useState(false);
 
   // Filter products when search, category, or price range changes
   useEffect(() => {
@@ -37,7 +31,6 @@ export default function ProductsPage() {
   }, [searchQuery, selectedCategory, selectedPriceRange]);
 
   const handleQuickAdd = (productName: string) => {
-    setCartCount((prev) => prev + 1);
     toast(`${productName} has been added to your cart.`, {
       description: "You can view your cart anytime.",
     });
@@ -55,7 +48,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <PageShell cartCount={cartCount}>
+    <PageShell>
       {/* Page Header */}
       <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <h1 className="text-3xl font-bold">All Products</h1>

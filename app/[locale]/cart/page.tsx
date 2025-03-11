@@ -16,7 +16,7 @@ export default function CartPage() {
   const router = useRouter();
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [isUpdating] = useState(false);
 
   // Handle continue shopping button click
   const handleContinueShopping = () => {
