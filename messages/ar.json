@@ -38,6 +38,10 @@
     "category": "الفئة:",
     "sku": "رمز المنتج:",
     "relatedProducts": "منتجات ذات صلة",
+    "featuredProducts": "المنتجات المميزة",
+    "newArrivals": "المنتجات الجديدة",
+    "bestSellers": "الأكثر مبيعاً",
+    "sale": "التخفيضات",
     "add": "إضافة",
     "view": "عرض",
     "currency": {

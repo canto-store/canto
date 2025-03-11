@@ -4,17 +4,11 @@ import { cn } from "@/lib/utils";
 
 interface ProductGridProps {
   products: Product[];
-  onAddToCart: (productName: string) => void;
   title?: string;
   className?: string;
 }
 
-export function ProductGrid({
-  products,
-  onAddToCart,
-  title,
-  className,
-}: ProductGridProps) {
+export function ProductGrid({ products, title, className }: ProductGridProps) {
   return (
     <SectionContainer title={title}>
       <div
@@ -24,11 +18,7 @@ export function ProductGrid({
         )}
       >
         {products.map((product) => (
-          <ProductCard
-            key={product.name}
-            product={product}
-            onAddToCart={onAddToCart}
-          />
+          <ProductCard key={product.name} product={product} />
         ))}
       </div>
     </SectionContainer>

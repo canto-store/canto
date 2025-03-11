@@ -8,6 +8,8 @@ import {
   ReactNode,
 } from "react";
 import { type Product } from "@/components/products/ProductCard";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 // Define the cart item type with quantity
 export interface CartItem extends Product {
@@ -50,6 +52,7 @@ export function CartProvider({ children }: CartProviderProps) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [, setIsInitialized] = useState(false);
 
+  const t = useTranslations();
   // Load cart from localStorage on mount
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
@@ -96,6 +99,7 @@ export function CartProvider({ children }: CartProviderProps) {
         return [...prevItems, { ...product, quantity }];
       }
     });
+    toast(t("products.addedToCart", { productName: product.name }));
   };
 
   // Remove an item from the cart

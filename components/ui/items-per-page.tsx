@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 
 interface ItemsPerPageProps {
+  defaultValue: number;
   value: number;
   onChange: (value: number) => void;
   options: number[];
@@ -16,6 +17,7 @@ interface ItemsPerPageProps {
 }
 
 export function ItemsPerPage({
+  defaultValue,
   value,
   onChange,
   options,
@@ -32,6 +34,7 @@ export function ItemsPerPage({
       >
         <span className="text-sm text-gray-500">{t("show")}</span>
         <Select
+          defaultValue={defaultValue.toString()}
           value={value.toString()}
           onValueChange={(val) => onChange(Number(val))}
         >

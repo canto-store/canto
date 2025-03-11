@@ -38,6 +38,10 @@
     "category": "Category:",
     "sku": "SKU:",
     "relatedProducts": "Related Products",
+    "featuredProducts": "Featured Products",
+    "newArrivals": "New Arrivals",
+    "bestSellers": "Best Sellers",
+    "sale": "Sale",
     "add": "Add",
     "view": "View",
     "currency": {

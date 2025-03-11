@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 interface SearchBarProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    "onChange" | "onSubmit"
+    "onChange" | "onSubmit" | "value" | "defaultValue"
   > {
   containerClassName?: string;
   iconClassName?: string;
@@ -16,6 +16,8 @@ interface SearchBarProps
   debounceMs?: number;
   showButton?: boolean;
   buttonText?: string;
+  value?: string;
+  defaultValue?: string;
 }
 
 export function SearchBar({
@@ -27,11 +29,20 @@ export function SearchBar({
   debounceMs = 300,
   showButton = true,
   buttonText = "Search",
+  value,
+  defaultValue,
   ...props
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState(
-    props.defaultValue?.toString() || "",
+    value !== undefined ? value : defaultValue?.toString() || "",
   );
+
+  // Update internal state when value prop changes
+  useEffect(() => {
+    if (value !== undefined) {
+      setSearchTerm(value);
+    }
+  }, [value]);
 
   const debouncedSearch = useCallback(
     (value: string) => {

@@ -218,9 +218,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       {/* Related Products */}
       <ProductGrid
         products={relatedProducts}
-        onAddToCart={(productName) => {
-          toast(`${productName} has been added to your cart.`);
-        }}
         title="You May Also Like"
         className="mt-16"
       />

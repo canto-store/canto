@@ -22,13 +22,19 @@ export function LanguageSelector() {
 
   return (
     <Select onValueChange={handleLanguageChange} defaultValue={locale}>
-      <SelectTrigger className="text-primary h-10 w-[120px] border-none hover:cursor-pointer focus:ring-0">
-        <SelectValue placeholder={<Globe className="h-5 w-5" />} />
+      <SelectTrigger className="text-primary h-8 w-[90px] border-none hover:cursor-pointer focus:ring-0 sm:h-10 sm:w-[120px]">
+        <SelectValue
+          placeholder={<Globe className="h-4 w-4 sm:h-5 sm:w-5" />}
+        />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="en">🇺🇸 English</SelectItem>
+        <SelectItem value="en">
+          🇺🇸 <span className="hidden sm:inline">English</span>
+          <span className="sm:hidden">EN</span>
+        </SelectItem>
         <SelectItem value="ar" className="font-arabic">
-          🇪🇬 العربية
+          🇪🇬 <span className="hidden sm:inline">العربية</span>
+          <span className="sm:hidden">AR</span>
         </SelectItem>
       </SelectContent>
     </Select>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, useParams } from "next/navigation";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { PageShell } from "@/components/layout";
 import { ProductGrid, ProductList } from "@/components/products";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import { type Product } from "@/components/products";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SortMenu, type SortOption } from "@/components/common/SortMenu";
-import { SearchBar } from "@/components/ui/SearchBar";
+import { SearchBar } from "@/components/ui/search-bar";
 import { Pagination } from "@/components/ui/pagination";
 import { ItemsPerPage } from "@/components/ui/items-per-page";
 import { useTranslations } from "next-intl";
@@ -25,11 +25,15 @@ import { useTranslations } from "next-intl";
 export default function BrowsePage() {
   const searchParams = useSearchParams();
   const params = useParams();
+  const router = useRouter();
   const isRTL = params.locale === "ar";
   const initialCategory = searchParams.get("category") || "All";
   const initialQuery = searchParams.get("q") || "";
   const initialTab = searchParams.get("tab") || "grid";
   const initialBrand = searchParams.get("brand") || "All";
+  const initialPage = Number(searchParams.get("page") || "1");
+  const initialItemsPerPage = Number(searchParams.get("perPage") || "10");
+  const initialSort = searchParams.get("sort") || "featured";
 
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -37,10 +41,10 @@ export default function BrowsePage() {
   const [selectedPriceRange, setSelectedPriceRange] = useState(PRICE_RANGES[0]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [sortOption, setSortOption] = useState("featured");
+  const [sortOption, setSortOption] = useState(initialSort);
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [paginatedProducts, setPaginatedProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -50,18 +54,19 @@ export default function BrowsePage() {
 
   // Update URL when filters or pagination change
   useEffect(() => {
-    const params = new URLSearchParams();
+    const urlParams = new URLSearchParams();
 
-    if (searchQuery) params.set("q", searchQuery);
-    if (selectedCategory !== "All") params.set("category", selectedCategory);
-    if (selectedBrand !== "All") params.set("brand", selectedBrand);
-    if (sortOption !== "featured") params.set("sort", sortOption);
-    if (activeTab !== "grid") params.set("tab", activeTab);
-    if (currentPage !== 1) params.set("page", currentPage.toString());
-    if (itemsPerPage !== 12) params.set("perPage", itemsPerPage.toString());
+    if (searchQuery) urlParams.set("q", searchQuery);
+    if (selectedCategory !== "All") urlParams.set("category", selectedCategory);
+    if (selectedBrand !== "All") urlParams.set("brand", selectedBrand);
+    if (sortOption !== "featured") urlParams.set("sort", sortOption);
+    if (activeTab !== "grid") urlParams.set("tab", activeTab);
+    if (currentPage !== 1) urlParams.set("page", currentPage.toString());
+    if (itemsPerPage !== 10) urlParams.set("perPage", itemsPerPage.toString());
 
-    const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ""}`;
-    window.history.replaceState({}, "", newUrl);
+    const locale = typeof params.locale === "string" ? params.locale : "en";
+    const newUrl = `/${locale}/browse${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
+    router.push(newUrl, { scroll: false });
   }, [
     searchQuery,
     selectedCategory,
@@ -70,6 +75,8 @@ export default function BrowsePage() {
     activeTab,
     currentPage,
     itemsPerPage,
+    router,
+    params.locale,
   ]);
 
   // Filter and sort products
@@ -100,13 +107,17 @@ export default function BrowsePage() {
 
     setFilteredProducts(products);
 
-    setCurrentPage(1);
+    // Don't reset page when coming from a URL with a page parameter
+    if (!searchParams.has("page")) {
+      setCurrentPage(1);
+    }
   }, [
     searchQuery,
     selectedCategory,
     selectedBrand,
     selectedPriceRange,
     sortOption,
+    searchParams,
   ]);
 
   // Calculate paginated products and total pages
@@ -259,7 +270,7 @@ export default function BrowsePage() {
         <div className="mb-8">
           <SearchBar
             placeholder={t("header.placeholder")}
-            defaultValue={searchQuery}
+            value={searchQuery}
             onSubmit={handleSearch}
             className="border-light-gray border-2"
             buttonText={t("header.search")}
@@ -291,6 +302,7 @@ export default function BrowsePage() {
           </p>
 
           <ItemsPerPage
+            defaultValue={itemsPerPage}
             value={itemsPerPage}
             onChange={handleItemsPerPageChange}
             options={[5, 10, 15, 20]}
@@ -327,7 +339,6 @@ export default function BrowsePage() {
               <TabsContent value="grid" className="mt-0">
                 <ProductGrid
                   products={paginatedProducts}
-                  onAddToCart={handleQuickAdd}
                   className={`grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ${isRTL ? "rtl" : ""}`}
                 />
               </TabsContent>

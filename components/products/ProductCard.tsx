@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useCart } from "../cart";
 
 export interface Product {
   name: string;
@@ -19,16 +20,16 @@ export interface Product {
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (productName: string) => void;
 }
 
-export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const t = useTranslations();
   const productsT = useTranslations("products");
   const router = useRouter();
   const params = useParams();
   const isRTL = params.locale === "ar";
 
+  const { addItem } = useCart();
   // Get translated product name and brand if translation keys are available
   const productName = product.translationKey?.name
     ? t(product.translationKey.name)
@@ -53,6 +54,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const handleBrandClick = (product: Product) => {
     router.push(`/browse?brand=${encodeURIComponent(product.brand)}`);
   };
+
+  function handleAddToCart(product: Product): void {}
 
   return (
     <div
@@ -114,7 +117,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </div>
           <div className={cn("mt-3 flex gap-2", isRTL && "flex-row-reverse")}>
             <Button
-              onClick={() => onAddToCart(productName)}
+              onClick={() => addItem(product)}
               size="sm"
               className="flex-1 gap-1"
             >
