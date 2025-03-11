@@ -342,10 +342,7 @@ export default function BrowsePage() {
 
               {/* List View */}
               <TabsContent value="list" className="mt-0">
-                <ProductList
-                  products={paginatedProducts}
-                  onAddToCart={handleQuickAdd}
-                />
+                <ProductList products={paginatedProducts} />
               </TabsContent>
 
               {/* Pagination */}

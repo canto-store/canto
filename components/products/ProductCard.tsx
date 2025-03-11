@@ -19,7 +19,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const params = useParams();
   const isRTL = params.locale === "ar";
 
-  const { addItem } = useCart();
+  const { addToCart } = useCart();
   // Get translated product name and brand if translation keys are available
   const productName = product.translationKey?.name
     ? t(product.translationKey.name)
@@ -105,7 +105,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className={cn("mt-3 flex gap-2", isRTL && "flex-row-reverse")}>
             <Button
-              onClick={() => addItem(product)}
+              onClick={() => addToCart(product)}
               size="sm"
               className="flex-1 gap-1"
             >

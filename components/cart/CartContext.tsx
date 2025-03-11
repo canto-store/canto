@@ -21,7 +21,7 @@ interface CartContextType {
   items: CartItem[];
   count: number;
   total: number;
-  addItem: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -33,7 +33,7 @@ const CartContext = createContext<CartContextType>({
   items: [],
   count: 0,
   total: 0,
-  addItem: () => {},
+  addToCart: () => {},
   removeItem: () => {},
   updateQuantity: () => {},
   clearCart: () => {},
@@ -80,7 +80,7 @@ export function CartProvider({ children }: CartProviderProps) {
   );
 
   // Add an item to the cart
-  const addItem = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1) => {
     setItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (item) => item.name === product.name,
@@ -139,7 +139,7 @@ export function CartProvider({ children }: CartProviderProps) {
         items,
         count,
         total,
-        addItem,
+        addToCart,
         removeItem,
         updateQuantity,
         clearCart,

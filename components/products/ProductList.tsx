@@ -7,24 +7,20 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useCart } from "../cart";
 
 interface ProductListProps {
   products: Product[];
-  onAddToCart: (productName: string) => void;
   title?: string;
   className?: string;
 }
 
-export function ProductList({
-  products,
-  onAddToCart,
-  title,
-  className,
-}: ProductListProps) {
+export function ProductList({ products, title, className }: ProductListProps) {
   const t = useTranslations("products");
   const params = useParams();
   const isRTL = params?.locale === "ar";
 
+  const { addToCart } = useCart();
   // Format price with proper currency symbol and localization
   const formatPrice = (price: number): string => {
     // Pass the amount as a parameter to the translation function
@@ -71,7 +67,7 @@ export function ProductList({
                   className={`flex ${isRTL ? "flex-row-reverse" : ""} gap-2`}
                 >
                   <Button
-                    onClick={() => onAddToCart(product.name)}
+                    onClick={() => addToCart(product)}
                     size="sm"
                     className="gap-1"
                   >
