@@ -30,7 +30,8 @@ export function ItemsPerPage({
   return (
     <div className={className}>
       <div
-        className={`flex items-center ${isRTL ? "space-x-1 space-x-reverse sm:space-x-2" : "space-x-1 sm:space-x-2"}`}
+        className={`flex items-center ${isRTL ? "flex-row space-x-1 space-x-reverse sm:space-x-2" : "space-x-1 sm:space-x-2"}`}
+        dir={isRTL ? "rtl" : "ltr"}
       >
         <span className="text-xs text-gray-500 sm:text-sm">{t("show")}</span>
         <Select

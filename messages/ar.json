@@ -4,7 +4,9 @@
     "browse": "تصفح",
     "sell": "بيع",
     "myAccount": "حسابي",
+    "account": "حسابي",
     "wishlist": "المفضلة",
+    "favorites": "المفضلة",
     "settings": "الإعدادات",
     "logout": "تسجيل خروج",
     "search": "بحث",
@@ -149,9 +151,16 @@
     "summerCollection": "مجموعة صيف 2025",
     "summerSubtitle": "اكتشف أحدث صيحات الموضة الفاخرة",
     "exclusiveBrands": "علامات تجارية حصرية",
+    "exclusiveCollection": "علامات تجارية حصرية",
     "exclusiveSubtitle": "تسوق مجموعات المصممين",
     "newArrivals": "وصل حديثاً",
-    "newArrivalsSubtitle": "كن أول من يتسوق الأنماط الجديدة"
+    "newArrivalsCollection": "وصل حديثاً",
+    "newArrivalsSubtitle": "كن أول من يتسوق الأنماط الجديدة",
+    "shopNow": "تسوق الآن"
+  },
+  "slider": {
+    "previousSlide": "الشريحة السابقة",
+    "nextSlide": "الشريحة التالية"
   },
   "categories": {
     "streetwear": "ملابس الشارع",

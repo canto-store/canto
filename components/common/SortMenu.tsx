@@ -37,7 +37,7 @@ export function SortMenu({
 
   return (
     <div
-      className={`flex items-center ${isRTL ? "flex-row-reverse gap-1 sm:gap-2" : "gap-1 sm:gap-2"} ${className}`}
+      className={`flex items-center ${isRTL ? "flex-row gap-1 sm:gap-2" : "gap-1 sm:gap-2"} ${className}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
       <ArrowUpDown className="h-4 w-4 text-gray-500" />

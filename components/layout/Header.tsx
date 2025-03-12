@@ -31,18 +31,27 @@ export function Header({ className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
+  const [isRTL, setIsRTL] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
 
   const navigationItems = [
-    { label: t("home"), href: "/", icon: <Home className="mr-3 h-4 w-4" /> },
+    {
+      label: t("home"),
+      href: "/",
+      icon: <Home className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
+    },
     {
       label: t("browse"),
       href: "/browse",
-      icon: <Search className="mr-3 h-4 w-4" />,
+      icon: <Search className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
     },
-    { label: t("sell"), href: "#", icon: <Store className="mr-3 h-4 w-4" /> },
+    {
+      label: t("sell"),
+      href: "#",
+      icon: <Store className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
+    },
   ];
 
   const mobileNavigationItems = [
@@ -88,6 +97,9 @@ export function Header({ className }: HeaderProps) {
         "(display-mode: standalone)",
       ).matches;
       setIsAppInstalled(isStandalone);
+
+      // Check if the document direction is RTL
+      setIsRTL(document.dir === "rtl");
     }
 
     return () => {
@@ -139,7 +151,6 @@ export function Header({ className }: HeaderProps) {
         {/* Right Section: Cart, Language Selector and User */}
         <div className="flex items-center gap-1 md:w-1/5 md:justify-end md:gap-4">
           {/* PWA Install Button */}
-          <InstallPWA />
 
           {/* Language Selector */}
           <div className="relative">
@@ -160,35 +171,37 @@ export function Header({ className }: HeaderProps) {
 
             {/* User Dropdown */}
             {userDropdownOpen && (
-              <div className="ring-opacity-5 ring-primary absolute right-0 mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1">
+              <div
+                className={`ring-opacity-5 ring-primary absolute mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1 ${isRTL ? "left-0" : "right-0"}`}
+              >
                 <Link
                   href="/account"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
-                  <User className="mr-3 h-4 w-4" />
-                  My Account
+                  <User className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
+                  {t("myAccount")}
                 </Link>
                 <Link
                   href="/wishlist"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
-                  <Heart className="mr-3 h-4 w-4" />
-                  Wishlist
+                  <Heart className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
+                  {t("wishlist")}
                 </Link>
                 <Link
                   href="/settings"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
-                  <Settings className="mr-3 h-4 w-4" />
-                  Settings
+                  <Settings className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
+                  {t("settings")}
                 </Link>
                 <div className="bg-primary/20 my-1 h-px" />
                 <Link
                   href="/logout"
                   className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
                 >
-                  <LogOut className="mr-3 h-4 w-4" />
-                  Logout
+                  <LogOut className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
+                  {t("logout")}
                 </Link>
               </div>
             )}
@@ -218,10 +231,14 @@ export function Header({ className }: HeaderProps) {
                   <Button
                     variant="ghost"
                     onClick={() => handleNavigation(item.href)}
-                    className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+                    className="flex w-full items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
                   >
-                    {item.icon}
-                    {item.label}
+                    <span
+                      className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </span>
                   </Button>
                 </li>
               ))}

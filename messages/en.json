@@ -149,9 +149,16 @@
     "summerCollection": "Summer Collection 2025",
     "summerSubtitle": "Discover the latest trends in luxury fashion",
     "exclusiveBrands": "Exclusive Brands",
+    "exclusiveCollection": "Exclusive Brands",
     "exclusiveSubtitle": "Shop designer collections",
     "newArrivals": "New Arrivals",
-    "newArrivalsSubtitle": "Be the first to shop new styles"
+    "newArrivalsCollection": "New Arrivals",
+    "newArrivalsSubtitle": "Be the first to shop new styles",
+    "shopNow": "Shop Now"
+  },
+  "slider": {
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide"
   },
   "categories": {
     "streetwear": "Streetwear",

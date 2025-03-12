@@ -7,6 +7,8 @@ import { SliderButton } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { type HeroSlide } from "@/lib/data/hero-slides";
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+
 interface HeroSliderProps {
   slides: HeroSlide[];
   autoplayInterval?: number;
@@ -20,6 +22,8 @@ export function HeroSlider({
 }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter();
+  const t = useTranslations("heroSlider");
+
   useEffect(() => {
     if (autoplayInterval <= 0) return;
 
@@ -40,6 +44,21 @@ export function HeroSlider({
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
+  // Function to get translated title and subtitle based on translationKey
+  const getTranslatedContent = (slide: HeroSlide) => {
+    if (!slide.translationKey)
+      return { title: slide.title, subtitle: slide.subtitle };
+
+    return {
+      title: t(`${slide.translationKey}Collection`, {
+        defaultValue: slide.title,
+      }),
+      subtitle: t(`${slide.translationKey}Subtitle`, {
+        defaultValue: slide.subtitle,
+      }),
+    };
+  };
+
   return (
     <section
       className={cn(
@@ -47,41 +66,44 @@ export function HeroSlider({
         className,
       )}
     >
-      {slides.map((slide, index) => (
-        <div
-          key={index}
-          className={cn(
-            "absolute inset-0 transition-opacity duration-500",
-            currentSlide === index ? "opacity-100" : "opacity-0",
-          )}
-        >
+      {slides.map((slide, index) => {
+        const { title, subtitle } = getTranslatedContent(slide);
+        return (
           <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${slide.image})` }}
+            key={index}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-500",
+              currentSlide === index ? "opacity-100" : "opacity-0",
+            )}
           >
-            <div className="absolute inset-0 bg-black/30" />
-          </div>
-          <div className="relative flex h-full items-center justify-center px-4 text-center text-white sm:px-6 md:px-8 lg:px-16">
-            <div className="max-w-4xl">
-              <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl lg:text-7xl">
-                {slide.title}
-              </h2>
-              <p className="mb-6 text-sm sm:text-base md:text-xl lg:text-2xl">
-                {slide.subtitle}
-              </p>
-              <Button
-                size="lg"
-                variant="default"
-                asChild
-                className="text-sm sm:text-base"
-                onClick={() => router.push("/browse")}
-              >
-                <span>Shop Now</span>
-              </Button>
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${slide.image})` }}
+            >
+              <div className="absolute inset-0 bg-black/30" />
+            </div>
+            <div className="relative flex h-full items-center justify-center px-4 text-center text-white sm:px-6 md:px-8 lg:px-16">
+              <div className="max-w-4xl">
+                <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl lg:text-7xl">
+                  {title}
+                </h2>
+                <p className="mb-6 text-sm sm:text-base md:text-xl lg:text-2xl">
+                  {subtitle}
+                </p>
+                <Button
+                  size="lg"
+                  variant="default"
+                  asChild
+                  className="text-sm sm:text-base"
+                  onClick={() => router.push("/browse")}
+                >
+                  <span>{t("shopNow", { defaultValue: "Shop Now" })}</span>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
       <SliderButton
         direction="left"
         onClick={handlePrevSlide}

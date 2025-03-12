@@ -29,13 +29,9 @@ export const useBanner = () => useContext(BannerContext);
 
 interface BannerProviderProps {
   children: ReactNode;
-  initialState?: boolean;
 }
 
-export function BannerProvider({
-  children,
-  initialState = true,
-}: BannerProviderProps) {
+export function BannerProvider({ children }: BannerProviderProps) {
   // Start with loading state to prevent flash
   const [isLoading, setIsLoading] = useState(true);
   // Always start with the banner visible
