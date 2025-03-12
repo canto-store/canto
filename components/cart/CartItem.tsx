@@ -64,13 +64,20 @@ export function CartItemComponent({
 
   if (compact) {
     return (
-      <Button
-        variant="ghost"
+      <div
         className={cn(
-          "group relative flex h-full w-full items-center gap-3 py-2 sm:gap-5",
+          "group relative flex h-full w-full cursor-pointer items-center gap-3 py-2 hover:bg-gray-50 sm:gap-5",
           className,
         )}
         onClick={handleProductClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleProductClick();
+          }
+        }}
       >
         <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:h-12 sm:w-12">
           <Image
@@ -81,7 +88,7 @@ export function CartItemComponent({
             className="h-full w-full object-cover object-center"
           />
         </div>
-        <div className="flex flex-1 flex-col items-start">
+        <div className="flex flex-1 flex-col">
           <h4 className="text-primary line-clamp-1 text-xs font-medium sm:text-sm">
             {getProductName()}
           </h4>
@@ -99,13 +106,16 @@ export function CartItemComponent({
         <Button
           variant="ghost"
           size="icon"
-          className="h-3 w-3 flex-shrink-0 self-start rounded-full hover:bg-gray-100 sm:h-4 sm:w-4"
-          onClick={handleRemove}
+          className="h-4 w-4 flex-shrink-0 self-start rounded-full hover:bg-gray-100"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleRemove();
+          }}
           aria-label={t("cart.removeItem")}
         >
-          <X className="h-3 w-3 text-gray-500 hover:text-red-500 sm:h-4 sm:w-4" />
+          <X className="h-4 w-4 text-gray-500 hover:text-red-500" />
         </Button>
-      </Button>
+      </div>
     );
   }
 
