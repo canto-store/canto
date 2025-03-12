@@ -6,14 +6,6 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export function SellForm() {
   const t = useTranslations("sell");
@@ -25,7 +17,7 @@ export function SellForm() {
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
+      // const formData = new FormData(e.currentTarget);
       // TODO: Implement API call to register seller
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push("/dashboard/seller");
