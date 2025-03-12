@@ -5,7 +5,7 @@ import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { PageShell } from "@/components/layout";
+import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { useCart, CartItemComponent, CartSummary } from "@/components/cart";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ export default function CartPage() {
   // If cart is empty, show empty state
   if (count === 0) {
     return (
-      <PageShell title={t("cart.yourCart")}>
+      <AppLayout theme="default">
         <div className="flex flex-col items-center justify-center px-4 py-8 sm:py-12">
           <div className="mb-6 rounded-full bg-gray-100 p-6 sm:mb-8 sm:p-8">
             <ShoppingCart className="h-14 w-14 text-gray-400 sm:h-16 sm:w-16" />
@@ -41,12 +41,12 @@ export default function CartPage() {
             {t("cart.startShopping")}
           </Button>
         </div>
-      </PageShell>
+      </AppLayout>
     );
   }
 
   return (
-    <PageShell title={t("cart.yourCart")}>
+    <AppLayout theme="default">
       <div className="mb-4 sm:mb-8">
         <Button
           variant="ghost"
@@ -142,6 +142,6 @@ export default function CartPage() {
           />
         </div>
       </div>
-    </PageShell>
+    </AppLayout>
   );
 }

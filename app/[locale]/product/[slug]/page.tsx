@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
-import { PageShell } from "@/components/layout";
+import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, Heart, ShoppingCart, Star } from "lucide-react";
@@ -52,7 +52,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   return (
-    <PageShell className="relative">
+    <AppLayout theme="default" className="mt-2 md:mt-7">
       {/* Breadcrumb and Back Button */}
       <div>
         <Button
@@ -254,6 +254,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           Add to Cart
         </Button>
       </div>
-    </PageShell>
+    </AppLayout>
   );
 }

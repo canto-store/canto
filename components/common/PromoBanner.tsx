@@ -5,14 +5,17 @@ import { cn } from "@/lib/utils";
 import { useClipboard } from "react-haiku";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { useBanner } from "@/lib/context";
+
 interface PromoBannerProps {
   className?: string;
-  onClose?: () => void;
 }
 
-export function PromoBanner({ className, onClose }: PromoBannerProps) {
+export function PromoBanner({ className }: PromoBannerProps) {
   const clipboard = useClipboard();
   const t = useTranslations();
+  const { closeBanner } = useBanner();
+
   const handleCopy = () => {
     clipboard.copy("SUMMER2024");
     toast.success(t("promo.copiedToClipboard"));
@@ -42,7 +45,7 @@ export function PromoBanner({ className, onClose }: PromoBannerProps) {
         <span className="hidden sm:inline">🌟</span>
       </div>
       <button
-        onClick={onClose}
+        onClick={closeBanner}
         className="absolute right-2 rounded-full p-1.5 transition-colors hover:bg-white/20"
         aria-label="Close promotional banner"
       >

@@ -1,6 +1,5 @@
 "use client";
 
-import { PageLayout } from "@/components/layout/PageLayout";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { HomeProducts } from "@/components/home/HomeProducts";
@@ -12,6 +11,7 @@ import {
   NEW_ARRIVALS,
 } from "@/lib/data/products";
 import { useTranslations } from "next-intl";
+import { AppLayout } from "@/components/layout";
 
 export default function Home() {
   const t = useTranslations();
@@ -19,13 +19,13 @@ export default function Home() {
   const featuredProducts = t("products.featuredProducts");
   const bestSellers = t("products.bestSellers");
   return (
-    <PageLayout>
+    <AppLayout theme="custom">
       <HeroSlider slides={HERO_SLIDES} />
       <CategoryGrid categories={CATEGORIES} />
       <HomeProducts products={FEATURED_PRODUCTS} title={featuredProducts} />
       <HomeProducts products={NEW_ARRIVALS} title={newArrivals} />
       <HomeProducts products={BEST_SELLERS} title={bestSellers} />
       <FeaturesBanner />
-    </PageLayout>
+    </AppLayout>
   );
 }

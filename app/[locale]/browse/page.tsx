@@ -1,10 +1,9 @@
 "use client";
 
-import { PageShell } from "@/components/layout";
+import { AppLayout } from "@/components/layout";
 import { PRICE_RANGES } from "@/lib/data";
 import { useProductFilters, useProductTranslations } from "./hooks";
 import {
-  BrowseHeader,
   SearchFilterBar,
   MobileControlsBar,
   ResultsControls,
@@ -57,11 +56,8 @@ export default function BrowsePage() {
   } = useProductTranslations();
 
   return (
-    <PageShell>
-      <div className="w-full">
-        {/* Header section with title */}
-        <BrowseHeader productCount={filteredProducts.length} />
-
+    <AppLayout>
+      <div className="mt-3 w-full">
         {/* Search and Filter Controls */}
         <SearchFilterBar
           searchQuery={searchQuery}
@@ -160,6 +156,6 @@ export default function BrowsePage() {
           isRTL={isRTL}
         />
       </div>
-    </PageShell>
+    </AppLayout>
   );
 }

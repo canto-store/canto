@@ -3,7 +3,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { PageShell } from "@/components/layout";
+import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { useCart, CartSummary } from "@/components/cart";
 
@@ -12,15 +12,13 @@ export default function CheckoutPage() {
   const t = useTranslations();
   const router = useRouter();
 
-  // Handle back to cart button click
   const handleBackToCart = () => {
     router.push("/cart");
   };
 
-  // If cart is empty, redirect to cart page
   if (count === 0) {
     return (
-      <PageShell title={t("header.checkout")}>
+      <AppLayout theme="default">
         <div className="flex flex-col items-center justify-center py-12">
           <p className="mb-8 max-w-md text-center text-gray-500">
             {t("cart.emptyCart")}
@@ -29,12 +27,12 @@ export default function CheckoutPage() {
             {t("products.back")}
           </Button>
         </div>
-      </PageShell>
+      </AppLayout>
     );
   }
 
   return (
-    <PageShell title={t("header.checkout")}>
+    <AppLayout theme="default">
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -82,6 +80,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-    </PageShell>
+    </AppLayout>
   );
 }

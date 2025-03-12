@@ -1,12 +1,12 @@
 "use client";
 
-import { PageShell } from "@/components/layout";
+import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function ProductNotFound() {
   return (
-    <PageShell className="flex items-center justify-center">
+    <AppLayout theme="default" className="flex items-center justify-center">
       <div className="flex flex-col items-center justify-center px-4 text-center">
         <h1 className="mb-4 text-4xl font-bold">Product Not Found</h1>
         <p className="mb-8 text-lg text-gray-600">
@@ -23,6 +23,6 @@ export default function ProductNotFound() {
           </Button>
         </div>
       </div>
-    </PageShell>
+    </AppLayout>
   );
 }

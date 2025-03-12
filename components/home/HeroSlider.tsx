@@ -42,7 +42,10 @@ export function HeroSlider({
 
   return (
     <section
-      className={cn("relative h-[calc(100vh-4rem)] min-h-[600px]", className)}
+      className={cn(
+        "relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-4rem)] w-screen max-w-none overflow-hidden",
+        className,
+      )}
     >
       {slides.map((slide, index) => (
         <div
@@ -58,8 +61,8 @@ export function HeroSlider({
           >
             <div className="absolute inset-0 bg-black/30" />
           </div>
-          <div className="relative flex h-full items-center justify-center px-16 text-center text-white sm:px-20">
-            <div className="max-w-3xl px-4">
+          <div className="relative flex h-full items-center justify-center px-4 text-center text-white sm:px-6 md:px-8 lg:px-16">
+            <div className="max-w-4xl">
               <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl lg:text-7xl">
                 {slide.title}
               </h2>
@@ -82,14 +85,14 @@ export function HeroSlider({
       <SliderButton
         direction="left"
         onClick={handlePrevSlide}
-        className="absolute top-1/2 left-2 z-10 -translate-y-1/2 sm:left-4"
+        className="absolute top-1/2 left-2 z-10 -translate-y-1/2 sm:left-4 md:left-6 lg:left-8"
       >
         <ChevronLeft className="h-5 w-5" />
       </SliderButton>
       <SliderButton
         direction="right"
         onClick={handleNextSlide}
-        className="absolute top-1/2 right-2 z-10 -translate-y-1/2 sm:right-4"
+        className="absolute top-1/2 right-2 z-10 -translate-y-1/2 sm:right-4 md:right-6 lg:right-8"
       >
         <ChevronRight className="h-5 w-5" />
       </SliderButton>
