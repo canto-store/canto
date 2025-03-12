@@ -21,11 +21,11 @@ export default function Home() {
   return (
     <AppLayout theme="custom">
       <HeroSlider slides={HERO_SLIDES} />
+      <FeaturesBanner />
       <CategoryGrid categories={CATEGORIES} />
       <HomeProducts products={FEATURED_PRODUCTS} title={featuredProducts} />
       <HomeProducts products={NEW_ARRIVALS} title={newArrivals} />
       <HomeProducts products={BEST_SELLERS} title={bestSellers} />
-      <FeaturesBanner />
     </AppLayout>
   );
 }
