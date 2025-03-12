@@ -52,7 +52,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   return (
-    <AppLayout theme="default" className="mt-2 md:mt-7">
+    <AppLayout theme="default">
       {/* Breadcrumb and Back Button */}
       <div>
         <Button
