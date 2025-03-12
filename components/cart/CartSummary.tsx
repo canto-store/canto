@@ -8,15 +8,9 @@ import { cn } from "@/lib/utils";
 
 interface CartSummaryProps {
   className?: string;
-  showCheckoutButton?: boolean;
-  showContinueShoppingButton?: boolean;
 }
 
-export function CartSummary({
-  className,
-  showCheckoutButton = true,
-  showContinueShoppingButton = false,
-}: CartSummaryProps) {
+export function CartSummary({ className }: CartSummaryProps) {
   const { total, count } = useCart();
   const t = useTranslations();
   const router = useRouter();
@@ -97,24 +91,20 @@ export function CartSummary({
         </div>
 
         <div className="mt-4 space-y-2 sm:mt-6 sm:space-y-3">
-          {showCheckoutButton && (
-            <Button
-              className="w-full text-sm sm:text-base"
-              onClick={() => router.push("/checkout")}
-            >
-              {t("header.checkout")}
-            </Button>
-          )}
+          <Button
+            className="w-full text-sm sm:text-base"
+            onClick={() => router.push("/checkout")}
+          >
+            {t("header.checkout")}
+          </Button>
 
-          {showContinueShoppingButton && (
-            <Button
-              variant="outline"
-              className="w-full text-sm sm:text-base"
-              onClick={() => router.push("/browse")}
-            >
-              {t("cart.continueShopping")}
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            className="w-full text-sm sm:text-base"
+            onClick={() => router.push("/browse")}
+          >
+            {t("cart.continueShopping")}
+          </Button>
         </div>
       </div>
     </div>

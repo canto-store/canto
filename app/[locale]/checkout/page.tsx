@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { AppLayout } from "@/components/layout";
@@ -33,18 +32,7 @@ export default function CheckoutPage() {
 
   return (
     <AppLayout theme="default">
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          className="flex items-center text-gray-600"
-          onClick={handleBackToCart}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t("products.back")}
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="h-main grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
           <div className="rounded-lg border border-gray-200 bg-white p-6">
@@ -66,19 +54,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <CartSummary
-            showCheckoutButton={false}
-            showContinueShoppingButton={false}
-          />
-
-          <div className="mt-6">
-            <Button className="w-full" size="lg">
-              {t("header.checkout")}
-            </Button>
-          </div>
-        </div>
+        <CartSummary />
       </div>
     </AppLayout>
   );

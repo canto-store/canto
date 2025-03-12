@@ -27,7 +27,7 @@ export default function CartPage() {
   if (count === 0) {
     return (
       <AppLayout theme="default">
-        <div className="flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+        <div className="h-main flex flex-col items-center justify-center px-4 py-8 sm:py-12">
           <div className="mb-6 rounded-full bg-gray-100 p-6 sm:mb-8 sm:p-8">
             <ShoppingCart className="h-14 w-14 text-gray-400 sm:h-16 sm:w-16" />
           </div>
@@ -47,27 +47,7 @@ export default function CartPage() {
 
   return (
     <AppLayout theme="default">
-      <div className="mb-4 sm:mb-8">
-        <Button
-          variant="ghost"
-          className="flex items-center text-sm text-gray-600 sm:text-base"
-          onClick={handleContinueShopping}
-        >
-          {isRTL ? (
-            <>
-              {t("cart.continueShopping")}
-              <ArrowLeft className="ml-1 h-3 w-3 sm:ml-2 sm:h-4 sm:w-4" />
-            </>
-          ) : (
-            <>
-              <ArrowLeft className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
-              {t("cart.continueShopping")}
-            </>
-          )}
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+      <div className="h-main grid grid-cols-1 items-center gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="rounded-lg border border-gray-200 bg-white">
@@ -135,11 +115,8 @@ export default function CartPage() {
         </div>
 
         {/* Cart Summary */}
-        <div className="mt-4 sm:mt-0 lg:col-span-1">
-          <CartSummary
-            showCheckoutButton={true}
-            showContinueShoppingButton={true}
-          />
+        <div className="sm:mt-0 lg:col-span-1">
+          <CartSummary />
         </div>
       </div>
     </AppLayout>
