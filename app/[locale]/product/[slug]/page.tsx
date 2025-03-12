@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PageShell } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,21 +21,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Check if we're on mobile
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkIfMobile);
-    };
-  }, []);
 
   // Unwrap the params Promise using React.use()
   const resolvedParams = React.use(params);

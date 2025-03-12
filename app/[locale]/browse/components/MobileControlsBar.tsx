@@ -5,6 +5,42 @@ import {
 } from "@/components/filters";
 import { PriceRange } from "@/lib/data";
 
+// Define interfaces for the translation objects
+interface FilterTranslations {
+  filters: string;
+  adjustFilters: string;
+  activeFilters: string;
+  clearAll: string;
+  categories: string;
+  brands: string;
+  priceRange: string;
+  applyFilters: string;
+  clearFilters: string;
+  close: string;
+}
+
+interface ViewOptionsTranslations {
+  viewOptions: string;
+  selectViewMode: string;
+  grid: string;
+  list: string;
+  close: string;
+}
+
+interface SortTranslations {
+  sortBy: string;
+  selectSortOrder: string;
+  close: string;
+}
+
+interface SortOptionTranslations {
+  featured: string;
+  priceLow: string;
+  priceHigh: string;
+  nameAsc: string;
+  nameDesc: string;
+}
+
 interface MobileControlsBarProps {
   isFilterDrawerOpen: boolean;
   setIsFilterDrawerOpen: (open: boolean) => void;
@@ -27,10 +63,10 @@ interface MobileControlsBarProps {
   setActiveTab: (tab: string) => void;
   sortOption: string;
   setSortOption: (option: string) => void;
-  filterTranslations: any;
-  viewOptionsTranslations: any;
-  sortTranslations: any;
-  sortOptionTranslations: any;
+  filterTranslations: FilterTranslations;
+  viewOptionsTranslations: ViewOptionsTranslations;
+  sortTranslations: SortTranslations;
+  sortOptionTranslations: SortOptionTranslations;
 }
 
 export function MobileControlsBar({

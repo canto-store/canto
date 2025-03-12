@@ -9,7 +9,7 @@ export function useProductTranslations() {
   const safeTranslation = (key: string, fallback: string): string => {
     try {
       return productsT(key);
-    } catch (error) {
+    } catch {
       return fallback;
     }
   };
@@ -48,7 +48,7 @@ export function useProductTranslations() {
   const getSortTranslation = (key: string, fallback: string): string => {
     try {
       return sortT(key);
-    } catch (error) {
+    } catch {
       return fallback;
     }
   };

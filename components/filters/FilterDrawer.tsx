@@ -146,7 +146,7 @@ export function FilterDrawer({
                   className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
                   onClick={() => setSearchQuery("")}
                 >
-                  "{searchQuery}"
+                  &quot;{searchQuery}&quot;
                   <X className="h-3 w-3" />
                 </Button>
               )}

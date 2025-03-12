@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { UpdateNotification, MobileInstallBanner } from "@/components/pwa";
 
 interface PageShellProps {
   children: ReactNode;
@@ -25,6 +26,8 @@ export function PageShell({ children, title, className = "" }: PageShellProps) {
         </div>
       </main>
       <Footer />
+      <UpdateNotification />
+      <MobileInstallBanner />
     </div>
   );
 }

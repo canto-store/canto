@@ -24,6 +24,21 @@ function registerSW() {
     .register(swUrl)
     .then((registration) => {
       console.log("Service Worker registered with scope:", registration.scope);
+
+      // Store the registration for later use
+      window.swRegistration = registration;
+
+      // Check for updates on page load
+      registration.update();
+
+      // Set up periodic checks for updates (every 60 minutes)
+      setInterval(
+        () => {
+          registration.update();
+          console.log("Checking for service worker updates...");
+        },
+        60 * 60 * 1000,
+      );
     })
     .catch((error) => {
       console.error("Service Worker registration failed:", error);

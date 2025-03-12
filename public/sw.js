@@ -7,9 +7,16 @@ const STATIC_ASSETS = [
   "/web-app-manifest-512x512.png",
 ];
 
+// Version number - increment this when you want to force an update
+const VERSION = "1.0.0";
+
 // Install event - cache core assets
 self.addEventListener("install", (event) => {
+  console.log(`[Service Worker] Installing new version ${VERSION}`);
+
+  // Skip waiting to activate the new service worker immediately
   self.skipWaiting();
+
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)),
   );
@@ -17,6 +24,8 @@ self.addEventListener("install", (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
+  console.log(`[Service Worker] Activating new version ${VERSION}`);
+
   event.waitUntil(
     caches
       .keys()
@@ -27,7 +36,18 @@ self.addEventListener("activate", (event) => {
             .map((name) => caches.delete(name)),
         ),
       )
-      .then(() => self.clients.claim()),
+      .then(() => {
+        // Claim clients to ensure the new service worker takes control immediately
+        return self.clients.claim();
+      })
+      .then(() => {
+        // Notify all clients that an update has occurred
+        return self.clients.matchAll().then((clients) => {
+          clients.forEach((client) => {
+            client.postMessage({ type: "UPDATE_AVAILABLE", version: VERSION });
+          });
+        });
+      }),
   );
 });
 
@@ -64,5 +84,12 @@ self.addEventListener("fetch", (event) => {
           return null;
         }),
     );
+  }
+});
+
+// Listen for messages from clients
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
   }
 });
