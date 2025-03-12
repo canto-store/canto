@@ -21,9 +21,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
     return category.name;
   };
   const handleCategoryClick = (category: Category) => {
-    router.push(
-      `/browse?category=${encodeURIComponent(category.name.toLowerCase())}`,
-    );
+    router.push(`/browse?category=${encodeURIComponent(category.name)}`);
   };
   return (
     <button
