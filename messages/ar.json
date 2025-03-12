@@ -21,6 +21,8 @@
     "addedToCart": "تمت إضافة {productName} إلى سلة التسوق الخاصة بك.",
     "browseTitle": "تصفح المنتجات",
     "filters": "الفلاتر",
+    "hideFilters": "إخفاء الفلاتر",
+    "activeFilters": "الفلاتر النشطة",
     "categories": "الفئات",
     "brands": "العلامات التجارية",
     "priceRange": "نطاق السعر",

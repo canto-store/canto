@@ -43,6 +43,32 @@ export function Header({ className }: HeaderProps) {
     },
     { label: t("sell"), href: "#", icon: <Store className="mr-3 h-4 w-4" /> },
   ];
+
+  const mobileNavigationItems = [
+    { label: t("home"), href: "/", icon: <Home className="h-5 w-5" /> },
+    {
+      label: t("browse"),
+      href: "/browse",
+      icon: <Search className="h-5 w-5" />,
+    },
+    { label: t("sell"), href: "#", icon: <Store className="h-5 w-5" /> },
+    {
+      label: t("favorites"),
+      href: "/favorites",
+      icon: <Heart className="h-5 w-5" />,
+    },
+    {
+      label: t("account"),
+      href: "/profile",
+      icon: <User className="h-5 w-5" />,
+    },
+    {
+      label: t("settings"),
+      href: "/settings",
+      icon: <Settings className="h-5 w-5" />,
+    },
+  ];
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -177,55 +203,20 @@ export function Header({ className }: HeaderProps) {
         <div className="border-primary/20 border-t shadow-lg md:hidden">
           <nav className="container mx-auto">
             <ul className="divide-primary/10 divide-y">
-              {navigationItems.map((item) => (
+              {mobileNavigationItems.map((item) => (
                 <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleNavigation(item.href)}
+                    className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
                   >
                     {item.icon}
                     {item.label}
-                  </Link>
+                  </Button>
                 </li>
               ))}
               <li>
-                <Link
-                  href="/account"
-                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-3 text-base transition-colors"
-                >
-                  <User className="mr-3 h-4 w-4" />
-                  My Account
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/wishlist"
-                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-3 text-base transition-colors"
-                >
-                  <Heart className="mr-3 h-4 w-4" />
-                  Wishlist
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/settings"
-                  className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
-                >
-                  <Settings className="mr-3 h-4 w-4" />
-                  Settings
-                </Link>
-              </li>
-              <li>
                 <InstallPWA variant="menu" />
-              </li>
-              <li>
-                <Link
-                  href="/logout"
-                  className="flex items-center px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
-                >
-                  <LogOut className="mr-3 h-4 w-4" />
-                  Logout
-                </Link>
               </li>
             </ul>
           </nav>

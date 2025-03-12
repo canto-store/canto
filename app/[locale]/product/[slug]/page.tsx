@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageShell } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,6 +21,21 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIfMobile();
+    window.addEventListener("resize", checkIfMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
 
   // Unwrap the params Promise using React.use()
   const resolvedParams = React.use(params);
@@ -52,13 +67,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   return (
-    <PageShell>
+    <PageShell className="relative">
       {/* Breadcrumb and Back Button */}
-      <div className="mb-8">
+      <div>
         <Button
           variant="ghost"
           size="sm"
-          className="mb-4 flex items-center gap-1"
+          className="mb-2 flex items-center gap-1 md:mb-4"
           onClick={() => window.history.back()}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -67,9 +82,9 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       </div>
 
       {/* Product Detail */}
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 md:gap-8">
         {/* Product Image */}
-        <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 sm:aspect-[4/3] md:aspect-square lg:aspect-[4/3]">
+        <div className="relative aspect-[4/3] rounded-lg bg-gray-100 md:aspect-square lg:aspect-[4/3]">
           <Image
             src={product.image}
             alt={product.name}
@@ -83,26 +98,34 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
         {/* Product Info */}
         <div>
-          <h1 className="mb-2 text-3xl font-bold">{product.name}</h1>
-          <p className="mb-4 text-lg text-gray-600">{product.brand}</p>
+          <h1 className="mb-1 text-2xl font-bold md:mb-2 md:text-3xl">
+            {product.name}
+          </h1>
+          <p className="mb-2 text-base text-gray-600 md:mb-4 md:text-lg">
+            {product.brand}
+          </p>
 
           {/* Rating */}
-          <div className="mb-4 flex items-center gap-1">
+          <div className="mb-2 flex items-center gap-1 md:mb-4">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className="h-5 w-5"
+                className="h-4 w-4 md:h-5 md:w-5"
                 fill={i < 4 ? "currentColor" : "none"}
               />
             ))}
-            <span className="ml-2 text-sm text-gray-600">(24 reviews)</span>
+            <span className="ml-2 text-xs text-gray-600 md:text-sm">
+              (24 reviews)
+            </span>
           </div>
 
-          <p className="mb-6 text-2xl font-bold">${product.price.toFixed(2)}</p>
+          <p className="mb-3 text-xl font-bold md:mb-6 md:text-2xl">
+            ${product.price.toFixed(2)}
+          </p>
 
-          <div className="mb-6">
-            <h3 className="mb-2 font-medium">Description</h3>
-            <p className="text-gray-600">
+          <div className="mb-4 md:mb-6">
+            <h3 className="mb-1 font-medium md:mb-2">Description</h3>
+            <p className="text-sm text-gray-600">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
               euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget
               aliquam nisl nisl sit amet nisl. Sed euismod, nisl vel ultricies
@@ -112,19 +135,23 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
 
           {/* Size Selection */}
-          <div className="mb-6">
-            <div className="mb-2 flex items-center justify-between">
+          <div className="mb-4 md:mb-6">
+            <div className="mb-1 flex items-center justify-between md:mb-2">
               <h3 className="font-medium">Size</h3>
-              <a href="#" className="text-sm text-gray-600 hover:underline">
+              <a
+                href="#"
+                className="text-xs text-gray-600 hover:underline md:text-sm"
+              >
                 Size Guide
               </a>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 md:gap-2">
               {SIZES.map((size) => (
                 <Button
                   key={size}
                   variant={selectedSize === size ? "default" : "outline"}
                   size="sm"
+                  className="h-auto px-2 py-1 text-xs md:h-9 md:text-sm"
                   onClick={() => setSelectedSize(size)}
                 >
                   {size}
@@ -134,15 +161,15 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
 
           {/* Color Selection */}
-          <div className="mb-6">
-            <h3 className="mb-2 font-medium">Color</h3>
-            <div className="flex flex-wrap gap-3">
+          <div className="mb-4 md:mb-6">
+            <h3 className="mb-1 font-medium md:mb-2">Color</h3>
+            <div className="flex flex-wrap gap-2 md:gap-3">
               {COLORS.map((color) => (
                 <button
                   key={color.name}
-                  className={`h-8 w-8 rounded-full border ${
+                  className={`h-6 w-6 rounded-full border md:h-8 md:w-8 ${
                     selectedColor === color.name
-                      ? "ring-2 ring-black ring-offset-2"
+                      ? "ring-2 ring-black ring-offset-1 md:ring-offset-2"
                       : ""
                   }`}
                   style={{ backgroundColor: color.value }}
@@ -154,12 +181,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
 
           {/* Quantity */}
-          <div className="mb-6">
-            <h3 className="mb-2 font-medium">Quantity</h3>
-            <div className="flex w-32 items-center">
+          <div className="mb-4 md:mb-6">
+            <h3 className="mb-1 font-medium md:mb-2">Quantity</h3>
+            <div className="flex w-24 items-center md:w-32">
               <Button
                 variant="outline"
                 size="sm"
+                className="h-8 md:h-9"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 disabled={quantity <= 1}
               >
@@ -169,6 +197,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <Button
                 variant="outline"
                 size="sm"
+                className="h-8 md:h-9"
                 onClick={() => setQuantity(quantity + 1)}
               >
                 +
@@ -176,8 +205,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </div>
           </div>
 
-          {/* Add to Cart */}
-          <div className="mb-6 flex gap-2">
+          {/* Add to Cart - Desktop only */}
+          <div className="mb-6 hidden gap-2 md:flex">
             <Button
               size="lg"
               className="flex-1 gap-2"
@@ -199,12 +228,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
 
           {/* Additional Info */}
-          <div className="rounded-lg border p-4">
-            <div className="mb-2 flex items-center gap-2">
+          <div className="rounded-lg border p-3 md:p-4">
+            <div className="mb-1 flex items-center gap-2 md:mb-2">
               <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span className="text-sm font-medium">In Stock</span>
+              <span className="text-xs font-medium md:text-sm">In Stock</span>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs text-gray-600 md:text-sm">
               Free shipping on orders over $50
             </p>
           </div>
@@ -215,8 +244,31 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       <ProductGrid
         products={relatedProducts}
         title="You May Also Like"
-        className="mt-16"
+        className="mt-8 md:mt-16"
       />
+
+      {/* Floating Add to Cart - Mobile only */}
+      <div className="fixed right-0 bottom-0 left-0 z-50 flex gap-2 border-t border-gray-200 bg-white p-4 shadow-lg md:hidden">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-12 w-12 flex-shrink-0"
+          onClick={() => setIsFavorite(!isFavorite)}
+        >
+          <Heart
+            className="h-5 w-5"
+            fill={isFavorite ? "currentColor" : "none"}
+          />
+        </Button>
+        <Button
+          size="lg"
+          className="h-12 flex-1 gap-2"
+          onClick={handleAddToCart}
+        >
+          <ShoppingCart className="h-5 w-5" />
+          Add to Cart
+        </Button>
+      </div>
     </PageShell>
   );
 }

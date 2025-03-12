@@ -30,15 +30,15 @@ export function ItemsPerPage({
   return (
     <div className={className}>
       <div
-        className={`flex items-center ${isRTL ? "space-x-2 space-x-reverse" : "space-x-2"}`}
+        className={`flex items-center ${isRTL ? "space-x-1 space-x-reverse sm:space-x-2" : "space-x-1 sm:space-x-2"}`}
       >
-        <span className="text-sm text-gray-500">{t("show")}</span>
+        <span className="text-xs text-gray-500 sm:text-sm">{t("show")}</span>
         <Select
           defaultValue={defaultValue.toString()}
           value={value.toString()}
           onValueChange={(val) => onChange(Number(val))}
         >
-          <SelectTrigger className="h-8 w-[70px]">
+          <SelectTrigger className="h-7 w-[60px] text-xs sm:h-8 sm:w-[70px] sm:text-sm">
             <SelectValue placeholder={value.toString()} />
           </SelectTrigger>
           <SelectContent>
@@ -49,7 +49,7 @@ export function ItemsPerPage({
             ))}
           </SelectContent>
         </Select>
-        <span className="text-sm text-gray-500">{t("perPage")}</span>
+        <span className="text-xs text-gray-500 sm:text-sm">{t("perPage")}</span>
       </div>
     </div>
   );

@@ -37,18 +37,20 @@ export function SortMenu({
 
   return (
     <div
-      className={`flex items-center ${isRTL ? "flex-row-reverse gap-2" : "gap-2"} ${className}`}
+      className={`flex items-center ${isRTL ? "flex-row-reverse gap-1 sm:gap-2" : "gap-1 sm:gap-2"} ${className}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
       <ArrowUpDown className="h-4 w-4 text-gray-500" />
       {label && (
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className="text-xs font-medium text-gray-700 sm:text-sm">
+          {label}
+        </span>
       )}
       <Select
         value={value}
         onValueChange={(value) => onValueChange(value as SortOption)}
       >
-        <SelectTrigger className={width}>
+        <SelectTrigger className={`text-xs sm:text-sm ${width}`}>
           <SelectValue placeholder={t("products.sortBy")} />
         </SelectTrigger>
         <SelectContent>
