@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
-import { Product } from "@/lib/data";
+import { Product } from "@/types";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useCart } from "../cart";
+import { useCart } from "@/providers";
 
 interface ProductListProps {
   products: Product[];

@@ -6,7 +6,7 @@ import { Footer } from "./Footer";
 import { PromoBanner } from "@/components/common/PromoBanner";
 import { InstallPWA } from "@/components/pwa";
 import { cn } from "@/lib/utils";
-import { useBanner } from "@/lib/context";
+import { useBanner } from "@/providers";
 
 interface AppLayoutProps {
   children: ReactNode;

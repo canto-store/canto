@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useClipboard } from "react-haiku";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { useBanner } from "@/lib/context";
+import { useBanner } from "@/providers";
 
 interface PromoBannerProps {
   className?: string;

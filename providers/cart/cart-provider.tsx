@@ -1,58 +1,22 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-import { Product } from "@/lib/data";
+import { useState, useEffect, ReactNode } from "react";
+import { Product } from "@/types/product";
+import { CartItem } from "@/types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-
-// Define the cart item type with quantity
-export interface CartItem extends Product {
-  quantity: number;
-}
-
-// Define the cart context type
-interface CartContextType {
-  items: CartItem[];
-  count: number;
-  total: number;
-  addToCart: (product: Product, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  isInCart: (productId: string) => boolean;
-}
-
-// Create the cart context with default values
-const CartContext = createContext<CartContextType>({
-  items: [],
-  count: 0,
-  total: 0,
-  addToCart: () => {},
-  removeItem: () => {},
-  updateQuantity: () => {},
-  clearCart: () => {},
-  isInCart: () => false,
-});
-
-// Custom hook to use the cart context
-export const useCart = () => useContext(CartContext);
+import { CartContext } from "./cart-context";
 
 interface CartProviderProps {
   children: ReactNode;
 }
 
 export function CartProvider({ children }: CartProviderProps) {
-  // Initialize cart state from localStorage if available
   const [items, setItems] = useState<CartItem[]>([]);
   const [, setIsInitialized] = useState(false);
 
   const t = useTranslations();
+
   // Load cart from localStorage on mount
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");

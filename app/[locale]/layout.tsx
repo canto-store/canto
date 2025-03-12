@@ -3,30 +3,26 @@ import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import "../globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import localFont from "next/font/local";
-import { ThemeProvider } from "next-themes";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { routing } from "@/i18n/routing";
-import { CartProvider } from "@/components/cart";
-import { ClientBannerProvider } from "@/lib/context";
+import { ReactNode } from "react";
 import Script from "next/script";
+import { routing } from "@/i18n/routing";
+import { getMessages } from "next-intl/server";
+import { Providers } from "@/providers";
 
-// Load IBM Plex Sans Arabic from Google Fonts
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-ibm-plex-sans-arabic",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-// Load Optician Sans from local font file
 const opticianSans = localFont({
   src: "../../public/fonts/Optician-Sans.woff2",
   variable: "--font-optician-sans",
   display: "swap",
 });
 
-// Load Space Grotesk from local font file
 const spaceGrotesk = localFont({
   src: "../../public/fonts/SpaceGrotesk.woff2",
   variable: "--font-space-grotesk",
@@ -51,27 +47,27 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+interface RootLayoutProps {
+  children: ReactNode;
+  params: {
+    locale: "en" | "ar";
+  };
+}
+
 export default async function RootLayout({
   children,
   params,
-}: {
-  children: React.ReactNode;
-  params: { locale: "en" | "ar" };
-}) {
-  // Ensure that the incoming `locale` is valid
+}: RootLayoutProps) {
   const paramsObj = await params;
   const { locale } = paramsObj;
   if (!routing.locales.includes(locale)) {
     notFound();
   }
 
-  // Providing all messages to the client side
   const messages = await getMessages();
 
-  // Determine text direction based on locale
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  // Use the appropriate font class based on locale
   const localeClass = locale === "ar" ? "font-arabic" : "font-latin";
 
   return (
@@ -86,18 +82,9 @@ export default async function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${opticianSans.variable} ${ibmPlexSansArabic.variable} antialiased ${localeClass}`}
       >
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ClientBannerProvider>
-              <CartProvider>{children}</CartProvider>
-            </ClientBannerProvider>
-            <Toaster />
-          </ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>{children}</Providers>
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>

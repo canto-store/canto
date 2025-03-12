@@ -5,10 +5,12 @@ import { Minus, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useCart, type CartItem } from "./CartContext";
+import { useCart } from "@/providers";
+import { CartItem } from "@/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
+
 interface CartItemProps {
   item: CartItem;
   showControls?: boolean;

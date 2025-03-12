@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useCart } from "./CartContext";
+import { useCart } from "@/providers";
 import { CartItemComponent } from "./CartItem";
 import { cn } from "@/lib/utils";
 

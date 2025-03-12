@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Pagination } from "@/components/ui/pagination";
 import { ProductGrid, ProductList } from "@/components/products";
-import { Product } from "@/lib/data";
+import { Product } from "@/types";
 import { useTranslations } from "next-intl";
 
 interface ProductsDisplayProps {

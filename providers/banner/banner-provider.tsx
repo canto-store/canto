@@ -1,31 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-
-// Define the banner context type
-interface BannerContextType {
-  showBanner: boolean;
-  setShowBanner: (show: boolean) => void;
-  closeBanner: () => void;
-  isLoading: boolean;
-}
-
-// Create the banner context with default values
-const BannerContext = createContext<BannerContextType>({
-  showBanner: true,
-  setShowBanner: () => {},
-  closeBanner: () => {},
-  isLoading: true,
-});
-
-// Custom hook to use the banner context
-export const useBanner = () => useContext(BannerContext);
+import { useState, useEffect, ReactNode } from "react";
+import { BannerContext } from "./banner-context";
 
 interface BannerProviderProps {
   children: ReactNode;

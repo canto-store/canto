@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/layout";
 import { ProductGrid } from "@/components/products";
 import { notFound } from "next/navigation";
 import { getProductBySlug, getRelatedProducts } from "@/lib/utils";
-import { ProductDetails } from "@/app/components/product/ProductDetails";
+import { ProductDetails } from "@/components/products/ProductDetails";
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;

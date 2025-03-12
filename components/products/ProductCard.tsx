@@ -5,8 +5,8 @@ import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useCart } from "../cart";
-import { Product } from "@/lib/data";
+import { useCart } from "@/providers";
+import { Product } from "@/types";
 
 interface ProductCardProps {
   product: Product;

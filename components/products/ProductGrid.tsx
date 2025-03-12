@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/products";
-import { Product } from "@/lib/data";
+import { Product } from "@/types";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 

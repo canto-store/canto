@@ -1,13 +1,4 @@
-export type Product = {
-  name: string;
-  brand: string;
-  price: number;
-  image: string;
-  translationKey?: {
-    name: string;
-    brand: string;
-  };
-};
+import { Product } from "@/types";
 export const FEATURED_PRODUCTS: Product[] = [
   {
     name: "Armchair",
@@ -154,7 +145,6 @@ export const BEST_SELLERS: Product[] = [
   },
 ];
 
-// Sample product data - in a real app, this would come from an API
 export const ALL_PRODUCTS: Product[] = [
   {
     name: "Oversized Cotton Hoodie",
@@ -244,7 +234,6 @@ export const ALL_PRODUCTS: Product[] = [
   ...NEW_ARRIVALS,
 ];
 
-// Price range type definition
 export type PriceRange = {
   label: string;
   min: number;

@@ -1,21 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useLocale } from "next-intl";
 import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { useCart, CartItemComponent, CartSummary } from "@/components/cart";
+import { CartItemComponent, CartSummary } from "@/components/cart";
 import { cn } from "@/lib/utils";
-
+import { useCart } from "@/providers";
 export default function CartPage() {
   const { items, count } = useCart();
   const t = useTranslations();
   const router = useRouter();
-  const locale = useLocale();
-  const isRTL = locale === "ar";
   const [isUpdating] = useState(false);
 
   // Handle continue shopping button click

@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { useCart, CartSummary } from "@/components/cart";
+import { CartSummary } from "@/components/cart";
+import { useCart } from "@/providers";
 
 export default function CheckoutPage() {
   const { count } = useCart();

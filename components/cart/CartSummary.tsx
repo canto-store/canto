@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { useCart } from "./CartContext";
+import { useCart } from "@/providers";
 import { cn } from "@/lib/utils";
 
 interface CartSummaryProps {

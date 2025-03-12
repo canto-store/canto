@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useParams, useRouter } from "next/navigation";
-import { PRICE_RANGES, Product } from "@/lib/data";
+import { Product } from "@/types";
+import { PRICE_RANGES } from "@/lib/data";
 import { filterProducts } from "@/lib/utils";
-
 export function useProductFilters() {
   const searchParams = useSearchParams();
   const params = useParams();
