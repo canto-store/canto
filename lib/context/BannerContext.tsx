@@ -38,39 +38,23 @@ export function BannerProvider({
 }: BannerProviderProps) {
   // Start with loading state to prevent flash
   const [isLoading, setIsLoading] = useState(true);
-  const [showBanner, setShowBanner] = useState<boolean>(initialState);
+  // Always start with the banner visible
+  const [showBanner, setShowBanner] = useState<boolean>(true);
 
-  // Load banner state from localStorage on mount
+  // Set loading to false after initial render
   useEffect(() => {
     // Only run on client
     if (typeof window === "undefined") return;
 
-    try {
-      const storedBannerState = localStorage.getItem("bannerClosed");
-      if (storedBannerState !== null) {
-        setShowBanner(storedBannerState !== "true");
-      }
-    } catch (error) {
-      console.error("Error accessing localStorage:", error);
-    } finally {
-      // Mark as loaded regardless of success/failure
+    // Short timeout to ensure the component has fully mounted
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    }
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  // Save banner state to localStorage whenever it changes
-  useEffect(() => {
-    // Skip during loading phase and on server
-    if (isLoading || typeof window === "undefined") return;
-
-    try {
-      localStorage.setItem("bannerClosed", (!showBanner).toString());
-    } catch (error) {
-      console.error("Error writing to localStorage:", error);
-    }
-  }, [showBanner, isLoading]);
-
-  // Close the banner
+  // Close the banner for the current session only
   const closeBanner = () => {
     setShowBanner(false);
   };

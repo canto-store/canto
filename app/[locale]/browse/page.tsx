@@ -57,7 +57,7 @@ export default function BrowsePage() {
 
   return (
     <AppLayout>
-      <div className="mt-3 w-full">
+      <div className="mt-5 w-full">
         {/* Search and Filter Controls */}
         <SearchFilterBar
           searchQuery={searchQuery}

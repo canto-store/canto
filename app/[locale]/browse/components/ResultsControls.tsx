@@ -33,9 +33,30 @@ export function ResultsControls({
 
   return (
     <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
-      {/* Results Count */}
+      {/* Mobile View: Products Count and Items Per Page on same line */}
+      <div className="flex w-full items-center justify-between sm:hidden">
+        <p className="text-sm text-gray-600" dir={isRTL ? "rtl" : "ltr"}>
+          {productsT("productsCount", { count: filteredProductsCount })}
+          {filteredProductsCount > 0 && (
+            <span
+              className={`${isRTL ? "mr-1" : "ml-1"} text-xs text-gray-500`}
+            >
+              ({formatNumber(filteredProductsCount)})
+            </span>
+          )}
+        </p>
+
+        <ItemsPerPage
+          defaultValue={itemsPerPage}
+          value={itemsPerPage}
+          onChange={onItemsPerPageChange}
+          options={[5, 10, 15, 20]}
+        />
+      </div>
+
+      {/* Desktop View: Products Count */}
       <p
-        className="text-sm text-gray-600 sm:text-base"
+        className="hidden text-sm text-gray-600 sm:block sm:text-base"
         dir={isRTL ? "rtl" : "ltr"}
       >
         {productsT("productsCount", { count: filteredProductsCount })}
@@ -90,16 +111,6 @@ export function ResultsControls({
           />
         </div>
 
-        <ItemsPerPage
-          defaultValue={itemsPerPage}
-          value={itemsPerPage}
-          onChange={onItemsPerPageChange}
-          options={[5, 10, 15, 20]}
-        />
-      </div>
-
-      {/* Mobile Items Per Page */}
-      <div className="flex justify-end sm:hidden">
         <ItemsPerPage
           defaultValue={itemsPerPage}
           value={itemsPerPage}

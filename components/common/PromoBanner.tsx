@@ -24,7 +24,7 @@ export function PromoBanner({ className }: PromoBannerProps) {
   return (
     <div
       className={cn(
-        "to-orange-red from-burgundy relative flex h-10 items-center justify-center bg-gradient-to-r px-4 text-center text-sm text-white shadow-md transition-all duration-300",
+        "to-orange-red from-burgundy relative flex h-8 items-center justify-center bg-gradient-to-r px-4 text-center text-[11px] text-white shadow-md transition-all duration-300 md:h-10 md:text-sm",
         className,
       )}
     >
@@ -46,7 +46,7 @@ export function PromoBanner({ className }: PromoBannerProps) {
       </div>
       <button
         onClick={closeBanner}
-        className="absolute right-2 rounded-full p-1.5 transition-colors hover:bg-white/20"
+        className="absolute right-1 rounded-full p-1.5 transition-colors hover:bg-white/20 md:right-4"
         aria-label="Close promotional banner"
       >
         <X className="h-4 w-4" />

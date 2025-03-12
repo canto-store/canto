@@ -30,7 +30,7 @@ export function SectionContainer({
   };
 
   return (
-    <section className={cn("px-4 py-16", getBgColor(), className)}>
+    <section className={cn(getBgColor(), className)}>
       <div className={cn("container mx-auto", containerClassName)}>
         {title && (
           <h2

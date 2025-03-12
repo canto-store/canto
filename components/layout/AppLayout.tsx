@@ -30,17 +30,16 @@ export function AppLayout({
 
   // Calculate the padding top based on banner visibility
   // Header height is 4.5rem (h-18), banner height is 2.5rem (h-10)
-  const paddingTop = showBanner ? "7rem" : "4.5rem";
 
   // Don't render the banner during loading to prevent flash
   const shouldRenderBanner = !isLoading && showBanner;
 
   return (
     <div className={cn("min-h-screen", bgColor, textColor)}>
-      {/* Only render the banner when not loading */}
+      {/* Banner - visible by default on each page load/refresh */}
       <div
         className={cn(
-          "fixed top-0 right-0 left-0 z-50 h-10 transition-all duration-300",
+          "fixed top-0 right-0 left-0 z-50 h-8 transition-all duration-300 md:h-10",
           shouldRenderBanner
             ? "translate-y-0"
             : "pointer-events-none -translate-y-full opacity-0",
@@ -53,16 +52,17 @@ export function AppLayout({
       <Header
         className={cn(
           "fixed right-0 left-0 z-40 transition-all duration-300",
-          shouldRenderBanner ? "top-10" : "top-0",
+          shouldRenderBanner ? "top-8 md:top-10" : "top-0",
         )}
       />
 
       {/* Main content with dynamic padding based on banner visibility */}
       <main
-        style={{
-          paddingTop: isLoading ? "4.5rem" : paddingTop,
-        }}
-        className={cn("transition-all duration-300", className)}
+        className={cn(
+          "transition-all duration-300",
+          shouldRenderBanner ? "pt-24 md:pt-28" : "pt-16 md:pt-[4.5rem]",
+          className
+        )}
       >
         <div className="container mx-auto px-4">{children}</div>
       </main>

@@ -107,8 +107,10 @@ export function CartDropdown({ className }: CartDropdownProps) {
       {isOpen && (
         <div
           className={cn(
-            "ring-primary ring-opacity-5 absolute z-50 mt-2 w-80 rounded-md bg-white py-2 shadow-lg ring-1",
+            "ring-primary ring-opacity-5 absolute z-50 mt-2 w-[calc(100vw-32px)] max-w-[320px] rounded-md bg-white py-2 shadow-lg ring-1 sm:w-80",
             isRTL ? "right-auto left-0" : "right-0 left-auto",
+            // Ensure dropdown stays within viewport on mobile
+            "max-sm:right-[-10px]",
           )}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -122,7 +124,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
           {count > 0 ? (
             <>
               {/* Cart Items */}
-              <div className="max-h-60 overflow-y-auto py-3">
+              <div className="max-h-[40vh] overflow-y-auto py-3 sm:max-h-60">
                 {items.map((item) => (
                   <CartItemComponent
                     key={`${item.name}-${item.quantity}`}
@@ -143,7 +145,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
               </div>
 
               {/* Cart Actions */}
-              <div className="flex gap-3 border-t border-gray-100 px-4 py-3">
+              <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-3 sm:flex-row sm:gap-3">
                 <Button
                   variant="outline"
                   className="h-9 flex-1 text-sm"
