@@ -17,10 +17,10 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Button } from "../ui/button";
-import { CartDropdown } from "../cart/CartDropdown";
-import { LanguageSelector } from "../language/LanguageSelector";
-import { InstallPWA } from "../pwa";
+import { Button } from "@/components/ui/button";
+import { CartDropdown } from "@/components/cart/CartDropdown";
+import { LanguageSelector } from "@/components/language/LanguageSelector";
+import { InstallPWA } from "@/components/pwa";
 import Link from "next/link";
 
 interface HeaderProps {

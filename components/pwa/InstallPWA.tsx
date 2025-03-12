@@ -1,5 +1,4 @@
-/*eslint-disable */
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -25,13 +24,38 @@ declare global {
 }
 
 interface InstallPWAProps {
-  variant?: "header" | "menu" | "message";
+  /**
+   * The display variant of the install prompt
+   * - "header": Button for desktop navigation headers
+   * - "menu": Menu item for navigation menus
+   * - "message": Floating card notification
+   * - "banner": Full-width banner at the bottom of the screen (mobile only)
+   */
+  variant?: "header" | "menu" | "message" | "banner";
+
+  /**
+   * Optional CSS class name to apply to the component
+   */
   className?: string;
+
+  /**
+   * Delay in milliseconds before showing the prompt (for message and banner variants)
+   * Default: 2000ms for message, 5000ms for banner
+   */
+  showDelay?: number;
+
+  /**
+   * Local storage key to use for tracking dismissal state
+   * Default: "pwa-install-dismissed"
+   */
+  dismissalKey?: string;
 }
 
 export function InstallPWA({
   variant = "header",
   className = "",
+  showDelay,
+  dismissalKey,
 }: InstallPWAProps) {
   const t = useTranslations("pwa");
   const [installPrompt, setInstallPrompt] =
@@ -39,10 +63,19 @@ export function InstallPWA({
   const [isInstallable, setIsInstallable] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [isMessageVisible, setIsMessageVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
+
+  // Determine the appropriate dismissal key based on variant
+  const storageDismissalKey =
+    dismissalKey ||
+    (variant === "banner" ? "pwa-banner-dismissed" : "pwa-message-dismissed");
+
+  // Determine the appropriate delay based on variant
+  const defaultDelay = variant === "banner" ? 5000 : 2000;
+  const displayDelay = showDelay ?? defaultDelay;
 
   useEffect(() => {
     // Check if we're in a browser environment
@@ -75,20 +108,32 @@ export function InstallPWA({
       };
     }
 
-    // Check if user has previously dismissed the message
-    if (variant === "message") {
-      const dismissed = localStorage.getItem("pwa-message-dismissed");
-      if (dismissed === "true") {
-        setIsDismissed(true);
-      }
+    // For banner variant, only show on mobile
+    if (variant === "banner" && window.innerWidth >= 768) {
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
+    }
+
+    // Check if user has previously dismissed the prompt
+    const dismissed = localStorage.getItem(storageDismissalKey);
+    if (dismissed === "true") {
+      setIsDismissed(true);
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
     }
 
     // For iOS, we'll always show our custom message since the beforeinstallprompt event isn't supported
-    if (isIOSDevice && variant === "message" && !isDismissed) {
+    if (
+      isIOSDevice &&
+      (variant === "message" || variant === "banner") &&
+      !isDismissed
+    ) {
       setTimeout(() => {
-        setIsMessageVisible(true);
+        setIsVisible(true);
         setIsInstallable(true);
-      }, 2000);
+      }, displayDelay);
       return () => {
         window.removeEventListener("resize", handleResize);
       };
@@ -100,11 +145,11 @@ export function InstallPWA({
       setInstallPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
 
-      // Show message after a delay if it's the message variant
-      if (variant === "message" && !isDismissed) {
+      // Show prompt after a delay if it's the message or banner variant
+      if ((variant === "message" || variant === "banner") && !isDismissed) {
         setTimeout(() => {
-          setIsMessageVisible(true);
-        }, 2000);
+          setIsVisible(true);
+        }, displayDelay);
       }
     };
 
@@ -115,9 +160,11 @@ export function InstallPWA({
       setInstallPrompt(window.deferredPrompt);
       setIsInstallable(true);
 
-      // Show message immediately if it's the message variant
-      if (variant === "message" && !isDismissed) {
-        setIsMessageVisible(true);
+      // Show prompt immediately if it's the message or banner variant
+      if ((variant === "message" || variant === "banner") && !isDismissed) {
+        setTimeout(() => {
+          setIsVisible(true);
+        }, displayDelay);
       }
     }
 
@@ -125,9 +172,9 @@ export function InstallPWA({
       window.removeEventListener("beforeinstallprompt", handler);
       window.removeEventListener("resize", handleResize);
     };
-  }, [variant, isDismissed]);
+  }, [variant, isDismissed, displayDelay, storageDismissalKey]);
 
-  const handleInstallClick = async () => {
+  const handleInstall = async () => {
     if (isIOS) {
       // For iOS, show instructions instead of triggering the prompt
       setShowIOSInstructions(true);
@@ -146,15 +193,15 @@ export function InstallPWA({
     // Clear the saved prompt since it can't be used again
     setInstallPrompt(null);
     setIsInstallable(false);
-    setIsMessageVisible(false);
+    setIsVisible(false);
     window.deferredPrompt = null;
   };
 
   const handleDismiss = () => {
-    setIsMessageVisible(false);
+    setIsVisible(false);
     setShowIOSInstructions(false);
     setIsDismissed(true);
-    localStorage.setItem("pwa-message-dismissed", "true");
+    localStorage.setItem(storageDismissalKey, "true");
   };
 
   // If the app is already installed, don't show the install button
@@ -163,53 +210,95 @@ export function InstallPWA({
   // If not installable and not iOS, don't show the button
   if (!isInstallable && !isIOS) return null;
 
-  // Message variant for mobile
-  if (variant === "message") {
-    if ((!isMessageVisible || isDismissed) && !showIOSInstructions) return null;
+  // For banner variant, only show on mobile
+  if (variant === "banner" && !isMobile) return null;
 
-    // iOS Instructions
-    if (showIOSInstructions) {
-      return (
-        <div className="fixed right-4 bottom-4 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg bg-white p-4 shadow-lg md:right-6 md:bottom-6">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h3 className="flex items-center font-medium">
-                <Globe className="mr-2 h-5 w-5" />
-                {t("installOnIOS")}
-              </h3>
-              <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-gray-600">
-                <li>
-                  {t("iosInstructions.step1")}{" "}
-                  <Share className="inline h-4 w-4 align-text-bottom" />
-                </li>
-                <li>{t("iosInstructions.step2")}</li>
-                <li>{t("iosInstructions.step3")}</li>
-              </ol>
-              <div className="mt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDismiss}
-                  className="w-full"
-                >
-                  {t("gotIt")}
-                </Button>
-              </div>
+  // For banner and message variants, check visibility
+  if (
+    (variant === "banner" || variant === "message") &&
+    (!isVisible || isDismissed) &&
+    !showIOSInstructions
+  ) {
+    return null;
+  }
+
+  // iOS Instructions (for message and banner variants)
+  if ((variant === "message" || variant === "banner") && showIOSInstructions) {
+    return (
+      <div className="fixed right-4 bottom-4 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg bg-white p-4 shadow-lg md:right-6 md:bottom-6">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h3 className="flex items-center font-medium">
+              <Globe className="mr-2 h-5 w-5" />
+              {t("installOnIOS")}
+            </h3>
+            <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-gray-600">
+              <li>
+                {t("iosInstructions.step1")}{" "}
+                <Share className="inline h-4 w-4 align-text-bottom" />
+              </li>
+              <li>{t("iosInstructions.step2")}</li>
+              <li>{t("iosInstructions.step3")}</li>
+            </ol>
+            <div className="mt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDismiss}
+                className="w-full"
+              >
+                {t("gotIt")}
+              </Button>
             </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="-mt-1 -mr-1 h-6 w-6"
+            onClick={handleDismiss}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Banner variant (mobile only)
+  if (variant === "banner") {
+    return (
+      <div className="fixed right-0 bottom-0 left-0 z-50 border-t bg-white p-4 shadow-lg md:hidden">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Download className="text-primary h-6 w-6" />
+            <div>
+              <p className="font-medium">{t("installApp")}</p>
+              <p className="text-sm text-gray-500">
+                {t("mobileInstallDescription")}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="-mt-1 -mr-1 h-6 w-6"
               onClick={handleDismiss}
+              className="h-8 w-8 rounded-full"
+              aria-label="Dismiss"
             >
               <X className="h-4 w-4" />
             </Button>
+            <Button variant="default" size="sm" onClick={handleInstall}>
+              {isIOS ? t("addToHomeScreen") : t("install")}
+            </Button>
           </div>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
-    // Standard install message
+  // Message variant
+  if (variant === "message") {
     return (
       <div className="fixed right-4 bottom-4 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg bg-white p-4 shadow-lg md:right-6 md:bottom-6">
         <div className="flex items-start justify-between">
@@ -226,7 +315,7 @@ export function InstallPWA({
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={handleInstallClick}
+                  onClick={handleInstall}
                   className="text-white"
                 >
                   {isIOS ? t("addToHomeScreen") : t("installNow")}
@@ -254,7 +343,7 @@ export function InstallPWA({
   if (variant === "menu") {
     return (
       <Button
-        onClick={handleInstallClick}
+        onClick={handleInstall}
         variant="ghost"
         className="flex w-full items-center justify-start px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
       >
@@ -273,7 +362,7 @@ export function InstallPWA({
   // Only show in desktop view
   return (
     <Button
-      onClick={handleInstallClick}
+      onClick={handleInstall}
       variant="outline"
       size="sm"
       className={`items-center gap-2 ${className}`}

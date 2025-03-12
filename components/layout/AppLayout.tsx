@@ -5,7 +5,6 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PromoBanner } from "@/components/common/PromoBanner";
 import { InstallPWA } from "@/components/pwa";
-import { UpdateNotification, MobileInstallBanner } from "@/components/pwa";
 import { cn } from "@/lib/utils";
 import { useBanner } from "@/lib/context";
 
@@ -47,7 +46,6 @@ export function AppLayout({
       >
         <PromoBanner />
       </div>
-
       {/* Header with dynamic positioning based on banner visibility */}
       <Header
         className={cn(
@@ -55,23 +53,18 @@ export function AppLayout({
           shouldRenderBanner ? "top-8 md:top-10" : "top-0",
         )}
       />
-
       {/* Main content with dynamic padding based on banner visibility */}
       <main
         className={cn(
           "transition-all duration-300",
           shouldRenderBanner ? "pt-24 md:pt-28" : "pt-16 md:pt-[4.5rem]",
-          className
+          className,
         )}
       >
         <div className="container mx-auto px-4">{children}</div>
       </main>
-
       <Footer />
-
       <InstallPWA variant="message" />
-      <UpdateNotification />
-      <MobileInstallBanner />
     </div>
   );
 }
