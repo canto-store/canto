@@ -30,7 +30,7 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
       href: "/browse",
       icon: <Search className="h-5 w-5" />,
     },
-    { label: t("sell"), href: "#", icon: <Store className="h-5 w-5" /> },
+    { label: t("sell"), href: "/sell", icon: <Store className="h-5 w-5" /> },
     {
       label: t("favorites"),
       href: "/favorites",
