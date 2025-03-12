@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import "../globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -9,6 +9,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { CartProvider } from "@/components/cart";
+import Script from "next/script";
 
 // Load IBM Plex Sans Arabic from Google Fonts
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
@@ -33,6 +34,20 @@ const spaceGrotesk = localFont({
 
 export const metadata: Metadata = {
   title: "Canto",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Canto",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default async function RootLayout({
@@ -60,6 +75,13 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
+      <head>
+        {/* Always include the HMR fix script - it will self-determine if it needs to run */}
+        <Script src="/hmr-fix.js" strategy="beforeInteractive" id="hmr-fix" />
+
+        {/* Always include the service worker registration script - it will self-determine if it should register */}
+        <Script src="/register-sw.js" id="register-sw" />
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${opticianSans.variable} ${ibmPlexSansArabic.variable} antialiased ${localeClass}`}
       >

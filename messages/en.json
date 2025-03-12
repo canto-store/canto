@@ -185,5 +185,8 @@
     "promoBanner": "Exclusive products with promo code",
     "promoPercent": "20%"
   },
+  "pwa": {
+    "install": "Install App"
+  },
   "showing": "Showing {from} to {to} of {total}"
 }

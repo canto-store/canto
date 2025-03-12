@@ -20,6 +20,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { CartDropdown } from "../cart/CartDropdown";
 import { LanguageSelector } from "../language/LanguageSelector";
+import { InstallPWA } from "../pwa";
 import Link from "next/link";
 
 interface HeaderProps {
@@ -101,6 +102,9 @@ export function Header({ className }: HeaderProps) {
 
         {/* Right Section: Cart, Language Selector and User */}
         <div className="flex items-center gap-1 md:w-1/5 md:justify-end md:gap-4">
+          {/* PWA Install Button */}
+          <InstallPWA />
+
           {/* Language Selector */}
           <div className="relative">
             <LanguageSelector />
@@ -210,6 +214,9 @@ export function Header({ className }: HeaderProps) {
                   <Settings className="mr-3 h-4 w-4" />
                   Settings
                 </Link>
+              </li>
+              <li>
+                <InstallPWA variant="menu" />
               </li>
               <li>
                 <Link

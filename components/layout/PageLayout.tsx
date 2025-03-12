@@ -4,6 +4,7 @@ import { ReactNode, useState } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PromoBanner } from "@/components/common/PromoBanner";
+import { InstallPWA } from "@/components/pwa";
 import { cn } from "@/lib/utils";
 
 interface PageLayoutProps {
@@ -38,6 +39,9 @@ export function PageLayout({ children }: PageLayoutProps) {
         {children}
       </main>
       <Footer />
+
+      {/* Install Message */}
+      <InstallPWA variant="message" />
     </div>
   );
 }

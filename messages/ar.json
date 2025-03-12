@@ -185,5 +185,8 @@
     "promoBanner": "منتجات حصرية مع كود الخصم",
     "promoPercent": "٢٠٪"
   },
+  "pwa": {
+    "install": "تثبيت التطبيق"
+  },
   "showing": "عرض {from} إلى {to} من {total}"
 }
