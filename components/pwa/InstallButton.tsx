@@ -40,6 +40,7 @@ export function InstallPWA({
   const [isMessageVisible, setIsMessageVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
 
   useEffect(() => {
     // Check if we're in a browser environment
@@ -61,7 +62,12 @@ export function InstallPWA({
     window.addEventListener("resize", handleResize);
 
     // Check if the app is already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)",
+    ).matches;
+    setIsAppInstalled(isStandalone);
+
+    if (isStandalone) {
       return () => {
         window.removeEventListener("resize", handleResize);
       };
@@ -149,6 +155,10 @@ export function InstallPWA({
     localStorage.setItem("pwa-message-dismissed", "true");
   };
 
+  // If the app is already installed, don't show the install button
+  if (isAppInstalled) return null;
+
+  // If not installable and not iOS, don't show the button
   if (!isInstallable && !isIOS) return null;
 
   // Message variant for mobile
