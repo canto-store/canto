@@ -30,6 +30,7 @@ interface HeaderProps {
 export function Header({ className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
@@ -80,6 +81,15 @@ export function Header({ className }: HeaderProps) {
     }
 
     document.addEventListener("mousedown", handleClickOutside);
+
+    // Check if the app is already installed
+    if (typeof window !== "undefined") {
+      const isStandalone = window.matchMedia(
+        "(display-mode: standalone)",
+      ).matches;
+      setIsAppInstalled(isStandalone);
+    }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -215,9 +225,11 @@ export function Header({ className }: HeaderProps) {
                   </Button>
                 </li>
               ))}
-              <li>
-                <InstallPWA variant="menu" />
-              </li>
+              {!isAppInstalled && (
+                <li>
+                  <InstallPWA variant="menu" />
+                </li>
+              )}
             </ul>
           </nav>
         </div>
