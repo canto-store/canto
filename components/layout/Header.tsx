@@ -231,7 +231,7 @@ export function Header({ className }: HeaderProps) {
                   <Button
                     variant="ghost"
                     onClick={() => handleNavigation(item.href)}
-                    className="flex w-full items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+                    className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
                   >
                     <span
                       className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}

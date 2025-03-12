@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -14,6 +15,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function MobileInstallBanner() {
+  const t = useTranslations("pwa");
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -90,9 +92,9 @@ export function MobileInstallBanner() {
         <div className="flex items-center gap-3">
           <Download className="text-primary h-6 w-6" />
           <div>
-            <p className="font-medium">Install Canto App</p>
+            <p className="font-medium">{t("installApp")}</p>
             <p className="text-sm text-gray-500">
-              Add to home screen for better experience
+              {t("mobileInstallDescription")}
             </p>
           </div>
         </div>
@@ -107,7 +109,7 @@ export function MobileInstallBanner() {
             <X className="h-4 w-4" />
           </Button>
           <Button variant="default" size="sm" onClick={handleInstall}>
-            Install
+            {t("install")}
           </Button>
         </div>
       </div>

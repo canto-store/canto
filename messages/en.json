@@ -202,7 +202,20 @@
     "promoPercent": "20%"
   },
   "pwa": {
-    "install": "Install App"
+    "install": "Install App",
+    "installNow": "Install Now",
+    "addToHomeScreen": "Add to Home Screen",
+    "installApp": "Install Canto App",
+    "installDescription": "Add our app to your home screen for a faster, app-like experience.",
+    "mobileInstallDescription": "Add to home screen for better experience",
+    "notNow": "Not Now",
+    "gotIt": "Got it",
+    "installOnIOS": "Install on iOS",
+    "iosInstructions": {
+      "step1": "Tap the Share button in Safari",
+      "step2": "Scroll down and tap Add to Home Screen",
+      "step3": "Tap Add in the top right corner"
+    }
   },
   "showing": "Showing {from} to {to} of {total}"
 }

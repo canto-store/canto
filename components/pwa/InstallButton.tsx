@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, X, Share, Globe } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // Define the BeforeInstallPromptEvent interface
 interface BeforeInstallPromptEvent extends Event {
@@ -32,6 +33,7 @@ export function InstallPWA({
   variant = "header",
   className = "",
 }: InstallPWAProps) {
+  const t = useTranslations("pwa");
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -173,19 +175,15 @@ export function InstallPWA({
             <div className="flex-1">
               <h3 className="flex items-center font-medium">
                 <Globe className="mr-2 h-5 w-5" />
-                Install on iOS
+                {t("installOnIOS")}
               </h3>
               <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-gray-600">
                 <li>
-                  Tap the <Share className="inline h-4 w-4 align-text-bottom" />{" "}
-                  Share button in Safari
+                  {t("iosInstructions.step1")}{" "}
+                  <Share className="inline h-4 w-4 align-text-bottom" />
                 </li>
-                <li>
-                  Scroll down and tap <strong>Add to Home Screen</strong>
-                </li>
-                <li>
-                  Tap <strong>Add</strong> in the top right corner
-                </li>
+                <li>{t("iosInstructions.step2")}</li>
+                <li>{t("iosInstructions.step3")}</li>
               </ol>
               <div className="mt-3">
                 <Button
@@ -194,7 +192,7 @@ export function InstallPWA({
                   onClick={handleDismiss}
                   className="w-full"
                 >
-                  Got it
+                  {t("gotIt")}
                 </Button>
               </div>
             </div>
@@ -220,10 +218,9 @@ export function InstallPWA({
               <Download className="text-primary h-5 w-5" />
             </div>
             <div className="flex-1">
-              <h3 className="font-medium">Install Canto App</h3>
+              <h3 className="font-medium">{t("installApp")}</h3>
               <p className="mt-1 text-sm text-gray-500">
-                Add our app to your home screen for a faster, app-like
-                experience.
+                {t("installDescription")}
               </p>
               <div className="mt-3 flex gap-2">
                 <Button
@@ -232,10 +229,10 @@ export function InstallPWA({
                   onClick={handleInstallClick}
                   className="text-white"
                 >
-                  {isIOS ? "Show Instructions" : "Install Now"}
+                  {isIOS ? t("addToHomeScreen") : t("installNow")}
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleDismiss}>
-                  Not Now
+                  {t("notNow")}
                 </Button>
               </div>
             </div>
@@ -262,7 +259,7 @@ export function InstallPWA({
         className="flex w-full items-center justify-start px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
       >
         <Download className="mr-3 h-4 w-4" />
-        {isIOS ? "Add to Home Screen" : "Install App"}
+        {isIOS ? t("addToHomeScreen") : t("install")}
       </Button>
     );
   }
@@ -282,7 +279,7 @@ export function InstallPWA({
       className={`items-center gap-2 ${className}`}
     >
       <Download className="h-4 w-4" />
-      <span>{isIOS ? "Add to Home Screen" : "Install App"}</span>
+      <span>{isIOS ? t("addToHomeScreen") : t("install")}</span>
     </Button>
   );
 }
