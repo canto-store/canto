@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useCart, type CartItem } from "./CartContext";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-
+import { useRouter } from "@/i18n/navigation";
 interface CartItemProps {
   item: CartItem;
   showControls?: boolean;
@@ -27,7 +27,7 @@ export function CartItemComponent({
   const isRTL = locale === "ar";
   const { updateQuantity, removeItem } = useCart();
   const [isUpdating, setIsUpdating] = useState(false);
-
+  const router = useRouter();
   const getProductName = () => {
     if (item.translationKey && item.translationKey.name) {
       return t(item.translationKey.name);
@@ -58,13 +58,19 @@ export function CartItemComponent({
     removeItem(item.name);
   };
 
+  const handleProductClick = () => {
+    router.push(`/product/${encodeURIComponent(item.name.toLowerCase())}`);
+  };
+
   if (compact) {
     return (
-      <div
+      <Button
+        variant="ghost"
         className={cn(
-          "group relative flex items-center gap-3 py-2 sm:gap-5",
+          "group relative flex h-full w-full items-center gap-3 py-2 sm:gap-5",
           className,
         )}
+        onClick={handleProductClick}
       >
         <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:h-12 sm:w-12">
           <Image
@@ -75,7 +81,7 @@ export function CartItemComponent({
             className="h-full w-full object-cover object-center"
           />
         </div>
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col items-start">
           <h4 className="text-primary line-clamp-1 text-xs font-medium sm:text-sm">
             {getProductName()}
           </h4>
@@ -93,13 +99,13 @@ export function CartItemComponent({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute -top-1 -right-1 h-6 w-6 rounded-full sm:h-8 sm:w-8"
+          className="h-3 w-3 flex-shrink-0 self-start rounded-full hover:bg-gray-100 sm:h-4 sm:w-4"
           onClick={handleRemove}
           aria-label={t("cart.removeItem")}
         >
           <X className="h-3 w-3 text-gray-500 hover:text-red-500 sm:h-4 sm:w-4" />
         </Button>
-      </div>
+      </Button>
     );
   }
 
