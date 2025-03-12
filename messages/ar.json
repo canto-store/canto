@@ -219,5 +219,22 @@
       "step3": "انقر على إضافة في الزاوية العلوية اليمنى"
     }
   },
-  "showing": "عرض {from} إلى {to} من {total}"
+  "showing": "عرض {from} إلى {to} من {total}",
+  "sell": {
+    "title": "كن بائعاً على كانتو",
+    "description": "انضم إلى مجتمعنا المتنامي من البائعين وصل إلى العملاء في جميع أنحاء العالم",
+    "firstName": "الاسم الأول",
+    "firstNamePlaceholder": "أدخل اسمك الأول",
+    "lastName": "اسم العائلة",
+    "lastNamePlaceholder": "أدخل اسم عائلتك",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "بريدك@الإلكتروني.com",
+    "phone": "رقم الهاتف",
+    "phonePlaceholder": "+20 1XX XXX XXXX",
+    "storeName": "اسم المتجر",
+    "storeNamePlaceholder": "أدخل اسم متجرك",
+    "agreement": "بتقديم هذا النموذج، فإنك توافق على شروط الخدمة واتفاقية البائع",
+    "submit": "تقدم للانضمام كبائع",
+    "submitting": "جاري التقديم..."
+  }
 }

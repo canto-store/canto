@@ -217,5 +217,22 @@
       "step3": "Tap Add in the top right corner"
     }
   },
-  "showing": "Showing {from} to {to} of {total}"
+  "showing": "Showing {from} to {to} of {total}",
+  "sell": {
+    "title": "Become a Seller on Canto",
+    "description": "Join our growing community of sellers and reach customers worldwide",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "email": "Email Address",
+    "emailPlaceholder": "your@email.com",
+    "phone": "Phone Number",
+    "phonePlaceholder": "+20 1XX XXX XXXX",
+    "storeName": "Store Name",
+    "storeNamePlaceholder": "Enter your store name",
+    "agreement": "By submitting this form, you agree to our Terms of Service and Seller Agreement",
+    "submit": "Apply to Become a Seller",
+    "submitting": "Submitting..."
+  }
 }

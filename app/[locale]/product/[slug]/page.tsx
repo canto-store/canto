@@ -22,21 +22,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Unwrap the params Promise using React.use()
   const resolvedParams = React.use(params);
 
-  // Now you can safely access the slug property
   const { slug } = resolvedParams;
 
-  // Find the product based on the slug
   const product = getProductBySlug(slug);
 
-  // If product not found, return 404
   if (!product) {
     notFound();
   }
 
-  // Get related products
   const relatedProducts = getRelatedProducts(product, 4);
 
   const handleAddToCart = () => {
@@ -53,21 +48,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   return (
     <AppLayout theme="default">
-      {/* Breadcrumb and Back Button */}
-      <div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-2 flex items-center gap-1 md:mb-4"
-          onClick={() => window.history.back()}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Button>
-      </div>
-
       {/* Product Detail */}
-      <div className="grid gap-4 md:grid-cols-2 md:gap-8">
+      <div className="mt-8 grid gap-4 md:grid-cols-2 md:gap-8">
         {/* Product Image */}
         <div className="relative aspect-[4/3] rounded-lg bg-gray-100 md:aspect-square lg:aspect-[4/3]">
           <Image
@@ -119,74 +101,80 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </p>
           </div>
 
-          {/* Size Selection */}
-          <div className="mb-4 md:mb-6">
-            <div className="mb-1 flex items-center justify-between md:mb-2">
-              <h3 className="font-medium">Size</h3>
-              <a
-                href="#"
-                className="text-xs text-gray-600 hover:underline md:text-sm"
-              >
-                Size Guide
-              </a>
+          <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
+            {/* Size Selection */}
+            <div>
+              <div className="flex items-center justify-between">
+                <h3 className="mb-1 font-medium md:mb-2">Size</h3>
+              </div>
+              <div className="flex flex-wrap gap-1 md:gap-2">
+                {SIZES.map((size) => (
+                  <Button
+                    key={size}
+                    variant={selectedSize === size ? "default" : "outline"}
+                    size="sm"
+                    className="h-auto px-2 py-1 text-xs md:h-9 md:text-sm"
+                    onClick={() => setSelectedSize(size)}
+                  >
+                    {size}
+                  </Button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1 md:gap-2">
-              {SIZES.map((size) => (
+
+            {/* Color Selection */}
+            <div>
+              <h3 className="mb-1 font-medium md:mb-2">Color</h3>
+              <div className="flex flex-wrap gap-2 md:gap-3">
+                {COLORS.map((color) => (
+                  <button
+                    key={color.name}
+                    className={`h-6 w-6 rounded-full border md:h-8 md:w-8 ${
+                      selectedColor === color.name
+                        ? "ring-2 ring-black ring-offset-1 md:ring-offset-2"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => setSelectedColor(color.name)}
+                    aria-label={`Select ${color.name} color`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Quantity */}
+            <div>
+              <h3 className="mb-1 font-medium md:mb-2">Quantity</h3>
+              <div className="flex w-24 items-center md:w-32">
                 <Button
-                  key={size}
-                  variant={selectedSize === size ? "default" : "outline"}
+                  variant="outline"
                   size="sm"
-                  className="h-auto px-2 py-1 text-xs md:h-9 md:text-sm"
-                  onClick={() => setSelectedSize(size)}
+                  className="h-8 md:h-9"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={quantity <= 1}
                 >
-                  {size}
+                  -
                 </Button>
-              ))}
+                <span className="flex-1 text-center">{quantity}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 md:h-9"
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  +
+                </Button>
+              </div>
             </div>
-          </div>
 
-          {/* Color Selection */}
-          <div className="mb-4 md:mb-6">
-            <h3 className="mb-1 font-medium md:mb-2">Color</h3>
-            <div className="flex flex-wrap gap-2 md:gap-3">
-              {COLORS.map((color) => (
-                <button
-                  key={color.name}
-                  className={`h-6 w-6 rounded-full border md:h-8 md:w-8 ${
-                    selectedColor === color.name
-                      ? "ring-2 ring-black ring-offset-1 md:ring-offset-2"
-                      : ""
-                  }`}
-                  style={{ backgroundColor: color.value }}
-                  onClick={() => setSelectedColor(color.name)}
-                  aria-label={`Select ${color.name} color`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Quantity */}
-          <div className="mb-4 md:mb-6">
-            <h3 className="mb-1 font-medium md:mb-2">Quantity</h3>
-            <div className="flex w-24 items-center md:w-32">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 md:h-9"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={quantity <= 1}
-              >
-                -
-              </Button>
-              <span className="flex-1 text-center">{quantity}</span>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 md:h-9"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </Button>
+            <div className="rounded-lg border p-3 md:p-4">
+              <div className="mb-1 flex items-center gap-2 md:mb-2">
+                <div className="h-2 w-2 rounded-full bg-green-500" />
+                <span className="text-xs font-medium md:text-sm">In Stock</span>
+              </div>
+              <p className="text-xs text-gray-600 md:text-sm">
+                Free shipping on orders over $50
+              </p>
             </div>
           </div>
 
@@ -213,15 +201,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
 
           {/* Additional Info */}
-          <div className="rounded-lg border p-3 md:p-4">
-            <div className="mb-1 flex items-center gap-2 md:mb-2">
-              <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span className="text-xs font-medium md:text-sm">In Stock</span>
-            </div>
-            <p className="text-xs text-gray-600 md:text-sm">
-              Free shipping on orders over $50
-            </p>
-          </div>
         </div>
       </div>
 

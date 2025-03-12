@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PromoBanner } from "@/components/common/PromoBanner";
@@ -32,6 +32,28 @@ export function AppLayout({
 
   // Don't render the banner during loading to prevent flash
   const shouldRenderBanner = !isLoading && showBanner;
+
+  // Update CSS variables when banner visibility changes
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const root = document.documentElement;
+      const isMobile = window.innerWidth < 768;
+      let headerHeight;
+
+      if (shouldRenderBanner) {
+        headerHeight = isMobile ? "6rem" : "7rem";
+      } else {
+        headerHeight = isMobile ? "4rem" : "4.5rem";
+      }
+
+      root.style.setProperty("--header-height", headerHeight);
+      root.style.setProperty("--main-height", `calc(100vh - ${headerHeight})`);
+    };
+
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, [shouldRenderBanner]);
 
   return (
     <div className={cn("min-h-screen", bgColor, textColor)}>

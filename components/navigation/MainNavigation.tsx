@@ -37,7 +37,7 @@ export function MainNavigation() {
     },
     {
       label: t("sell"),
-      href: "#",
+      href: "/sell",
       icon: <Store className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
     },
   ];
