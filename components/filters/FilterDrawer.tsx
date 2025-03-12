@@ -73,23 +73,30 @@ export function FilterDrawer({
           )}
         </Button>
       </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{translations.filters}</DrawerTitle>
-          <DrawerDescription>{translations.adjustFilters}</DrawerDescription>
+      <DrawerContent className="max-h-[85vh] overflow-hidden">
+        <DrawerHeader className="pb-2">
+          <DrawerTitle className="text-xl font-bold text-gray-900">
+            {translations.filters}
+          </DrawerTitle>
+          <DrawerDescription className="text-sm text-gray-600">
+            {translations.adjustFilters}
+          </DrawerDescription>
         </DrawerHeader>
-        <div className="px-4">
+        <div
+          className="custom-scrollbar overflow-y-auto px-4"
+          style={{ maxHeight: "calc(85vh - 180px)" }}
+        >
           {/* Active Filters Summary in Drawer */}
           {hasActiveFilters && (
-            <div className="mb-4 flex flex-wrap items-center gap-2 rounded-md bg-gray-50 p-3">
+            <div className="mb-4 flex flex-wrap items-center gap-2 rounded-md bg-gray-50 p-3 shadow-sm">
               <div className="mb-1 flex w-full items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-800">
                   {translations.activeFilters}:
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-primary h-7 px-2 py-0 text-xs"
+                  className="text-primary hover:bg-primary/10 h-7 px-2 py-0 text-xs font-medium"
                   onClick={clearFilters}
                 >
                   {translations.clearAll}
@@ -100,7 +107,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
                   onClick={() => setSelectedCategory("All")}
                 >
                   {selectedCategory}
@@ -112,7 +119,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
                   onClick={() => setSelectedBrand("All")}
                 >
                   {selectedBrand}
@@ -124,7 +131,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
                   onClick={() => setSelectedPriceRange(PRICE_RANGES[0])}
                 >
                   {selectedPriceRange.label}
@@ -136,7 +143,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
                   onClick={() => setSearchQuery("")}
                 >
                   "{searchQuery}"
@@ -146,13 +153,13 @@ export function FilterDrawer({
             </div>
           )}
 
-          <div className="grid gap-4 sm:gap-6">
+          <div className="grid gap-5 pb-4">
             {/* Categories */}
             <div>
-              <h4 className="mb-2 text-sm font-medium text-gray-700">
+              <h4 className="mb-2 text-sm font-semibold text-gray-800">
                 {translations.categories}
               </h4>
-              <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto sm:max-h-40 sm:gap-2">
+              <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 bg-white p-2 shadow-sm sm:max-h-40 sm:gap-2">
                 {CATEGORIES.map((category) => (
                   <Button
                     key={category.name}
@@ -160,7 +167,11 @@ export function FilterDrawer({
                       selectedCategory === category.name ? "default" : "outline"
                     }
                     size="sm"
-                    className="text-xs sm:text-sm"
+                    className={`text-xs font-medium sm:text-sm ${
+                      selectedCategory === category.name
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
                     onClick={() => {
                       setSelectedCategory(category.name);
                       onOpenChange(false);
@@ -174,16 +185,20 @@ export function FilterDrawer({
 
             {/* Brands */}
             <div>
-              <h4 className="mb-2 text-sm font-medium text-gray-700">
+              <h4 className="mb-2 text-sm font-semibold text-gray-800">
                 {translations.brands}
               </h4>
-              <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto sm:max-h-40 sm:gap-2">
+              <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 bg-white p-2 shadow-sm sm:max-h-40 sm:gap-2">
                 {BRANDS.map((brand) => (
                   <Button
                     key={brand}
                     variant={selectedBrand === brand ? "default" : "outline"}
                     size="sm"
-                    className="text-xs sm:text-sm"
+                    className={`text-xs font-medium sm:text-sm ${
+                      selectedBrand === brand
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
                     onClick={() => {
                       setSelectedBrand(brand);
                       onOpenChange(false);
@@ -197,10 +212,10 @@ export function FilterDrawer({
 
             {/* Price Ranges */}
             <div>
-              <h4 className="mb-2 text-sm font-medium text-gray-700">
+              <h4 className="mb-2 text-sm font-semibold text-gray-800">
                 {translations.priceRange}
               </h4>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              <div className="flex flex-wrap gap-1.5 rounded-md border border-gray-100 bg-white p-2 shadow-sm sm:gap-2">
                 {PRICE_RANGES.map((range) => (
                   <Button
                     key={range.label}
@@ -208,7 +223,11 @@ export function FilterDrawer({
                       selectedPriceRange === range ? "default" : "outline"
                     }
                     size="sm"
-                    className="text-xs sm:text-sm"
+                    className={`text-xs font-medium sm:text-sm ${
+                      selectedPriceRange === range
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
                     onClick={() => {
                       setSelectedPriceRange(range);
                       onOpenChange(false);
@@ -221,12 +240,20 @@ export function FilterDrawer({
             </div>
           </div>
         </div>
-        <DrawerFooter>
-          <Button variant="default" onClick={() => onOpenChange(false)}>
+        <DrawerFooter className="border-t bg-gray-50 pt-4">
+          <Button
+            variant="default"
+            className="font-medium"
+            onClick={() => onOpenChange(false)}
+          >
             {translations.applyFilters}
           </Button>
           <DrawerClose asChild>
-            <Button variant="outline" onClick={clearFilters}>
+            <Button
+              variant="outline"
+              className="font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              onClick={clearFilters}
+            >
               {translations.clearFilters}
             </Button>
           </DrawerClose>

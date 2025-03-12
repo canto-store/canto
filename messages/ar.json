@@ -35,6 +35,7 @@
     "list": "قائمة",
     "sortBy": "ترتيب حسب:",
     "selectSortOrder": "اختر كيفية ترتيب المنتجات",
+    "viewOptions": "طريقة العرض",
     "back": "رجوع",
     "size": "المقاس",
     "color": "اللون",
@@ -48,6 +49,10 @@
     "sale": "التخفيضات",
     "add": "إضافة",
     "view": "عرض",
+    "adjustFilters": "تعديل الفلاتر",
+    "applyFilters": "تطبيق الفلاتر",
+    "close": "إغلاق",
+    "selectViewMode": "اختر طريقة العرض",
     "currency": {
       "symbol": "$",
       "code": "USD",

@@ -49,6 +49,10 @@
     "sale": "Sale",
     "add": "Add",
     "view": "View",
+    "adjustFilters": "Adjust filters",
+    "applyFilters": "Apply filters",
+    "close": "Close",
+    "selectViewMode": "Select view mode",
     "currency": {
       "symbol": "$",
       "code": "USD",
