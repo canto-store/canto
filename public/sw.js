@@ -5,10 +5,11 @@ const STATIC_ASSETS = [
   "/logo.svg",
   "/web-app-manifest-192x192.png",
   "/web-app-manifest-512x512.png",
+  "/offline.html",
 ];
 
 // Version number - increment this when you want to force an update
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 
 // Install event - cache core assets
 self.addEventListener("install", (event) => {
@@ -51,7 +52,21 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch event - simple cache-first for static assets, network-first for everything else
+// Helper function to determine if a request is a navigation request
+const isNavigationRequest = (request) => {
+  return (
+    request.mode === "navigate" ||
+    (request.method === "GET" &&
+      request.headers.get("accept")?.includes("text/html"))
+  );
+};
+
+// Helper function to determine if a request is for a static asset
+const isStaticAsset = (request) => {
+  return STATIC_ASSETS.some((asset) => request.url.endsWith(asset));
+};
+
+// Fetch event - improved caching strategy with better offline support
 self.addEventListener("fetch", (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) return;
@@ -59,32 +74,64 @@ self.addEventListener("fetch", (event) => {
   // Skip non-GET requests
   if (event.request.method !== "GET") return;
 
-  // Simple strategy: cache-first for static assets, network-first for everything else
-  const isStaticAsset = STATIC_ASSETS.some((asset) =>
-    event.request.url.endsWith(asset),
-  );
+  // Handle navigation requests
+  if (isNavigationRequest(event.request)) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Cache successful navigation responses
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(async () => {
+          // Try to get a cached version of the page
+          const cachedResponse = await caches.match(event.request);
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // If no cached version, return cached home page as fallback
+          return caches.match("/");
+        }),
+    );
+    return;
+  }
 
-  if (isStaticAsset) {
-    // Cache-first for static assets
+  // Handle static assets with cache-first strategy
+  if (isStaticAsset(event.request)) {
     event.respondWith(
       caches
         .match(event.request)
         .then((cachedResponse) => cachedResponse || fetch(event.request)),
     );
-  } else {
-    // Network-first for everything else
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => caches.match(event.request))
-        .catch(() => {
-          // Fallback for navigation requests
-          if (event.request.mode === "navigate") {
-            return caches.match("/");
-          }
-          return null;
-        }),
-    );
+    return;
   }
+
+  // Handle all other requests with network-first strategy
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // Cache successful responses
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(async () => {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // Return a basic error response if no cached version exists
+        return new Response("Network error occurred", {
+          status: 408,
+          headers: { "Content-Type": "text/plain" },
+        });
+      }),
+  );
 });
 
 // Listen for messages from clients

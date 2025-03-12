@@ -1,27 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  Menu,
-  X,
-  CircleUser,
-  LogOut,
-  User,
-  Settings,
-  Heart,
-  Home,
-  Search,
-  Store,
-} from "lucide-react";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import { CartDropdown } from "@/components/cart/CartDropdown";
 import { LanguageSelector } from "@/components/language/LanguageSelector";
-import { InstallPWA } from "@/components/pwa";
-import Link from "next/link";
+import { UserDropdown } from "@/components/user/UserDropdown";
+import { MainNavigation } from "@/components/navigation/MainNavigation";
+import { MobileMenu } from "@/components/navigation/MobileMenu";
 
 interface HeaderProps {
   className?: string;
@@ -29,83 +17,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [isAppInstalled, setIsAppInstalled] = useState(false);
-  const [isRTL, setIsRTL] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const t = useTranslations("header");
   const router = useRouter();
-
-  const navigationItems = [
-    {
-      label: t("home"),
-      href: "/",
-      icon: <Home className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
-    },
-    {
-      label: t("browse"),
-      href: "/browse",
-      icon: <Search className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
-    },
-    {
-      label: t("sell"),
-      href: "#",
-      icon: <Store className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
-    },
-  ];
-
-  const mobileNavigationItems = [
-    { label: t("home"), href: "/", icon: <Home className="h-5 w-5" /> },
-    {
-      label: t("browse"),
-      href: "/browse",
-      icon: <Search className="h-5 w-5" />,
-    },
-    { label: t("sell"), href: "#", icon: <Store className="h-5 w-5" /> },
-    {
-      label: t("favorites"),
-      href: "/favorites",
-      icon: <Heart className="h-5 w-5" />,
-    },
-    {
-      label: t("account"),
-      href: "/profile",
-      icon: <User className="h-5 w-5" />,
-    },
-    {
-      label: t("settings"),
-      href: "/settings",
-      icon: <Settings className="h-5 w-5" />,
-    },
-  ];
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setUserDropdownOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // Check if the app is already installed
-    if (typeof window !== "undefined") {
-      const isStandalone = window.matchMedia(
-        "(display-mode: standalone)",
-      ).matches;
-      setIsAppInstalled(isStandalone);
-
-      // Check if the document direction is RTL
-      setIsRTL(document.dir === "rtl");
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const handleNavigation = (href: string) => {
     router.push(href);
@@ -119,7 +31,6 @@ export function Header({ className }: HeaderProps) {
       )}
     >
       <div className="container mx-auto flex h-18 items-center justify-between px-4">
-        {/* Left Section: Logo */}
         <div className="flex items-center gap-3 md:w-1/5 md:flex-initial">
           <Image
             src="/logo.svg"
@@ -131,83 +42,15 @@ export function Header({ className }: HeaderProps) {
           />
         </div>
 
-        {/* Center Section: Desktop Navigation */}
-        <nav className="hidden md:flex md:w-3/5 md:justify-center">
-          <ul className="flex items-center space-x-12">
-            {navigationItems.map((item) => (
-              <li key={item.label}>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleNavigation(item.href)}
-                  className="text-primary hovers:bg-primary/10 text-base font-medium transition-colors"
-                >
-                  {item.label}
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <MainNavigation />
 
-        {/* Right Section: Cart, Language Selector and User */}
         <div className="flex items-center gap-1 md:w-1/5 md:justify-end md:gap-4">
-          {/* PWA Install Button */}
+          <LanguageSelector />
 
-          {/* Language Selector */}
-          <div className="relative">
-            <LanguageSelector />
-          </div>
-
-          {/* Cart with Dropdown */}
           <CartDropdown />
 
-          {/* User Menu (Desktop) */}
-          <div className="relative hidden md:block" ref={dropdownRef}>
-            <button
-              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
-            >
-              <CircleUser className="h-6 w-6" />
-            </button>
+          <UserDropdown />
 
-            {/* User Dropdown */}
-            {userDropdownOpen && (
-              <div
-                className={`ring-opacity-5 ring-primary absolute mt-2 w-56 rounded-md bg-white py-2 shadow-lg ring-1 ${isRTL ? "left-0" : "right-0"}`}
-              >
-                <Link
-                  href="/account"
-                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
-                >
-                  <User className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
-                  {t("myAccount")}
-                </Link>
-                <Link
-                  href="/wishlist"
-                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
-                >
-                  <Heart className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
-                  {t("wishlist")}
-                </Link>
-                <Link
-                  href="/settings"
-                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
-                >
-                  <Settings className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
-                  {t("settings")}
-                </Link>
-                <div className="bg-primary/20 my-1 h-px" />
-                <Link
-                  href="/logout"
-                  className="text-primary hover:bg-primary/10 flex items-center px-4 py-2.5 text-sm transition-colors"
-                >
-                  <LogOut className={`h-4 w-4 ${isRTL ? "ml-3" : "mr-3"}`} />
-                  {t("logout")}
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all md:hidden"
@@ -221,36 +64,7 @@ export function Header({ className }: HeaderProps) {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="border-primary/20 border-t shadow-lg md:hidden">
-          <nav className="container mx-auto">
-            <ul className="divide-primary/10 divide-y">
-              {mobileNavigationItems.map((item) => (
-                <li key={item.label}>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleNavigation(item.href)}
-                    className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
-                  >
-                    <span
-                      className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}
-                    >
-                      {item.icon}
-                      {item.label}
-                    </span>
-                  </Button>
-                </li>
-              ))}
-              {!isAppInstalled && (
-                <li>
-                  <InstallPWA variant="menu" />
-                </li>
-              )}
-            </ul>
-          </nav>
-        </div>
-      )}
+      <MobileMenu isOpen={mobileMenuOpen} />
     </header>
   );
 }

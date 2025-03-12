@@ -67,6 +67,7 @@ export function InstallPWA({
   const [isDismissed, setIsDismissed] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
+  const [isRTL, setIsRTL] = useState(false);
 
   // Determine the appropriate dismissal key based on variant
   const storageDismissalKey =
@@ -80,6 +81,9 @@ export function InstallPWA({
   useEffect(() => {
     // Check if we're in a browser environment
     if (typeof window === "undefined") return;
+
+    // Check if the document direction is RTL
+    setIsRTL(document.dir === "rtl");
 
     // Detect iOS
     const isIOSDevice =
@@ -347,7 +351,7 @@ export function InstallPWA({
         variant="ghost"
         className="flex w-full items-center justify-start px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
       >
-        <Download className="mr-3 h-4 w-4" />
+        <Download className={`${isRTL ? "ml-3" : "mr-3"} h-4 w-4`} />
         {isIOS ? t("addToHomeScreen") : t("install")}
       </Button>
     );
