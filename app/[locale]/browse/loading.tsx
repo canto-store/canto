@@ -52,10 +52,7 @@ export default function BrowseLoading() {
       {/* Products Grid Skeleton */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            className="overflow-hidden rounded-lg bg-white shadow-sm"
-          >
+          <div key={i} className="overflow-hidden rounded-lg shadow-sm">
             <Skeleton className="aspect-square w-full" />
             <div className="p-4">
               <Skeleton className="mb-2 h-5 w-full" />

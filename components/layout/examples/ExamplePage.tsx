@@ -12,7 +12,7 @@ export default function ExamplePage() {
   return (
     <div>
       {/* Controls outside the layout */}
-      <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2 rounded-lg bg-white p-4 shadow-lg">
+      <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2 rounded-lg p-4 shadow-lg">
         <h3 className="font-medium">Layout Controls</h3>
         <div className="flex flex-col gap-2">
           <Button

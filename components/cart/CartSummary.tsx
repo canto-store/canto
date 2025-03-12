@@ -29,7 +29,7 @@ export function CartSummary({ className }: CartSummaryProps) {
     return (
       <div
         className={cn(
-          "rounded-lg border border-gray-200 bg-white p-4 sm:p-6",
+          "rounded-lg border border-gray-200 p-4 sm:p-6",
           className,
         )}
       >
@@ -51,10 +51,7 @@ export function CartSummary({ className }: CartSummaryProps) {
 
   return (
     <div
-      className={cn(
-        "rounded-lg border border-gray-200 bg-white p-4 sm:p-6",
-        className,
-      )}
+      className={cn("rounded-lg border border-gray-200 p-4 sm:p-6", className)}
     >
       <h2 className="mb-3 text-base font-medium text-gray-900 sm:mb-4 sm:text-lg">
         {t("cart.cartSummary")}

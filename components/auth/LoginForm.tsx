@@ -1,0 +1,121 @@
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/providers/auth/auth-provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ErrorAlert } from "@/components/ui/error-alert";
+import { Loader2 } from "lucide-react";
+
+interface LoginFormProps {
+  onSuccess?: () => void;
+  onRegister?: () => void;
+}
+
+export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
+  const [email, setEmail] = useState("omar@example.com");
+  const [password, setPassword] = useState("omar");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const t = useTranslations("auth");
+  const { login } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl") || "/";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      await login(email, password);
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push(returnUrl);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("loginError"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <ErrorAlert message={error} />
+
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-sm font-medium">
+          {t("emailLabel")}
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder={t("emailPlaceholder")}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+          disabled={isLoading}
+          className="h-10"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="password" className="text-sm font-medium">
+          {t("passwordLabel")}
+        </Label>
+        <Input
+          id="password"
+          type="password"
+          placeholder={t("passwordPlaceholder")}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          autoComplete="current-password"
+          disabled={isLoading}
+          className="h-10"
+        />
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <Button
+          type="button"
+          variant="link"
+          className="h-auto px-0 text-sm font-normal"
+          onClick={() => router.push("/forgot-password")}
+          disabled={isLoading}
+        >
+          {t("forgotPassword")}
+        </Button>
+        <Button type="submit" disabled={isLoading} className="w-24">
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            t("loginButton")
+          )}
+        </Button>
+      </div>
+
+      <div className="text-muted-foreground before:bg-border after:bg-border relative mt-6 text-center text-sm before:absolute before:top-1/2 before:left-0 before:h-px before:w-[calc(50%-1rem)] after:absolute after:top-1/2 after:right-0 after:h-px after:w-[calc(50%-1rem)]">
+        <span className="bg-background px-4">{t("noAccount")}</span>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={onRegister}
+        disabled={isLoading}
+      >
+        {t("registerLink")}
+      </Button>
+    </form>
+  );
+}

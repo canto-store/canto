@@ -25,7 +25,7 @@ export function FilterPanel({
   translations,
 }: FilterPanelProps) {
   return (
-    <div className="mb-6 hidden rounded-lg border bg-white p-3 shadow-sm sm:block sm:p-4">
+    <div className="mb-6 hidden rounded-lg border p-3 shadow-sm sm:block sm:p-4">
       <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
         {/* Categories */}
         <div>

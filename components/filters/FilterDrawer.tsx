@@ -159,7 +159,7 @@ export function FilterDrawer({
               <h4 className="mb-2 text-sm font-semibold text-gray-800">
                 {translations.categories}
               </h4>
-              <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 bg-white p-2 shadow-sm sm:max-h-40 sm:gap-2">
+              <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 p-2 shadow-sm sm:max-h-40 sm:gap-2">
                 {CATEGORIES.map((category) => (
                   <Button
                     key={category.name}
@@ -170,7 +170,7 @@ export function FilterDrawer({
                     className={`text-xs font-medium sm:text-sm ${
                       selectedCategory === category.name
                         ? "bg-primary text-primary-foreground"
-                        : "bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => {
                       setSelectedCategory(category.name);
@@ -188,7 +188,7 @@ export function FilterDrawer({
               <h4 className="mb-2 text-sm font-semibold text-gray-800">
                 {translations.brands}
               </h4>
-              <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 bg-white p-2 shadow-sm sm:max-h-40 sm:gap-2">
+              <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 p-2 shadow-sm sm:max-h-40 sm:gap-2">
                 {BRANDS.map((brand) => (
                   <Button
                     key={brand}
@@ -197,7 +197,7 @@ export function FilterDrawer({
                     className={`text-xs font-medium sm:text-sm ${
                       selectedBrand === brand
                         ? "bg-primary text-primary-foreground"
-                        : "bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => {
                       setSelectedBrand(brand);
@@ -215,7 +215,7 @@ export function FilterDrawer({
               <h4 className="mb-2 text-sm font-semibold text-gray-800">
                 {translations.priceRange}
               </h4>
-              <div className="flex flex-wrap gap-1.5 rounded-md border border-gray-100 bg-white p-2 shadow-sm sm:gap-2">
+              <div className="flex flex-wrap gap-1.5 rounded-md border border-gray-100 p-2 shadow-sm sm:gap-2">
                 {PRICE_RANGES.map((range) => (
                   <Button
                     key={range.label}
@@ -226,7 +226,7 @@ export function FilterDrawer({
                     className={`text-xs font-medium sm:text-sm ${
                       selectedPriceRange === range
                         ? "bg-primary text-primary-foreground"
-                        : "bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => {
                       setSelectedPriceRange(range);

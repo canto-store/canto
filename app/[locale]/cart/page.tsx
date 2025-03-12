@@ -47,7 +47,7 @@ export default function CartPage() {
       <div className="h-main grid grid-cols-1 items-center gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="rounded-lg border border-gray-200 bg-white">
+          <div className="rounded-lg border border-gray-200">
             <div className="border-b border-gray-200 p-4 sm:p-6">
               <h2 className="text-lg font-medium sm:text-xl">
                 {t("cart.itemsInCart", { count })}

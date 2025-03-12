@@ -229,7 +229,7 @@ export function InstallPWA({
   // iOS Instructions (for message and banner variants)
   if ((variant === "message" || variant === "banner") && showIOSInstructions) {
     return (
-      <div className="fixed right-4 bottom-4 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg bg-white p-4 shadow-lg md:right-6 md:bottom-6">
+      <div className="bg-global fixed right-4 bottom-4 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg p-4 shadow-lg md:right-6 md:bottom-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h3 className="flex items-center font-medium">
@@ -271,7 +271,7 @@ export function InstallPWA({
   // Banner variant (mobile only)
   if (variant === "banner") {
     return (
-      <div className="fixed right-0 bottom-0 left-0 z-50 border-t bg-white p-4 shadow-lg md:hidden">
+      <div className="bg-global fixed right-0 bottom-0 left-0 z-50 border-t p-4 shadow-lg md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Download className="text-primary h-6 w-6" />
@@ -304,7 +304,7 @@ export function InstallPWA({
   // Message variant
   if (variant === "message") {
     return (
-      <div className="fixed right-4 bottom-4 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg bg-white p-4 shadow-lg md:right-6 md:bottom-6">
+      <div className="bg-global fixed right-4 bottom-4 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg p-4 shadow-lg md:right-6 md:bottom-6">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
             <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">

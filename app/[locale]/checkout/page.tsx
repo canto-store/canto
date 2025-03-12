@@ -36,7 +36,7 @@ export default function CheckoutPage() {
       <div className="h-main grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="rounded-lg border border-gray-200 p-6">
             <h2 className="mb-6 text-xl font-medium">{t("header.checkout")}</h2>
 
             {/* Placeholder for checkout form */}

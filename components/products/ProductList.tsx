@@ -33,7 +33,7 @@ export function ProductList({ products, title, className }: ProductListProps) {
         {products.map((product) => (
           <div
             key={product.name}
-            className="flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md sm:flex-row"
+            className="flex flex-col overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md sm:flex-row"
           >
             <div
               className={`relative aspect-square h-auto w-full overflow-hidden sm:aspect-square sm:h-auto sm:w-48 md:w-56 lg:w-64 ${isRTL ? "sm:order-2" : ""}`}

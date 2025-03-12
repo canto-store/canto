@@ -21,7 +21,7 @@ export function SectionContainer({
       case "background":
         return "bg-background";
       case "white":
-        return "bg-white";
+        return "";
       case "tertiary":
         return "bg-tertiary text-tertiary-foreground";
       default:

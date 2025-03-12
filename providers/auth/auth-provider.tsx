@@ -1,0 +1,222 @@
+"use client";
+
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AuthContextType, AuthState, User } from "@/types/auth";
+
+const initialState: AuthState = {
+  user: null,
+  isLoading: true,
+  error: null,
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<AuthState>(initialState);
+  const router = useRouter();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      // Mock auth check - check localStorage for mock user
+      const mockUser = localStorage.getItem("mockUser");
+      if (mockUser) {
+        setState({
+          user: JSON.parse(mockUser),
+          isLoading: false,
+          error: null,
+        });
+      } else {
+        setState({
+          user: null,
+          isLoading: false,
+          error: null,
+        });
+      }
+    } catch (error) {
+      setState({
+        user: null,
+        isLoading: false,
+        error: "Failed to check authentication status",
+      });
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    try {
+      setState({ ...state, isLoading: true, error: null });
+
+      // Mock login logic
+      if (email === "omar@example.com" && password === "omar") {
+        const mockUser: User = {
+          id: "1",
+          email: "omar@example.com",
+          name: "Omar",
+          role: "user",
+          createdAt: new Date(),
+        };
+
+        // Store mock user in localStorage
+        localStorage.setItem("mockUser", JSON.stringify(mockUser));
+
+        setState({
+          user: mockUser,
+          isLoading: false,
+          error: null,
+        });
+
+        router.refresh();
+        return;
+      }
+
+      throw new Error("Invalid credentials");
+    } catch (error) {
+      setState({
+        ...state,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Login failed",
+      });
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      setState({ ...state, isLoading: true, error: null });
+      // Remove mock user from localStorage
+      localStorage.removeItem("mockUser");
+
+      setState({
+        user: null,
+        isLoading: false,
+        error: null,
+      });
+
+      router.refresh();
+      router.push("/login");
+    } catch (error) {
+      setState({
+        ...state,
+        isLoading: false,
+        error: "Logout failed",
+      });
+    }
+  };
+
+  const register = async (name: string, email: string, password: string) => {
+    try {
+      setState({ ...state, isLoading: true, error: null });
+
+      // Mock register logic
+      const mockUser: User = {
+        id: "1",
+        email,
+        name,
+        role: "user",
+        createdAt: new Date(),
+      };
+
+      // Store mock user in localStorage
+      localStorage.setItem("mockUser", JSON.stringify(mockUser));
+
+      setState({
+        user: mockUser,
+        isLoading: false,
+        error: null,
+      });
+
+      router.refresh();
+    } catch (error) {
+      setState({
+        ...state,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Registration failed",
+      });
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    try {
+      setState({ ...state, isLoading: true, error: null });
+      // TODO: Replace with your actual password reset endpoint
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Password reset failed");
+      }
+
+      setState({
+        ...state,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error) {
+      setState({
+        ...state,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Password reset failed",
+      });
+    }
+  };
+
+  const updateProfile = async (data: Partial<User>) => {
+    try {
+      setState({ ...state, isLoading: true, error: null });
+      // TODO: Replace with your actual profile update endpoint
+      const response = await fetch("/api/auth/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Profile update failed");
+      }
+
+      setState({
+        ...state,
+        user: responseData.user,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error) {
+      setState({
+        ...state,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Profile update failed",
+      });
+    }
+  };
+
+  const value = {
+    ...state,
+    login,
+    logout,
+    register,
+    resetPassword,
+    updateProfile,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}

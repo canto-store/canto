@@ -47,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className="group relative flex h-auto flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+      className="group relative flex h-auto flex-col overflow-hidden rounded-lg shadow-sm transition-shadow duration-300 hover:shadow-md"
       dir={isRTL ? "rtl" : "ltr"}
     >
       <div className="relative aspect-square w-full overflow-hidden">

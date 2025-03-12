@@ -69,8 +69,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           ${product.price.toFixed(2)}
         </p>
 
-        <ProductDescription />
-
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
           <ProductSizeSelector
             selectedSize={selectedSize}
@@ -89,6 +87,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
           <ProductAvailability />
         </div>
+
+        <ProductDescription />
 
         {/* Add to Cart - Desktop only */}
         <div className="mb-6 hidden gap-2 md:flex">
@@ -110,7 +110,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       </div>
 
       {/* Floating Add to Cart - Mobile only */}
-      <div className="fixed right-0 bottom-0 left-0 z-50 flex gap-2 border-t border-gray-200 bg-white p-4 shadow-lg md:hidden">
+      <div className="bg-global fixed right-0 bottom-0 left-0 z-50 flex gap-2 border-t border-gray-200 p-4 shadow-lg md:hidden">
         <Button
           variant="outline"
           size="icon"

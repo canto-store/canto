@@ -107,7 +107,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
       {isOpen && (
         <div
           className={cn(
-            "ring-primary ring-opacity-5 absolute z-50 mt-2 w-[calc(100vw-32px)] max-w-[320px] rounded-md bg-white py-2 shadow-lg ring-1 sm:w-80",
+            "bg-global ring-primary ring-opacity-5 absolute z-50 mt-2 w-[calc(100vw-32px)] max-w-[320px] rounded-md py-2 shadow-lg ring-1 sm:w-80",
             isRTL ? "right-auto left-0" : "right-0 left-auto",
             // Ensure dropdown stays within viewport on mobile
             "max-sm:right-[-10px]",

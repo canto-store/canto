@@ -32,7 +32,7 @@ export function PromoBanner({ className }: PromoBannerProps) {
         <span className="hidden sm:inline">🌟</span>
         <p>
           {t("promo.promoBanner")}
-          <span className="mx-1 rounded-md bg-white/20 px-2 py-0.5 font-bold tracking-wide">
+          <span className="/20 mx-1 rounded-md px-2 py-0.5 font-bold tracking-wide">
             {t("promo.promoPercent")}
           </span>
           <a
@@ -46,7 +46,7 @@ export function PromoBanner({ className }: PromoBannerProps) {
       </div>
       <button
         onClick={closeBanner}
-        className="absolute right-1 rounded-full p-1.5 transition-colors hover:bg-white/20 md:right-4"
+        className="hover:/20 absolute right-1 rounded-full p-1.5 transition-colors md:right-4"
         aria-label="Close promotional banner"
       >
         <X className="h-4 w-4" />

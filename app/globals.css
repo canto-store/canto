@@ -28,6 +28,9 @@
   --color-primary-foreground: var(--color-light-gray);
   --color-secondary-foreground: var(--color-light-gray);
   --color-tertiary-foreground: var(--color-light-gray);
+
+  /* Global background color variable */
+  --background-color: #fff;
 }
 
 @layer base {
@@ -40,8 +43,8 @@
   }
 
   body {
-    @apply bg-white;
     @apply font-body;
+    background-color: var(--background-color);
     --radius: 0.625rem;
   }
 
@@ -91,5 +94,9 @@
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #a1a1a1;
+  }
+
+  .bg-global {
+    background-color: var(--background-color);
   }
 }

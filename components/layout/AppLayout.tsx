@@ -22,8 +22,7 @@ export function AppLayout({
   const { showBanner, isLoading } = useBanner();
 
   // Theme-based styling
-  const bgColor =
-    theme === "default" ? "bg-white" : "bg-[var(--color-background)]";
+  const bgColor = theme === "default" ? "" : "bg-[var(--color-background)]";
   const textColor =
     theme === "default" ? "text-black" : "text-[var(--color-primary)]";
 

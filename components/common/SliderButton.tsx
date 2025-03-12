@@ -22,7 +22,7 @@ export function SliderButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white shadow-md backdrop-blur-md transition-all hover:cursor-pointer hover:bg-white/40 focus:ring-2 focus:ring-white/50 focus:outline-none active:scale-95",
+        "/20 hover:/40 flex h-10 w-10 items-center justify-center rounded-full text-white shadow-md backdrop-blur-md transition-all hover:cursor-pointer focus:ring-2 focus:ring-white/50 focus:outline-none active:scale-95",
         className,
       )}
       aria-label={

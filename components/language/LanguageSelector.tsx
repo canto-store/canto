@@ -27,7 +27,7 @@ export function LanguageSelector() {
           placeholder={<Globe className="h-4 w-4 sm:h-5 sm:w-5" />}
         />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-global">
         <SelectItem value="en">
           🇺🇸 <span className="hidden sm:inline">English</span>
           <span className="sm:hidden">EN</span>

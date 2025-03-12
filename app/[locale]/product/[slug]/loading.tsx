@@ -89,10 +89,7 @@ export default function ProductDetailLoading() {
         <Skeleton className="mb-8 h-8 w-48" />
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={index}
-              className="overflow-hidden rounded-lg bg-white shadow-sm"
-            >
+            <div key={index} className="overflow-hidden rounded-lg shadow-sm">
               <Skeleton className="aspect-square" />
               <div className="p-4">
                 <Skeleton className="mb-2 h-6" />

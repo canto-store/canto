@@ -3,10 +3,10 @@
     "home": "Home",
     "browse": "Browse",
     "sell": "Sell",
-    "account": "Account",
+    "account": "My Account",
     "favorites": "Favorites",
     "settings": "Settings",
-    "logout": "Logout",
+    "logout": "Sign out",
     "search": "Search",
     "placeholder": "Search for products...",
     "language": "Language",
@@ -14,7 +14,8 @@
     "yourCart": "Your Cart ({count} items)",
     "total": "Total",
     "viewCart": "View Cart",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "login": "Sign in"
   },
   "products": {
     "addToCart": "Add to Cart",
@@ -234,5 +235,34 @@
     "agreement": "By submitting this form, you agree to our Terms of Service and Seller Agreement",
     "submit": "Apply to Become a Seller",
     "submitting": "Submitting..."
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginDescription": "Sign in to your account",
+    "loginSubtitle": "Enter your email below to access your account",
+    "loginQuote": "Making the world a better place through connecting people.",
+    "loginQuoteAuthor": "Canto Store Team",
+    "loginButton": "Sign in",
+    "loginError": "Invalid email or password",
+    "emailLabel": "Email",
+    "emailPlaceholder": "name@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Sign up",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Join our community and start shopping",
+    "registerButton": "Sign up",
+    "registerError": "Registration failed. Please try again.",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Enter your full name",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Create an account",
+    "forgotPassword": "Forgot password?"
   }
 }

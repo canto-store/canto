@@ -26,7 +26,7 @@ export function Header({ className }: HeaderProps) {
   return (
     <header
       className={cn(
-        "border-primary fixed top-0 z-50 w-full border-b bg-white",
+        "border-primary bg-global fixed top-0 z-50 w-full border-b",
         className,
       )}
     >
