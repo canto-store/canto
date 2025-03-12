@@ -5,7 +5,7 @@ import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { PageShell } from "@/components/layout";
 import { ProductGrid, ProductList } from "@/components/products";
 import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
+import { Filter, X, LayoutGrid, List } from "lucide-react";
 import { CATEGORIES, BRANDS, PRICE_RANGES, Product } from "@/lib/data";
 import { filterProducts } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +15,13 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Pagination } from "@/components/ui/pagination";
 import { ItemsPerPage } from "@/components/ui/items-per-page";
 import { useTranslations } from "next-intl";
+import {
+  FilterDrawer,
+  FilterPanel,
+  ActiveFilters,
+  ViewOptionsDrawer,
+  SortDrawer,
+} from "@/components/filters";
 
 export default function BrowsePage() {
   const searchParams = useSearchParams();
@@ -42,9 +49,28 @@ export default function BrowsePage() {
   const [paginatedProducts, setPaginatedProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Mobile drawer states
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false);
+  const [isSortDrawerOpen, setIsSortDrawerOpen] = useState(false);
+
   // Get translations
   const t = useTranslations();
   const productsT = useTranslations("products");
+  const sortT = useTranslations("sort");
+
+  // Calculate active filters count
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (selectedCategory !== "All") count++;
+    if (selectedBrand !== "All") count++;
+    if (selectedPriceRange !== PRICE_RANGES[0]) count++;
+    if (searchQuery) count++;
+    return count;
+  };
+
+  const activeFiltersCount = getActiveFiltersCount();
+  const hasActiveFilters = activeFiltersCount > 0;
 
   // Update URL when filters or pagination change
   useEffect(() => {
@@ -166,114 +192,182 @@ export default function BrowsePage() {
     return num.toString().replace(/[0-9]/g, (d) => arabicNumerals[parseInt(d)]);
   };
 
+  // Filter translations
+  const filterTranslations = {
+    filters: productsT("filters"),
+    adjustFilters: productsT("adjustFilters"),
+    activeFilters: productsT("activeFilters"),
+    clearAll: productsT("clearAll"),
+    categories: productsT("categories"),
+    brands: productsT("brands"),
+    priceRange: productsT("priceRange"),
+    applyFilters: productsT("applyFilters"),
+    clearFilters: productsT("clearFilters"),
+    close: productsT("close"),
+  };
+
+  // View options translations
+  const viewOptionsTranslations = {
+    viewOptions: productsT("viewOptions"),
+    selectViewMode: productsT("selectViewMode"),
+    grid: productsT("grid"),
+    list: productsT("list"),
+    close: productsT("close"),
+  };
+
+  // Sort translations
+  const sortTranslations = {
+    sortBy: productsT("sortBy"),
+    selectSortOrder: productsT("selectSortOrder"),
+    close: productsT("close"),
+  };
+
+  // Sort option translations
+  const sortOptionTranslations = {
+    featured: sortT("featured"),
+    priceLow: sortT("priceLow"),
+    priceHigh: sortT("priceHigh"),
+    nameAsc: sortT("nameAsc"),
+    nameDesc: sortT("nameDesc"),
+  };
+
   return (
     <PageShell>
-      <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-        <h1 className="text-3xl font-bold">{productsT("browseTitle")}</h1>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <Filter className="h-4 w-4" />
-            {productsT("filters")}
-          </Button>
+      <div className="w-full">
+        {/* Header section with title */}
+        <div className="mb-5 flex flex-col gap-2 sm:mb-6">
+          <h1 className="text-2xl font-bold sm:text-3xl">
+            {productsT("browseTitle")}
+          </h1>
+          <p className="text-sm text-gray-500 sm:text-base">
+            {productsT("productsCount", { count: filteredProducts.length })}
+          </p>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4">
-        {/* Filters */}
-        {showFilters && (
-          <div className="mb-6 rounded-lg border bg-white p-4 shadow-sm">
-            <h3 className="mb-2 font-medium text-black">
-              {productsT("filters")}:
-            </h3>
-            <div className="grid gap-6 md:grid-cols-3">
-              {/* Categories */}
-              <div>
-                <h4 className="mb-2 text-sm font-medium text-gray-700">
-                  {productsT("categories")}
-                </h4>
-                <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
-                  {CATEGORIES.map((category) => (
-                    <Button
-                      key={category.name}
-                      variant={
-                        selectedCategory === category.name
-                          ? "default"
-                          : "outline"
-                      }
-                      size="sm"
-                      onClick={() => setSelectedCategory(category.name)}
-                    >
-                      {category.name}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Brands */}
-              <div>
-                <h4 className="mb-2 text-sm font-medium text-gray-700">
-                  {productsT("brands")}
-                </h4>
-                <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
-                  {BRANDS.map((brand) => (
-                    <Button
-                      key={brand}
-                      variant={selectedBrand === brand ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedBrand(brand)}
-                    >
-                      {brand}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Ranges */}
-              <div>
-                <h4 className="mb-2 text-sm font-medium text-gray-700">
-                  {productsT("priceRange")}
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {PRICE_RANGES.map((range) => (
-                    <Button
-                      key={range.label}
-                      variant={
-                        selectedPriceRange === range ? "default" : "outline"
-                      }
-                      size="sm"
-                      onClick={() => setSelectedPriceRange(range)}
-                    >
-                      {range.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
+        {/* Search and Filter Controls */}
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:gap-4">
+          <div className="flex-1">
+            <SearchBar
+              placeholder={t("header.placeholder")}
+              value={searchQuery}
+              onSubmit={handleSearch}
+              className="border-light-gray w-full border-2"
+              buttonText={t("header.search")}
+            />
           </div>
-        )}
-        {/* Search and Filters */}
-        <div className="mb-8">
-          <SearchBar
-            placeholder={t("header.placeholder")}
-            value={searchQuery}
-            onSubmit={handleSearch}
-            className="border-light-gray border-2"
-            buttonText={t("header.search")}
+
+          <div className="flex items-center gap-2 self-start">
+            {/* Desktop Filter Button */}
+            <Button
+              variant={showFilters ? "default" : "outline"}
+              size="sm"
+              className="hidden h-10 items-center gap-1.5 sm:flex"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              {showFilters ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Filter className="h-4 w-4" />
+              )}
+              {showFilters ? productsT("clearFilters") : productsT("filters")}
+            </Button>
+
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden h-10 text-xs sm:flex sm:text-sm"
+                onClick={clearFilters}
+              >
+                {productsT("clearFilters")}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Controls Bar */}
+        <div className="mb-5 flex items-center justify-between gap-2 sm:hidden">
+          {/* Mobile Filter Drawer */}
+          <FilterDrawer
+            isOpen={isFilterDrawerOpen}
+            onOpenChange={setIsFilterDrawerOpen}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            selectedBrand={selectedBrand}
+            setSelectedBrand={setSelectedBrand}
+            selectedPriceRange={selectedPriceRange}
+            setSelectedPriceRange={setSelectedPriceRange}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            clearFilters={clearFilters}
+            activeFiltersCount={activeFiltersCount}
+            hasActiveFilters={hasActiveFilters}
+            translations={filterTranslations}
+          />
+
+          {/* Mobile View Drawer */}
+          <ViewOptionsDrawer
+            isOpen={isViewDrawerOpen}
+            onOpenChange={setIsViewDrawerOpen}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            translations={viewOptionsTranslations}
+          />
+
+          {/* Mobile Sort Drawer */}
+          <SortDrawer
+            isOpen={isSortDrawerOpen}
+            onOpenChange={setIsSortDrawerOpen}
+            sortOption={sortOption}
+            setSortOption={setSortOption}
+            translations={sortTranslations}
+            sortTranslations={sortOptionTranslations}
           />
         </div>
 
-        {/* Results Count and Items Per Page */}
-        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="text-gray-600" dir={isRTL ? "rtl" : "ltr"}>
+        {/* Active Filters Summary */}
+        <ActiveFilters
+          hasActiveFilters={hasActiveFilters}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedBrand={selectedBrand}
+          setSelectedBrand={setSelectedBrand}
+          selectedPriceRange={selectedPriceRange}
+          defaultPriceRange={PRICE_RANGES[0]}
+          setSelectedPriceRange={setSelectedPriceRange}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          translations={{ filters: productsT("filters") }}
+        />
+
+        {/* Desktop Filters Panel */}
+        {showFilters && (
+          <FilterPanel
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            selectedBrand={selectedBrand}
+            setSelectedBrand={setSelectedBrand}
+            selectedPriceRange={selectedPriceRange}
+            setSelectedPriceRange={setSelectedPriceRange}
+            translations={{
+              categories: productsT("categories"),
+              brands: productsT("brands"),
+              priceRange: productsT("priceRange"),
+            }}
+          />
+        )}
+
+        {/* Results Controls */}
+        <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+          {/* Results Count */}
+          <p
+            className="text-sm text-gray-600 sm:text-base"
+            dir={isRTL ? "rtl" : "ltr"}
+          >
             {productsT("productsCount", { count: filteredProducts.length })}
             {filteredProducts.length > 0 && (
               <span
-                className={`${isRTL ? "mr-1" : "ml-1"} text-sm text-gray-500`}
+                className={`${isRTL ? "mr-1" : "ml-1"} text-xs text-gray-500 sm:text-sm`}
               >
                 (
                 {formatNumber(
@@ -291,17 +385,57 @@ export default function BrowsePage() {
             )}
           </p>
 
-          <ItemsPerPage
-            defaultValue={itemsPerPage}
-            value={itemsPerPage}
-            onChange={handleItemsPerPageChange}
-            options={[5, 10, 15, 20]}
-          />
+          {/* Desktop View Controls */}
+          <div className="hidden items-center justify-end gap-3 sm:flex">
+            <div className="flex items-center gap-3">
+              {/* Desktop View mode buttons */}
+              <div className="h-9 w-[160px] overflow-hidden rounded-md border">
+                <Button
+                  variant={activeTab === "grid" ? "default" : "ghost"}
+                  className="flex-1 rounded-none"
+                  onClick={() => setActiveTab("grid")}
+                >
+                  <LayoutGrid className="mr-1 h-4 w-4" />
+                  {productsT("grid")}
+                </Button>
+                <Button
+                  variant={activeTab === "list" ? "default" : "ghost"}
+                  className="flex-1 rounded-none"
+                  onClick={() => setActiveTab("list")}
+                >
+                  <List className="mr-1 h-4 w-4" />
+                  {productsT("list")}
+                </Button>
+              </div>
 
-          <Separator className="mt-2 sm:hidden" />
+              <SortMenu
+                value={sortOption as SortOption}
+                onValueChange={setSortOption}
+                label={productsT("sortBy")}
+                width="w-[180px]"
+              />
+            </div>
+
+            <ItemsPerPage
+              defaultValue={itemsPerPage}
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              options={[5, 10, 15, 20]}
+            />
+          </div>
+
+          {/* Mobile Items Per Page */}
+          <div className="flex justify-end sm:hidden">
+            <ItemsPerPage
+              defaultValue={itemsPerPage}
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              options={[5, 10, 15, 20]}
+            />
+          </div>
         </div>
 
-        {/* View Tabs */}
+        {/* Products Display */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
@@ -309,32 +443,16 @@ export default function BrowsePage() {
           id="products-section"
           dir={isRTL ? "rtl" : "ltr"}
         >
-          <div
-            className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}
-          >
-            <TabsList className="grid w-[200px] grid-cols-2">
-              <TabsTrigger value="grid">{productsT("grid")}</TabsTrigger>
-              <TabsTrigger value="list">{productsT("list")}</TabsTrigger>
-            </TabsList>
-            <SortMenu
-              value={sortOption as SortOption}
-              onValueChange={setSortOption}
-              label={productsT("sortBy")}
-            />
-          </div>
-
-          {/* Products Display */}
           {filteredProducts.length > 0 ? (
             <>
-              <TabsContent value="grid" className="mt-0">
+              <TabsContent value="grid" className="mt-4 sm:mt-6">
                 <ProductGrid
                   products={paginatedProducts}
-                  className={`grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ${isRTL ? "rtl" : ""}`}
+                  className={`xs:grid-cols-2 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ${isRTL ? "rtl" : ""}`}
                 />
               </TabsContent>
 
-              {/* List View */}
-              <TabsContent value="list" className="mt-0">
+              <TabsContent value="list" className="mt-4 sm:mt-6">
                 <ProductList products={paginatedProducts} />
               </TabsContent>
 
@@ -343,18 +461,20 @@ export default function BrowsePage() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
-                className="mt-8"
+                className="mt-6 sm:mt-8"
               />
             </>
           ) : (
             <div
-              className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center"
+              className="flex h-48 flex-col items-center justify-center rounded-lg border border-dashed p-4 text-center sm:h-64 sm:p-8"
               dir={isRTL ? "rtl" : "ltr"}
             >
-              <p className="mb-2 text-xl font-medium text-black">
+              <p className="mb-2 text-lg font-medium text-black sm:text-xl">
                 {productsT("noProductsFound")}
               </p>
-              <p className="text-gray-500">{productsT("tryAdjusting")}</p>
+              <p className="text-sm text-gray-500 sm:text-base">
+                {productsT("tryAdjusting")}
+              </p>
               <Button variant="outline" className="mt-4" onClick={clearFilters}>
                 {productsT("clearFilters")}
               </Button>
