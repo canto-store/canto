@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { AuthContextType, AuthState, User } from "@/types/auth";
 
 const initialState: AuthState = {
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setState({ ...state, isLoading: true, error: null });
 
       // Mock login logic
-      if (email === "omar@example.com" && password === "omar") {
+      if (email === "omar" && password === "omar") {
         const mockUser: User = {
           id: "1",
           email: "omar@example.com",
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       router.refresh();
-      router.push("/login");
+      router.push("/");
     } catch (error) {
       setState({
         ...state,
