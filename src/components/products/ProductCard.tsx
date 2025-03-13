@@ -47,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className="group relative flex h-auto flex-col overflow-hidden rounded-lg shadow-sm transition-shadow duration-300 hover:shadow-md"
+      className="group relative flex h-full flex-col overflow-hidden rounded-lg text-sm shadow-md transition-shadow duration-300 hover:shadow-lg sm:text-base"
       dir={isRTL ? "rtl" : "ltr"}
     >
       <div className="relative aspect-square w-full overflow-hidden">
@@ -59,15 +59,15 @@ export function ProductCard({ product }: ProductCardProps) {
             src={product.image}
             alt={productName}
             className="h-full w-full transform object-cover transition-transform duration-300 group-hover:scale-105"
-            width={500}
-            height={500}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
-            priority={false}
-            quality={85}
+            width={600}
+            height={600}
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 60vw, 500px"
+            priority={true}
+            quality={90}
           />
         </button>
       </div>
-      <div className="flex flex-1 flex-col justify-between p-4">
+      <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
         <div>
           <button
             onClick={() => handleProductClick(product)}
@@ -75,7 +75,7 @@ export function ProductCard({ product }: ProductCardProps) {
           >
             <h3
               className={cn(
-                "line-clamp-2 min-h-[48px] font-semibold",
+                "line-clamp-2 min-h-[40px] text-base font-semibold sm:min-h-[48px] sm:text-lg",
                 isRTL ? "text-right" : "text-left",
               )}
             >
@@ -85,7 +85,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={() => handleBrandClick(product)}
             className={cn(
-              "mb-2 line-clamp-1 w-full text-sm text-gray-600 hover:cursor-pointer",
+              "mb-3 line-clamp-1 w-full text-xs text-gray-600 hover:cursor-pointer sm:text-sm",
               isRTL ? "text-right" : "text-left",
             )}
           >
@@ -99,23 +99,25 @@ export function ProductCard({ product }: ProductCardProps) {
               isRTL && "flex-row-reverse",
             )}
           >
-            <span className="text-lg font-bold">
+            <span className="text-lg font-bold sm:text-xl">
               {formatPrice(product.price)}
             </span>
           </div>
-          <div className={cn("mt-3 flex gap-2", isRTL && "flex-row-reverse")}>
+          <div className={cn("mt-4 flex gap-3", isRTL && "flex-row-reverse")}>
             <Button
               onClick={() => addToCart(product)}
-              size="sm"
-              className="flex-1 gap-1"
+              size="default"
+              className="flex-1 gap-2 py-2 text-sm sm:py-2.5 sm:text-base"
             >
-              <ShoppingCart className={cn("h-4 w-4", isRTL && "mr-0 ml-1")} />
+              <ShoppingCart
+                className={cn("h-4 w-4 sm:h-5 sm:w-5", isRTL && "mr-0 ml-1")}
+              />
               {productsT("add")}
             </Button>
             <Button
               variant="outline"
-              size="sm"
-              className="flex-1 gap-1"
+              size="default"
+              className="flex-1 gap-2 py-2 text-sm sm:py-2.5 sm:text-base"
               asChild
               onClick={() => handleProductClick(product)}
             >
@@ -125,7 +127,9 @@ export function ProductCard({ product }: ProductCardProps) {
                   isRTL && "flex-row-reverse",
                 )}
               >
-                <Eye className={cn("h-4 w-4", isRTL && "mr-0 ml-1")} />
+                <Eye
+                  className={cn("h-4 w-4 sm:h-5 sm:w-5", isRTL && "mr-0 ml-1")}
+                />
                 {productsT("view")}
               </div>
             </Button>

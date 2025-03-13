@@ -4,3 +4,4 @@ export * from "./ProductList";
 export * from "./ProductDetails";
 export * from "./ProductCardSkeleton";
 export * from "./ProductGridSkeleton";
+export * from "./ProductCarousel";

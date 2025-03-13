@@ -1,6 +1,5 @@
 import { ProductCard } from "@/components/products";
 import { Product } from "@/types";
-import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 
 interface ProductGridProps {
@@ -11,10 +10,12 @@ interface ProductGridProps {
 
 export function ProductGrid({ products, title, className }: ProductGridProps) {
   return (
-    <SectionContainer title={title}>
+    <div className="w-full">
+      {title && <h3 className="mb-6 text-xl font-semibold">{title}</h3>}
+
       <div
         className={cn(
-          "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5",
+          "grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4",
           className,
         )}
       >
@@ -22,6 +23,6 @@ export function ProductGrid({ products, title, className }: ProductGridProps) {
           <ProductCard key={product.name} product={product} />
         ))}
       </div>
-    </SectionContainer>
+    </div>
   );
 }
