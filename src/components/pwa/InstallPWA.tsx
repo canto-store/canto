@@ -85,9 +85,16 @@ export function InstallPWA({
     // Check if the document direction is RTL
     setIsRTL(document.dir === "rtl");
 
-    // Detect iOS
+    // Improved iOS detection
     const isIOSDevice =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    // Check if the user is in Safari on iOS (required for Add to Home Screen)
+    const isSafari =
+      /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
+      (navigator.vendor && navigator.vendor.indexOf("Apple") > -1);
+
     setIsIOS(isIOSDevice);
 
     // Set initial mobile state
@@ -101,9 +108,10 @@ export function InstallPWA({
     window.addEventListener("resize", handleResize);
 
     // Check if the app is already installed
-    const isStandalone = window.matchMedia(
-      "(display-mode: standalone)",
-    ).matches;
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+
     setIsAppInstalled(isStandalone);
 
     if (isStandalone) {
@@ -131,13 +139,17 @@ export function InstallPWA({
     // For iOS, we'll always show our custom message since the beforeinstallprompt event isn't supported
     if (
       isIOSDevice &&
-      (variant === "message" || variant === "banner") &&
+      (variant === "message" || variant === "banner" || variant === "menu") &&
       !isDismissed
     ) {
-      setTimeout(() => {
-        setIsVisible(true);
-        setIsInstallable(true);
-      }, displayDelay);
+      // Only show the prompt in Safari on iOS
+      if (isSafari) {
+        setTimeout(() => {
+          setIsVisible(true);
+          setIsInstallable(true);
+        }, displayDelay);
+      }
+
       return () => {
         window.removeEventListener("resize", handleResize);
       };
@@ -246,6 +258,9 @@ export function InstallPWA({
               </li>
               <li>{t("iosInstructions.step2")}</li>
               <li>{t("iosInstructions.step3")}</li>
+              <li className="text-xs text-gray-500 italic">
+                {t("iosInstructions.note")}
+              </li>
             </ol>
             <div className="mt-3">
               <Button
