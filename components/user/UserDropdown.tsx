@@ -57,11 +57,6 @@ export function UserDropdown() {
     setRegisterModalOpen(true);
   };
 
-  const switchToLogin = () => {
-    setRegisterModalOpen(false);
-    setLoginModalOpen(true);
-  };
-
   const handleLogout = async () => {
     await logout();
     setUserDropdownOpen(false);

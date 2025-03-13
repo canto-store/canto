@@ -1,9 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 
 export default function FavoritesPage() {
-  const t = useTranslations("favorites");
 
   return (
     <div className="container py-10">
