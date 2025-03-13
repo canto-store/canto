@@ -35,7 +35,7 @@ export type ApiProduct = {
 export type HomeProductsApiResponse = {
   products: {
     Fashion: ApiProduct[];
-    sections: any[];
+    sections: Record<string, unknown>[];
   };
 };
 

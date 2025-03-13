@@ -38,7 +38,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error: null,
         });
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("Auth check failed:", err);
       setState({
         user: null,
         isLoading: false,
@@ -74,13 +75,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       throw new Error("Invalid credentials");
-    } catch (error) {
+    } catch (err) {
       setState({
         ...state,
         isLoading: false,
-        error: error instanceof Error ? error.message : "Login failed",
+        error: err instanceof Error ? err.message : "Login failed",
       });
-      throw error;
+      throw err;
     }
   };
 
@@ -98,7 +99,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       router.refresh();
       router.push("/");
-    } catch (error) {
+    } catch (err) {
+      console.error("Logout failed:", err);
       setState({
         ...state,
         isLoading: false,
@@ -107,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string) => {
     try {
       setState({ ...state, isLoading: true, error: null });
 
@@ -130,13 +132,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       router.refresh();
-    } catch (error) {
+    } catch (err) {
       setState({
         ...state,
         isLoading: false,
-        error: error instanceof Error ? error.message : "Registration failed",
+        error: err instanceof Error ? err.message : "Registration failed",
       });
-      throw error;
+      throw err;
     }
   };
 
@@ -161,11 +163,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading: false,
         error: null,
       });
-    } catch (error) {
+    } catch (err) {
       setState({
         ...state,
         isLoading: false,
-        error: error instanceof Error ? error.message : "Password reset failed",
+        error: err instanceof Error ? err.message : "Password reset failed",
       });
     }
   };
@@ -192,11 +194,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading: false,
         error: null,
       });
-    } catch (error) {
+    } catch (err) {
       setState({
         ...state,
         isLoading: false,
-        error: error instanceof Error ? error.message : "Profile update failed",
+        error: err instanceof Error ? err.message : "Profile update failed",
       });
     }
   };

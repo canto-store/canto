@@ -18,13 +18,13 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
 });
 
 const opticianSans = localFont({
-  src: "../../public/fonts/Optician-Sans.woff2",
+  src: "../../../public/fonts/Optician-Sans.woff2",
   variable: "--font-optician-sans",
   display: "swap",
 });
 
 const spaceGrotesk = localFont({
-  src: "../../public/fonts/SpaceGrotesk.woff2",
+  src: "../../../public/fonts/SpaceGrotesk.woff2",
   variable: "--font-space-grotesk",
   display: "swap",
 });
