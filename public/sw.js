@@ -6,10 +6,23 @@ const STATIC_ASSETS = [
   "/web-app-manifest-192x192.png",
   "/web-app-manifest-512x512.png",
   "/offline.html",
+  // Add Apple-specific assets
+  "/apple-touch-icon.png",
+  "/apple-touch-icon-120x120.png",
+  "/apple-touch-icon-152x152.png",
+  "/apple-touch-icon-167x167.png",
+  "/apple-splash-750-1334.png",
+  "/apple-splash-828-1792.png",
+  "/apple-splash-1125-2436.png",
+  "/apple-splash-1242-2208.png",
+  "/apple-splash-1242-2688.png",
+  "/apple-splash-1536-2048.png",
+  "/apple-splash-1668-2388.png",
+  "/apple-splash-2048-2732.png",
 ];
 
 // Version number - increment this when you want to force an update
-const VERSION = "1.0.1";
+const VERSION = "1.0.2";
 
 // Install event - cache core assets
 self.addEventListener("install", (event) => {
@@ -19,7 +32,16 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)),
+    caches.open(CACHE_NAME).then((cache) => {
+      // Cache each asset individually to handle failures gracefully
+      return Promise.all(
+        STATIC_ASSETS.map((url) =>
+          cache.add(url).catch((error) => {
+            console.error(`Failed to cache asset ${url}:`, error);
+          }),
+        ),
+      );
+    }),
   );
 });
 
@@ -63,7 +85,14 @@ const isNavigationRequest = (request) => {
 
 // Helper function to determine if a request is for a static asset
 const isStaticAsset = (request) => {
-  return STATIC_ASSETS.some((asset) => request.url.endsWith(asset));
+  const url = new URL(request.url);
+  return STATIC_ASSETS.some((asset) => url.pathname === asset);
+};
+
+// Helper function to determine if a request is for an image
+const isImageRequest = (request) => {
+  const url = new URL(request.url);
+  return url.pathname.match(/\.(jpg|jpeg|png|gif|svg|webp)$/i);
 };
 
 // Fetch event - improved caching strategy with better offline support
@@ -74,7 +103,7 @@ self.addEventListener("fetch", (event) => {
   // Skip non-GET requests
   if (event.request.method !== "GET") return;
 
-  // Handle navigation requests
+  // Handle navigation requests with network-first strategy
   if (isNavigationRequest(event.request)) {
     event.respondWith(
       fetch(event.request)
@@ -92,8 +121,8 @@ self.addEventListener("fetch", (event) => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          // If no cached version, return cached home page as fallback
-          return caches.match("/");
+          // If no cached version, return cached offline page as fallback
+          return caches.match("/offline.html") || caches.match("/");
         }),
     );
     return;
@@ -104,7 +133,59 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       caches
         .match(event.request)
-        .then((cachedResponse) => cachedResponse || fetch(event.request)),
+        .then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // If not in cache, try to fetch it
+          return fetch(event.request).then((response) => {
+            // Cache the fetched response
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+            return response;
+          });
+        })
+        .catch(() => {
+          // For critical assets like icons, return a fallback if possible
+          if (event.request.url.includes("icon")) {
+            return caches.match("/logo.svg");
+          }
+          return new Response("Asset not available", {
+            status: 404,
+            headers: { "Content-Type": "text/plain" },
+          });
+        }),
+    );
+    return;
+  }
+
+  // Handle image requests with cache-first strategy
+  if (isImageRequest(event.request)) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // If not in cache, try to fetch it
+        return fetch(event.request)
+          .then((response) => {
+            // Cache the fetched response
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+            return response;
+          })
+          .catch(() => {
+            // Return a placeholder image or null
+            return new Response("Image not available", {
+              status: 404,
+              headers: { "Content-Type": "text/plain" },
+            });
+          });
+      }),
     );
     return;
   }
@@ -140,3 +221,23 @@ self.addEventListener("message", (event) => {
     self.skipWaiting();
   }
 });
+
+// Handle periodic sync for iOS (not fully supported but future-proofing)
+self.addEventListener("periodicsync", (event) => {
+  if (event.tag === "refresh-content") {
+    event.waitUntil(refreshContent());
+  }
+});
+
+// Function to refresh content in the background
+async function refreshContent() {
+  try {
+    // Fetch the main page to refresh the cache
+    const response = await fetch("/");
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put("/", response);
+    console.log("Content refreshed in background");
+  } catch (error) {
+    console.error("Failed to refresh content:", error);
+  }
+}
