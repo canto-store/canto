@@ -74,7 +74,9 @@ export default async function RootLayout({
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <head>
         {/* Always include the HMR fix script - it will self-determine if it needs to run */}
-        <Script src="/hmr-fix.js" strategy="beforeInteractive" id="hmr-fix" />
+        {process.env.NODE_ENV !== "production" && (
+          <Script src="/hmr-fix.js" strategy="beforeInteractive" id="hmr-fix" />
+        )}
 
         {/* Always include the service worker registration script - it will self-determine if it should register */}
         <Script src="/register-sw.js" id="register-sw" />

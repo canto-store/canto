@@ -146,6 +146,8 @@ export function InstallPWA({
     // Listen for the beforeinstallprompt event (non-iOS browsers)
     const handler = (e: Event) => {
       e.preventDefault();
+      // Store the event for later use
+      window.deferredPrompt = e as BeforeInstallPromptEvent;
       setInstallPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
 
@@ -185,20 +187,21 @@ export function InstallPWA({
       return;
     }
 
-    if (!installPrompt) return;
+    // Use either the stored prompt or the current installPrompt
+    const promptToUse = window.deferredPrompt || installPrompt;
+    if (!promptToUse) return;
 
-    // Show the install prompt
-    await installPrompt.prompt();
+    try {
+      // Show the install prompt
+      await promptToUse.prompt();
 
-    // Wait for the user to respond to the prompt
-    const { outcome } = await installPrompt.userChoice;
-    console.log(`User response to the install prompt: ${outcome}`);
-
-    // Clear the saved prompt since it can't be used again
-    setInstallPrompt(null);
-    setIsInstallable(false);
-    setIsVisible(false);
-    window.deferredPrompt = null;
+      setInstallPrompt(null);
+      setIsInstallable(false);
+      setIsVisible(false);
+      window.deferredPrompt = null;
+    } catch (error) {
+      console.error("Error showing install prompt:", error);
+    }
   };
 
   const handleDismiss = () => {
