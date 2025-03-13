@@ -174,7 +174,6 @@ export function FilterDrawer({
                     }`}
                     onClick={() => {
                       setSelectedCategory(category.name);
-                      onOpenChange(false);
                     }}
                   >
                     {category.name}
@@ -201,7 +200,6 @@ export function FilterDrawer({
                     }`}
                     onClick={() => {
                       setSelectedBrand(brand);
-                      onOpenChange(false);
                     }}
                   >
                     {brand}
@@ -230,7 +228,6 @@ export function FilterDrawer({
                     }`}
                     onClick={() => {
                       setSelectedPriceRange(range);
-                      onOpenChange(false);
                     }}
                   >
                     {range.label}

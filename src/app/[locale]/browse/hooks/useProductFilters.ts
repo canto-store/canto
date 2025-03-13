@@ -150,7 +150,7 @@ export function useProductFilters() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({
-      top: document.getElementById("products-section")?.offsetTop || 0,
+      top: 0,
       behavior: "smooth",
     });
   };

@@ -91,7 +91,6 @@ export function SortDrawer({
             className="flex w-full items-center justify-start gap-2"
             onClick={() => {
               setSortOption("featured");
-              onOpenChange(false);
             }}
           >
             {sortTranslations.featured}
@@ -101,7 +100,6 @@ export function SortDrawer({
             className="flex w-full items-center justify-start gap-2"
             onClick={() => {
               setSortOption("price-low");
-              onOpenChange(false);
             }}
           >
             {sortTranslations.priceLow}
@@ -111,7 +109,6 @@ export function SortDrawer({
             className="flex w-full items-center justify-start gap-2"
             onClick={() => {
               setSortOption("price-high");
-              onOpenChange(false);
             }}
           >
             {sortTranslations.priceHigh}
@@ -121,7 +118,6 @@ export function SortDrawer({
             className="flex w-full items-center justify-start gap-2"
             onClick={() => {
               setSortOption("name-asc");
-              onOpenChange(false);
             }}
           >
             {sortTranslations.nameAsc}
@@ -131,7 +127,6 @@ export function SortDrawer({
             className="flex w-full items-center justify-start gap-2"
             onClick={() => {
               setSortOption("name-desc");
-              onOpenChange(false);
             }}
           >
             {sortTranslations.nameDesc}

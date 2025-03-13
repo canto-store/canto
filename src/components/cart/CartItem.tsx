@@ -124,17 +124,17 @@ export function CartItemComponent({
   return (
     <div
       className={cn(
-        "flex flex-col border-b border-gray-200 py-4 sm:flex-row",
+        "flex flex-col border-gray-200 py-2 sm:flex-row sm:py-3",
         className,
       )}
     >
       {/* Product Image */}
-      <div className="mx-auto mb-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:mx-0 sm:mb-0 sm:h-24 sm:w-24">
+      <div className="mx-auto mb-2 h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:mx-0 sm:mb-0 sm:h-20 sm:w-20">
         <Image
           src={item.image}
           alt={getProductName()}
-          width={128}
-          height={128}
+          width={80}
+          height={80}
           className="h-full w-full object-cover object-center"
         />
       </div>
@@ -143,42 +143,44 @@ export function CartItemComponent({
       <div
         className={cn(
           "flex flex-1 flex-col",
-          isRTL ? "mr-0 sm:mr-8" : "ml-0 sm:ml-8",
+          isRTL ? "mr-0 sm:mr-6" : "ml-0 sm:ml-6",
         )}
       >
         <div>
           <div className="flex flex-col sm:flex-row sm:justify-between">
-            <h3 className="text-center text-base font-medium text-gray-900 sm:text-left">
+            <h3 className="text-center text-sm font-medium text-gray-900 sm:text-left sm:text-base">
               {getProductName()}
             </h3>
-            <p className="text-primary mt-1 text-center text-base font-medium sm:mt-0 sm:ml-4 sm:text-left">
+            <p className="text-primary mt-1 text-center text-sm font-medium sm:mt-0 sm:ml-4 sm:text-left">
               ${(item.price * item.quantity).toFixed(2)}
             </p>
           </div>
-          <p className="mt-1 text-center text-sm text-gray-500 sm:text-left">
+          <p className="mt-1 text-center text-xs text-gray-500 sm:text-left sm:text-sm">
             {getBrandName()}
           </p>
         </div>
 
-        <div className="mt-4 flex flex-1 items-center justify-center sm:justify-start">
+        <div className="mt-2 flex flex-1 items-center justify-center sm:mt-3 sm:justify-start">
           {showControls ? (
-            <div className="flex flex-col items-center sm:flex-row">
+            <div className="flex w-full flex-col items-center sm:w-auto sm:flex-row">
               <div className="flex items-center rounded-md border">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-none"
+                  className="h-7 w-7 rounded-none sm:h-8 sm:w-8"
                   onClick={() => handleQuantityChange(item.quantity - 1)}
                   disabled={isUpdating || item.quantity <= 1}
                 >
                   <Minus className="h-3 w-3" />
                   <span className="sr-only">Decrease quantity</span>
                 </Button>
-                <span className="w-8 text-center text-sm">{item.quantity}</span>
+                <span className="w-6 text-center text-xs sm:w-8 sm:text-sm">
+                  {item.quantity}
+                </span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-none"
+                  className="h-7 w-7 rounded-none sm:h-8 sm:w-8"
                   onClick={() => handleQuantityChange(item.quantity + 1)}
                   disabled={isUpdating}
                 >
@@ -190,7 +192,7 @@ export function CartItemComponent({
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "mt-3 text-xs text-gray-500 sm:mt-0 sm:text-sm",
+                  "mt-2 text-xs text-gray-500 sm:mt-0 sm:text-sm",
                   isRTL ? "sm:mr-4" : "sm:ml-4",
                 )}
                 onClick={handleRemove}
@@ -205,7 +207,7 @@ export function CartItemComponent({
               </Button>
             </div>
           ) : (
-            <div className="text-sm text-gray-500">
+            <div className="text-xs text-gray-500 sm:text-sm">
               {t("cart.quantity")}: {item.quantity}
             </div>
           )}

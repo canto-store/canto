@@ -59,7 +59,6 @@ export function ViewOptionsDrawer({
             className="flex w-full items-center justify-start gap-2"
             onClick={() => {
               setActiveTab("grid");
-              onOpenChange(false);
             }}
           >
             <LayoutGrid className="h-5 w-5" />
@@ -70,7 +69,6 @@ export function ViewOptionsDrawer({
             className="flex w-full items-center justify-start gap-2"
             onClick={() => {
               setActiveTab("list");
-              onOpenChange(false);
             }}
           >
             <List className="h-5 w-5" />
