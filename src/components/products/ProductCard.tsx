@@ -67,7 +67,7 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         </button>
       </div>
-      <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
+      <div className="flex flex-1 flex-col justify-between p-3 sm:p-4 md:p-5">
         <div>
           <button
             onClick={() => handleProductClick(product)}
@@ -75,7 +75,7 @@ export function ProductCard({ product }: ProductCardProps) {
           >
             <h3
               className={cn(
-                "line-clamp-2 min-h-[40px] text-base font-semibold sm:min-h-[48px] sm:text-lg",
+                "line-clamp-2 min-h-[36px] text-sm font-semibold sm:min-h-[40px] sm:text-base md:min-h-[48px] md:text-lg",
                 isRTL ? "text-right" : "text-left",
               )}
             >
@@ -85,7 +85,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={() => handleBrandClick(product)}
             className={cn(
-              "mb-3 line-clamp-1 w-full text-xs text-gray-600 hover:cursor-pointer sm:text-sm",
+              "mb-2 line-clamp-1 w-full text-xs text-gray-600 hover:cursor-pointer sm:mb-3 sm:text-sm",
               isRTL ? "text-right" : "text-left",
             )}
           >
@@ -99,26 +99,33 @@ export function ProductCard({ product }: ProductCardProps) {
               isRTL && "flex-row-reverse",
             )}
           >
-            <span className="text-lg font-bold sm:text-xl">
+            <span className="text-base font-bold sm:text-lg md:text-xl">
               {formatPrice(product.price)}
             </span>
           </div>
-          <div className={cn("mt-4 flex gap-3", isRTL && "flex-row-reverse")}>
+          <div
+            className={cn(
+              "mt-3 flex gap-2 sm:mt-4 sm:gap-3",
+              isRTL && "flex-row-reverse",
+            )}
+          >
             <Button
               onClick={() => addToCart(product)}
-              size="default"
-              className="flex-1 gap-2 py-2 text-sm sm:py-2.5 sm:text-base"
+              size="sm"
+              className="flex-1 gap-1 px-2 py-1.5 text-xs sm:gap-2 sm:px-3 sm:py-2 sm:text-sm md:py-2.5 md:text-base"
             >
               <ShoppingCart
-                className={cn("h-4 w-4 sm:h-5 sm:w-5", isRTL && "mr-0 ml-1")}
+                className={cn(
+                  "h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5",
+                  isRTL && "mr-0 ml-1",
+                )}
               />
-              {productsT("add")}
+              <span className="whitespace-nowrap">{productsT("add")}</span>
             </Button>
             <Button
               variant="outline"
-              size="default"
-              className="flex-1 gap-2 py-2 text-sm sm:py-2.5 sm:text-base"
-              asChild
+              size="sm"
+              className="flex-1 gap-1 px-2 py-1.5 text-xs sm:gap-2 sm:px-3 sm:py-2 sm:text-sm md:py-2.5 md:text-base"
               onClick={() => handleProductClick(product)}
             >
               <div
@@ -128,9 +135,12 @@ export function ProductCard({ product }: ProductCardProps) {
                 )}
               >
                 <Eye
-                  className={cn("h-4 w-4 sm:h-5 sm:w-5", isRTL && "mr-0 ml-1")}
+                  className={cn(
+                    "h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5",
+                    isRTL && "mr-0 ml-1",
+                  )}
                 />
-                {productsT("view")}
+                <span className="whitespace-nowrap">{productsT("view")}</span>
               </div>
             </Button>
           </div>

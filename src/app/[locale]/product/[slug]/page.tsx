@@ -27,11 +27,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       <ProductDetails product={product} />
 
       {/* Related Products */}
-      <ProductGrid
-        products={relatedProducts}
-        title="You May Also Like"
-        className="mt-8 md:mt-16"
-      />
+      <div className="mx-auto w-full max-w-screen-2xl">
+        <ProductGrid
+          products={relatedProducts}
+          title="You May Also Like"
+          className="mt-4 mb-6 sm:mt-6 sm:mb-8 md:mt-10 md:mb-10 lg:mt-16 lg:mb-12"
+        />
+      </div>
     </AppLayout>
   );
 }
