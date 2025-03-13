@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { CartProvider } from "./cart/cart-provider";
 import { BannerProvider } from "./banner/banner-provider";
 import { AuthProvider } from "./auth/auth-provider";
+import { QueryProvider } from "./query-provider";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -11,10 +12,12 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <AuthProvider>
-      <BannerProvider>
-        <CartProvider>{children}</CartProvider>
-      </BannerProvider>
-    </AuthProvider>
+    <QueryProvider>
+      <AuthProvider>
+        <BannerProvider>
+          <CartProvider>{children}</CartProvider>
+        </BannerProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 }
