@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface ProtectedRouteProps {
