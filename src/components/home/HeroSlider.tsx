@@ -24,6 +24,7 @@ export function HeroSlider({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const { showBanner } = useBanner();
   const router = useRouter();
@@ -32,8 +33,27 @@ export function HeroSlider({
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
+  // Detect mobile devices
   useEffect(() => {
-    if (autoplayInterval <= 0) return;
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Check on initial load
+    checkIfMobile();
+
+    // Add event listener for window resize
+    window.addEventListener("resize", checkIfMobile);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Don't auto-scroll if autoplayInterval is disabled or on mobile devices
+    if (autoplayInterval <= 0 || isMobile) return;
 
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -42,7 +62,7 @@ export function HeroSlider({
     return () => {
       clearInterval(timer);
     };
-  }, [slides.length, autoplayInterval]);
+  }, [slides.length, autoplayInterval, isMobile]);
 
   const handlePrevSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
@@ -102,52 +122,51 @@ export function HeroSlider({
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div className="h-main relative w-full">
-        {slides.map((slide, index) => {
-          const { title, subtitle } = getTranslatedContent(slide);
-          return (
-            <div
-              key={index}
-              className={cn(
-                "absolute inset-0 transition-opacity duration-500",
-                currentSlide === index ? "opacity-100" : "opacity-0",
-              )}
-            >
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${slide.image})` }}
-              >
-                <div className="absolute inset-0 bg-black/30" />
-              </div>
-              <div className="relative flex h-full items-center justify-center px-4 text-center text-white sm:px-6 md:px-8 lg:px-16">
-                <div className="max-w-4xl">
-                  <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl lg:text-7xl">
-                    {title}
-                  </h2>
-                  <p className="mb-6 text-sm sm:text-base md:text-xl lg:text-2xl">
-                    {subtitle}
-                  </p>
-                  <Button
-                    size="lg"
-                    variant="default"
-                    asChild
-                    className="text-sm sm:text-base"
-                    onClick={() => router.push("/browse")}
-                  >
-                    <span>{t("shopNow", { defaultValue: "Shop Now" })}</span>
-                  </Button>
+      <div className="h-main relative w-full overflow-hidden">
+        <div
+          className="flex h-full transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        >
+          {slides.map((slide, index) => {
+            const { title, subtitle } = getTranslatedContent(slide);
+            return (
+              <div key={index} className="relative h-full w-full flex-shrink-0">
+                <div
+                  className="absolute inset-0 h-full w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${slide.image})` }}
+                >
+                  <div className="absolute inset-0 bg-black/30" />
+                </div>
+                <div className="relative flex h-full items-center justify-center px-4 text-center text-white sm:px-6 md:px-8 lg:px-16">
+                  <div className="max-w-4xl">
+                    <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl lg:text-7xl">
+                      {title}
+                    </h2>
+                    <p className="mb-6 text-sm sm:text-base md:text-xl lg:text-2xl">
+                      {subtitle}
+                    </p>
+                    <Button
+                      size="lg"
+                      variant="default"
+                      asChild
+                      className="text-sm sm:text-base"
+                      onClick={() => router.push("/browse")}
+                    >
+                      <span>{t("shopNow", { defaultValue: "Shop Now" })}</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Pagination indicators */}
       <div
         className={cn(
           "absolute right-0 left-0 flex justify-center gap-2",
-          showBanner ? "bottom-11" : "bottom-4",
+          showBanner ? "bottom-16" : "bottom-8",
         )}
       >
         {slides.map((_, index) => (
