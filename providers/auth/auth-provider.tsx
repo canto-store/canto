@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { AuthContextType, AuthState, User } from "@/types/auth";
+import { toast } from "sonner";
 
 const initialState: AuthState = {
   user: null,
@@ -50,8 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setState({ ...state, isLoading: true, error: null });
 
-      // Mock login logic
-      if (email === "omar" && password === "omar") {
+      if (email === "omar@example.com" && password === "omar") {
         const mockUser: User = {
           id: "1",
           email: "omar@example.com",
@@ -60,7 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           createdAt: new Date(),
         };
 
-        // Store mock user in localStorage
         localStorage.setItem("mockUser", JSON.stringify(mockUser));
 
         setState({
@@ -69,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error: null,
         });
 
+        toast.success("Login successful");
         router.refresh();
         return;
       }
