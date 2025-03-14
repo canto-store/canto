@@ -56,57 +56,14 @@ export default function CartPage() {
 
             <div
               className={cn(
-                "min-h-[calc(100vh-350px)] divide-y divide-gray-200 overflow-y-auto",
+                "divide-y divide-gray-200 overflow-y-auto",
                 isUpdating && "opacity-50",
               )}
             >
               {items.map((item) => (
                 <div key={item.name} className="p-3 sm:p-4">
                   {/* Custom wrapper with improved mobile spacing */}
-                  <div className="cart-item-wrapper">
-                    <style jsx>{`
-                      /* Base styles for both LTR and RTL */
-                      .cart-item-wrapper :global(.ml-0),
-                      .cart-item-wrapper :global(.mr-0) {
-                        margin-left: 0 !important;
-                        margin-right: 0 !important;
-                      }
-
-                      /* Mobile-first approach */
-                      .cart-item-wrapper :global(.cart-item-enhanced) {
-                        width: 100%;
-                      }
-
-                      @media (min-width: 640px) {
-                        /* LTR styles for small screens */
-                        .cart-item-wrapper :global(.ml-0.sm\\:ml-8) {
-                          margin-left: 2rem !important;
-                        }
-
-                        /* RTL styles for small screens */
-                        .cart-item-wrapper :global(.mr-0.sm\\:mr-8) {
-                          margin-right: 2rem !important;
-                        }
-                      }
-
-                      @media (min-width: 768px) {
-                        /* LTR styles for larger screens */
-                        .cart-item-wrapper :global(.ml-0.sm\\:ml-8) {
-                          margin-left: 3.5rem !important;
-                        }
-
-                        /* RTL styles for larger screens */
-                        .cart-item-wrapper :global(.mr-0.sm\\:mr-8) {
-                          margin-right: 3.5rem !important;
-                        }
-                      }
-                    `}</style>
-                    <CartItemComponent
-                      item={item}
-                      showControls={true}
-                      className="cart-item-enhanced"
-                    />
-                  </div>
+                  <CartItemComponent item={item} showControls={true} />
                 </div>
               ))}
             </div>

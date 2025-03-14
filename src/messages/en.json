@@ -95,7 +95,7 @@
     "proceedToCheckout": "Proceed to Checkout",
     "cartSummary": "Cart Summary",
     "shippingAndTaxes": "Shipping & taxes calculated at checkout",
-    "freeShipping": "Free shipping on orders over $50",
+    "freeShipping": "Free",
     "itemRemoved": "Item removed from cart",
     "itemAdded": "Item added to cart",
     "cartUpdated": "Cart updated successfully"
@@ -261,9 +261,6 @@
     "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "Re-enter your password",
     "passwordsDoNotMatch": "Passwords do not match",
-    "alreadyHaveAccount": "Already have an account?",
-    "noAccount": "Don't have an account?",
-    "registerLink": "Create an account",
-    "forgotPassword": "Forgot password?"
+    "alreadyHaveAccount": "Already have an account?"
   }
 }

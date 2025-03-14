@@ -1,0 +1,12 @@
+{
+  "projectId": "prj_DasytWo3lPPkqWYzljM0y",
+  "locale": {
+    "source": "en",
+    "targets": ["ar"]
+  },
+  "files": {
+    "json": {
+      "include": ["src/messages/[locale].json"]
+    }
+  }
+}
