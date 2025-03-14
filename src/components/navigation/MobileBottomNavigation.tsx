@@ -6,6 +6,7 @@ import { Home, Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth/auth-provider";
 import { useEffect, useState } from "react";
+import React from "react";
 
 export function MobileBottomNavigation() {
   const router = useRouter();
@@ -48,7 +49,7 @@ export function MobileBottomNavigation() {
   };
 
   return (
-    <div className="border-primary/20 fixed right-0 bottom-0 left-0 z-40 h-16 border-t bg-white shadow-lg md:hidden">
+    <div className="border-primary/20 fixed right-0 bottom-0 left-0 z-40 h-20 border-t bg-white shadow-lg md:hidden">
       <nav className="container mx-auto h-full">
         <ul className="flex h-full items-center justify-around">
           {navigationItems.map((item) => (
@@ -56,14 +57,14 @@ export function MobileBottomNavigation() {
               <button
                 onClick={() => handleNavigation(item.href)}
                 className={cn(
-                  "flex h-full w-full flex-col items-center justify-center gap-1 px-2 py-2 text-sm transition-colors",
+                  "flex h-full w-full flex-col items-center justify-center gap-1.5 px-2 py-2 text-sm transition-colors",
                   activePath === item.href
                     ? "text-primary"
                     : "hover:text-primary text-gray-500",
                 )}
               >
                 {item.icon}
-                <span className={cn("text-xs", isRTL ? "rtl" : "ltr")}>
+                <span className={cn("text-sm", isRTL ? "rtl" : "ltr")}>
                   {item.label}
                 </span>
               </button>

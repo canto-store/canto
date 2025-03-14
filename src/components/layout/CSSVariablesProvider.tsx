@@ -31,7 +31,7 @@ export function CSSVariablesProvider({ children }: CSSVariablesProviderProps) {
 
       // Set main-height based on current header height and bottom nav height
       // Bottom nav height is controlled by CSS media queries in globals.css
-      const bottomNavHeight = isMobile ? "4rem" : "0";
+      const bottomNavHeight = isMobile ? "5rem" : "0";
       root.style.setProperty(
         "--main-height",
         `calc(100vh - ${headerHeight} - ${bottomNavHeight})`,
