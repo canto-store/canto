@@ -47,7 +47,7 @@ export function MainNavigation() {
   };
 
   return (
-    <nav className="hidden md:flex md:w-3/5 md:justify-center">
+    <nav className="flex w-3/5 justify-center">
       <ul className="flex items-center space-x-12">
         {navigationItems.map((item) => (
           <li key={item.label}>

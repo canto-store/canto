@@ -86,7 +86,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
 
   return (
     <div
-      className={cn("relative", className)}
+      className={cn("relative isolate", className)}
       ref={dropdownRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -97,7 +97,12 @@ export function CartDropdown({ className }: CartDropdownProps) {
       >
         <ShoppingCart className="h-5 w-5" />
         {count > 0 && (
-          <span className="bg-primary absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white">
+          <span
+            className={cn(
+              "bg-primary absolute flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white",
+              isRTL ? "-top-1 -left-1" : "-top-1 -right-1",
+            )}
+          >
             {count}
           </span>
         )}
@@ -107,10 +112,9 @@ export function CartDropdown({ className }: CartDropdownProps) {
       {isOpen && (
         <div
           className={cn(
-            "bg-global ring-primary ring-opacity-5 absolute z-50 mt-2 w-[calc(100vw-32px)] max-w-[320px] rounded-md py-2 shadow-lg ring-1 sm:w-80",
-            isRTL ? "right-auto left-0" : "right-0 left-auto",
-            // Ensure dropdown stays within viewport on mobile
-            "max-sm:right-[-10px]",
+            "bg-global ring-primary ring-opacity-5 absolute z-50 mt-2 rounded-md py-2 shadow-lg ring-1",
+            "w-[calc(100vw-32px)] max-w-[320px] sm:w-80",
+            isRTL ? "left-0 origin-top-left" : "right-0 origin-top-right",
           )}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -155,7 +159,9 @@ export function CartDropdown({ className }: CartDropdownProps) {
                 </Button>
                 <Button className="h-9 flex-1 text-sm" onClick={handleCheckout}>
                   {t("header.checkout")}{" "}
-                  <ChevronIcon className="ml-1 h-4 w-4" />
+                  <ChevronIcon
+                    className={cn("h-4 w-4", isRTL ? "mr-1" : "ml-1")}
+                  />
                 </Button>
               </div>
             </>

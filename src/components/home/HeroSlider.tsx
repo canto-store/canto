@@ -27,6 +27,8 @@ export function HeroSlider({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [sliderHeight, setSliderHeight] =
+    useState<string>("calc(100vh - 4rem)");
   const sliderRef = useRef<HTMLDivElement>(null);
   const { showBanner } = useBanner();
   const router = useRouter();
@@ -37,23 +39,33 @@ export function HeroSlider({
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
-  // Detect mobile devices
+  // Calculate slider height based on banner visibility and viewport size
   useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const calculateHeight = () => {
+      const isMobileView = window.innerWidth < 768;
+      const headerHeight = showBanner
+        ? isMobileView
+          ? 6
+          : 7
+        : isMobileView
+          ? 4
+          : 4.5;
+
+      setSliderHeight(`calc(100vh - ${headerHeight}rem)`);
+      setIsMobile(isMobileView);
     };
 
-    // Check on initial load
-    checkIfMobile();
+    // Calculate on initial load
+    calculateHeight();
 
     // Add event listener for window resize
-    window.addEventListener("resize", checkIfMobile);
+    window.addEventListener("resize", calculateHeight);
 
     // Cleanup
     return () => {
-      window.removeEventListener("resize", checkIfMobile);
+      window.removeEventListener("resize", calculateHeight);
     };
-  }, []);
+  }, [showBanner]);
 
   useEffect(() => {
     // Don't auto-scroll if autoplayInterval is disabled or on mobile devices
@@ -121,14 +133,15 @@ export function HeroSlider({
     <section
       ref={sliderRef}
       className={cn(
-        "relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-4rem)] w-screen max-w-none overflow-hidden",
+        "relative right-[50%] left-[50%] -mx-[50vw] w-screen max-w-none overflow-hidden",
         className,
       )}
+      style={{ height: sliderHeight }}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div className="h-main relative w-full overflow-hidden">
+      <div className="relative h-full w-full overflow-hidden">
         <div
           className="flex h-full transition-transform duration-500 ease-in-out"
           style={{

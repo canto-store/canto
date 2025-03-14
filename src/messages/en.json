@@ -15,7 +15,8 @@
     "total": "Total",
     "viewCart": "View Cart",
     "checkout": "Checkout",
-    "login": "Sign in"
+    "login": "Sign in",
+    "hello": "Hello, {name}"
   },
   "products": {
     "addToCart": "Add to Cart",

@@ -104,9 +104,8 @@ export function UserDropdown() {
           >
             <div className="border-primary/10 mb-2 border-b px-4 pb-2">
               <p className="text-primary font-medium">
-                {user.name || user.email}
+                {t("hello", { name: user.name })}
               </p>
-              <p className="text-muted-foreground text-sm">{user.email}</p>
             </div>
 
             {dropDownItems.map((item) => (

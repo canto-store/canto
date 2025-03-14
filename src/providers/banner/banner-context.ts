@@ -6,12 +6,7 @@ export interface BannerContextType {
   showBanner: boolean;
   setShowBanner: (show: boolean) => void;
   closeBanner: () => void;
-  isLoading: boolean;
+  isLoading: false;
 }
 
-export const BannerContext = createContext<BannerContextType>({
-  showBanner: true,
-  setShowBanner: () => {},
-  closeBanner: () => {},
-  isLoading: true,
-});
+export const BannerContext = createContext<BannerContextType | null>(null);

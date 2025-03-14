@@ -19,18 +19,12 @@ export function AppLayout({
   className = "",
   theme = "default",
 }: AppLayoutProps) {
-  const { showBanner, isLoading } = useBanner();
+  const { showBanner } = useBanner();
 
   // Theme-based styling
   const bgColor = theme === "default" ? "" : "bg-[var(--color-background)]";
   const textColor =
     theme === "default" ? "text-black" : "text-[var(--color-primary)]";
-
-  // Calculate the padding top based on banner visibility
-  // Header height is 4.5rem (h-18), banner height is 2.5rem (h-10)
-
-  // Don't render the banner during loading to prevent flash
-  const shouldRenderBanner = !isLoading && showBanner;
 
   // Update CSS variables when banner visibility changes
   useEffect(() => {
@@ -39,7 +33,7 @@ export function AppLayout({
       const isMobile = window.innerWidth < 768;
       let headerHeight;
 
-      if (shouldRenderBanner) {
+      if (showBanner) {
         headerHeight = isMobile ? "6rem" : "7rem";
       } else {
         headerHeight = isMobile ? "4rem" : "4.5rem";
@@ -52,7 +46,7 @@ export function AppLayout({
     updateHeaderHeight();
     window.addEventListener("resize", updateHeaderHeight);
     return () => window.removeEventListener("resize", updateHeaderHeight);
-  }, [shouldRenderBanner]);
+  }, [showBanner]);
 
   return (
     <div className={cn("min-h-screen", bgColor, textColor)}>
@@ -60,7 +54,7 @@ export function AppLayout({
       <div
         className={cn(
           "fixed top-0 right-0 left-0 z-50 h-8 transition-all duration-300 md:h-10",
-          shouldRenderBanner
+          showBanner
             ? "translate-y-0"
             : "pointer-events-none -translate-y-full opacity-0",
         )}
@@ -71,14 +65,14 @@ export function AppLayout({
       <Header
         className={cn(
           "fixed right-0 left-0 z-40 transition-all duration-300",
-          shouldRenderBanner ? "top-8 md:top-10" : "top-0",
+          showBanner ? "top-8 md:top-10" : "top-0",
         )}
       />
       {/* Main content with dynamic padding based on banner visibility */}
       <main
         className={cn(
           "transition-all duration-300",
-          shouldRenderBanner ? "pt-24 md:pt-28" : "pt-16 md:pt-[4.5rem]",
+          showBanner ? "pt-24 md:pt-28" : "pt-16 md:pt-[4.5rem]",
           className,
         )}
       >

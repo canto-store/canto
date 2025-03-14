@@ -17,7 +17,8 @@
     "total": "الإجمالي",
     "viewCart": "عرض العربة",
     "checkout": "الدفع",
-    "login": "تسجيل الدخول"
+    "login": "تسجيل الدخول",
+    "hello": "مرحبًا بك، {name}"
   },
   "products": {
     "addToCart": "أضف إلى العربة",
