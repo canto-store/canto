@@ -9,6 +9,7 @@ import { type HeroSlide } from "@/lib/data/hero-slides";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useBanner } from "@/providers";
+import { useLocale } from "next-intl";
 
 interface HeroSliderProps {
   slides: HeroSlide[];
@@ -29,6 +30,8 @@ export function HeroSlider({
   const { showBanner } = useBanner();
   const router = useRouter();
   const t = useTranslations("heroSlider");
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -86,8 +89,10 @@ export function HeroSlider({
     if (!touchStart || !touchEnd) return;
 
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    // Invert swipe direction for RTL
+    const swipeDistance = isRTL ? -distance : distance;
+    const isLeftSwipe = swipeDistance > minSwipeDistance;
+    const isRightSwipe = swipeDistance < -minSwipeDistance;
 
     if (isLeftSwipe) {
       handleNextSlide();
@@ -125,7 +130,11 @@ export function HeroSlider({
       <div className="h-main relative w-full overflow-hidden">
         <div
           className="flex h-full transition-transform duration-500 ease-in-out"
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          style={{
+            transform: isRTL
+              ? `translateX(${currentSlide * 100}%)`
+              : `translateX(-${currentSlide * 100}%)`,
+          }}
         >
           {slides.map((slide, index) => {
             const { title, subtitle } = getTranslatedContent(slide);
@@ -186,18 +195,36 @@ export function HeroSlider({
 
       {/* Navigation arrows - hidden on mobile */}
       <SliderButton
-        direction="left"
+        direction={isRTL ? "right" : "left"}
         onClick={handlePrevSlide}
-        className="absolute top-1/2 left-2 z-10 hidden -translate-y-1/2 sm:left-4 sm:flex md:left-6 lg:left-8"
+        className={cn(
+          "absolute top-1/2 z-10 hidden -translate-y-1/2 sm:flex",
+          isRTL
+            ? "right-2 sm:right-4 md:right-6 lg:right-8"
+            : "left-2 sm:left-4 md:left-6 lg:left-8",
+        )}
       >
-        <ChevronLeft className="h-5 w-5" />
+        {isRTL ? (
+          <ChevronRight className="h-5 w-5" />
+        ) : (
+          <ChevronLeft className="h-5 w-5" />
+        )}
       </SliderButton>
       <SliderButton
-        direction="right"
+        direction={isRTL ? "left" : "right"}
         onClick={handleNextSlide}
-        className="absolute top-1/2 right-2 z-10 hidden -translate-y-1/2 sm:right-4 sm:flex md:right-6 lg:right-8"
+        className={cn(
+          "absolute top-1/2 z-10 hidden -translate-y-1/2 sm:flex",
+          isRTL
+            ? "left-2 sm:left-4 md:left-6 lg:left-8"
+            : "right-2 sm:right-4 md:right-6 lg:right-8",
+        )}
       >
-        <ChevronRight className="h-5 w-5" />
+        {isRTL ? (
+          <ChevronLeft className="h-5 w-5" />
+        ) : (
+          <ChevronRight className="h-5 w-5" />
+        )}
       </SliderButton>
     </section>
   );

@@ -18,17 +18,26 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
   // Update scroll position state when scrolling
   const handleScroll = useCallback(() => {
     if (scrollContainerRef.current) {
-      const newScrollPosition = scrollContainerRef.current.scrollLeft;
+      const scrollContainer = scrollContainerRef.current;
+      const scrollPosition = scrollContainer.scrollLeft;
 
-      // Calculate current index based on scroll position
-      if (scrollContainerRef.current.clientWidth > 0) {
-        const itemWidth =
-          scrollContainerRef.current.scrollWidth / products.length;
-        const newIndex = Math.round(newScrollPosition / itemWidth);
+      // Calculate current index based on scroll position, accounting for RTL
+      if (scrollContainer.clientWidth > 0) {
+        const itemWidth = scrollContainer.scrollWidth / products.length;
+
+        // In RTL mode, scrollLeft is negative in most browsers
+        // We need to use the absolute value and adjust the calculation
+        const normalizedScrollPosition = isRTL
+          ? scrollContainer.scrollWidth -
+            scrollContainer.clientWidth +
+            scrollPosition
+          : scrollPosition;
+
+        const newIndex = Math.round(normalizedScrollPosition / itemWidth);
         setCurrentIndex(newIndex);
       }
     }
-  }, [products.length]);
+  }, [products.length, isRTL]);
 
   // Attach scroll event listener
   useEffect(() => {
@@ -42,11 +51,19 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
   // Scroll to specific index
   const scrollToIndex = (index: number) => {
     if (scrollContainerRef.current && products.length > 0) {
-      const itemWidth =
-        scrollContainerRef.current.scrollWidth / products.length;
-      const newPosition = itemWidth * index;
+      const scrollContainer = scrollContainerRef.current;
+      const itemWidth = scrollContainer.scrollWidth / products.length;
 
-      scrollContainerRef.current.scrollTo({
+      // Calculate the position based on RTL or LTR
+      let newPosition = itemWidth * index;
+
+      // For RTL, we need to adjust the scroll position
+      if (isRTL) {
+        // In RTL, we need to scroll from the right side
+        newPosition = itemWidth * (products.length - index - 1);
+      }
+
+      scrollContainer.scrollTo({
         left: newPosition,
         behavior: "smooth",
       });
@@ -64,7 +81,11 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
         <div
           ref={scrollContainerRef}
           className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth pt-1 pb-6"
-          style={{ scrollbarWidth: "none" }}
+          style={{
+            scrollbarWidth: "none",
+            // Force the scroll direction for RTL
+            direction: isRTL ? "rtl" : "ltr",
+          }}
         >
           {products.map((product) => (
             <div
@@ -82,6 +103,7 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
       {/* Enhanced pagination indicators */}
       {products.length > 1 && (
         <div className="mt-6 flex justify-center gap-3">
+          {/* For RTL, we can keep the same order of indicators but adjust the scrollToIndex function */}
           {products.map((_, i) => (
             <button
               key={i}
