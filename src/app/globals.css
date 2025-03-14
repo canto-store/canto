@@ -51,6 +51,7 @@
     @apply font-body;
     background-color: var(--background-color);
     --radius: 0.625rem;
+    --webkit-tap-highlight-color: transparent;
   }
 
   h1,
