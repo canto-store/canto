@@ -269,6 +269,35 @@
     "welcomeBack": "مرحبًا بعودتك، {name}!",
     "redirectingIn": "جارٍ إعادة التوجيه إلى الصفحة الرئيسية في {seconds} ثوانٍ...",
     "goToHome": "الذهاب إلى الصفحة الرئيسية",
-    "viewProfile": "عرض الملف الشخصي"
+    "viewProfile": "عرض الملف الشخصي",
+    "signUp": "إنشاء حساب",
+    "signUpTitle": "إنشاء حسابك",
+    "signUpButton": "إنشاء حساب",
+    "signUpError": "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.",
+    "signUpDescription": "أنشئ حسابًا جديدًا لبدء التسوق",
+    "signIn": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "phoneNumber": "رقم الهاتف (اختياري)",
+    "acceptMarketing": "أرغب في تلقي رسائل البريد الإلكتروني الترويجية",
+    "signingUp": "جاري إنشاء الحساب...",
+    "serverError": "حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقاً.",
+    "signUpSuccess": "تم إنشاء الحساب بنجاح",
+    "verificationEmailSent": "يرجى التحقق من بريدك الإلكتروني لتأكيد حسابك.",
+    "verificationEmailSentTo": "لقد أرسلنا رسالة تحقق إلى {email}",
+    "goToLogin": "الذهاب إلى تسجيل الدخول",
+    "nameRequired": "الاسم مطلوب",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "errors": {
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "passwordRequired": "كلمة المرور مطلوبة",
+      "passwordTooShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+      "firstNameRequired": "الاسم الأول مطلوب",
+      "lastNameRequired": "اسم العائلة مطلوب"
+    }
   }
 }

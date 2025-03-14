@@ -18,6 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>(initialState);
   const router = useRouter();
   const t = useTranslations("auth");
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -110,39 +111,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (name: string, email: string) => {
-    try {
-      setState({ ...state, isLoading: true, error: null });
-
-      // Mock register logic
-      const mockUser: User = {
-        id: "1",
-        email,
-        name,
-        role: "user",
-        createdAt: new Date(),
-      };
-
-      // Store mock user in localStorage
-      localStorage.setItem("mockUser", JSON.stringify(mockUser));
-
-      setState({
-        user: mockUser,
-        isLoading: false,
-        error: null,
-      });
-
-      router.refresh();
-    } catch (err) {
-      setState({
-        ...state,
-        isLoading: false,
-        error: err instanceof Error ? err.message : "Registration failed",
-      });
-      throw err;
-    }
-  };
-
   const resetPassword = async (email: string) => {
     try {
       setState({ ...state, isLoading: true, error: null });
@@ -208,7 +176,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ...state,
     login,
     logout,
-    register,
     resetPassword,
     updateProfile,
   };

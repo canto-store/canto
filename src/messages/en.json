@@ -268,6 +268,35 @@
     "welcomeBack": "Welcome back, {name}!",
     "redirectingIn": "Redirecting to home in {seconds} seconds...",
     "goToHome": "Go to Home",
-    "viewProfile": "View Profile"
+    "viewProfile": "View Profile",
+    "signUp": "Sign Up",
+    "signUpTitle": "Create your account",
+    "signUpButton": "Sign Up",
+    "signUpError": "Sign up failed. Please try again.",
+    "signUpDescription": "Create a new account to start shopping",
+    "signIn": "Sign In",
+    "email": "Email Address",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phoneNumber": "Phone Number (Optional)",
+    "acceptMarketing": "I want to receive promotional emails",
+    "signingUp": "Signing Up...",
+    "serverError": "Something went wrong. Please try again later.",
+    "signUpSuccess": "Sign Up Successful",
+    "verificationEmailSent": "Please check your email to verify your account.",
+    "verificationEmailSentTo": "We've sent a verification email to {email}",
+    "goToLogin": "Go to Login",
+    "nameRequired": "Name is required",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "errors": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required"
+    }
   }
 }

@@ -9,19 +9,19 @@ import {
 import { SignUpForm } from "./SignUpForm";
 import { useTranslations } from "next-intl";
 
-interface RegisterModalProps {
+interface SignUpModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
+export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
   const t = useTranslations("auth");
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("registerTitle")}</DialogTitle>
+          <DialogTitle>{t("signUpTitle")}</DialogTitle>
         </DialogHeader>
         <SignUpForm onSuccess={onClose} />
       </DialogContent>

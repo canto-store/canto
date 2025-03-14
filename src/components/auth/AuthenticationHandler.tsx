@@ -34,7 +34,7 @@ export function AuthenticationHandler() {
 
   if (!user) {
     // Not logged in - show the login form
-    return <LoginForm />;
+    return <LoginForm onRegister={() => router.push("/sign-up")} />;
   }
 
   // Already logged in - show success message

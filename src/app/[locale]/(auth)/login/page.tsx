@@ -27,7 +27,7 @@ export default async function LoginPage() {
               {t("loginSubtitle")}
             </p>
           </div>
-          <div className="border-border bg-card rounded-lg border p-6 shadow-sm sm:p-8">
+          <div className="rounded-lg p-6 shadow-lg">
             <AuthenticationHandler />
           </div>
         </div>
