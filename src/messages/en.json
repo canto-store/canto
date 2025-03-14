@@ -261,6 +261,12 @@
     "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "Re-enter your password",
     "passwordsDoNotMatch": "Passwords do not match",
-    "alreadyHaveAccount": "Already have an account?"
+    "alreadyHaveAccount": "Already have an account?",
+    "loginSuccess": "Login successful",
+    "alreadyLoggedIn": "You're already signed in",
+    "welcomeBack": "Welcome back, {name}!",
+    "redirectingIn": "Redirecting to home in {seconds} seconds...",
+    "goToHome": "Go to Home",
+    "viewProfile": "View Profile"
   }
 }

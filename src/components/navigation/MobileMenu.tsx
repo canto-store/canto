@@ -5,7 +5,17 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { InstallPWA } from "@/components/pwa";
-import { Home, Search, Store, Heart, User, Settings } from "lucide-react";
+import {
+  Home,
+  Search,
+  Store,
+  LogIn,
+  Heart,
+  User,
+  Settings,
+  LogOut,
+} from "lucide-react";
+import { useAuth } from "@/providers/auth/auth-provider";
 
 interface NavigationItem {
   label: string;
@@ -22,8 +32,11 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
   const t = useTranslations("header");
   const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [isRTL, setIsRTL] = useState(false);
+  const { user, logout } = useAuth(); // Get user and logout from auth provider
+  const isAuthenticated = !!user;
 
-  const navigationItems: NavigationItem[] = [
+  // Common navigation items for all users
+  const commonNavigationItems: NavigationItem[] = [
     { label: t("home"), href: "/", icon: <Home className="h-5 w-5" /> },
     {
       label: t("browse"),
@@ -31,6 +44,10 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
       icon: <Search className="h-5 w-5" />,
     },
     { label: t("sell"), href: "/sell", icon: <Store className="h-5 w-5" /> },
+  ];
+
+  // User-specific navigation items (only shown when logged in)
+  const authenticatedNavigationItems: NavigationItem[] = [
     {
       label: t("favorites"),
       href: "/favorites",
@@ -46,6 +63,23 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
       href: "/settings",
       icon: <Settings className="h-5 w-5" />,
     },
+  ];
+
+  // Login navigation item (only shown when logged out)
+  const unauthenticatedNavigationItems: NavigationItem[] = [
+    {
+      label: t("login"),
+      href: "/login",
+      icon: <LogIn className="h-5 w-5" />,
+    },
+  ];
+
+  // Combine navigation items based on authentication status
+  const navigationItems = [
+    ...commonNavigationItems,
+    ...(isAuthenticated
+      ? authenticatedNavigationItems
+      : unauthenticatedNavigationItems),
   ];
 
   useEffect(() => {
@@ -64,6 +98,12 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
   const handleNavigation = (href: string) => {
     router.push(href);
   };
+
+  const handleLogout = async () => {
+    await logout();
+    // No need to close the menu as the page will refresh
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -86,6 +126,25 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
               </Button>
             </li>
           ))}
+
+          {/* Sign out button - only shown when logged in */}
+          {isAuthenticated && (
+            <li>
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+              >
+                <span
+                  className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}
+                >
+                  <LogOut className="h-5 w-5" />
+                  {t("logout")}
+                </span>
+              </Button>
+            </li>
+          )}
+
           {!isAppInstalled && (
             <li>
               <InstallPWA variant="menu" />

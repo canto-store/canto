@@ -15,23 +15,77 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-ibm-plex-sans-arabic",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: true,
 });
 
 const opticianSans = localFont({
   src: "../../../public/fonts/Optician-Sans.woff2",
   variable: "--font-optician-sans",
   display: "swap",
+  preload: true,
 });
 
 const spaceGrotesk = localFont({
   src: "../../../public/fonts/SpaceGrotesk.woff2",
   variable: "--font-space-grotesk",
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
-  title: "Canto",
+  title: {
+    template: "%s - Canto",
+    default: "Canto - Egyptian Marketplace",
+  },
+  description:
+    "Shop the latest trends in fashion, electronics, home goods, and more on Canto. Discover new arrivals, featured products, and best sellers with fast shipping and secure checkout.",
+  keywords: [
+    "marketplace",
+    "online shopping",
+    "ecommerce",
+    "products",
+    "canto",
+  ],
+  authors: [{ name: "Canto Team" }],
+  creator: "Canto",
+  publisher: "Canto",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   manifest: "/manifest.json",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://canto.com"),
+  openGraph: {
+    type: "website",
+    siteName: "Canto",
+    title: "Canto - Egyptian Marketplace",
+    description:
+      "Shop the latest trends in fashion, electronics, home goods, and more on Canto. Discover new arrivals, featured products, and best sellers with fast shipping and secure checkout.",
+    images: [
+      {
+        url: "/web-app-manifest-512x512.png",
+        width: 512,
+        height: 512,
+        alt: "Canto Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Canto - Egyptian Marketplace",
+    description:
+      "Shop the latest trends in fashion, electronics, home goods, and more on Canto. Discover new arrivals, featured products, and best sellers with fast shipping and secure checkout.",
+    creator: "@cantomarketplace",
+    images: ["/web-app-manifest-512x512.png"],
+  },
+  alternates: {
+    languages: {
+      en: "/en",
+      ar: "/ar",
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -70,8 +124,10 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  minimumScale: 1,
+  userScalable: true,
+  viewportFit: "cover",
 };
 
 interface RootLayoutProps {
@@ -176,7 +232,7 @@ export default async function RootLayout({
         )}
 
         {/* Script to show recovery link if needed */}
-        <Script id="recovery-link-script" strategy="afterInteractive">
+        <Script id="recovery-link-script" strategy="lazyOnload">
           {`
             // Check if there have been service worker failures
             if (typeof window !== 'undefined') {
@@ -241,11 +297,7 @@ export default async function RootLayout({
         </NextIntlClientProvider>
 
         {/* Service worker registration script - moved to end of body for better compatibility */}
-        <Script
-          src="/register-sw.js"
-          strategy="afterInteractive"
-          id="register-sw"
-        />
+        <Script src="/register-sw.js" strategy="lazyOnload" />
       </body>
     </html>
   );

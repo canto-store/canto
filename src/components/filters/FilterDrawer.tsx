@@ -63,6 +63,7 @@ export function FilterDrawer({
           variant="outline"
           size="sm"
           className="flex h-10 flex-1 items-center justify-center gap-1.5"
+          aria-label={`${translations.filters}${hasActiveFilters ? ` (${activeFiltersCount} ${translations.activeFilters})` : ""}`}
         >
           <Filter className="h-4 w-4" />
           {translations.filters}

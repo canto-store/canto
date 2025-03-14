@@ -10,9 +10,15 @@ import { Product } from "@/types";
 
 interface ProductCardProps {
   product: Product;
+  priority?: boolean;
+  index?: number;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({
+  product,
+  priority = false,
+  index = 0,
+}: ProductCardProps) {
   const t = useTranslations();
   const productsT = useTranslations("products");
   const router = useRouter();
@@ -45,6 +51,9 @@ export function ProductCard({ product }: ProductCardProps) {
     router.push(`/browse?brand=${encodeURIComponent(product.brand)}`);
   };
 
+  // Determine if this product should be prioritized
+  const shouldPrioritize = priority || index < 2;
+
   return (
     <div
       className="group relative flex h-full flex-col overflow-hidden rounded-lg text-sm shadow-md transition-shadow duration-300 hover:shadow-lg sm:text-base"
@@ -62,8 +71,9 @@ export function ProductCard({ product }: ProductCardProps) {
             width={600}
             height={600}
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 60vw, 500px"
-            priority={true}
-            quality={90}
+            priority={shouldPrioritize}
+            loading={shouldPrioritize ? "eager" : "lazy"}
+            quality={80}
           />
         </button>
       </div>

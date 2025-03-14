@@ -75,6 +75,7 @@ export function SortDrawer({
           variant="outline"
           size="sm"
           className="flex h-10 flex-1 items-center justify-center gap-1.5"
+          aria-label={`${translations.sortBy}: ${getSortDisplayText()}`}
         >
           <SlidersHorizontal className="mr-1 h-4 w-4" />
           <span className="truncate">{getSortDisplayText()}</span>

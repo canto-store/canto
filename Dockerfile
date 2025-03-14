@@ -36,6 +36,7 @@ WORKDIR /app
 # Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_APP_URL=https://staging.canto-store.com
 
 # Create a non-root user and give them ownership of the app directory
 RUN addgroup --system --gid 1001 nodejs && \

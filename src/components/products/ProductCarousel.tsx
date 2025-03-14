@@ -87,13 +87,17 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
             direction: isRTL ? "rtl" : "ltr",
           }}
         >
-          {products.map((product) => (
+          {products.map((product, index) => (
             <div
               key={product.name}
               className="w-full flex-shrink-0 snap-center px-4 md:px-12"
             >
               <div className="mx-auto max-w-md">
-                <ProductCard product={product} />
+                <ProductCard
+                  product={product}
+                  priority={index === 0}
+                  index={index}
+                />
               </div>
             </div>
           ))}

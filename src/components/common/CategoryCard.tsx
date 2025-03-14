@@ -5,9 +5,10 @@ import Image from "next/image";
 
 interface CategoryCardProps {
   category: Category;
+  index?: number;
 }
 
-export function CategoryCard({ category }: CategoryCardProps) {
+export function CategoryCard({ category, index = 0 }: CategoryCardProps) {
   const t = useTranslations();
   const router = useRouter();
   const getTranslatedCategoryName = (category: Category) => {
@@ -37,6 +38,9 @@ export function CategoryCard({ category }: CategoryCardProps) {
           width={300}
           height={300}
           sizes="(max-width: 768px) 100vw, 300px"
+          priority={index < 3}
+          loading={index < 3 ? "eager" : "lazy"}
+          quality={80}
         />
         <div className="absolute inset-0 bg-black/30 transition-opacity duration-300 group-hover:bg-black/40" />
         <div className="absolute inset-0 flex items-center justify-center">

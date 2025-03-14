@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { AppLayout } from "@/components/layout";
 import { useHomeProducts } from "@/hooks/use-home-products";
 import { HomePageSkeleton } from "@/components/home/HomePageSkeleton";
+import { OrganizationSchema } from "@/components/structured-data";
 
 export default function Home() {
   const t = useTranslations();
@@ -29,6 +30,7 @@ export default function Home() {
 
   return (
     <AppLayout theme="custom">
+      <OrganizationSchema />
       <HeroSlider slides={HERO_SLIDES} />
       <FeaturesBanner />
       <CategoryGrid categories={CATEGORIES} />

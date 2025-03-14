@@ -22,7 +22,10 @@ export function LanguageSelector() {
 
   return (
     <Select onValueChange={handleLanguageChange} defaultValue={locale}>
-      <SelectTrigger className="text-primary h-8 w-[90px] border-none hover:cursor-pointer focus:ring-0 sm:h-10 sm:w-[120px]">
+      <SelectTrigger
+        className="text-primary h-8 w-[90px] border-none hover:cursor-pointer focus:ring-0 sm:h-10 sm:w-[120px]"
+        aria-label="Select language"
+      >
         <SelectValue
           placeholder={<Globe className="h-4 w-4 sm:h-5 sm:w-5" />}
         />

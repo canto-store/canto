@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { AuthContextType, AuthState, User } from "@/types/auth";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const initialState: AuthState = {
   user: null,
@@ -16,7 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>(initialState);
   const router = useRouter();
-
+  const t = useTranslations("auth");
   useEffect(() => {
     checkAuth();
   }, []);
@@ -69,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error: null,
         });
 
-        toast.success("Login successful");
+        toast.success(t("loginSuccess"));
         router.refresh();
         return;
       }

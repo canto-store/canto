@@ -10,6 +10,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useBanner } from "@/providers";
 import { useLocale } from "next-intl";
+import Image from "next/image";
 
 interface HeroSliderProps {
   slides: HeroSlide[];
@@ -140,10 +141,17 @@ export function HeroSlider({
             const { title, subtitle } = getTranslatedContent(slide);
             return (
               <div key={index} className="relative h-full w-full flex-shrink-0">
-                <div
-                  className="absolute inset-0 h-full w-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${slide.image})` }}
-                >
+                <div className="absolute inset-0 h-full w-full">
+                  <Image
+                    src={slide.image}
+                    alt={title}
+                    fill
+                    sizes="100vw"
+                    className="object-cover"
+                    priority={index === 0}
+                    quality={80}
+                    loading={index === 0 ? "eager" : "lazy"}
+                  />
                   <div className="absolute inset-0 bg-black/30" />
                 </div>
                 <div className="relative flex h-full items-center justify-center px-4 text-center text-white sm:px-6 md:px-8 lg:px-16">
