@@ -1,257 +1,315 @@
-if ("serviceWorker" in navigator) {
-  if (document.readyState === "complete") {
-    registerSW();
-  } else {
-    window.addEventListener("load", registerSW);
-  }
-}
+/**
+ * Canto Service Worker Registration
+ * This script handles the registration and lifecycle management of the service worker
+ */
 
-function registerSW() {
+// Configuration
+const SW_URL = "/sw.js";
+const DEBUG = false;
+const RECOVERY_URL = "/recovery.html";
+
+// Utility for logging
+const log = (message, isError = false) => {
+  if (DEBUG || isError) {
+    if (isError) {
+      console.error(`[SW Registration] ${message}`);
+    } else {
+      console.log(`[SW Registration] ${message}`);
+    }
+  }
+};
+
+// Check if we should register the service worker
+const shouldRegisterSW = () => {
+  // Only register in secure contexts (HTTPS or localhost)
+  if (!("serviceWorker" in navigator)) {
+    log("Service Worker not supported in this browser", true);
+    return false;
+  }
+
   // Check if we're in development mode
   const isDev =
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1" ||
     window.location.protocol === "http:";
 
-  if (isDev) {
-    console.log("Development mode: Not registering service worker");
-    return;
+  if (isDev && !DEBUG) {
+    log("Development mode: Not registering service worker");
+    return false;
   }
 
-  // Check if we're in recovery mode
-  if (window.location.pathname === "/recovery.html") {
-    console.log("Recovery mode: Not registering service worker");
-    return;
+  // Don't register in recovery mode
+  if (window.location.pathname === RECOVERY_URL) {
+    log("Recovery mode: Not registering service worker");
+    return false;
   }
 
-  // Check if there was a previous failure
-  const swFailureCount = parseInt(
+  return true;
+};
+
+// Register the service worker
+const registerServiceWorker = async () => {
+  if (!shouldRegisterSW()) return;
+
+  try {
+    // Add cache-busting query parameter
+    const swUrlWithCache = `${SW_URL}?v=${new Date().getTime()}`;
+
+    // Register the service worker
+    const registration = await navigator.serviceWorker.register(swUrlWithCache);
+    log(
+      `Service Worker registered successfully with scope: ${registration.scope}`,
+    );
+
+    // Store registration for later use
+    window.swRegistration = registration;
+
+    // Reset failure counter on successful registration
+    localStorage.removeItem("sw_failure_count");
+    localStorage.removeItem("sw_last_failure_time");
+
+    // Set up update detection
+    setupUpdateDetection(registration);
+
+    // Set up periodic updates
+    setupPeriodicUpdates(registration);
+
+    return registration;
+  } catch (error) {
+    log(`Service Worker registration failed: ${error}`, true);
+    recordFailure();
+    return null;
+  }
+};
+
+// Set up detection for service worker updates
+const setupUpdateDetection = (registration) => {
+  // When a new service worker is found
+  registration.addEventListener("updatefound", () => {
+    const newWorker = registration.installing;
+
+    newWorker.addEventListener("statechange", () => {
+      // When the new service worker is installed
+      if (
+        newWorker.state === "installed" &&
+        navigator.serviceWorker.controller
+      ) {
+        log("New service worker installed and waiting to activate");
+        showUpdatePrompt();
+      }
+
+      // If installation fails
+      if (newWorker.state === "redundant") {
+        log("Service Worker installation failed", true);
+        recordFailure();
+      }
+    });
+  });
+
+  // Listen for controller change
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    log("Service Worker controller changed - page will reload");
+    // Reload the page when the new service worker takes control
+    if (!window.isReloading) {
+      window.isReloading = true;
+      window.location.reload();
+    }
+  });
+};
+
+// Set up periodic updates for the service worker
+const setupPeriodicUpdates = (registration) => {
+  // Check for updates immediately
+  setTimeout(() => {
+    registration
+      .update()
+      .catch((err) => log(`Update check failed: ${err}`, true));
+  }, 5000);
+
+  // Then check every 6 hours
+  setInterval(
+    () => {
+      registration
+        .update()
+        .catch((err) => log(`Update check failed: ${err}`, true));
+    },
+    6 * 60 * 60 * 1000,
+  );
+};
+
+// Show a prompt when an update is available
+const showUpdatePrompt = () => {
+  // Don't show the prompt if it's already visible
+  if (document.getElementById("sw-update-toast")) return;
+
+  const toast = document.createElement("div");
+  toast.id = "sw-update-toast";
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.backgroundColor = "white";
+  toast.style.color = "#333";
+  toast.style.padding = "16px";
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
+  toast.style.zIndex = "9999";
+  toast.style.display = "flex";
+  toast.style.flexDirection = "column";
+  toast.style.gap = "12px";
+  toast.style.maxWidth = "300px";
+
+  toast.innerHTML = `
+    <div style="font-weight: 600; margin-bottom: 4px;">Update Available</div>
+    <p style="margin: 0; font-size: 14px;">A new version of the app is available. Refresh to update?</p>
+    <div style="display: flex; gap: 8px; margin-top: 8px;">
+      <button id="sw-update-now" style="background-color: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; flex: 1;">Update Now</button>
+      <button id="sw-update-later" style="background-color: #e5e7eb; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Later</button>
+    </div>
+  `;
+
+  document.body.appendChild(toast);
+
+  // Add event listeners
+  document.getElementById("sw-update-now").addEventListener("click", () => {
+    if (window.swRegistration && window.swRegistration.waiting) {
+      // Send message to the waiting service worker to skip waiting
+      window.swRegistration.waiting.postMessage({ type: "SKIP_WAITING" });
+    }
+    toast.remove();
+  });
+
+  document.getElementById("sw-update-later").addEventListener("click", () => {
+    toast.remove();
+  });
+
+  // Auto-remove after 1 hour
+  setTimeout(
+    () => {
+      if (document.body.contains(toast)) {
+        toast.remove();
+      }
+    },
+    60 * 60 * 1000,
+  );
+};
+
+// Record a service worker failure
+const recordFailure = () => {
+  const currentCount = parseInt(
     localStorage.getItem("sw_failure_count") || "0",
   );
-  const lastFailureTime = localStorage.getItem("sw_last_failure_time");
+  localStorage.setItem("sw_failure_count", (currentCount + 1).toString());
+  localStorage.setItem("sw_last_failure_time", new Date().getTime().toString());
+
+  // If there have been multiple failures, show a recovery option
+  if (currentCount >= 2) {
+    showRecoveryPrompt();
+  }
+};
+
+// Show a recovery prompt
+const showRecoveryPrompt = () => {
+  // Check if we've already shown the prompt recently
+  const lastPromptTime = localStorage.getItem("sw_recovery_prompt_time");
   const now = new Date().getTime();
 
-  // If there have been multiple failures in a short time, redirect to recovery
-  if (
-    swFailureCount > 2 &&
-    lastFailureTime &&
-    now - parseInt(lastFailureTime) < 5 * 60 * 1000
-  ) {
-    console.log(
-      "Multiple service worker failures detected, redirecting to recovery page",
-    );
-    window.location.href = "/recovery.html";
+  if (lastPromptTime && now - parseInt(lastPromptTime) < 60 * 60 * 1000) {
+    // Don't show the prompt more than once per hour
     return;
   }
 
-  const swUrl = "/sw.js";
+  // Record that we showed the prompt
+  localStorage.setItem("sw_recovery_prompt_time", now.toString());
 
-  // Add a timestamp to the service worker URL to force updates
-  const swUrlWithCache = `${swUrl}?v=${new Date().getTime()}`;
+  // Create and show a recovery prompt
+  const promptContainer = document.createElement("div");
+  promptContainer.style.position = "fixed";
+  promptContainer.style.bottom = "20px";
+  promptContainer.style.left = "20px";
+  promptContainer.style.backgroundColor = "white";
+  promptContainer.style.padding = "16px";
+  promptContainer.style.borderRadius = "8px";
+  promptContainer.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
+  promptContainer.style.zIndex = "9999";
+  promptContainer.style.maxWidth = "300px";
 
-  // Set up error detection
-  let registrationSuccessful = false;
-  let registrationTimeout = setTimeout(() => {
-    if (!registrationSuccessful) {
-      console.error("Service Worker registration timed out");
-      recordFailure();
-    }
-  }, 10000); // 10 second timeout
+  promptContainer.innerHTML = `
+    <div style="font-weight: 600; margin-bottom: 8px;">Having trouble with the app?</div>
+    <p style="margin: 0 0 16px 0; font-size: 14px;">We've detected some issues that might affect your experience.</p>
+    <div style="display: flex; gap: 8px;">
+      <button id="fix-app-btn" style="background-color: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Fix Now</button>
+      <button id="dismiss-prompt-btn" style="background-color: #e5e7eb; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Dismiss</button>
+    </div>
+  `;
 
-  navigator.serviceWorker
-    .register(swUrlWithCache)
-    .then((registration) => {
-      registrationSuccessful = true;
-      clearTimeout(registrationTimeout);
-      console.log("Service Worker registered with scope:", registration.scope);
+  document.body.appendChild(promptContainer);
 
-      // Reset failure counter on successful registration
-      localStorage.setItem("sw_failure_count", "0");
+  // Add event listeners
+  document.getElementById("fix-app-btn").addEventListener("click", () => {
+    window.location.href = RECOVERY_URL;
+  });
 
-      // Store the registration for later use
-      window.swRegistration = registration;
-
-      // Check for updates on page load
-      registration.update();
-
-      // Set up periodic checks for updates (every 30 minutes)
-      setInterval(
-        () => {
-          registration.update();
-          console.log("Checking for service worker updates...");
-        },
-        30 * 60 * 1000,
-      );
-
-      // Set up error detection for the service worker
-      registration.addEventListener("updatefound", () => {
-        const newWorker = registration.installing;
-
-        newWorker.addEventListener("statechange", () => {
-          if (newWorker.state === "redundant") {
-            console.error("Service Worker installation failed");
-            recordFailure();
-          }
-
-          if (
-            newWorker.state === "installed" &&
-            navigator.serviceWorker.controller
-          ) {
-            console.log("New service worker installed and waiting to activate");
-          }
-        });
-      });
-    })
-    .catch((error) => {
-      registrationSuccessful = true; // Prevent timeout from also triggering
-      clearTimeout(registrationTimeout);
-      console.error("Service Worker registration failed:", error);
-      recordFailure();
+  document
+    .getElementById("dismiss-prompt-btn")
+    .addEventListener("click", () => {
+      promptContainer.remove();
     });
 
-  // Initialize deferredPrompt as null
+  // Auto-remove after 30 seconds
+  setTimeout(() => {
+    if (document.body.contains(promptContainer)) {
+      promptContainer.remove();
+    }
+  }, 30 * 1000);
+};
+
+// Set up PWA installation prompt
+const setupInstallPrompt = () => {
+  // Initialize deferredPrompt for use later
   window.deferredPrompt = null;
 
-  // Listen for the beforeinstallprompt event
+  // Listen for beforeinstallprompt event
   window.addEventListener("beforeinstallprompt", (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later
     window.deferredPrompt = e;
-    console.log("Install prompt ready");
+    log("Install prompt ready");
   });
 
-  // Handle iOS PWA events
-  const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  // Listen for appinstalled event
+  window.addEventListener("appinstalled", () => {
+    // Clear the deferredPrompt
+    window.deferredPrompt = null;
+    log("PWA was installed");
 
-  if (isIOS) {
-    // Check if the app is running in standalone mode (installed PWA)
-    const isInStandaloneMode =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      navigator.standalone === true;
-
-    if (isInStandaloneMode) {
-      console.log("Running as installed PWA on iOS");
-
-      // Add event listeners for iOS PWA lifecycle
-      window.addEventListener("pagehide", () => {
-        // This event fires when the page is hidden (app closed or switched)
-        console.log("App hidden or closed on iOS");
-        // Store any necessary state in localStorage
-        localStorage.setItem("pwa_last_active", new Date().toISOString());
-      });
-
-      window.addEventListener("pageshow", (event) => {
-        // This event fires when the page is shown (app opened or resumed)
-        if (event.persisted) {
-          console.log("App resumed from iOS back-forward cache");
-          // Check if we need to refresh content
-          const lastActive = localStorage.getItem("pwa_last_active");
-          if (lastActive) {
-            const lastActiveTime = new Date(lastActive).getTime();
-            const currentTime = new Date().getTime();
-            const timeDiff = currentTime - lastActiveTime;
-
-            // If app was inactive for more than 5 minutes, refresh content
-            if (timeDiff > 5 * 60 * 1000) {
-              console.log(
-                "App was inactive for more than 5 minutes, refreshing content",
-              );
-              window.location.reload();
-            }
-          }
-        }
-      });
-    }
-  }
-
-  // Add a global error handler to detect page load failures
-  window.addEventListener("error", (event) => {
-    console.error("Global error detected:", event.message);
-    // Only count certain errors that might be related to service worker issues
-    if (
-      event.message &&
-      (event.message.includes("fetch") ||
-        event.message.includes("network") ||
-        event.message.includes("load") ||
-        event.message.includes("failed"))
-    ) {
-      recordFailure();
+    // You might want to track this event for analytics
+    if (typeof gtag === "function") {
+      gtag("event", "pwa_install");
     }
   });
+};
 
-  // Function to record a service worker failure
-  function recordFailure() {
-    const currentCount = parseInt(
-      localStorage.getItem("sw_failure_count") || "0",
-    );
-    localStorage.setItem("sw_failure_count", (currentCount + 1).toString());
-    localStorage.setItem(
-      "sw_last_failure_time",
-      new Date().getTime().toString(),
-    );
-
-    // If there have been multiple failures, show a recovery option
-    if (currentCount >= 2) {
-      showRecoveryPrompt();
-    }
-  }
-
-  // Function to show a recovery prompt
-  function showRecoveryPrompt() {
-    // Check if we've already shown the prompt recently
-    const lastPromptTime = localStorage.getItem("sw_recovery_prompt_time");
-    const now = new Date().getTime();
-
-    if (lastPromptTime && now - parseInt(lastPromptTime) < 60 * 60 * 1000) {
-      // Don't show the prompt more than once per hour
-      return;
-    }
-
-    // Record that we showed the prompt
-    localStorage.setItem("sw_recovery_prompt_time", now.toString());
-
-    // Create and show a recovery prompt
-    const promptContainer = document.createElement("div");
-    promptContainer.style.position = "fixed";
-    promptContainer.style.bottom = "20px";
-    promptContainer.style.right = "20px";
-    promptContainer.style.backgroundColor = "white";
-    promptContainer.style.padding = "15px";
-    promptContainer.style.borderRadius = "8px";
-    promptContainer.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
-    promptContainer.style.zIndex = "9999";
-    promptContainer.style.maxWidth = "300px";
-
-    promptContainer.innerHTML = `
-      <div style="margin-bottom: 10px; font-weight: bold;">Having trouble with the app?</div>
-      <p style="margin-bottom: 15px; font-size: 14px;">We've detected some issues that might affect your experience.</p>
-      <div style="display: flex; justify-content: space-between;">
-        <button id="fix-app-btn" style="background-color: #2563eb; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Fix Now</button>
-        <button id="dismiss-prompt-btn" style="background-color: #e5e7eb; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Dismiss</button>
-      </div>
-    `;
-
-    document.body.appendChild(promptContainer);
-
-    // Add event listeners
-    document.getElementById("fix-app-btn").addEventListener("click", () => {
-      window.location.href = "/recovery.html";
+// Initialize everything
+const init = () => {
+  if (document.readyState === "complete") {
+    registerServiceWorker();
+    setupInstallPrompt();
+  } else {
+    window.addEventListener("load", () => {
+      registerServiceWorker();
+      setupInstallPrompt();
     });
-
-    document
-      .getElementById("dismiss-prompt-btn")
-      .addEventListener("click", () => {
-        promptContainer.remove();
-      });
-
-    // Auto-remove after 30 seconds
-    setTimeout(() => {
-      if (document.body.contains(promptContainer)) {
-        promptContainer.remove();
-      }
-    }, 30000);
   }
-}
+};
+
+// Initialize the service worker registration
+void (function () {
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
+    // Document already ready, initialize immediately
+    init();
+  } else {
+    // Wait for the DOM to be ready
+    window.addEventListener("DOMContentLoaded", init);
+  }
+})();

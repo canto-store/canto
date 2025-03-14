@@ -5,16 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { InstallPWA } from "@/components/pwa";
-import {
-  Home,
-  Search,
-  Store,
-  LogIn,
-  Heart,
-  User,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { Store, Heart, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface NavigationItem {
@@ -35,29 +26,9 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
   const { user, logout } = useAuth(); // Get user and logout from auth provider
   const isAuthenticated = !!user;
 
-  // Common navigation items for all users
+  // Common navigation items for all users (removed home and browse)
   const commonNavigationItems: NavigationItem[] = [
-    { label: t("home"), href: "/", icon: <Home className="h-5 w-5" /> },
-    {
-      label: t("browse"),
-      href: "/browse",
-      icon: <Search className="h-5 w-5" />,
-    },
     { label: t("sell"), href: "/sell", icon: <Store className="h-5 w-5" /> },
-  ];
-
-  // User-specific navigation items (only shown when logged in)
-  const authenticatedNavigationItems: NavigationItem[] = [
-    {
-      label: t("favorites"),
-      href: "/favorites",
-      icon: <Heart className="h-5 w-5" />,
-    },
-    {
-      label: t("account"),
-      href: "/profile",
-      icon: <User className="h-5 w-5" />,
-    },
     {
       label: t("settings"),
       href: "/settings",
@@ -65,21 +36,17 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
     },
   ];
 
-  // Login navigation item (only shown when logged out)
-  const unauthenticatedNavigationItems: NavigationItem[] = [
+  const authenticatedNavigationItems: NavigationItem[] = [
     {
-      label: t("login"),
-      href: "/login",
-      icon: <LogIn className="h-5 w-5" />,
+      label: t("favorites"),
+      href: "/favorites",
+      icon: <Heart className="h-5 w-5" />,
     },
   ];
 
-  // Combine navigation items based on authentication status
   const navigationItems = [
     ...commonNavigationItems,
-    ...(isAuthenticated
-      ? authenticatedNavigationItems
-      : unauthenticatedNavigationItems),
+    ...(isAuthenticated ? authenticatedNavigationItems : []),
   ];
 
   useEffect(() => {
@@ -101,7 +68,6 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
 
   const handleLogout = async () => {
     await logout();
-    // No need to close the menu as the page will refresh
   };
 
   if (!isOpen) return null;

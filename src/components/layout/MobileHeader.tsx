@@ -5,7 +5,6 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { CartDropdown } from "@/components/cart/CartDropdown";
-import { LanguageSelector } from "@/components/language/LanguageSelector";
 import { MobileMenu } from "@/components/navigation/MobileMenu";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +40,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
               <Menu className="h-6 w-6" />
             )}
           </button>
-          <LanguageSelector className="h-7 w-[80px] scale-90 transform" />
+          {/* <LanguageSelector className="h-7 w-[80px] scale-90 transform" /> */}
         </div>
 
         {/* Center section: Logo */}

@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canto - Recovery Mode</title>
     <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --danger: #dc2626;
+        --danger-hover: #b91c1c;
+        --secondary: #6b7280;
+        --secondary-hover: #4b5563;
+        --background: #f9fafb;
+        --card-bg: #ffffff;
+        --text: #1f2937;
+        --text-secondary: #4b5563;
+        --border: #e5e7eb;
+        --success: #10b981;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
         font-family:
           system-ui,
@@ -18,68 +39,150 @@
           "Open Sans",
           "Helvetica Neue",
           sans-serif;
-        max-width: 600px;
+        max-width: 650px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 24px;
         line-height: 1.6;
-        color: #333;
+        color: var(--text);
+        background-color: var(--background);
       }
+
       h1 {
-        color: #2563eb;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-size: 1.875rem;
+      }
+
+      h2 {
+        font-size: 1.25rem;
         margin-bottom: 1rem;
       }
+
+      p {
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+      }
+
       .card {
-        background-color: #f9fafb;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border);
       }
+
       .status {
-        background-color: #f3f4f6;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 20px 0;
+        background-color: var(--background);
+        padding: 16px;
+        border-radius: 8px;
+        margin: 16px 0;
+        border: 1px solid var(--border);
       }
+
       .button {
         display: inline-block;
-        background-color: #2563eb;
+        background-color: var(--primary);
         color: white;
         padding: 10px 20px;
-        border-radius: 5px;
+        border-radius: 6px;
         text-decoration: none;
         margin-top: 10px;
         border: none;
         cursor: pointer;
         font-size: 16px;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
       }
+
+      .button:hover {
+        background-color: var(--primary-hover);
+      }
+
       .button.secondary {
-        background-color: #6b7280;
+        background-color: var(--secondary);
       }
+
+      .button.secondary:hover {
+        background-color: var(--secondary-hover);
+      }
+
       .button.danger {
-        background-color: #dc2626;
+        background-color: var(--danger);
       }
+
+      .button.danger:hover {
+        background-color: var(--danger-hover);
+      }
+
       .actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 12px;
         margin-top: 20px;
       }
+
       .progress {
-        height: 4px;
-        background-color: #e5e7eb;
-        border-radius: 2px;
-        margin: 10px 0;
+        height: 6px;
+        background-color: var(--border);
+        border-radius: 3px;
+        margin: 16px 0;
         overflow: hidden;
       }
+
       .progress-bar {
         height: 100%;
-        background-color: #2563eb;
+        background-color: var(--primary);
         width: 0%;
         transition: width 0.3s ease;
       }
+
       .hidden {
         display: none;
+      }
+
+      .success {
+        color: var(--success);
+        margin-top: 8px;
+        font-weight: 500;
+      }
+
+      .error {
+        color: var(--danger);
+        margin-top: 8px;
+        font-weight: 500;
+      }
+
+      .details {
+        margin-top: 16px;
+        padding: 12px;
+        background-color: var(--background);
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 14px;
+        max-height: 200px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 16px;
+        }
+
+        .card {
+          padding: 16px;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+          text-align: center;
+        }
       }
     </style>
   </head>
@@ -89,8 +192,8 @@
     <div class="card">
       <h2>Service Worker Troubleshooter</h2>
       <p>
-        This page will help fix issues with the app not working properly in
-        Safari or other browsers.
+        This page will help fix issues with the app not working properly. It can
+        resolve problems with offline functionality, caching, and app updates.
       </p>
 
       <div id="status" class="status">Checking application status...</div>
@@ -120,6 +223,17 @@
         </button>
         <button id="reset-all" class="button danger">Reset Everything</button>
       </div>
+
+      <div id="manual-result" class="hidden">
+        <div id="manual-status" class="status"></div>
+        <div id="manual-details" class="details hidden"></div>
+      </div>
+    </div>
+
+    <div id="diagnostic-info" class="card hidden">
+      <h2>Diagnostic Information</h2>
+      <p>Technical details about your current application state:</p>
+      <div id="diagnostic-details" class="details"></div>
     </div>
 
     <script>
@@ -133,6 +247,11 @@
       const clearCacheButton = document.getElementById("clear-cache");
       const clearStorageButton = document.getElementById("clear-storage");
       const resetAllButton = document.getElementById("reset-all");
+      const manualResult = document.getElementById("manual-result");
+      const manualStatus = document.getElementById("manual-status");
+      const manualDetails = document.getElementById("manual-details");
+      const diagnosticInfo = document.getElementById("diagnostic-info");
+      const diagnosticDetails = document.getElementById("diagnostic-details");
 
       // Update progress bar
       function updateProgress(percent) {
@@ -140,8 +259,23 @@
       }
 
       // Update status message
-      function updateStatus(message) {
+      function updateStatus(message, isError = false) {
         statusEl.textContent = message;
+        statusEl.className = isError ? "status error" : "status";
+      }
+
+      // Update manual status
+      function updateManualStatus(message, isError = false, details = null) {
+        manualResult.classList.remove("hidden");
+        manualStatus.textContent = message;
+        manualStatus.className = isError ? "status error" : "status";
+
+        if (details) {
+          manualDetails.textContent = details;
+          manualDetails.classList.remove("hidden");
+        } else {
+          manualDetails.classList.add("hidden");
+        }
       }
 
       // Check if service worker is registered
@@ -153,15 +287,25 @@
           };
         }
 
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        return {
-          registered: registrations.length > 0,
-          count: registrations.length,
-          message:
-            registrations.length > 0
-              ? `Found ${registrations.length} service worker registration(s).`
-              : "No service workers registered.",
-        };
+        try {
+          const registrations =
+            await navigator.serviceWorker.getRegistrations();
+          return {
+            registered: registrations.length > 0,
+            count: registrations.length,
+            message:
+              registrations.length > 0
+                ? `Found ${registrations.length} service worker registration(s).`
+                : "No service workers registered.",
+          };
+        } catch (error) {
+          return {
+            registered: false,
+            error: true,
+            message: "Error checking service worker registrations.",
+            details: error.toString(),
+          };
+        }
       }
 
       // Check if caches exist
@@ -173,16 +317,53 @@
           };
         }
 
-        const cacheNames = await caches.keys();
-        return {
-          exists: cacheNames.length > 0,
-          count: cacheNames.length,
-          names: cacheNames,
-          message:
-            cacheNames.length > 0
-              ? `Found ${cacheNames.length} cache(s): ${cacheNames.join(", ")}`
-              : "No caches found.",
-        };
+        try {
+          const cacheNames = await caches.keys();
+          return {
+            exists: cacheNames.length > 0,
+            count: cacheNames.length,
+            names: cacheNames,
+            message:
+              cacheNames.length > 0
+                ? `Found ${cacheNames.length} cache(s): ${cacheNames.join(", ")}`
+                : "No caches found.",
+          };
+        } catch (error) {
+          return {
+            exists: false,
+            error: true,
+            message: "Error checking caches.",
+            details: error.toString(),
+          };
+        }
+      }
+
+      // Check local storage
+      function checkLocalStorage() {
+        try {
+          const itemCount = localStorage.length;
+          const keys = [];
+          for (let i = 0; i < itemCount; i++) {
+            keys.push(localStorage.key(i));
+          }
+
+          return {
+            exists: itemCount > 0,
+            count: itemCount,
+            keys: keys,
+            message:
+              itemCount > 0
+                ? `Found ${itemCount} item(s) in local storage.`
+                : "No items in local storage.",
+          };
+        } catch (error) {
+          return {
+            exists: false,
+            error: true,
+            message: "Error checking local storage.",
+            details: error.toString(),
+          };
+        }
       }
 
       // Unregister service workers
@@ -191,25 +372,48 @@
           return { success: false, message: "Service Worker not supported." };
         }
 
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        if (registrations.length === 0) {
+        try {
+          const registrations =
+            await navigator.serviceWorker.getRegistrations();
+          if (registrations.length === 0) {
+            return {
+              success: true,
+              message: "No service workers to unregister.",
+            };
+          }
+
+          let unregisteredCount = 0;
+          const results = [];
+
+          for (const registration of registrations) {
+            try {
+              const scope = registration.scope;
+              const success = await registration.unregister();
+
+              if (success) {
+                unregisteredCount++;
+                results.push(`✓ Unregistered: ${scope}`);
+              } else {
+                results.push(`✗ Failed to unregister: ${scope}`);
+              }
+            } catch (error) {
+              results.push(`✗ Error unregistering: ${error.toString()}`);
+            }
+          }
+
           return {
-            success: true,
-            message: "No service workers to unregister.",
+            success: unregisteredCount > 0,
+            count: unregisteredCount,
+            message: `Unregistered ${unregisteredCount} of ${registrations.length} service worker(s).`,
+            details: results.join("\n"),
+          };
+        } catch (error) {
+          return {
+            success: false,
+            message: "Error unregistering service workers.",
+            details: error.toString(),
           };
         }
-
-        let unregisteredCount = 0;
-        for (const registration of registrations) {
-          const success = await registration.unregister();
-          if (success) unregisteredCount++;
-        }
-
-        return {
-          success: unregisteredCount > 0,
-          count: unregisteredCount,
-          message: `Unregistered ${unregisteredCount} of ${registrations.length} service worker(s).`,
-        };
       }
 
       // Clear caches
@@ -218,169 +422,323 @@
           return { success: false, message: "Cache API not supported." };
         }
 
-        const cacheNames = await caches.keys();
-        if (cacheNames.length === 0) {
-          return { success: true, message: "No caches to clear." };
-        }
+        try {
+          const cacheNames = await caches.keys();
+          if (cacheNames.length === 0) {
+            return { success: true, message: "No caches to clear." };
+          }
 
-        let clearedCount = 0;
-        for (const cacheName of cacheNames) {
-          const success = await caches.delete(cacheName);
-          if (success) clearedCount++;
-        }
+          let clearedCount = 0;
+          const results = [];
 
-        return {
-          success: clearedCount > 0,
-          count: clearedCount,
-          message: `Cleared ${clearedCount} of ${cacheNames.length} cache(s).`,
-        };
+          for (const cacheName of cacheNames) {
+            try {
+              const success = await caches.delete(cacheName);
+
+              if (success) {
+                clearedCount++;
+                results.push(`✓ Cleared cache: ${cacheName}`);
+              } else {
+                results.push(`✗ Failed to clear cache: ${cacheName}`);
+              }
+            } catch (error) {
+              results.push(
+                `✗ Error clearing cache ${cacheName}: ${error.toString()}`,
+              );
+            }
+          }
+
+          return {
+            success: clearedCount > 0,
+            count: clearedCount,
+            message: `Cleared ${clearedCount} of ${cacheNames.length} cache(s).`,
+            details: results.join("\n"),
+          };
+        } catch (error) {
+          return {
+            success: false,
+            message: "Error clearing caches.",
+            details: error.toString(),
+          };
+        }
       }
 
       // Clear local storage
       function clearLocalStorage() {
         try {
           const itemCount = localStorage.length;
-          localStorage.clear();
+          const keys = [];
+
+          // Save keys first because they'll change as we delete
+          for (let i = 0; i < itemCount; i++) {
+            keys.push(localStorage.key(i));
+          }
+
+          // Only clear PWA-related items
+          const pwaKeys = keys.filter(
+            (key) =>
+              key.startsWith("sw_") ||
+              key.startsWith("pwa_") ||
+              key.includes("cache") ||
+              key.includes("worker"),
+          );
+
+          // Delete PWA-related items
+          for (const key of pwaKeys) {
+            localStorage.removeItem(key);
+          }
+
           return {
             success: true,
-            count: itemCount,
-            message: `Cleared ${itemCount} item(s) from local storage.`,
+            count: pwaKeys.length,
+            message: `Cleared ${pwaKeys.length} PWA-related item(s) from local storage.`,
+            details:
+              pwaKeys.length > 0
+                ? `Cleared items: ${pwaKeys.join(", ")}`
+                : "No PWA-related items found.",
           };
         } catch (error) {
           return {
             success: false,
-            message: `Failed to clear local storage: ${error.message}`,
+            message: "Error clearing local storage.",
+            details: error.toString(),
           };
         }
       }
 
-      // Automatic fix
-      async function autoFix() {
+      // Run diagnostics
+      async function runDiagnostics() {
+        updateStatus("Running diagnostics...");
+        updateProgress(10);
+
+        // Check service worker
+        const swStatus = await checkServiceWorker();
+        updateProgress(30);
+
+        // Check caches
+        const cacheStatus = await checkCaches();
+        updateProgress(50);
+
+        // Check local storage
+        const storageStatus = checkLocalStorage();
+        updateProgress(70);
+
+        // Check browser info
+        const browserInfo = {
+          userAgent: navigator.userAgent,
+          platform: navigator.platform,
+          vendor: navigator.vendor,
+          language: navigator.language,
+          cookiesEnabled: navigator.cookieEnabled,
+          onLine: navigator.onLine,
+          serviceWorkerSupported: "serviceWorker" in navigator,
+          cacheSupported: "caches" in window,
+          storageSupported: typeof localStorage !== "undefined",
+        };
+
+        // Display diagnostic information
+        diagnosticInfo.classList.remove("hidden");
+        diagnosticDetails.textContent = JSON.stringify(
+          {
+            serviceWorker: swStatus,
+            caches: cacheStatus,
+            localStorage: storageStatus,
+            browser: browserInfo,
+          },
+          null,
+          2,
+        );
+
+        updateProgress(100);
+
+        // Return combined status
+        return {
+          serviceWorker: swStatus,
+          caches: cacheStatus,
+          localStorage: storageStatus,
+          browser: browserInfo,
+        };
+      }
+
+      // Fix automatically
+      async function fixAutomatically() {
         updateStatus("Starting automatic fix...");
         updateProgress(10);
 
-        // Step 1: Check service worker
-        const swStatus = await checkServiceWorker();
-        updateStatus(`${swStatus.message} Proceeding with fix...`);
-        updateProgress(20);
+        // Step 1: Unregister service workers
+        updateStatus("Unregistering service workers...");
+        const swResult = await unregisterServiceWorkers();
+        updateProgress(40);
 
-        // Step 2: Check caches
-        const cacheStatus = await checkCaches();
-        updateStatus(
-          `${swStatus.message} ${cacheStatus.message} Proceeding with fix...`,
-        );
-        updateProgress(30);
-
-        // Step 3: Unregister service workers
-        const unregisterResult = await unregisterServiceWorkers();
-        updateStatus(`${unregisterResult.message} Continuing...`);
-        updateProgress(50);
-
-        // Step 4: Clear caches
-        const clearCacheResult = await clearCaches();
-        updateStatus(
-          `${unregisterResult.message} ${clearCacheResult.message} Continuing...`,
-        );
+        // Step 2: Clear caches
+        updateStatus("Clearing caches...");
+        const cacheResult = await clearCaches();
         updateProgress(70);
 
-        // Step 5: Clear problematic local storage items
-        try {
-          localStorage.removeItem("pwa_last_active");
-          localStorage.removeItem("pwa-install-dismissed");
-          localStorage.removeItem("pwa-banner-dismissed");
-          localStorage.removeItem("pwa-message-dismissed");
-          updateStatus(
-            `Removed PWA-related local storage items. Continuing...`,
-          );
-        } catch (error) {
-          updateStatus(
-            `Could not clear some local storage items. Continuing...`,
-          );
-        }
+        // Step 3: Clear PWA-related local storage
+        updateStatus("Clearing PWA-related storage...");
+        const storageResult = await clearLocalStorage();
         updateProgress(90);
 
-        // Final step
-        updateProgress(100);
-        updateStatus("Fix complete! The page will reload in 3 seconds...");
+        // Final status
+        const allSuccessful =
+          swResult.success && cacheResult.success && storageResult.success;
 
-        // Reload the page after a delay
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 3000);
+        if (allSuccessful) {
+          updateStatus(
+            "✅ All issues fixed successfully! You can now return to the app.",
+          );
+          updateProgress(100);
+
+          // Add success class
+          statusEl.classList.add("success");
+
+          // Show details in diagnostic info
+          diagnosticInfo.classList.remove("hidden");
+          diagnosticDetails.textContent =
+            `SERVICE WORKERS: ${swResult.message}\n` +
+            `CACHES: ${cacheResult.message}\n` +
+            `LOCAL STORAGE: ${storageResult.message}\n\n` +
+            `The app should now work correctly. If you still experience issues, please try the manual reset options.`;
+        } else {
+          updateStatus(
+            "⚠️ Some issues could not be fixed automatically. Try manual options.",
+            true,
+          );
+          updateProgress(100);
+
+          // Show details in diagnostic info
+          diagnosticInfo.classList.remove("hidden");
+          diagnosticDetails.textContent =
+            `SERVICE WORKERS: ${swResult.message}\n` +
+            `CACHES: ${cacheResult.message}\n` +
+            `LOCAL STORAGE: ${storageResult.message}\n\n` +
+            `Please try the manual reset options or contact support if issues persist.`;
+        }
+
+        return {
+          success: allSuccessful,
+          serviceWorker: swResult,
+          caches: cacheResult,
+          localStorage: storageResult,
+        };
       }
+
+      // Event listeners
+      fixButton.addEventListener("click", async () => {
+        fixButton.disabled = true;
+        fixButton.textContent = "Fixing...";
+
+        try {
+          await fixAutomatically();
+        } catch (error) {
+          updateStatus(`Error during automatic fix: ${error.message}`, true);
+          console.error("Automatic fix error:", error);
+        } finally {
+          fixButton.textContent = "Fix Automatically";
+          fixButton.disabled = false;
+        }
+      });
+
+      manualFixButton.addEventListener("click", () => {
+        manualOptions.classList.toggle("hidden");
+        manualResult.classList.add("hidden");
+      });
+
+      disableSWButton.addEventListener("click", async () => {
+        disableSWButton.disabled = true;
+
+        try {
+          const result = await unregisterServiceWorkers();
+          updateManualStatus(
+            result.success ? `✅ ${result.message}` : `⚠️ ${result.message}`,
+            !result.success,
+            result.details,
+          );
+        } catch (error) {
+          updateManualStatus(
+            `⚠️ Error disabling service worker: ${error.message}`,
+            true,
+            error.stack,
+          );
+        } finally {
+          disableSWButton.disabled = false;
+        }
+      });
+
+      clearCacheButton.addEventListener("click", async () => {
+        clearCacheButton.disabled = true;
+
+        try {
+          const result = await clearCaches();
+          updateManualStatus(
+            result.success ? `✅ ${result.message}` : `⚠️ ${result.message}`,
+            !result.success,
+            result.details,
+          );
+        } catch (error) {
+          updateManualStatus(
+            `⚠️ Error clearing cache: ${error.message}`,
+            true,
+            error.stack,
+          );
+        } finally {
+          clearCacheButton.disabled = false;
+        }
+      });
+
+      clearStorageButton.addEventListener("click", () => {
+        clearStorageButton.disabled = true;
+
+        try {
+          const result = clearLocalStorage();
+          updateManualStatus(
+            result.success ? `✅ ${result.message}` : `⚠️ ${result.message}`,
+            !result.success,
+            result.details,
+          );
+        } catch (error) {
+          updateManualStatus(
+            `⚠️ Error clearing storage: ${error.message}`,
+            true,
+            error.stack,
+          );
+        } finally {
+          clearStorageButton.disabled = false;
+        }
+      });
+
+      resetAllButton.addEventListener("click", async () => {
+        resetAllButton.disabled = true;
+        resetAllButton.textContent = "Resetting...";
+
+        try {
+          await fixAutomatically();
+          updateManualStatus("✅ All app data has been reset successfully!");
+        } catch (error) {
+          updateManualStatus(
+            `⚠️ Error during reset: ${error.message}`,
+            true,
+            error.stack,
+          );
+        } finally {
+          resetAllButton.textContent = "Reset Everything";
+          resetAllButton.disabled = false;
+        }
+      });
 
       // Initialize
-      async function init() {
-        // Check browser
-        const isIOS =
-          /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-        const isSafari = /^((?!chrome|android).)*safari/i.test(
-          navigator.userAgent,
-        );
-
-        let statusMessage = "System information: ";
-        statusMessage += isIOS ? "iOS device, " : "Non-iOS device, ";
-        statusMessage += isSafari ? "Safari browser. " : "Non-Safari browser. ";
-
-        // Check service worker and caches
-        const swStatus = await checkServiceWorker();
-        const cacheStatus = await checkCaches();
-
-        statusMessage += `${swStatus.message} ${cacheStatus.message}`;
-        updateStatus(statusMessage);
-
-        // Event listeners
-        fixButton.addEventListener("click", autoFix);
-
-        manualFixButton.addEventListener("click", () => {
-          manualOptions.classList.toggle("hidden");
-        });
-
-        disableSWButton.addEventListener("click", async () => {
-          updateStatus("Disabling service worker...");
-          const result = await unregisterServiceWorkers();
-          updateStatus(`${result.message} Reload the page to see the effect.`);
-        });
-
-        clearCacheButton.addEventListener("click", async () => {
-          updateStatus("Clearing caches...");
-          const result = await clearCaches();
-          updateStatus(`${result.message} Reload the page to see the effect.`);
-        });
-
-        clearStorageButton.addEventListener("click", () => {
-          updateStatus("Clearing local storage...");
-          const result = clearLocalStorage();
-          updateStatus(`${result.message} Reload the page to see the effect.`);
-        });
-
-        resetAllButton.addEventListener("click", async () => {
-          updateStatus("Resetting everything...");
-
-          // Unregister service workers
-          const swResult = await unregisterServiceWorkers();
-
-          // Clear caches
-          const cacheResult = await clearCaches();
-
-          // Clear local storage
-          const storageResult = clearLocalStorage();
-
+      (async function init() {
+        try {
+          await runDiagnostics();
           updateStatus(
-            `Reset complete: ${swResult.message} ${cacheResult.message} ${storageResult.message} Reloading in 3 seconds...`,
+            "Ready to fix issues. Click 'Fix Automatically' to begin.",
           );
-
-          // Reload after delay
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 3000);
-        });
-      }
-
-      // Start initialization when page loads
-      window.addEventListener("load", init);
+        } catch (error) {
+          updateStatus(`Error during initialization: ${error.message}`, true);
+          console.error("Initialization error:", error);
+        }
+      })();
     </script>
   </body>
 </html>

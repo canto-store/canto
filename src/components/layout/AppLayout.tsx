@@ -1,12 +1,13 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PromoBanner } from "@/components/common/PromoBanner";
 import { InstallPWA } from "@/components/pwa";
 import { cn } from "@/lib/utils";
 import { useBanner } from "@/providers";
+import { MobileBottomNavigation } from "@/components/navigation/MobileBottomNavigation";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -25,28 +26,6 @@ export function AppLayout({
   const bgColor = theme === "default" ? "" : "bg-[var(--color-background)]";
   const textColor =
     theme === "default" ? "text-black" : "text-[var(--color-primary)]";
-
-  // Update CSS variables when banner visibility changes
-  useEffect(() => {
-    const updateHeaderHeight = () => {
-      const root = document.documentElement;
-      const isMobile = window.innerWidth < 768;
-      let headerHeight;
-
-      if (showBanner) {
-        headerHeight = isMobile ? "6rem" : "7rem";
-      } else {
-        headerHeight = isMobile ? "4rem" : "4.5rem";
-      }
-
-      root.style.setProperty("--header-height", headerHeight);
-      root.style.setProperty("--main-height", `calc(100vh - ${headerHeight})`);
-    };
-
-    updateHeaderHeight();
-    window.addEventListener("resize", updateHeaderHeight);
-    return () => window.removeEventListener("resize", updateHeaderHeight);
-  }, [showBanner]);
 
   return (
     <div className={cn("min-h-screen", bgColor, textColor)}>
@@ -68,18 +47,23 @@ export function AppLayout({
           showBanner ? "top-8 md:top-10" : "top-0",
         )}
       />
-      {/* Main content with dynamic padding based on banner visibility */}
+      {/* Main content with dynamic padding based on CSS variables */}
       <main
         className={cn(
           "transition-all duration-300",
-          showBanner ? "pt-24 md:pt-28" : "pt-16 md:pt-[4.5rem]",
+          "pt-[var(--header-height)]", // Use CSS variable for top padding
+          "pb-16 md:pb-0", // Explicit padding for mobile to avoid layout shift
           className,
         )}
+        style={{
+          minHeight: "var(--main-height)", // Use CSS variable for min-height
+        }}
       >
         <div className="container mx-auto px-4">{children}</div>
       </main>
       <Footer />
       <InstallPWA variant="message" />
+      <MobileBottomNavigation />
     </div>
   );
 }

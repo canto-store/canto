@@ -1,133 +1,177 @@
-const CACHE_NAME = "canto-cache-v1";
-const STATIC_ASSETS = [
-  "/",
-  "/manifest.json",
-  "/logo.svg",
-  "/web-app-manifest-192x192.png",
-  "/web-app-manifest-512x512.png",
-  "/offline.html",
-  "/apple-touch-icon.png",
-  "/apple-touch-icon-120x120.png",
-  "/apple-touch-icon-152x152.png",
-  "/apple-touch-icon-167x167.png",
-  "/apple-splash-750-1334.png",
-  "/apple-splash-828-1792.png",
-  "/apple-splash-1125-2436.png",
-  "/apple-splash-1242-2208.png",
-  "/apple-splash-1242-2688.png",
-  "/apple-splash-1536-2048.png",
-  "/apple-splash-1668-2388.png",
-  "/apple-splash-2048-2732.png",
-];
+/**
+ * Canto Service Worker powered by Workbox
+ * This service worker handles caching strategies and offline functionality
+ */
 
-// Version number - increment this when you want to force an update
-const VERSION = "1.0.3";
+// Import Workbox from CDN (this will be replaced with the actual library at runtime)
+importScripts(
+  "https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js",
+);
 
-// Install event - cache core assets
-self.addEventListener("install", (event) => {
-  console.log(`[Service Worker] Installing new version ${VERSION}`);
+// Check if Workbox loaded successfully
+if (!workbox) {
+  console.error("Workbox failed to load");
+} else {
+  console.log("Workbox loaded successfully!");
 
-  // Skip waiting to activate the new service worker immediately
-  self.skipWaiting();
+  // Force development logs in debug mode
+  workbox.setConfig({ debug: false });
 
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // Cache each asset individually to handle failures gracefully
-      return Promise.all(
-        STATIC_ASSETS.map((url) =>
-          cache.add(url).catch((error) => {
-            console.error(`Failed to cache asset ${url}:`, error);
-          }),
-        ),
-      );
+  // Customize the default cache names
+  workbox.core.setCacheNameDetails({
+    prefix: "canto",
+    suffix: "v1",
+    precache: "precache",
+    runtime: "runtime",
+  });
+
+  // Skip waiting and claim clients
+  workbox.core.skipWaiting();
+  workbox.core.clientsClaim();
+
+  // Precache manifest will be injected here by workbox-cli or other build tools
+  // This is a placeholder that would normally be filled during build
+  self.__WB_MANIFEST = self.__WB_MANIFEST || [];
+  workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
+
+  // Precache specific static assets
+  workbox.precaching.precacheAndRoute([
+    { url: "/", revision: "1" },
+    { url: "/offline.html", revision: "1" },
+    { url: "/manifest.json", revision: "1" },
+    { url: "/logo.svg", revision: "1" },
+    { url: "/web-app-manifest-192x192.png", revision: "1" },
+    { url: "/web-app-manifest-512x512.png", revision: "1" },
+    { url: "/apple-touch-icon.png", revision: "1" },
+    { url: "/apple-touch-icon-120x120.png", revision: "1" },
+    { url: "/apple-touch-icon-152x152.png", revision: "1" },
+    { url: "/apple-touch-icon-167x167.png", revision: "1" },
+  ]);
+
+  // Cache page navigations (HTML) with a Network First strategy
+  workbox.routing.registerRoute(
+    // Check if the request is a navigation to an HTML page
+    ({ request }) => request.mode === "navigate",
+    new workbox.strategies.NetworkFirst({
+      // Use a custom cache name
+      cacheName: "canto-pages-cache",
+      plugins: [
+        // Cache for a maximum of 1 day
+        new workbox.expiration.ExpirationPlugin({
+          maxAgeSeconds: 24 * 60 * 60,
+          // Only cache 50 pages
+          maxEntries: 50,
+          // Automatically cleanup if quota is exceeded
+          purgeOnQuotaError: true,
+        }),
+        // Return the offline page if network fails
+        new workbox.cacheableResponse.CacheableResponsePlugin({
+          statuses: [0, 200],
+        }),
+        // Fallback to offline page if network fails
+        {
+          handlerDidError: async () => {
+            return await caches.match("/offline.html");
+          },
+        },
+      ],
     }),
   );
-});
 
-// Activate event - clean up old caches
-self.addEventListener("activate", (event) => {
-  console.log(`[Service Worker] Activating new version ${VERSION}`);
-
-  event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) =>
-        Promise.all(
-          cacheNames
-            .filter((name) => name !== CACHE_NAME)
-            .map((name) => caches.delete(name)),
-        ),
-      )
-      .then(() => {
-        // Claim clients to ensure the new service worker takes control immediately
-        return self.clients.claim();
-      }),
+  // Cache CSS, JS, and Web Worker requests with a Stale While Revalidate strategy
+  workbox.routing.registerRoute(
+    ({ request }) =>
+      request.destination === "style" ||
+      request.destination === "script" ||
+      request.destination === "worker",
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: "canto-assets-cache",
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
+          maxEntries: 100,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    }),
   );
-});
 
-// Simplified fetch event handler for better Safari compatibility
-self.addEventListener("fetch", (event) => {
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) return;
-
-  // Skip non-GET requests
-  if (event.request.method !== "GET") return;
-
-  // Simple network-first strategy for all requests
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Cache successful responses
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
-        return response;
-      })
-      .catch(async () => {
-        // Try to get a cached version
-        const cachedResponse = await caches.match(event.request);
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-
-        // If it's a navigation request, return the offline page
-        if (event.request.mode === "navigate") {
-          return caches.match("/offline.html") || caches.match("/");
-        }
-
-        // Return a basic error response for other requests
-        return new Response("Network error occurred", {
-          status: 408,
-          headers: { "Content-Type": "text/plain" },
-        });
-      }),
+  // Cache images with a Cache First strategy
+  workbox.routing.registerRoute(
+    ({ request }) => request.destination === "image",
+    new workbox.strategies.CacheFirst({
+      cacheName: "canto-images-cache",
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+          maxEntries: 60,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    }),
   );
-});
 
-// Listen for messages from clients
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
-});
+  // Cache fonts with a Cache First strategy
+  workbox.routing.registerRoute(
+    ({ request }) => request.destination === "font",
+    new workbox.strategies.CacheFirst({
+      cacheName: "canto-fonts-cache",
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
+          maxEntries: 20,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    }),
+  );
 
-// Handle periodic sync for iOS (not fully supported but future-proofing)
-self.addEventListener("periodicsync", (event) => {
-  if (event.tag === "refresh-content") {
-    event.waitUntil(refreshContent());
-  }
-});
+  // API calls with Network First strategy
+  workbox.routing.registerRoute(
+    ({ url }) => url.pathname.startsWith("/api/"),
+    new workbox.strategies.NetworkFirst({
+      cacheName: "canto-api-cache",
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxAgeSeconds: 10 * 60, // 10 minutes
+          maxEntries: 50,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    }),
+  );
 
-// Function to refresh content in the background
-async function refreshContent() {
-  try {
-    // Fetch the main page to refresh the cache
-    const response = await fetch("/");
-    const cache = await caches.open(CACHE_NAME);
-    await cache.put("/", response);
-    console.log("Content refreshed in background");
-  } catch (error) {
-    console.error("Failed to refresh content:", error);
-  }
+  // Handle offline analytics
+  const bgSyncPlugin = new workbox.backgroundSync.BackgroundSyncPlugin(
+    "analytics-queue",
+    {
+      maxRetentionTime: 24 * 60, // Retry for max of 24 Hours (specified in minutes)
+    },
+  );
+
+  workbox.routing.registerRoute(
+    ({ url }) => url.pathname.startsWith("/api/analytics"),
+    new workbox.strategies.NetworkOnly({
+      plugins: [bgSyncPlugin],
+    }),
+    "POST",
+  );
+
+  // Catch routing errors, like when the network is unavailable
+  workbox.routing.setCatchHandler(({ event }) => {
+    // Return the precached offline page if a document is being requested
+    if (event.request.destination === "document") {
+      return caches.match("/offline.html");
+    }
+
+    // If we don't have a fallback, return an error response
+    return Response.error();
+  });
+
+  // Listen for message events
+  self.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "SKIP_WAITING") {
+      self.skipWaiting();
+    }
+  });
 }

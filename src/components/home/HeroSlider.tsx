@@ -12,6 +12,10 @@ import { useBanner } from "@/providers";
 import { useLocale } from "next-intl";
 import Image from "next/image";
 
+// Create a safe useLayoutEffect that falls back to useEffect in SSR
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useEffect : useEffect;
+
 interface HeroSliderProps {
   slides: HeroSlide[];
   autoplayInterval?: number;
@@ -27,8 +31,6 @@ export function HeroSlider({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [sliderHeight, setSliderHeight] =
-    useState<string>("calc(100vh - 4rem)");
   const sliderRef = useRef<HTMLDivElement>(null);
   const { showBanner } = useBanner();
   const router = useRouter();
@@ -39,19 +41,10 @@ export function HeroSlider({
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
-  // Calculate slider height based on banner visibility and viewport size
-  useEffect(() => {
+  // Use useIsomorphicLayoutEffect to ensure height calculation happens before paint
+  useIsomorphicLayoutEffect(() => {
     const calculateHeight = () => {
       const isMobileView = window.innerWidth < 768;
-      const headerHeight = showBanner
-        ? isMobileView
-          ? 6
-          : 7
-        : isMobileView
-          ? 4
-          : 4.5;
-
-      setSliderHeight(`calc(100vh - ${headerHeight}rem)`);
       setIsMobile(isMobileView);
     };
 
@@ -136,7 +129,7 @@ export function HeroSlider({
         "relative right-[50%] left-[50%] -mx-[50vw] w-screen max-w-none overflow-hidden",
         className,
       )}
-      style={{ height: sliderHeight }}
+      style={{ height: "var(--main-height)" }}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -195,8 +188,7 @@ export function HeroSlider({
       {/* Pagination indicators */}
       <div
         className={cn(
-          "absolute right-0 left-0 flex justify-center gap-2",
-          showBanner ? "bottom-16" : "bottom-8",
+          "absolute right-0 bottom-4 left-0 flex justify-center gap-2",
         )}
       >
         {slides.map((_, index) => (

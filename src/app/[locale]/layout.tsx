@@ -55,7 +55,6 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  manifest: "/manifest.json",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://canto.com"),
   openGraph: {
     type: "website",
