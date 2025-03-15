@@ -24,7 +24,7 @@ export default function CartPage() {
   if (count === 0) {
     return (
       <AppLayout theme="default">
-        <div className="min-h-main flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+        <div className="min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-4.5rem)] flex flex-col items-center justify-center px-4 py-8 sm:py-12">
           <div className="mb-6 rounded-full bg-gray-100 p-6 sm:mb-8 sm:p-8">
             <ShoppingCart className="h-14 w-14 text-gray-400 sm:h-16 sm:w-16" />
           </div>
@@ -44,7 +44,7 @@ export default function CartPage() {
 
   return (
     <AppLayout theme="default">
-      <div className="min-h-main flex flex-col gap-5 px-4 py-7 pb-16 sm:gap-4 sm:px-6 sm:pb-20 lg:grid lg:grid-cols-3 lg:gap-6 lg:px-8">
+      <div className="min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-4.5rem)] flex flex-col gap-5 px-4 py-7 pb-16 sm:gap-4 sm:px-6 sm:pb-20 lg:grid lg:grid-cols-3 lg:gap-6 lg:px-8">
         {/* Cart Items */}
         <div className="w-full lg:col-span-2">
           <div className="rounded-lg border border-gray-200">

@@ -169,6 +169,7 @@ export function InstallPWA({
 
   const handleDismiss = () => {
     setShowIOSInstructions(false);
+    setIsInstallable(false);
     setIsDismissed(true);
     localStorage.setItem(storageDismissalKey, "true");
   };
@@ -176,8 +177,8 @@ export function InstallPWA({
   // If the app is already installed, don't show the install button
   if (isAppInstalled) return null;
 
-  // If not installable and not iOS, don't show the button
-  if (!isInstallable && !isIOS) return null;
+  // If dismissed or not installable (and not showing iOS instructions), don't show anything
+  if (isDismissed || (!isInstallable && !showIOSInstructions)) return null;
 
   // Only show on mobile devices
   if (!isMobile) return null;

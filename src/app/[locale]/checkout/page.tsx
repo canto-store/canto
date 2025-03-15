@@ -19,7 +19,7 @@ export default function CheckoutPage() {
   if (count === 0) {
     return (
       <AppLayout theme="default">
-        <div className="h-main flex flex-col items-center justify-center py-12">
+        <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-4.5rem)] flex flex-col items-center justify-center py-12">
           <p className="mb-8 max-w-md text-center text-gray-500">
             {t("cart.emptyCart")}
           </p>
@@ -33,7 +33,7 @@ export default function CheckoutPage() {
 
   return (
     <AppLayout theme="default">
-      <div className="h-main grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
+      <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-4.5rem)] grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
           <div className="rounded-lg border border-gray-200 p-6">

@@ -10,11 +10,7 @@
   --font-heading: var(--font-optician-sans);
   --font-body: var(--font-space-grotesk);
 
-  /* Layout variables with default values - will be updated by CSSVariablesProvider */
-  --header-height: 4.5rem;
-  --bottom-nav-height: 4rem; /* Default to 4rem for mobile to avoid layout shift */
-  --main-height: calc(100vh - var(--header-height) - var(--bottom-nav-height));
-
+  /* Color variables */
   --color-light-gray: oklch(0.9431 0 0);
   --color-pink: oklch(0.7531 0.1625 348.5);
   --color-light-blue: oklch(0.7013 0.1354 266.53);
@@ -39,14 +35,6 @@
 }
 
 @layer base {
-  /* Add utility class for main height */
-  .h-main {
-    height: var(--main-height);
-  }
-  .min-h-main {
-    min-height: var(--main-height);
-  }
-
   body {
     @apply font-body;
     background-color: var(--background-color);

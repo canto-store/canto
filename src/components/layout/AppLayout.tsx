@@ -47,17 +47,18 @@ export function AppLayout({
           showBanner ? "top-8 md:top-10" : "top-0",
         )}
       />
-      {/* Main content with dynamic padding based on CSS variables */}
+      {/* Main content with dynamic padding based on screen size and banner visibility */}
       <main
         className={cn(
           "transition-all duration-300",
-          "pt-[var(--header-height)]", // Use CSS variable for top padding
-          "pb-16 md:pb-0", // Explicit padding for mobile to avoid layout shift
+          // Dynamic top padding based on banner visibility and screen size
+          showBanner 
+            ? "pt-24 md:pt-28" // 6rem/7rem (banner + header)
+            : "pt-16 md:pt-18", // 4rem/4.5rem (header only)
+          "pb-20 md:pb-0", // Bottom padding for mobile navigation
+          "min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-4.5rem)]", // Viewport height minus header/nav
           className,
         )}
-        style={{
-          minHeight: "var(--main-height)", // Use CSS variable for min-height
-        }}
       >
         <div className="container mx-auto px-4">{children}</div>
       </main>

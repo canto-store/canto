@@ -127,9 +127,9 @@ export function HeroSlider({
       ref={sliderRef}
       className={cn(
         "relative right-[50%] left-[50%] -mx-[50vw] w-screen max-w-none overflow-hidden",
+        "h-[calc(100vh-11rem)] md:h-[calc(100vh-4.5rem)]",
         className,
       )}
-      style={{ height: "var(--main-height)" }}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
