@@ -26,6 +26,12 @@ const footerNavigation = (t: TranslationFunction) => ({
     { label: t("footer.shippingReturns"), href: "#" },
     { label: t("footer.sizeGuide"), href: "#" },
   ],
+  legal: [
+    { label: t("footer.termsConditions"), href: "#" },
+    { label: t("footer.privacyPolicy"), href: "#" },
+    { label: t("footer.cookiePolicy"), href: "#" },
+    { label: t("footer.accessibility"), href: "#" },
+  ],
 });
 
 const socialLinks = [
@@ -62,8 +68,8 @@ export function Footer() {
   return (
     <footer className="border-t border-gray-200">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-2 lg:grid-cols-6">
+          <div className="col-span-2 lg:col-span-2">
             <div className="flex items-center">
               <Image
                 src="/logo.svg"
@@ -127,23 +133,39 @@ export function Footer() {
           </div>
 
           <div>
-            <div>
-              <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
-                {t("footer.support")}
-              </h3>
-              <ul className="mt-4 space-y-2">
-                {navigation.support.map((item) => (
-                  <li key={item.label}>
-                    <a
-                      href={item.href}
-                      className="text-sm text-gray-600 transition-colors hover:text-gray-900"
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
+              {t("footer.support")}
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {navigation.support.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
+              {t("footer.legal")}
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {navigation.legal.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
