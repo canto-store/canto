@@ -53,19 +53,45 @@ export default function manifest(): MetadataRoute.Manifest {
     prefer_related_applications: false,
     categories: ["shopping", "lifestyle"],
     screenshots: [
+      // iPhone 16 Pro Max
+      {
+        src: "/apple-splash-1320-2868.png",
+        sizes: "1320x2868",
+        type: "image/png",
+        platform: "ios",
+        label: "Canto App on iPhone 16 Pro Max",
+      },
+      // iPhone 15 Pro Max
+      {
+        src: "/apple-splash-1290-2796.png",
+        sizes: "1290x2796",
+        type: "image/png",
+        platform: "ios",
+        label: "Canto App on iPhone 15 Pro Max",
+      },
+      // iPhone 14 Pro
+      {
+        src: "/apple-splash-1170-2532.png",
+        sizes: "1170x2532",
+        type: "image/png",
+        platform: "ios",
+        label: "Canto App on iPhone 14 Pro",
+      },
+      // iPhone 11 Pro Max / XS Max
       {
         src: "/apple-splash-1242-2688.png",
         sizes: "1242x2688",
         type: "image/png",
         platform: "ios",
-        label: "Canto App on Mobile",
+        label: "Canto App on iPhone",
       },
+      // iPad Pro
       {
         src: "/apple-splash-2048-2732.png",
         sizes: "2048x2732",
         type: "image/png",
         platform: "ipados",
-        label: "Canto App on Tablet",
+        label: "Canto App on iPad",
       },
     ],
     shortcuts: [

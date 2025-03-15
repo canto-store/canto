@@ -28,12 +28,30 @@ const sourceImage = path.join(publicDir, "web-app-manifest-512x512.png");
 
 // iOS splash screen sizes
 const splashScreens = [
+  // iPad Pro
   { width: 2048, height: 2732, name: "apple-splash-2048-2732.png" }, // iPad Pro 12.9"
   { width: 1668, height: 2388, name: "apple-splash-1668-2388.png" }, // iPad Pro 11"
   { width: 1536, height: 2048, name: "apple-splash-1536-2048.png" }, // iPad Air
-  { width: 1125, height: 2436, name: "apple-splash-1125-2436.png" }, // iPhone X/XS
-  { width: 1242, height: 2688, name: "apple-splash-1242-2688.png" }, // iPhone XS Max
-  { width: 828, height: 1792, name: "apple-splash-828-1792.png" }, // iPhone XR
+  
+  // iPhone 16 Series
+  { width: 1320, height: 2868, name: "apple-splash-1320-2868.png" }, // iPhone 16 Pro Max
+  { width: 1206, height: 2622, name: "apple-splash-1206-2622.png" }, // iPhone 16 Pro
+  { width: 1179, height: 2556, name: "apple-splash-1179-2556.png" }, // iPhone 16
+  
+  // iPhone 15 Series
+  { width: 1290, height: 2796, name: "apple-splash-1290-2796.png" }, // iPhone 15 Pro Max
+  { width: 1179, height: 2556, name: "apple-splash-1179-2556.png" }, // iPhone 15 Pro/15
+  
+  // iPhone 14 Series
+  { width: 1284, height: 2778, name: "apple-splash-1284-2778.png" }, // iPhone 14 Plus/Pro Max
+  { width: 1170, height: 2532, name: "apple-splash-1170-2532.png" }, // iPhone 14/Pro
+  
+  // iPhone X through 13 Series
+  { width: 1125, height: 2436, name: "apple-splash-1125-2436.png" }, // iPhone X/XS/11 Pro/12 mini/13 mini
+  { width: 1242, height: 2688, name: "apple-splash-1242-2688.png" }, // iPhone XS Max/11 Pro Max
+  { width: 828, height: 1792, name: "apple-splash-828-1792.png" }, // iPhone XR/11
+  
+  // Older iPhones
   { width: 750, height: 1334, name: "apple-splash-750-1334.png" }, // iPhone 8/7/6s/6
   { width: 1242, height: 2208, name: "apple-splash-1242-2208.png" }, // iPhone 8/7/6s/6 Plus
 ];
