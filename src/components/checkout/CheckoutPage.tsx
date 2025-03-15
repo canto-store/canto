@@ -6,7 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { ShippingAddressForm, ShippingAddress } from "./ShippingAddressForm";
 import { CouponForm, CouponData } from "./CouponForm";
 import { CheckoutSummary } from "./CheckoutSummary";
-import { useCart } from "@/providers";
+import { useBanner, useCart } from "@/providers";
 import { toast } from "sonner";
 
 export function CheckoutPage() {
@@ -18,6 +18,7 @@ export function CheckoutPage() {
     useState<ShippingAddress | null>(null);
   const [coupon, setCoupon] = useState<CouponData | null>(null);
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
+  const { closeBanner } = useBanner();
 
   const handleAddressSubmit = (address: ShippingAddress) => {
     setShippingAddress(address);
@@ -26,6 +27,7 @@ export function CheckoutPage() {
 
   const handleApplyCoupon = (appliedCoupon: CouponData | null) => {
     setCoupon(appliedCoupon);
+    closeBanner();
     if (appliedCoupon) {
       toast.success(t("checkout.couponApplied"));
     }

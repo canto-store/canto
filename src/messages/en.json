@@ -155,6 +155,7 @@
     "add": "Add New Address",
     "addressSaved": "Address saved successfully",
     "couponApplied": "Coupon applied successfully",
+    "orderSuccess": "Order placed successfully!",
     "orderConfirmed": "Order Confirmed!",
     "orderConfirmationMessage": "Thank you for your purchase. We've received your order and will process it shortly.",
     "orderDetails": "Order Details",
@@ -328,7 +329,8 @@
   },
   "common": {
     "saving": "Saving...",
-    "applying": "Applying..."
+    "applying": "Applying...",
+    "processing": "Processing..."
   },
   "auth": {
     "loginTitle": "Welcome back",

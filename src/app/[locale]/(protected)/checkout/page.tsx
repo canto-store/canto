@@ -1,7 +1,4 @@
-"use client";
-
-import { AppLayout } from "@/components";
-import { CheckoutPage } from "@/components/checkout";
+import { AppLayout, CheckoutPage } from "@/components";
 
 export default function Page() {
   return (

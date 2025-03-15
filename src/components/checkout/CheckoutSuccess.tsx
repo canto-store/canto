@@ -4,14 +4,23 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AppLayout } from "@/components/layout";
 
 export function CheckoutSuccess() {
   const t = useTranslations();
   const router = useRouter();
+  const [orderNumber, setOrderNumber] = useState("ORD-000000");
+  const [orderDate, setOrderDate] = useState("2023-01-01");
+
+  useEffect(() => {
+    setOrderNumber("ORD-90129");
+    setOrderDate("3/16/2025");
+  }, []);
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center px-4 py-12 text-center sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+    <AppLayout>
+      <div className="bg-global mx-auto max-w-md rounded-lg border border-gray-200 p-6 shadow-sm sm:p-8">
         <div className="mb-4 flex justify-center">
           <div className="rounded-full bg-green-100 p-3">
             <CheckCircle className="h-12 w-12 text-green-600" />
@@ -32,15 +41,11 @@ export function CheckoutSuccess() {
           </h3>
           <p className="text-sm text-gray-600">
             {t("checkout.orderNumber")}:{" "}
-            <span className="font-medium">
-              ORD-{Math.floor(100000 + Math.random() * 900000)}
-            </span>
+            <span className="font-medium">{orderNumber}</span>
           </p>
           <p className="text-sm text-gray-600">
             {t("checkout.orderDate")}:{" "}
-            <span className="font-medium">
-              {new Date().toLocaleDateString()}
-            </span>
+            <span className="font-medium">{orderDate}</span>
           </p>
           <p className="text-sm text-gray-600">
             {t("checkout.paymentMethod")}:{" "}
@@ -62,6 +67,6 @@ export function CheckoutSuccess() {
           </Button>
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
