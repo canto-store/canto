@@ -6,24 +6,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SignUpForm } from "./SignUpForm";
+import { RegisterForm } from "./RegisterForm";
 import { useTranslations } from "next-intl";
 
-interface RegisterModalProps {
+export function RegisterModal({
+  isOpen,
+  onClose,
+  switchToLogin,
+}: {
   isOpen: boolean;
   onClose: () => void;
-}
-
-export function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
+  switchToLogin: () => void;
+}) {
   const t = useTranslations("auth");
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="bg-global sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{t("registerTitle")}</DialogTitle>
         </DialogHeader>
-        <SignUpForm onSuccess={onClose} />
+        <RegisterForm switchToLogin={switchToLogin} />
       </DialogContent>
     </Dialog>
   );

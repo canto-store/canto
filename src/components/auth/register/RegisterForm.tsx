@@ -2,17 +2,13 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
-import { Loader2, CheckCircle, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSignUp, type SignUpRequest } from "@/hooks";
-
-interface SignUpFormProps {
-  onSuccess?: () => void;
-}
+import { useRouter } from "@/i18n/navigation";
 
 interface FieldError {
   name?: string;
@@ -21,19 +17,23 @@ interface FieldError {
   confirmPassword?: string;
 }
 
-export function SignUpForm({ onSuccess }: SignUpFormProps) {
+export function RegisterForm({
+  onSuccess,
+  switchToLogin,
+}: {
+  onSuccess?: (email: string) => void;
+  switchToLogin?: () => void;
+}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldError>({});
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const t = useTranslations("auth");
   const router = useRouter();
   const signUpMutation = useSignUp();
-
   const validateForm = (): boolean => {
     const errors: FieldError = {};
     let isValid = true;
@@ -87,13 +87,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
       await signUpMutation.mutateAsync(signUpData);
 
       toast.success(t("signUpSuccess"));
-      setIsSuccess(true);
-
-      if (onSuccess) {
-        setTimeout(() => {
-          onSuccess();
-        }, 3000);
-      }
+      onSuccess?.(email);
     } catch (err: unknown) {
       if (
         err &&
@@ -126,37 +120,13 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     }
   };
 
-  if (isSuccess) {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-6 py-4 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
-          <CheckCircle className="h-10 w-10" />
-        </div>
-        <div className="space-y-2">
-          <h3 className="text-xl font-semibold">{t("signUpSuccess")}</h3>
-          <p className="text-muted-foreground">{t("verificationEmailSent")}</p>
-          <div className="mt-2 rounded-md bg-blue-50 p-3 text-blue-800">
-            <div className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
-              <p>{t("verificationEmailSentTo", { email })}</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col gap-3 pt-4">
-          <Button onClick={() => router.push("/login")} className="w-full">
-            {t("goToLogin")}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => router.push("/")}
-            className="w-full"
-          >
-            {t("goToHome")}
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const handleSwitchToLogin = () => {
+    if (switchToLogin) {
+      switchToLogin();
+    } else {
+      router.push("/login");
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -241,7 +211,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
           type="button"
           variant="link"
           className="h-auto px-0 text-sm font-normal"
-          onClick={() => router.push("/login")}
+          onClick={handleSwitchToLogin}
           disabled={signUpMutation.isPending}
         >
           {t("alreadyHaveAccount")} {t("signIn")}

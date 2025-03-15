@@ -2,19 +2,19 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/providers/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 
-interface LoginFormProps {
-  onSuccess?: () => void;
-  onRegister?: () => void;
-}
-
-export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
+export function LoginForm({
+  switchToRegister,
+}: {
+  switchToRegister?: () => void;
+}) {
   const [email, setEmail] = useState("omar@example.com");
   const [password, setPassword] = useState("omar");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,15 +33,19 @@ export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
 
     try {
       await login(email, password);
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push(returnUrl);
-      }
+      router.push(returnUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("loginError"));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSwitchToRegister = () => {
+    if (switchToRegister) {
+      switchToRegister();
+    } else {
+      router.push(`/register?returnUrl=${encodeURIComponent(returnUrl)}`);
     }
   };
 
@@ -104,7 +108,7 @@ export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
         type="button"
         variant="outline"
         className="w-full"
-        onClick={onRegister}
+        onClick={handleSwitchToRegister}
         disabled={isLoading}
       >
         {t("auth.registerLink")}

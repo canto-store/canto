@@ -10,13 +10,15 @@ import {
 } from "@/components/ui/dialog";
 import { LoginForm } from "./LoginForm";
 
-interface LoginModalProps {
+export function LoginModal({
+  isOpen,
+  onClose,
+  switchToRegister,
+}: {
   isOpen: boolean;
   onClose: () => void;
-  onRegister?: () => void;
-}
-
-export function LoginModal({ isOpen, onClose, onRegister }: LoginModalProps) {
+  switchToRegister: () => void;
+}) {
   const t = useTranslations("auth");
 
   return (
@@ -30,7 +32,7 @@ export function LoginModal({ isOpen, onClose, onRegister }: LoginModalProps) {
             {t("loginSubtitle")}
           </DialogDescription>
         </DialogHeader>
-        <LoginForm onSuccess={onClose} onRegister={onRegister} />
+        <LoginForm switchToRegister={switchToRegister} />
       </DialogContent>
     </Dialog>
   );

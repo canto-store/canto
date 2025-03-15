@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { useAuth } from "@/providers/auth/auth-provider";
-import { LoginModal } from "../auth/LoginModal";
-import { RegisterModal } from "../auth/RegisterModal";
+import { LoginModal } from "../auth/login";
+import { RegisterModal } from "../auth/register";
 
 export function UserDropdown() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -52,9 +52,14 @@ export function UserDropdown() {
     setUserDropdownOpen(!userDropdownOpen);
   };
 
+  const switchToLogin = () => {
+    setLoginModalOpen(true);
+    setRegisterModalOpen(false);
+  };
+
   const switchToRegister = () => {
-    setLoginModalOpen(false);
     setRegisterModalOpen(true);
+    setLoginModalOpen(false);
   };
 
   const handleLogout = async () => {
@@ -136,12 +141,15 @@ export function UserDropdown() {
 
       <LoginModal
         isOpen={loginModalOpen}
+        switchToRegister={switchToRegister}
         onClose={() => setLoginModalOpen(false)}
-        onRegister={switchToRegister}
       />
       <RegisterModal
         isOpen={registerModalOpen}
-        onClose={() => setRegisterModalOpen(false)}
+        switchToLogin={switchToLogin}
+        onClose={() => {
+          setRegisterModalOpen(false);
+        }}
       />
     </>
   );
