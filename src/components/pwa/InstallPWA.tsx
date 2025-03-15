@@ -60,7 +60,6 @@ export function InstallPWA({
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
@@ -117,7 +116,6 @@ export function InstallPWA({
       // Only show the prompt in Safari on iOS
       if (isSafari) {
         setTimeout(() => {
-          setIsVisible(true);
           setIsInstallable(true);
         }, displayDelay);
       }
@@ -131,13 +129,6 @@ export function InstallPWA({
       window.deferredPrompt = e as BeforeInstallPromptEvent;
       setInstallPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
-
-      // Show prompt after a delay if it's the message variant
-      if (variant === "message" && !isDismissed) {
-        setTimeout(() => {
-          setIsVisible(true);
-        }, displayDelay);
-      }
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -146,13 +137,6 @@ export function InstallPWA({
     if (window.deferredPrompt) {
       setInstallPrompt(window.deferredPrompt);
       setIsInstallable(true);
-
-      // Show prompt immediately if it's the message variant
-      if (variant === "message" && !isDismissed) {
-        setTimeout(() => {
-          setIsVisible(true);
-        }, displayDelay);
-      }
     }
 
     return () => {
@@ -177,7 +161,6 @@ export function InstallPWA({
 
       setInstallPrompt(null);
       setIsInstallable(false);
-      setIsVisible(false);
       window.deferredPrompt = null;
     } catch (error) {
       console.error("Error showing install prompt:", error);
@@ -185,7 +168,6 @@ export function InstallPWA({
   };
 
   const handleDismiss = () => {
-    setIsVisible(false);
     setShowIOSInstructions(false);
     setIsDismissed(true);
     localStorage.setItem(storageDismissalKey, "true");
