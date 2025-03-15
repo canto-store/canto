@@ -53,9 +53,8 @@ export function AppLayout({
           "transition-all duration-300",
           // Dynamic top padding based on banner visibility and screen size
           showBanner 
-            ? "pt-24 md:pt-28" // 6rem/7rem (banner + header)
-            : "pt-16 md:pt-18", // 4rem/4.5rem (header only)
-          "pb-20 md:pb-0", // Bottom padding for mobile navigation
+            ? "pt-26 md:pt-28" // 6rem/7rem (banner + header)
+            : "pt-18 md:pt-18", // 4rem/4.5rem (header only)
           "min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-4.5rem)]", // Viewport height minus header/nav
           className,
         )}

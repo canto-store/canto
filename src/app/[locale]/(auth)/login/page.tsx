@@ -17,7 +17,7 @@ export default async function LoginPage() {
 
   return (
     <AppLayout>
-      <div className="min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-4.5rem)] flex flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="flex flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-4 text-center">
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">

@@ -17,11 +17,8 @@ export function MobileBottomNavigation() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Check if the document direction is RTL
       setIsRTL(document.dir === "rtl");
-
-      // Set active path based on current URL
-      setActivePath(window.location.pathname);
+      setActivePath("/" + window.location.pathname.split("/")[2]);
     }
   }, []);
 
@@ -60,7 +57,7 @@ export function MobileBottomNavigation() {
                   "flex h-full w-full flex-col items-center justify-center gap-1.5 px-2 py-2 text-sm transition-colors",
                   activePath === item.href
                     ? "text-primary"
-                    : "hover:text-primary text-gray-500",
+                    : "text-gray-400",
                 )}
               >
                 {item.icon}
