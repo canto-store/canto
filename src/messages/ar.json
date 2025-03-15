@@ -98,6 +98,8 @@
     "proceedToCheckout": "المتابعة إلى الدفع",
     "cartSummary": "ملخص العربة",
     "shippingAndTaxes": "تم حساب الشحن والضرائب عند الدفع",
+    "shippingNote": "تم حساب الشحن عند الدفع",
+    "checkoutNote": "سيتم حساب الشحن والضرائب عند الدفع",
     "freeShipping": "مجاني",
     "itemRemoved": "تمت إزالة العنصر من العربة",
     "itemAdded": "تمت إضافة العنصر إلى العربة",

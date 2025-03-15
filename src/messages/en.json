@@ -96,6 +96,7 @@
     "proceedToCheckout": "Proceed to Checkout",
     "cartSummary": "Cart Summary",
     "shippingAndTaxes": "Shipping & taxes calculated at checkout",
+    "shippingNote": "Shipping calculated at checkout",
     "freeShipping": "Free",
     "itemRemoved": "Item removed from cart",
     "itemAdded": "Item added to cart",

@@ -15,16 +15,6 @@ export function CartSummary({ className }: CartSummaryProps) {
   const t = useTranslations();
   const router = useRouter();
 
-  // Calculate shipping (free over $50)
-  const shippingCost = total >= 50 ? 0 : 5.99;
-
-  // Calculate tax (example: 8%)
-  const taxRate = 0.08;
-  const taxAmount = total * taxRate;
-
-  // Calculate order total
-  const orderTotal = total + shippingCost + taxAmount;
-
   if (count === 0) {
     return (
       <div
@@ -66,28 +56,12 @@ export function CartSummary({ className }: CartSummaryProps) {
           <p className="font-medium">${total.toFixed(2)}</p>
         </div>
 
-        <div className="flex justify-between text-xs sm:text-sm">
-          <p>{t("cart.shipping")}</p>
-          <p className="font-medium">
-            {shippingCost === 0
-              ? t("cart.freeShipping")
-              : `$${shippingCost.toFixed(2)}`}
-          </p>
-        </div>
-
-        <div className="flex justify-between text-xs sm:text-sm">
-          <p>{t("cart.tax")}</p>
-          <p className="font-medium">${taxAmount.toFixed(2)}</p>
-        </div>
-
         <div className="border-t border-gray-200 pt-2 sm:pt-3">
           <div className="flex justify-between text-xs font-medium sm:text-sm">
             <p className="text-gray-900">{t("cart.orderTotal")}</p>
-            <p className="text-primary">${orderTotal.toFixed(2)}</p>
+            <p className="text-primary">${total.toFixed(2)}</p>
           </div>
-          <p className="mt-1 text-xs text-gray-500">
-            {t("cart.shippingAndTaxes")}
-          </p>
+          <p className="mt-1 text-xs text-gray-500">{t("cart.shippingNote")}</p>
         </div>
 
         <div className="mt-2 space-y-2 sm:mt-3 sm:space-y-2">
