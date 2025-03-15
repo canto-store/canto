@@ -40,6 +40,22 @@
     background-color: var(--background-color);
     --radius: 0.625rem;
     --webkit-tap-highlight-color: transparent;
+
+    /* Mobile layout variables */
+    --banner-height: 2rem; /* h-8 = 2rem */
+    --header-height: 4.5rem; /* 18 (h-18) = 4.5rem */
+    --footer-height: 5rem; /* h-20 = 5rem */
+    --total-top-height: calc(var(--banner-height) + var(--header-height));
+  }
+
+  @media (min-width: 768px) {
+    body {
+      /* Desktop layout variables */
+      --banner-height: 2.5rem; /* h-10 = 2.5rem */
+      --header-height: 4.5rem; /* Same as mobile for header */
+      --footer-height: 0; /* No bottom nav on desktop */
+      --total-top-height: calc(var(--banner-height) + var(--header-height));
+    }
   }
 
   h1,

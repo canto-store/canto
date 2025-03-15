@@ -168,7 +168,10 @@ export function HeroSlider({
       ref={sliderRef}
       className={cn(
         "relative right-[50%] left-[50%] -mx-[50vw] w-screen max-w-none overflow-hidden",
-        "h-[calc(100vh-11rem)] md:h-[calc(100vh-4.5rem)]",
+        showBanner
+          ? "h-[calc(100vh-var(--total-top-height)-var(--footer-height))]"
+          : "h-[calc(100vh-var(--header-height)-var(--footer-height))]",
+        "min-h-[400px] transition-all duration-300 ease-in-out", // Match banner transition
         className,
       )}
       onTouchStart={onTouchStart}
