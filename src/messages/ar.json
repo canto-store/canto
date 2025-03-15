@@ -242,6 +242,9 @@
     "submit": "قدم طلب لتصبح بائعًا",
     "submitting": "جارٍ التقديم..."
   },
+  "form": {
+    "fieldRequired": "هذا الحقل مطلوب"
+  },
   "auth": {
     "loginTitle": "مرحبًا بعودتك",
     "loginDescription": "قم بتسجيل الدخول إلى حسابك",

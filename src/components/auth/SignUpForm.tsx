@@ -4,12 +4,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2, CheckCircle, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useSignUp, type SignUpRequest } from "@/hooks";
 
 interface SignUpFormProps {
@@ -32,7 +30,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
   const [fieldErrors, setFieldErrors] = useState<FieldError>({});
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const t = useTranslations("auth");
+  const t = useTranslations();
   const router = useRouter();
   const signUpMutation = useSignUp();
 
@@ -164,101 +162,81 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <ErrorAlert message={error} />
 
-      <div className="space-y-2">
-        <Label htmlFor="name" className="text-sm font-medium">
-          {t("nameLabel")}
-        </Label>
-        <Input
-          id="name"
-          type="text"
-          placeholder={t("namePlaceholder")}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={signUpMutation.isPending}
-          className={cn(
-            "h-10",
-            fieldErrors.name && "border-red-500 focus-visible:ring-red-500",
-          )}
-          aria-invalid={!!fieldErrors.name}
-        />
-        {fieldErrors.name && (
-          <p className="mt-1 text-sm text-red-500">{fieldErrors.name}</p>
-        )}
-      </div>
+      <FormInput
+        id="name"
+        name="name"
+        label={t("nameLabel")}
+        type="text"
+        placeholder={t("namePlaceholder")}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        disabled={signUpMutation.isPending}
+        required
+        error={fieldErrors.name}
+        customErrorMessage={t("form.fieldRequired")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium">
-          {t("emailLabel")}
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder={t("emailPlaceholder")}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          disabled={signUpMutation.isPending}
-          className={cn(
-            "h-10",
-            fieldErrors.email && "border-red-500 focus-visible:ring-red-500",
-          )}
-          aria-invalid={!!fieldErrors.email}
-        />
-        {fieldErrors.email && (
-          <p className="mt-1 text-sm text-red-500">{fieldErrors.email}</p>
-        )}
-      </div>
+      <FormInput
+        id="email"
+        name="email"
+        label={t("emailLabel")}
+        type="email"
+        placeholder={t("emailPlaceholder")}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        autoComplete="email"
+        disabled={signUpMutation.isPending}
+        required
+        error={fieldErrors.email}
+        customErrorMessage={t("form.fieldRequired")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="password" className="text-sm font-medium">
-          {t("passwordLabel")}
-        </Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder={t("passwordPlaceholder")}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="new-password"
-          disabled={signUpMutation.isPending}
-          className={cn(
-            "h-10",
-            fieldErrors.password && "border-red-500 focus-visible:ring-red-500",
-          )}
-          aria-invalid={!!fieldErrors.password}
-        />
-        {fieldErrors.password && (
-          <p className="mt-1 text-sm text-red-500">{fieldErrors.password}</p>
-        )}
-      </div>
+      <FormInput
+        id="password"
+        name="password"
+        label={t("passwordLabel")}
+        type="password"
+        placeholder={t("passwordPlaceholder")}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        autoComplete="new-password"
+        disabled={signUpMutation.isPending}
+        required
+        error={fieldErrors.password}
+        customErrorMessage={t("form.fieldRequired")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword" className="text-sm font-medium">
-          {t("confirmPasswordLabel")}
-        </Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          placeholder={t("confirmPasswordPlaceholder")}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          autoComplete="new-password"
-          disabled={signUpMutation.isPending}
-          className={cn(
-            "h-10",
-            fieldErrors.confirmPassword &&
-              "border-red-500 focus-visible:ring-red-500",
-          )}
-          aria-invalid={!!fieldErrors.confirmPassword}
-        />
-        {fieldErrors.confirmPassword && (
-          <p className="mt-1 text-sm text-red-500">
-            {fieldErrors.confirmPassword}
-          </p>
-        )}
-      </div>
+      <FormInput
+        id="confirmPassword"
+        name="confirmPassword"
+        label={t("confirmPasswordLabel")}
+        type="password"
+        placeholder={t("confirmPasswordPlaceholder")}
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        autoComplete="new-password"
+        disabled={signUpMutation.isPending}
+        required
+        error={fieldErrors.confirmPassword}
+        customErrorMessage={t("auth.passwordsDoNotMatch")}
+      />
 
-      <div className="flex items-center justify-between pt-2">
+      <Button
+        type="submit"
+        className="mt-6 w-full"
+        disabled={signUpMutation.isPending}
+      >
+        {signUpMutation.isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {t("signingUp")}
+          </>
+        ) : (
+          t("signUpButton")
+        )}
+      </Button>
+
+      <div className="mt-4 text-center">
         <Button
           type="button"
           variant="link"
@@ -266,18 +244,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
           onClick={() => router.push("/login")}
           disabled={signUpMutation.isPending}
         >
-          {t("alreadyHaveAccount")}
-        </Button>
-        <Button
-          type="submit"
-          disabled={signUpMutation.isPending}
-          className="w-24"
-        >
-          {signUpMutation.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            t("signUpButton")
-          )}
+          {t("alreadyHaveAccount")} {t("signIn")}
         </Button>
       </div>
     </form>

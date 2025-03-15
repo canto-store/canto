@@ -225,7 +225,7 @@
   "showing": "Showing {from} to {to} of {total}",
   "sell": {
     "title": "Become a Seller on Canto",
-    "description": "Join our growing community of sellers and reach customers worldwide",
+    "description": "Join our growing community of sellers and reach customers easily",
     "firstName": "First Name",
     "firstNamePlaceholder": "Enter your first name",
     "lastName": "Last Name",
@@ -239,6 +239,9 @@
     "agreement": "By submitting this form, you agree to our Terms of Service and Seller Agreement",
     "submit": "Apply to Become a Seller",
     "submitting": "Submitting..."
+  },
+  "form": {
+    "fieldRequired": "This field is required"
   },
   "auth": {
     "loginTitle": "Welcome back",

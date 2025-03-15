@@ -5,8 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/providers/auth/auth-provider";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 
@@ -21,7 +20,7 @@ export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const t = useTranslations("auth");
+  const t = useTranslations();
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -50,39 +49,33 @@ export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <ErrorAlert message={error} />
 
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium">
-          {t("emailLabel")}
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder={t("emailPlaceholder")}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-          disabled={isLoading}
-          className="h-10"
-        />
-      </div>
+      <FormInput
+        id="email"
+        name="email"
+        label={t("auth.emailLabel")}
+        type="email"
+        placeholder={t("auth.emailPlaceholder")}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        autoComplete="email"
+        disabled={isLoading}
+        customErrorMessage={t("form.fieldRequired")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="password" className="text-sm font-medium">
-          {t("passwordLabel")}
-        </Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder={t("passwordPlaceholder")}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-          disabled={isLoading}
-          className="h-10"
-        />
-      </div>
+      <FormInput
+        id="password"
+        name="password"
+        label={t("auth.passwordLabel")}
+        type="password"
+        placeholder={t("auth.passwordPlaceholder")}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        autoComplete="current-password"
+        disabled={isLoading}
+        customErrorMessage={t("form.fieldRequired")}
+      />
 
       <div className="flex items-center justify-between pt-2">
         <Button
@@ -92,19 +85,19 @@ export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
           onClick={() => router.push("/forgot-password")}
           disabled={isLoading}
         >
-          {t("forgotPassword")}
+          {t("auth.forgotPassword")}
         </Button>
         <Button type="submit" disabled={isLoading} className="w-24">
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            t("loginButton")
+            t("auth.loginButton")
           )}
         </Button>
       </div>
 
       <div className="text-muted-foreground before:bg-border after:bg-border relative mt-6 text-center text-sm before:absolute before:top-1/2 before:left-0 before:h-px before:w-[calc(50%-1rem)] after:absolute after:top-1/2 after:right-0 after:h-px after:w-[calc(50%-1rem)]">
-        <span className="bg-background px-4">{t("noAccount")}</span>
+        <span className="bg-background px-4">{t("auth.noAccount")}</span>
       </div>
 
       <Button
@@ -114,7 +107,7 @@ export function LoginForm({ onSuccess, onRegister }: LoginFormProps) {
         onClick={onRegister}
         disabled={isLoading}
       >
-        {t("registerLink")}
+        {t("auth.registerLink")}
       </Button>
     </form>
   );

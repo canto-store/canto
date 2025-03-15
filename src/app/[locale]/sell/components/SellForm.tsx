@@ -4,11 +4,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormInput } from "@/components/ui/form-input";
 
 export function SellForm() {
-  const t = useTranslations("sell");
+  const t = useTranslations();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,69 +31,60 @@ export function SellForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="firstName">{t("firstName")}</Label>
-            <Input
-              id="firstName"
-              name="firstName"
-              required
-              className="mt-1"
-              placeholder={t("firstNamePlaceholder")}
-            />
-          </div>
-          <div>
-            <Label htmlFor="lastName">{t("lastName")}</Label>
-            <Input
-              id="lastName"
-              name="lastName"
-              required
-              className="mt-1"
-              placeholder={t("lastNamePlaceholder")}
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="email">{t("email")}</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
+          <FormInput
+            id="firstName"
+            name="firstName"
+            label={t("sell.firstName")}
             required
-            className="mt-1"
-            placeholder={t("emailPlaceholder")}
+            placeholder={t("sell.firstNamePlaceholder")}
+            customErrorMessage={t("form.fieldRequired")}
+          />
+
+          <FormInput
+            id="lastName"
+            name="lastName"
+            label={t("sell.lastName")}
+            required
+            placeholder={t("sell.lastNamePlaceholder")}
+            customErrorMessage={t("form.fieldRequired")}
           />
         </div>
 
-        <div>
-          <Label htmlFor="phone">{t("phone")}</Label>
-          <Input
-            id="phone"
-            name="phone"
-            type="tel"
-            required
-            className="mt-1"
-            placeholder={t("phonePlaceholder")}
-          />
-        </div>
+        <FormInput
+          id="email"
+          name="email"
+          label={t("sell.email")}
+          type="email"
+          required
+          placeholder={t("sell.emailPlaceholder")}
+          customErrorMessage={t("form.fieldRequired")}
+        />
 
-        <div>
-          <Label htmlFor="storeName">{t("storeName")}</Label>
-          <Input
-            id="storeName"
-            name="storeName"
-            required
-            className="mt-1"
-            placeholder={t("storeNamePlaceholder")}
-          />
-        </div>
+        <FormInput
+          id="phone"
+          name="phone"
+          label={t("sell.phone")}
+          type="tel"
+          required
+          placeholder={t("sell.phonePlaceholder")}
+          customErrorMessage={t("form.fieldRequired")}
+        />
+
+        <FormInput
+          id="storeName"
+          name="storeName"
+          label={t("sell.storeName")}
+          required
+          placeholder={t("sell.storeNamePlaceholder")}
+          customErrorMessage={t("form.fieldRequired")}
+        />
       </div>
 
       <div className="space-y-4">
-        <p className="text-sm text-gray-500">{t("agreement")}</p>
+        <p className="text-sm text-gray-500">{t("sell.agreement")}</p>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? t("submitting") : t("submit")}
+          {isSubmitting ? t("sell.submitting") : t("sell.submit")}
         </Button>
       </div>
     </form>

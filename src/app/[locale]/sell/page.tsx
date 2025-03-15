@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 export const metadata: Metadata = {
   title: "Become a Seller on Canto",
   description:
-    "Join our marketplace and start selling your products to customers worldwide",
+    "Join our marketplace and start selling your products to customers easily",
 };
 
 export default function SellPage() {
@@ -14,7 +14,7 @@ export default function SellPage() {
 
   return (
     <AppLayout>
-      <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-4.5rem)] mx-auto max-w-2xl pt-8">
+      <div className="mx-auto h-[calc(100vh-5rem)] max-w-2xl pt-8 md:h-[calc(100vh-4.5rem)]">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight">{t("title")}</h1>
           <p className="mt-4 text-lg text-gray-600">{t("description")}</p>
