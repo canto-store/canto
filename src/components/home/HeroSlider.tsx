@@ -27,16 +27,28 @@ export function HeroSlider({
   autoplayInterval = 5000,
   className,
 }: HeroSliderProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(1); // Start at index 1 (first real slide)
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const { showBanner } = useBanner();
   const router = useRouter();
   const t = useTranslations("heroSlider");
   const locale = useLocale();
   const isRTL = locale === "ar";
+
+  // Create an augmented array with cloned slides for infinite effect
+  // Add last slide at the beginning and first slide at the end
+  const augmentedSlides = useCallback(() => {
+    if (slides.length === 0) return [];
+    return [
+      slides[slides.length - 1], // Clone of last slide at the beginning
+      ...slides,
+      slides[0], // Clone of first slide at the end
+    ];
+  }, [slides]);
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -65,21 +77,39 @@ export function HeroSlider({
     if (autoplayInterval <= 0 || isMobile) return;
 
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      handleNextSlide();
     }, autoplayInterval);
 
     return () => {
       clearInterval(timer);
     };
-  }, [slides.length, autoplayInterval, isMobile]);
+  }, [autoplayInterval, isMobile]);
+
+  // Handle the transition end to reset position for infinite loop
+  const handleTransitionEnd = useCallback(() => {
+    setIsTransitioning(false);
+
+    // If we're at the cloned last slide (position 0), jump to the real last slide
+    if (currentSlide === 0) {
+      setCurrentSlide(slides.length);
+    }
+    // If we're at the cloned first slide (position slides.length+1), jump to the real first slide
+    else if (currentSlide === slides.length + 1) {
+      setCurrentSlide(1);
+    }
+  }, [currentSlide, slides.length]);
 
   const handlePrevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  }, [slides.length]);
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => prev - 1);
+  }, [isTransitioning]);
 
   const handleNextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  }, [slides.length]);
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => prev + 1);
+  }, [isTransitioning]);
 
   // Touch event handlers
   const onTouchStart = (e: React.TouchEvent) => {
@@ -122,6 +152,17 @@ export function HeroSlider({
     };
   };
 
+  // Get the actual slides with clones
+  const displaySlides = augmentedSlides();
+
+  // Calculate the real index for pagination indicators
+  const realIndex =
+    currentSlide === 0
+      ? slides.length - 1
+      : currentSlide === slides.length + 1
+        ? 0
+        : currentSlide - 1;
+
   return (
     <section
       ref={sliderRef}
@@ -141,9 +182,13 @@ export function HeroSlider({
             transform: isRTL
               ? `translateX(${currentSlide * 100}%)`
               : `translateX(-${currentSlide * 100}%)`,
+            transition: isTransitioning
+              ? "transform 500ms ease-in-out"
+              : "none",
           }}
+          onTransitionEnd={handleTransitionEnd}
         >
-          {slides.map((slide, index) => {
+          {displaySlides.map((slide, index) => {
             const { title, subtitle } = getTranslatedContent(slide);
             return (
               <div key={index} className="relative h-full w-full flex-shrink-0">
@@ -154,9 +199,9 @@ export function HeroSlider({
                     fill
                     sizes="100vw"
                     className="object-cover"
-                    priority={index === 0}
+                    priority={index <= 1} // Prioritize first two slides (clone and first real slide)
                     quality={80}
-                    loading={index === 0 ? "eager" : "lazy"}
+                    loading={index <= 1 ? "eager" : "lazy"}
                   />
                   <div className="absolute inset-0 bg-black/30" />
                 </div>
@@ -196,11 +241,14 @@ export function HeroSlider({
             key={index}
             className={cn(
               "h-2 w-2 rounded-full transition-all",
-              currentSlide === index
+              realIndex === index
                 ? "w-6 bg-white"
                 : "bg-white/50 hover:bg-white/70",
             )}
-            onClick={() => setCurrentSlide(index)}
+            onClick={() => {
+              setIsTransitioning(true);
+              setCurrentSlide(index + 1);
+            }}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
