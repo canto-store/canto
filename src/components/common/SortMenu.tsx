@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
+import { useLocale } from "next-intl";
 
 export type SortOption =
   | "featured"
@@ -32,8 +32,8 @@ export function SortMenu({
   width = "w-[180px]",
 }: SortMenuProps) {
   const t = useTranslations();
-  const params = useParams();
-  const isRTL = params.locale === "ar";
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   return (
     <div

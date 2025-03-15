@@ -1,12 +1,9 @@
-"use client";
-
+import { CheckoutSuccess } from "@/components/checkout";
 import { AppLayout } from "@/components";
-import { CheckoutPage } from "@/components/checkout";
-
 export default function Page() {
   return (
     <AppLayout>
-      <CheckoutPage />
+      <CheckoutSuccess />
     </AppLayout>
   );
 }

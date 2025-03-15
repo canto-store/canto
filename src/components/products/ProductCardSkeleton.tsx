@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import { useParams } from "next/navigation";
+import { useLocale } from "next-intl";
 
 export function ProductCardSkeleton() {
-  const params = useParams();
-  const isRTL = params.locale === "ar";
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   return (
     <div

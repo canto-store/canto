@@ -17,7 +17,7 @@ export function PromoBanner({ className }: PromoBannerProps) {
   const { closeBanner } = useBanner();
 
   const handleCopy = () => {
-    clipboard.copy("SUMMER2024");
+    clipboard.copy("SUMMER25");
     toast.success(t("promo.copiedToClipboard"));
   };
 
@@ -33,13 +33,13 @@ export function PromoBanner({ className }: PromoBannerProps) {
         <p>
           {t("promo.promoBanner")}
           <span className="/20 mx-1 rounded-md px-2 py-0.5 font-bold tracking-wide">
-            {t("promo.promoPercent")}
+            25%
           </span>
           <a
             className="font-mono font-bold tracking-wider text-yellow-300 hover:cursor-pointer"
             onClick={handleCopy}
           >
-            SUMMER2024
+            SUMMER25
           </a>
         </p>
         <span className="hidden sm:inline">🌟</span>

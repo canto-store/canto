@@ -1,8 +1,10 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useCart } from "@/providers";
@@ -22,8 +24,8 @@ export function ProductCard({
   const t = useTranslations();
   const productsT = useTranslations("products");
   const router = useRouter();
-  const params = useParams();
-  const isRTL = params.locale === "ar";
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   const { addToCart } = useCart();
   // Get translated product name and brand if translation keys are available

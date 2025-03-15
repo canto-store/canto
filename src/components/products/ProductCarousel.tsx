@@ -1,8 +1,10 @@
+"use client";
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ProductCard } from "./ProductCard";
 import { Product } from "@/types";
 import { cn } from "@/lib/utils";
-import { useParams } from "next/navigation";
+import { useLocale } from "next-intl";
 
 interface ProductCarouselProps {
   products: Product[];
@@ -12,8 +14,8 @@ interface ProductCarouselProps {
 export function ProductCarousel({ products, title }: ProductCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const params = useParams();
-  const isRTL = params.locale === "ar";
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   // Update scroll position state when scrolling
   const handleScroll = useCallback(() => {
