@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Home, Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,15 +10,14 @@ import React from "react";
 
 export function MobileBottomNavigation() {
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations("header");
   const { user } = useAuth();
   const [isRTL, setIsRTL] = useState(false);
-  const [activePath, setActivePath] = useState("/");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setIsRTL(document.dir === "rtl");
-      setActivePath("/" + window.location.pathname.split("/")[2]);
     }
   }, []);
 
@@ -40,9 +39,15 @@ export function MobileBottomNavigation() {
     },
   ];
 
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/" || pathname === "";
+    }
+    return pathname.startsWith(href);
+  };
+
   const handleNavigation = (href: string) => {
     router.push(href);
-    setActivePath(href);
   };
 
   return (
@@ -55,7 +60,7 @@ export function MobileBottomNavigation() {
                 onClick={() => handleNavigation(item.href)}
                 className={cn(
                   "flex h-full w-full flex-col items-center justify-center gap-1.5 px-2 py-2 text-sm transition-colors",
-                  activePath === item.href
+                  isActive(item.href)
                     ? "text-primary"
                     : "text-gray-400",
                 )}
