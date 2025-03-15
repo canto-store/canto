@@ -38,7 +38,7 @@ if (!workbox) {
   workbox.precaching.precacheAndRoute([
     { url: "/", revision: "1" },
     { url: "/offline.html", revision: "1" },
-    { url: "/manifest.json", revision: "1" },
+    { url: "/manifest.ts", revision: "1" },
     { url: "/logo.svg", revision: "1" },
     { url: "/web-app-manifest-192x192.png", revision: "1" },
     { url: "/web-app-manifest-512x512.png", revision: "1" },
