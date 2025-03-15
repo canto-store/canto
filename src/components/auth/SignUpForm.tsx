@@ -30,7 +30,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
   const [fieldErrors, setFieldErrors] = useState<FieldError>({});
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const t = useTranslations();
+  const t = useTranslations("auth");
   const router = useRouter();
   const signUpMutation = useSignUp();
 
@@ -173,7 +173,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         disabled={signUpMutation.isPending}
         required
         error={fieldErrors.name}
-        customErrorMessage={t("form.fieldRequired")}
+        customErrorMessage={t("errors.firstNameRequired")}
       />
 
       <FormInput
@@ -188,7 +188,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         disabled={signUpMutation.isPending}
         required
         error={fieldErrors.email}
-        customErrorMessage={t("form.fieldRequired")}
+        customErrorMessage={t("errors.emailRequired")}
       />
 
       <FormInput
@@ -203,7 +203,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         disabled={signUpMutation.isPending}
         required
         error={fieldErrors.password}
-        customErrorMessage={t("form.fieldRequired")}
+        customErrorMessage={t("errors.passwordRequired")}
       />
 
       <FormInput
@@ -218,7 +218,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         disabled={signUpMutation.isPending}
         required
         error={fieldErrors.confirmPassword}
-        customErrorMessage={t("auth.passwordsDoNotMatch")}
+        customErrorMessage={t("passwordsDoNotMatch")}
       />
 
       <Button
