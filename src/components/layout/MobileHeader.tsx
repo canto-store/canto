@@ -15,7 +15,6 @@ interface MobileHeaderProps {
 export function MobileHeader({ className }: MobileHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
-
   const handleNavigation = (href: string) => {
     router.push(href);
   };
@@ -59,7 +58,6 @@ export function MobileHeader({ className }: MobileHeaderProps) {
           <CartDropdown />
         </div>
       </div>
-
       <MobileMenu isOpen={mobileMenuOpen} />
     </>
   );

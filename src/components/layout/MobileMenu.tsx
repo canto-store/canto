@@ -73,51 +73,49 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="border-primary/20 border-t shadow-lg md:hidden">
-      <nav className="container mx-auto">
-        <ul className="divide-primary/10 divide-y">
-          {navigationItems.map((item) => (
-            <li key={item.label}>
-              <Button
-                variant="ghost"
-                onClick={() => handleNavigation(item.href)}
-                className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+    <div className="border-primary/20 bg-global absolute z-50 container border-t shadow-lg md:hidden">
+      <ul className="divide-primary/10 divide-y">
+        {navigationItems.map((item) => (
+          <li key={item.label}>
+            <Button
+              variant="ghost"
+              onClick={() => handleNavigation(item.href)}
+              className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+            >
+              <span
+                className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}
               >
-                <span
-                  className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}
-                >
-                  {item.icon}
-                  {item.label}
-                </span>
-              </Button>
-            </li>
-          ))}
+                {item.icon}
+                {item.label}
+              </span>
+            </Button>
+          </li>
+        ))}
 
-          {/* Sign out button - only shown when logged in */}
-          {isAuthenticated && (
-            <li>
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+        {/* Sign out button - only shown when logged in */}
+        {isAuthenticated && (
+          <li>
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+            >
+              <span
+                className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}
               >
-                <span
-                  className={`flex items-center ${isRTL ? "flex-row" : "flex-row"} gap-2`}
-                >
-                  <LogOut className="h-5 w-5" />
-                  {t("logout")}
-                </span>
-              </Button>
-            </li>
-          )}
+                <LogOut className="h-5 w-5" />
+                {t("logout")}
+              </span>
+            </Button>
+          </li>
+        )}
 
-          {!isAppInstalled && (
-            <li>
-              <InstallPWA variant="menu" />
-            </li>
-          )}
-        </ul>
-      </nav>
+        {!isAppInstalled && (
+          <li>
+            <InstallPWA variant="menu" />
+          </li>
+        )}
+      </ul>
     </div>
   );
 }

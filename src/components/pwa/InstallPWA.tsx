@@ -95,8 +95,6 @@ export function InstallPWA({
     localStorage.setItem(storageDismissalKey, "true");
   };
 
-  if (isDismissed) return null;
-
   if (!isMobile) return null;
 
   if (variant === "message" && showIOSInstructions) {
@@ -143,7 +141,7 @@ export function InstallPWA({
     );
   }
 
-  if (variant === "message") {
+  if (variant === "message" && !isDismissed) {
     return (
       <div className="bg-global fixed right-4 bottom-22 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg p-4 shadow-lg">
         <div className="flex items-start justify-between">
