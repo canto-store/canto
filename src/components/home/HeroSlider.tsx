@@ -11,26 +11,17 @@ import { useTranslations } from "next-intl";
 import { useBanner } from "@/providers";
 import { useLocale } from "next-intl";
 import Image from "next/image";
-
-// Create a safe useLayoutEffect that falls back to useEffect in SSR
-const useIsomorphicLayoutEffect =
-  typeof window !== "undefined" ? useEffect : useEffect;
-
+import { useMediaQuery } from "@/hooks/use-media-query";
 interface HeroSliderProps {
   slides: HeroSlide[];
-  autoplayInterval?: number;
   className?: string;
 }
 
-export function HeroSlider({
-  slides,
-  autoplayInterval = 5000,
-  className,
-}: HeroSliderProps) {
+export function HeroSlider({ slides, className }: HeroSliderProps) {
+  const autoplayInterval = 5000;
   const [currentSlide, setCurrentSlide] = useState(1); // Start at index 1 (first real slide)
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const { showBanner } = useBanner();
@@ -39,8 +30,8 @@ export function HeroSlider({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  // Create an augmented array with cloned slides for infinite effect
-  // Add last slide at the beginning and first slide at the end
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   const augmentedSlides = useCallback(() => {
     if (slides.length === 0) return [];
     return [
@@ -50,18 +41,14 @@ export function HeroSlider({
     ];
   }, [slides]);
 
-  // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
   const handleTransitionEnd = useCallback(() => {
     setIsTransitioning(false);
 
-    // If we're at the cloned last slide (position 0), jump to the real last slide
     if (currentSlide === 0) {
       setCurrentSlide(slides.length);
-    }
-    // If we're at the cloned first slide (position slides.length+1), jump to the real first slide
-    else if (currentSlide === slides.length + 1) {
+    } else if (currentSlide === slides.length + 1) {
       setCurrentSlide(1);
     }
   }, [currentSlide, slides.length]);
@@ -78,27 +65,7 @@ export function HeroSlider({
     setCurrentSlide((prev) => prev + 1);
   }, [isTransitioning]);
 
-  // Use useIsomorphicLayoutEffect to ensure height calculation happens before paint
-  useIsomorphicLayoutEffect(() => {
-    const calculateHeight = () => {
-      const isMobileView = window.innerWidth < 768;
-      setIsMobile(isMobileView);
-    };
-
-    // Calculate on initial load
-    calculateHeight();
-
-    // Add event listener for window resize
-    window.addEventListener("resize", calculateHeight);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", calculateHeight);
-    };
-  }, [showBanner]);
-
   useEffect(() => {
-    // Don't auto-scroll if autoplayInterval is disabled or on mobile devices
     if (autoplayInterval <= 0 || isMobile) return;
 
     const timer = setInterval(() => {
@@ -110,9 +77,6 @@ export function HeroSlider({
     };
   }, [autoplayInterval, isMobile, handleNextSlide]);
 
-  // Handle the transition end to reset position for infinite loop
-
-  // Touch event handlers
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
@@ -138,7 +102,6 @@ export function HeroSlider({
     }
   };
 
-  // Function to get translated title and subtitle based on translationKey
   const getTranslatedContent = (slide: HeroSlide) => {
     if (!slide.translationKey)
       return { title: slide.title, subtitle: slide.subtitle };
@@ -153,29 +116,22 @@ export function HeroSlider({
     };
   };
 
-  // Get the actual slides with clones
   const displaySlides = augmentedSlides();
 
-  // Calculate the real index for pagination indicators
   const realIndex =
     currentSlide === 0
       ? slides.length - 1
       : currentSlide === slides.length + 1
         ? 0
         : currentSlide - 1;
-
   return (
     <section
       ref={sliderRef}
       className={cn(
-        "relative right-[50%] left-[50%] -mx-[50vw] w-screen max-w-none overflow-hidden",
-        // Mobile height (default)
+        "relative right-[50%] left-[50%] -mx-[50vw] h-screen w-screen max-w-none overflow-hidden transition-all duration-300 ease-in-out",
         showBanner
-          ? "h-[calc(100vh-var(--total-top-height)-var(--footer-height))]"
-          : "h-[calc(100vh-var(--header-height)-var(--footer-height))]",
-        // Desktop optimized height
-        "md:h-screen",
-        "min-h-[400px] transition-all duration-300 ease-in-out", // Match banner transition
+          ? "h-[calc(100vh-6.5rem-5rem)] md:h-[calc(100vh-6.5rem)]"
+          : "h-[calc(100vh-4.5rem-5rem)] md:h-[calc(100vh-4.5rem)]",
         className,
       )}
       onTouchStart={onTouchStart}

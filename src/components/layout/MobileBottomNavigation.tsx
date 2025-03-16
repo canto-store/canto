@@ -60,9 +60,7 @@ export function MobileBottomNavigation() {
                 onClick={() => handleNavigation(item.href)}
                 className={cn(
                   "flex h-full w-full flex-col items-center justify-center gap-1.5 px-2 py-2 text-sm transition-colors",
-                  isActive(item.href)
-                    ? "text-primary"
-                    : "text-gray-400",
+                  isActive(item.href) ? "text-primary" : "text-gray-400",
                 )}
               >
                 {item.icon}

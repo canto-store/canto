@@ -1,41 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { WebHeader } from "@/components/layout/WebHeader";
-import { MobileHeader } from "@/components/layout/MobileHeader";
+import { WebHeader } from "./WebHeader";
+import { MobileHeader } from "./MobileHeader";
+import { PromoBanner } from "./PromoBanner";
 
-interface HeaderProps {
-  className?: string;
-}
-
-export function Header({ className }: HeaderProps) {
-  // State is still needed for the resize listener but we don't use it in rendering
-  const [, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    // Function to check if viewport is mobile
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768); // 768px is the md breakpoint in Tailwind
-    };
-
-    // Initial check
-    checkIsMobile();
-
-    // Add event listener for window resize
-    window.addEventListener("resize", checkIsMobile);
-
-    // Cleanup
-    return () => window.removeEventListener("resize", checkIsMobile);
-  }, []);
-
+export function Header() {
   return (
-    <header
-      className={cn(
-        "border-primary bg-global fixed top-0 z-50 w-full border-b",
-        className,
-      )}
-    >
+    <header className="border-primary bg-global sticky top-0 w-full border-b">
+      <PromoBanner />
       <div className="block md:hidden">
         <MobileHeader />
       </div>

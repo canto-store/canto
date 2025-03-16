@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { CartDropdown } from "@/components/cart/CartDropdown";
 import { LanguageSelector } from "@/components/language/LanguageSelector";
 import { UserDropdown } from "@/components/user/UserDropdown";
-import { MainNavigation } from "@/components/navigation/MainNavigation";
+import { MainNavigation } from "@/components/layout/MainNavigation";
 
 interface WebHeaderProps {
   className?: string;

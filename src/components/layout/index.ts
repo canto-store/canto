@@ -1,4 +1,3 @@
-// Export layout components
-export * from "./Header";
-export * from "./Footer";
-export * from "./AppLayout";
+import { AppLayout } from "./AppLayout";
+
+export default AppLayout;

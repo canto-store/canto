@@ -18,7 +18,7 @@ export function CheckoutPage() {
     useState<ShippingAddress | null>(null);
   const [coupon, setCoupon] = useState<CouponData | null>(null);
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
-  const { closeBanner } = useBanner();
+  const { setShowBanner } = useBanner();
 
   const handleAddressSubmit = (address: ShippingAddress) => {
     setShippingAddress(address);
@@ -27,7 +27,7 @@ export function CheckoutPage() {
 
   const handleApplyCoupon = (appliedCoupon: CouponData | null) => {
     setCoupon(appliedCoupon);
-    closeBanner();
+    setShowBanner(false);
     if (appliedCoupon) {
       toast.success(t("checkout.couponApplied"));
     }

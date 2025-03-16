@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { CartDropdown } from "@/components/cart/CartDropdown";
-import { MobileMenu } from "@/components/navigation/MobileMenu";
+import { MobileMenu } from "@/components/layout/MobileMenu";
 import { cn } from "@/lib/utils";
 
 interface MobileHeaderProps {
