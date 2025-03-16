@@ -11,7 +11,6 @@ import {
   NEW_ARRIVALS,
 } from "@/lib/data/products";
 import { useTranslations } from "next-intl";
-import { AppLayout } from "@/components/layout";
 import { useHomeProducts } from "@/hooks/use-home-products";
 import { HomePageSkeleton } from "@/components/home/HomePageSkeleton";
 import { OrganizationSchema } from "@/components/structured-data";
@@ -29,7 +28,7 @@ export default function Home() {
   const sellers = data?.bestSellers || [];
 
   return (
-    <AppLayout theme="custom">
+    <>
       <OrganizationSchema />
       <HeroSlider slides={HERO_SLIDES} />
       <FeaturesBanner />
@@ -71,6 +70,6 @@ export default function Home() {
             )}
         </>
       )}
-    </AppLayout>
+    </>
   );
 }

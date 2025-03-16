@@ -1,12 +1,11 @@
 "use client";
 
-import { AppLayout } from "@/components/layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SectionContainer } from "@/components/common";
 
 export default function HomeLoading() {
   return (
-    <AppLayout theme="default">
+    <>
       {/* Hero Slider Skeleton */}
       <div className="relative h-[500px] w-full overflow-hidden">
         <Skeleton className="h-full w-full" />
@@ -52,6 +51,6 @@ export default function HomeLoading() {
           ))}
         </div>
       </SectionContainer>
-    </AppLayout>
+    </>
   );
 }

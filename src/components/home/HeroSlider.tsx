@@ -53,6 +53,31 @@ export function HeroSlider({
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
+  const handleTransitionEnd = useCallback(() => {
+    setIsTransitioning(false);
+
+    // If we're at the cloned last slide (position 0), jump to the real last slide
+    if (currentSlide === 0) {
+      setCurrentSlide(slides.length);
+    }
+    // If we're at the cloned first slide (position slides.length+1), jump to the real first slide
+    else if (currentSlide === slides.length + 1) {
+      setCurrentSlide(1);
+    }
+  }, [currentSlide, slides.length]);
+
+  const handlePrevSlide = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => prev - 1);
+  }, [isTransitioning]);
+
+  const handleNextSlide = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => prev + 1);
+  }, [isTransitioning]);
+
   // Use useIsomorphicLayoutEffect to ensure height calculation happens before paint
   useIsomorphicLayoutEffect(() => {
     const calculateHeight = () => {
@@ -83,33 +108,9 @@ export function HeroSlider({
     return () => {
       clearInterval(timer);
     };
-  }, [autoplayInterval, isMobile]);
+  }, [autoplayInterval, isMobile, handleNextSlide]);
 
   // Handle the transition end to reset position for infinite loop
-  const handleTransitionEnd = useCallback(() => {
-    setIsTransitioning(false);
-
-    // If we're at the cloned last slide (position 0), jump to the real last slide
-    if (currentSlide === 0) {
-      setCurrentSlide(slides.length);
-    }
-    // If we're at the cloned first slide (position slides.length+1), jump to the real first slide
-    else if (currentSlide === slides.length + 1) {
-      setCurrentSlide(1);
-    }
-  }, [currentSlide, slides.length]);
-
-  const handlePrevSlide = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentSlide((prev) => prev - 1);
-  }, [isTransitioning]);
-
-  const handleNextSlide = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentSlide((prev) => prev + 1);
-  }, [isTransitioning]);
 
   // Touch event handlers
   const onTouchStart = (e: React.TouchEvent) => {
@@ -168,9 +169,12 @@ export function HeroSlider({
       ref={sliderRef}
       className={cn(
         "relative right-[50%] left-[50%] -mx-[50vw] w-screen max-w-none overflow-hidden",
+        // Mobile height (default)
         showBanner
           ? "h-[calc(100vh-var(--total-top-height)-var(--footer-height))]"
           : "h-[calc(100vh-var(--header-height)-var(--footer-height))]",
+        // Desktop optimized height
+        "md:h-screen",
         "min-h-[400px] transition-all duration-300 ease-in-out", // Match banner transition
         className,
       )}

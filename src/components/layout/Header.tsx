@@ -36,12 +36,6 @@ export function Header({ className }: HeaderProps) {
         className,
       )}
     >
-      {/* 
-        Pure CSS-based responsive rendering:
-        - Mobile header is visible by default on small screens (below md breakpoint)
-        - Web header is visible by default on larger screens (md and above)
-        - JavaScript only enhances this behavior for edge cases and window resizing
-      */}
       <div className="block md:hidden">
         <MobileHeader />
       </div>

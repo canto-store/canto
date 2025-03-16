@@ -1,5 +1,4 @@
 import { RegisterSuccess } from "@/components/auth/register/RegisterSuccess";
-import { AppLayout } from "@/components/layout";
 import { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -9,9 +8,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  return (
-    <AppLayout>
-      <RegisterSuccess />
-    </AppLayout>
-  );
+  return <RegisterSuccess />;
 }

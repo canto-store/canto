@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { AppLayout } from "@/components/layout";
 import { ProductGrid } from "@/components/products";
 import { notFound } from "next/navigation";
 import { getProductBySlug, getRelatedProducts } from "@/lib/utils";
@@ -45,7 +44,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   ];
 
   return (
-    <AppLayout theme="default">
+    <>
       <ProductSchema product={extendedProduct} locale={locale} />
       <BreadcrumbSchema items={breadcrumbItems} />
       <ProductDetails product={product} />
@@ -58,6 +57,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           className="mt-4 mb-6 sm:mt-6 sm:mb-8 md:mt-10 md:mb-10 lg:mt-16 lg:mb-12"
         />
       </div>
-    </AppLayout>
+    </>
   );
 }

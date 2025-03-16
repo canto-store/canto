@@ -1,5 +1,4 @@
 import { CheckoutSuccess } from "@/components";
-import { AppLayout } from "@/components/layout";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return (
-    <AppLayout>
-      <CheckoutSuccess />
-    </AppLayout>
-  );
+  return <CheckoutSuccess />;
 }

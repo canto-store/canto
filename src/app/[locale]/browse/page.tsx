@@ -1,6 +1,5 @@
 "use client";
 
-import { AppLayout } from "@/components/layout";
 import { PRICE_RANGES } from "@/lib/data";
 import { useProductFilters, useProductTranslations } from "./hooks";
 import {
@@ -56,7 +55,7 @@ export default function BrowsePage() {
   } = useProductTranslations();
 
   return (
-    <AppLayout>
+    <>
       <div className="mt-5 w-full">
         {/* Search and Filter Controls */}
         <SearchFilterBar
@@ -156,6 +155,6 @@ export default function BrowsePage() {
           isRTL={isRTL}
         />
       </div>
-    </AppLayout>
+    </>
   );
 }

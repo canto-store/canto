@@ -1,5 +1,4 @@
 import { RegisterPage } from "@/components/auth/register";
-import { AppLayout } from "@/components/layout";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
@@ -13,9 +12,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  return (
-    <AppLayout>
-      <RegisterPage />
-    </AppLayout>
-  );
+  return <RegisterPage />;
 }

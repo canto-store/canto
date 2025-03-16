@@ -5,7 +5,6 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { useState, useEffect } from "react";
-import { AppLayout } from "@/components/layout";
 
 export function CheckoutSuccess() {
   const t = useTranslations();
@@ -19,7 +18,7 @@ export function CheckoutSuccess() {
   }, []);
 
   return (
-    <AppLayout>
+    <>
       <div className="bg-global mx-auto max-w-md rounded-lg border border-gray-200 p-6 shadow-sm sm:p-8">
         <div className="mb-4 flex justify-center">
           <div className="rounded-full bg-green-100 p-3">
@@ -67,6 +66,6 @@ export function CheckoutSuccess() {
           </Button>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }

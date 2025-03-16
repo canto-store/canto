@@ -1,15 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
-import { notFound } from "next/navigation";
 import { ReactNode } from "react";
-import { routing } from "@/i18n/routing";
 import { getMessages } from "next-intl/server";
 import { Providers } from "@/providers";
 import { cn } from "@/lib/utils";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-ibm-plex-sans-arabic",
@@ -20,14 +19,14 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
 });
 
 const opticianSans = localFont({
-  src: "../../../public/fonts/Optician-Sans.woff2",
+  src: "../../public/fonts/Optician-Sans.woff2",
   variable: "--font-optician-sans",
   display: "swap",
   preload: true,
 });
 
 const spaceGrotesk = localFont({
-  src: "../../../public/fonts/SpaceGrotesk.woff2",
+  src: "../../public/fonts/SpaceGrotesk.woff2",
   variable: "--font-space-grotesk",
   display: "swap",
   preload: true,
@@ -106,7 +105,7 @@ export const metadata: Metadata = {
         media:
           "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
       },
-      
+
       // iPhone 16 Series
       {
         url: "/apple-splash-1320-2868.png",
@@ -123,14 +122,14 @@ export const metadata: Metadata = {
         media:
           "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
       },
-      
+
       // iPhone 15 Series
       {
         url: "/apple-splash-1290-2796.png",
         media:
           "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
       },
-      
+
       // iPhone 14 Series
       {
         url: "/apple-splash-1284-2778.png",
@@ -142,7 +141,7 @@ export const metadata: Metadata = {
         media:
           "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
       },
-      
+
       // iPhone X through 13 Series
       {
         url: "/apple-splash-1125-2436.png",
@@ -159,7 +158,7 @@ export const metadata: Metadata = {
         media:
           "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
       },
-      
+
       // Older iPhones
       {
         url: "/apple-splash-750-1334.png",
@@ -198,9 +197,6 @@ export default async function RootLayout({
 }: RootLayoutProps) {
   const paramsObj = await params;
   const { locale } = paramsObj;
-  if (!routing.locales.includes(locale)) {
-    notFound();
-  }
 
   const messages = await getMessages();
 
@@ -234,7 +230,7 @@ export default async function RootLayout({
           href="/apple-splash-1536-2048.png"
           media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
         />
-        
+
         {/* iPhone 16 Series */}
         <link
           rel="apple-touch-startup-image"
@@ -251,14 +247,14 @@ export default async function RootLayout({
           href="/apple-splash-1179-2556.png"
           media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
         />
-        
+
         {/* iPhone 15 Series */}
         <link
           rel="apple-touch-startup-image"
           href="/apple-splash-1290-2796.png"
           media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
         />
-        
+
         {/* iPhone 14 Series */}
         <link
           rel="apple-touch-startup-image"
@@ -270,7 +266,7 @@ export default async function RootLayout({
           href="/apple-splash-1170-2532.png"
           media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
         />
-        
+
         {/* iPhone X through 13 Series */}
         <link
           rel="apple-touch-startup-image"
@@ -287,7 +283,7 @@ export default async function RootLayout({
           href="/apple-splash-828-1792.png"
           media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
         />
-        
+
         {/* Older iPhones */}
         <link
           rel="apple-touch-startup-image"
@@ -331,12 +327,14 @@ export default async function RootLayout({
           spaceGrotesk.variable,
           opticianSans.variable,
           ibmPlexSansArabic.variable,
-          localeClass
+          localeClass,
         )}
         dir={dir}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers>{children}</Providers>
+          <Providers>
+            <AppLayout>{children}</AppLayout>
+          </Providers>
           <Toaster />
         </NextIntlClientProvider>
       </body>

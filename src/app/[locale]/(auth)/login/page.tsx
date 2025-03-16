@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { LoginPage } from "@/components/auth/login";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,9 +12,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  return (
-    <AppLayout>
-      <LoginPage />
-    </AppLayout>
-  );
+  return <LoginPage />;
 }

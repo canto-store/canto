@@ -1,11 +1,10 @@
 "use client";
 
-import { AppLayout } from "@/components/layout";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BrowseLoading() {
   return (
-    <AppLayout theme="default">
+    <>
       {/* Page Header Skeleton */}
       <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <Skeleton className="h-10 w-64" />
@@ -66,6 +65,6 @@ export default function BrowseLoading() {
           </div>
         ))}
       </div>
-    </AppLayout>
+    </>
   );
 }

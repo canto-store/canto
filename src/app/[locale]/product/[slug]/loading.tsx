@@ -1,11 +1,10 @@
 "use client";
 
-import { AppLayout } from "@/components/layout";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductDetailLoading() {
   return (
-    <AppLayout theme="default">
+    <>
       {/* Breadcrumb Skeleton */}
       <div className="mb-6">
         <Skeleton className="h-6 w-32" />
@@ -103,6 +102,6 @@ export default function ProductDetailLoading() {
           ))}
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
