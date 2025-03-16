@@ -4,9 +4,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, X, Share, Globe } from "lucide-react";
-import { useTranslations } from "next-intl";
-
-// Define the BeforeInstallPromptEvent interface
+import { useLocale, useTranslations } from "next-intl";
+import { useDeviceOS } from "react-haiku";
+import { useMediaQuery } from "react-haiku";
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
@@ -16,7 +16,6 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-// Extend the Window interface to include our custom property
 declare global {
   interface Window {
     deferredPrompt: BeforeInstallPromptEvent | null;
@@ -24,119 +23,42 @@ declare global {
 }
 
 interface InstallPWAProps {
-  /**
-   * The display variant of the install prompt
-   * - "menu": Menu item for navigation menus (mobile only)
-   * - "message": Floating card notification (mobile only)
-   */
   variant?: "menu" | "message";
-
-  /**
-   * Optional CSS class name to apply to the component
-   */
   className?: string;
-
-  /**
-   * Delay in milliseconds before showing the prompt (for message variant)
-   * Default: 2000ms
-   */
-  showDelay?: number;
-
-  /**
-   * Local storage key to use for tracking dismissal state
-   * Default: "pwa-install-dismissed"
-   */
   dismissalKey?: string;
 }
 
 export function InstallPWA({
   variant = "message",
   className = "",
-  showDelay,
   dismissalKey,
 }: InstallPWAProps) {
   const t = useTranslations("pwa");
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
-  const [isAppInstalled, setIsAppInstalled] = useState(false);
-  const [isRTL, setIsRTL] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const deviceOS = useDeviceOS();
+  const isIOSDevice = deviceOS === "iOS";
+  const isMobile = useMediaQuery("(max-width: 768px)", false);
 
-  // Determine the appropriate dismissal key
   const storageDismissalKey = dismissalKey || "pwa-message-dismissed";
-
-  // Default delay for showing the prompt
-  const displayDelay = showDelay ?? 2000;
+  const displayDelay = 2000;
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
   useEffect(() => {
-    // Check if we're in a browser environment
-    if (typeof window === "undefined") return;
-
-    // Check if the document direction is RTL
-    setIsRTL(document.dir === "rtl");
-
-    // Check if on mobile device (once on mount)
-    setIsMobile(window.innerWidth < 768);
-
-    // Improved iOS detection
-    const isIOSDevice =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-    // Check if the user is in Safari on iOS (required for Add to Home Screen)
-    const isSafari =
-      /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
-      (navigator.vendor && navigator.vendor.indexOf("Apple") > -1);
-
-    setIsIOS(isIOSDevice);
-
-    // Check if the app is already installed
-    const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
-
-    setIsAppInstalled(isStandalone);
-
-    // If app is already installed, no need to continue
-    if (isStandalone) return;
-
-    // Check if user has previously dismissed the prompt
-    const dismissed = localStorage.getItem(storageDismissalKey);
-    if (dismissed === "true") {
-      setIsDismissed(true);
-      return;
-    }
-
-    // For iOS, we'll always show our custom message since the beforeinstallprompt event isn't supported
-    if (isIOSDevice && !isDismissed) {
-      // Only show the prompt in Safari on iOS
-      if (isSafari) {
-        setTimeout(() => {
-          setIsInstallable(true);
-        }, displayDelay);
-      }
-      return;
-    }
-
-    // Listen for the beforeinstallprompt event (non-iOS browsers)
+    setIsDismissed(localStorage.getItem(storageDismissalKey) === "true");
     const handler = (e: Event) => {
       e.preventDefault();
-      // Store the event for later use
       window.deferredPrompt = e as BeforeInstallPromptEvent;
       setInstallPrompt(e as BeforeInstallPromptEvent);
-      setIsInstallable(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Check if we already have a stored prompt
     if (window.deferredPrompt) {
       setInstallPrompt(window.deferredPrompt);
-      setIsInstallable(true);
     }
 
     return () => {
@@ -145,22 +67,22 @@ export function InstallPWA({
   }, [variant, isDismissed, displayDelay, storageDismissalKey]);
 
   const handleInstall = async () => {
-    if (isIOS) {
-      // For iOS, show instructions instead of triggering the prompt
+    const isAppInstalled =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+    if (isAppInstalled) setIsDismissed(true);
+
+    if (isIOSDevice) {
       setShowIOSInstructions(true);
       return;
     }
 
-    // Use either the stored prompt or the current installPrompt
     const promptToUse = window.deferredPrompt || installPrompt;
     if (!promptToUse) return;
 
     try {
-      // Show the install prompt
       await promptToUse.prompt();
-
       setInstallPrompt(null);
-      setIsInstallable(false);
       window.deferredPrompt = null;
     } catch (error) {
       console.error("Error showing install prompt:", error);
@@ -169,21 +91,14 @@ export function InstallPWA({
 
   const handleDismiss = () => {
     setShowIOSInstructions(false);
-    setIsInstallable(false);
     setIsDismissed(true);
     localStorage.setItem(storageDismissalKey, "true");
   };
 
-  // If the app is already installed, don't show the install button
-  if (isAppInstalled) return null;
+  if (isDismissed) return null;
 
-  // If dismissed or not installable (and not showing iOS instructions), don't show anything
-  if (isDismissed || (!isInstallable && !showIOSInstructions)) return null;
-
-  // Only show on mobile devices
   if (!isMobile) return null;
 
-  // iOS Instructions (for message variant)
   if (variant === "message" && showIOSInstructions) {
     return (
       <div className="bg-global fixed right-4 bottom-22 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg p-4 shadow-lg">
@@ -228,7 +143,6 @@ export function InstallPWA({
     );
   }
 
-  // Message variant
   if (variant === "message") {
     return (
       <div className="bg-global fixed right-4 bottom-22 z-40 w-[calc(100%-2rem)] max-w-sm rounded-lg p-4 shadow-lg">
@@ -249,7 +163,7 @@ export function InstallPWA({
                   onClick={handleInstall}
                   className="text-white"
                 >
-                  {isIOS ? t("addToHomeScreen") : t("installNow")}
+                  {isIOSDevice ? t("addToHomeScreen") : t("installNow")}
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleDismiss}>
                   {t("notNow")}
@@ -270,15 +184,16 @@ export function InstallPWA({
     );
   }
 
-  // Menu item variant
-  return (
-    <Button
-      onClick={handleInstall}
-      variant="ghost"
-      className={`flex w-full items-center justify-start px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black ${className}`}
-    >
-      <Download className={`${isRTL ? "ml-3" : "mr-3"} h-4 w-4`} />
-      {isIOS ? t("addToHomeScreen") : t("install")}
-    </Button>
-  );
+  if (variant === "menu") {
+    return (
+      <Button
+        onClick={handleInstall}
+        variant="ghost"
+        className={`flex w-full items-center justify-start px-4 py-3 text-base text-gray-600 transition-colors hover:bg-gray-50 hover:text-black ${className}`}
+      >
+        <Download className={`${isRTL ? "ml-3" : "mr-3"} h-4 w-4`} />
+        {isIOSDevice ? t("addToHomeScreen") : t("install")}
+      </Button>
+    );
+  }
 }

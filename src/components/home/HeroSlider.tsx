@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 import { useBanner } from "@/providers";
 import { useLocale } from "next-intl";
 import Image from "next/image";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useMediaQuery } from "react-haiku";
 interface HeroSliderProps {
   slides: HeroSlide[];
   className?: string;
@@ -30,7 +30,7 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const isMobile = useMediaQuery("(max-width: 767px)");
+  const isMobile = useMediaQuery("(max-width: 767px)", false);
 
   const augmentedSlides = useCallback(() => {
     if (slides.length === 0) return [];

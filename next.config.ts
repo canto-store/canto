@@ -1,5 +1,8 @@
 import { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import withTM from "next-transpile-modules";
+
+const withTranspileModules = withTM(["react-haiku"]);
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -14,4 +17,4 @@ const nextConfig: NextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin();
-export default withNextIntl(nextConfig);
+export default withNextIntl(withTranspileModules(nextConfig));

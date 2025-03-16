@@ -6,7 +6,7 @@ import { PromoBanner } from "./PromoBanner";
 
 export function Header() {
   return (
-    <header className="border-primary bg-global sticky top-0 w-full border-b">
+    <header className="border-primary bg-global sticky top-0 z-50 w-full border-b">
       <PromoBanner />
       <div className="block md:hidden">
         <MobileHeader />

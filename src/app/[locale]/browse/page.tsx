@@ -55,7 +55,7 @@ export default function BrowsePage() {
   } = useProductTranslations();
 
   return (
-    <>
+    <div className="mt-3">
       {/* Search and Filter Controls */}
       <SearchFilterBar
         searchQuery={searchQuery}
@@ -153,6 +153,6 @@ export default function BrowsePage() {
         clearFilters={clearFilters}
         isRTL={isRTL}
       />
-    </>
+    </div>
   );
 }

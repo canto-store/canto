@@ -1,5 +1,4 @@
 // Export hooks that don't have conflicts
-export * from "./use-media-query";
 export * from "./use-protected-route";
 export * from "./use-sign-up";
 
