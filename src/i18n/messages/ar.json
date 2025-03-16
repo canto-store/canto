@@ -299,13 +299,15 @@
     "nameRequired": "الاسم مطلوب",
     "emailRequired": "البريد الإلكتروني مطلوب",
     "passwordRequired": "كلمة المرور مطلوبة",
+    "confirmPasswordRequired": "يرجى تأكيد كلمة المرور الخاصة بك",
     "errors": {
       "emailRequired": "البريد الإلكتروني مطلوب",
       "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
       "passwordRequired": "كلمة المرور مطلوبة",
       "passwordTooShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
       "firstNameRequired": "الاسم الأول مطلوب",
-      "lastNameRequired": "اسم العائلة مطلوب"
+      "lastNameRequired": "اسم العائلة مطلوب",
+      "confirmPasswordRequired": "يرجى تأكيد كلمة المرور الخاصة بك"
     }
   },
   "checkout": {

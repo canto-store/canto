@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { CartDropdown } from "@/components/cart/CartDropdown";
 import { LanguageSelector } from "@/components/language/LanguageSelector";
-import { UserDropdown } from "@/components/user/UserDropdown";
+import { UserDropdown } from "@/components/home/UserDropdown";
 import { MainNavigation } from "@/components/layout/MainNavigation";
 
 interface WebHeaderProps {

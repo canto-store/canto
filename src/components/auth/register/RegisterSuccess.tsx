@@ -6,12 +6,36 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 
-export function RegisterSuccess() {
+export function RegisterSuccess({
+  email,
+  switchToLogin,
+  onClose,
+}: {
+  email?: string;
+  switchToLogin?: () => void;
+  onClose?: () => void;
+}) {
   const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/";
-  const email = searchParams.get("email") || "";
+  email = email || searchParams.get("email") || "";
+
+  const handleGoToLogin = () => {
+    if (switchToLogin) {
+      switchToLogin();
+    } else {
+      router.push(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+    }
+  };
+
+  const handleGoToHome = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      router.push("/");
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6 py-4 text-center">
@@ -29,19 +53,10 @@ export function RegisterSuccess() {
         </div>
       </div>
       <div className="flex flex-col gap-3 pt-4">
-        <Button
-          onClick={() =>
-            router.push(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
-          }
-          className="w-full"
-        >
+        <Button onClick={handleGoToLogin} className="w-full">
           {t("goToLogin")}
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => router.push("/")}
-          className="w-full"
-        >
+        <Button variant="outline" onClick={handleGoToHome} className="w-full">
           {t("goToHome")}
         </Button>
       </div>

@@ -384,13 +384,15 @@
     "nameRequired": "Name is required",
     "emailRequired": "Email is required",
     "passwordRequired": "Password is required",
+    "confirmPasswordRequired": "Please confirm your password",
     "errors": {
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "passwordRequired": "Password is required",
       "passwordTooShort": "Password must be at least 8 characters",
       "firstNameRequired": "First name is required",
-      "lastNameRequired": "Last name is required"
+      "lastNameRequired": "Last name is required",
+      "confirmPasswordRequired": "Please confirm your password"
     }
   }
 }

@@ -32,7 +32,7 @@ export function LoginModal({
             {t("loginSubtitle")}
           </DialogDescription>
         </DialogHeader>
-        <LoginForm switchToRegister={switchToRegister} />
+        <LoginForm onClose={onClose} switchToRegister={switchToRegister} />
       </DialogContent>
     </Dialog>
   );

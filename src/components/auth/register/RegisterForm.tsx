@@ -1,21 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useSignUp, type SignUpRequest } from "@/hooks";
+import { useSignUp } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
+import { useForm } from "react-hook-form";
 
-interface FieldError {
-  name?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-}
+type FormData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export function RegisterForm({
   onSuccess,
@@ -24,99 +24,29 @@ export function RegisterForm({
   onSuccess?: (email: string) => void;
   switchToLogin?: () => void;
 }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<FieldError>({});
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
   const t = useTranslations("auth");
   const router = useRouter();
-  const signUpMutation = useSignUp();
-  const validateForm = (): boolean => {
-    const errors: FieldError = {};
-    let isValid = true;
+  const { mutate, isPending, error, isSuccess } = useSignUp();
 
-    if (!name.trim()) {
-      errors.name = t("nameRequired");
-      isValid = false;
-    }
-
-    if (!email.trim()) {
-      errors.email = t("emailRequired");
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = t("errors.emailInvalid");
-      isValid = false;
-    }
-
-    if (!password.trim()) {
-      errors.password = t("passwordRequired");
-      isValid = false;
-    } else if (password.length < 8) {
-      errors.password = t("errors.passwordTooShort");
-      isValid = false;
-    }
-
-    if (password !== confirmPassword) {
-      errors.confirmPassword = t("passwordsDoNotMatch");
-      isValid = false;
-    }
-
-    setFieldErrors(errors);
-    return isValid;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setFieldErrors({});
-
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      const signUpData: SignUpRequest = {
-        email,
-        password,
-        name,
-      };
-
-      await signUpMutation.mutateAsync(signUpData);
-
+  const onSubmit = async (data: FormData) => {
+    mutate(data);
+    if (isSuccess) {
       toast.success(t("signUpSuccess"));
-      onSuccess?.(email);
-    } catch (err: unknown) {
-      if (
-        err &&
-        typeof err === "object" &&
-        "status" in err &&
-        "message" in err
-      ) {
-        const errorObj = err as {
-          status: number;
-          message: string;
-          errors?: Record<string, string | string[]>;
-        };
-
-        if (errorObj.status >= 400 && errorObj.status < 500) {
-          setError(errorObj.message || t("signUpError"));
-
-          if (errorObj.errors) {
-            const apiErrors: Record<string, string> = {};
-            Object.entries(errorObj.errors).forEach(([key, messages]) => {
-              apiErrors[key] = Array.isArray(messages)
-                ? messages[0]
-                : (messages as string);
-            });
-            setFieldErrors({ ...fieldErrors, ...apiErrors });
-          }
-        } else {
-          setError(t("serverError"));
-        }
-      }
+      onSuccess?.(data.email);
     }
   };
 
@@ -129,74 +59,80 @@ export function RegisterForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <ErrorAlert message={error} />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <ErrorAlert message={error?.message || null} />
 
       <FormInput
         id="name"
-        name="name"
         label={t("nameLabel")}
         type="text"
         placeholder={t("namePlaceholder")}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        disabled={signUpMutation.isPending}
+        disabled={isPending}
         required
-        error={fieldErrors.name}
+        error={errors.name}
         customErrorMessage={t("errors.firstNameRequired")}
+        {...register("name", {
+          required: t("nameRequired"),
+        })}
       />
 
       <FormInput
         id="email"
-        name="email"
         label={t("emailLabel")}
         type="email"
         placeholder={t("emailPlaceholder")}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
         autoComplete="email"
-        disabled={signUpMutation.isPending}
+        disabled={isPending}
         required
-        error={fieldErrors.email}
+        error={errors.email}
         customErrorMessage={t("errors.emailRequired")}
+        {...register("email", {
+          required: t("emailRequired"),
+          pattern: {
+            value: /\S+@\S+\.\S+/,
+            message: t("errors.emailInvalid"),
+          },
+        })}
       />
 
       <FormInput
         id="password"
-        name="password"
         label={t("passwordLabel")}
         type="password"
         placeholder={t("passwordPlaceholder")}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
         autoComplete="new-password"
-        disabled={signUpMutation.isPending}
+        disabled={isPending}
         required
-        error={fieldErrors.password}
+        error={errors.password}
         customErrorMessage={t("errors.passwordRequired")}
+        {...register("password", {
+          required: t("passwordRequired"),
+          minLength: {
+            value: 8,
+            message: t("errors.passwordTooShort"),
+          },
+        })}
       />
 
       <FormInput
         id="confirmPassword"
-        name="confirmPassword"
         label={t("confirmPasswordLabel")}
         type="password"
         placeholder={t("confirmPasswordPlaceholder")}
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
         autoComplete="new-password"
-        disabled={signUpMutation.isPending}
+        disabled={isPending}
         required
-        error={fieldErrors.confirmPassword}
+        error={errors.confirmPassword}
         customErrorMessage={t("passwordsDoNotMatch")}
+        {...register("confirmPassword", {
+          required: t("confirmPasswordRequired"),
+          validate: (value) =>
+            value === watch("password") || t("passwordsDoNotMatch"),
+        })}
       />
 
-      <Button
-        type="submit"
-        className="mt-6 w-full"
-        disabled={signUpMutation.isPending}
-      >
-        {signUpMutation.isPending ? (
+      <Button type="submit" className="mt-6 w-full" disabled={isPending}>
+        {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             {t("signingUp")}
@@ -212,7 +148,7 @@ export function RegisterForm({
           variant="link"
           className="h-auto px-0 text-sm font-normal"
           onClick={handleSwitchToLogin}
-          disabled={signUpMutation.isPending}
+          disabled={isPending}
         >
           {t("alreadyHaveAccount")} {t("signIn")}
         </Button>

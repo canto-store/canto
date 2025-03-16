@@ -11,8 +11,10 @@ import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 
 export function LoginForm({
+  onClose,
   switchToRegister,
 }: {
+  onClose?: () => void;
   switchToRegister?: () => void;
 }) {
   const [email, setEmail] = useState("omar@example.com");
@@ -34,6 +36,9 @@ export function LoginForm({
     try {
       await login(email, password);
       router.push(returnUrl);
+      if (onClose) {
+        onClose();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("loginError"));
     } finally {

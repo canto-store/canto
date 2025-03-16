@@ -32,28 +32,16 @@ export class ApiError extends Error {
     this.status = status;
     this.errors = errors;
 
-    // Ensures proper instanceof checks work in ES5
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 
-  // Helper to determine if error is client-side (4xx)
-  isClientError(): boolean {
-    return this.status >= 400 && this.status < 500;
-  }
-
-  // Helper to determine if error is server-side (5xx)
   isServerError(): boolean {
     return this.status >= 500;
   }
 }
 
 // Define possible response types from API
-type ApiResponseData =
-  | Record<string, unknown>
-  | string
-  | Blob
-  | ArrayBuffer
-  | null;
+type ApiResponseData = Record<string, unknown> | string;
 
 /**
  * Parses API response based on content type
@@ -71,18 +59,7 @@ async function parseResponse(response: Response): Promise<ApiResponseData> {
     return response.text();
   }
 
-  // For binary responses, return as blob
-  if (
-    contentType?.includes("application/octet-stream") ||
-    contentType?.includes("image/") ||
-    contentType?.includes("audio/") ||
-    contentType?.includes("video/")
-  ) {
-    return response.blob();
-  }
-
-  // For other types, return as arrayBuffer
-  return response.arrayBuffer();
+  return "";
 }
 
 /**
@@ -118,14 +95,16 @@ export async function fetchData<T>(
     const data = await parseResponse(response);
 
     if (!response.ok) {
-      // Extract error details if available
-      const errorMessage =
+      let errorMessage = `API error: ${response.status}`;
+      if (typeof data === "string") {
+        errorMessage = data;
+      } else if (
         typeof data === "object" &&
         data !== null &&
-        "message" in data &&
-        typeof data.message === "string"
-          ? data.message
-          : `API error: ${response.status}`;
+        "message" in data
+      ) {
+        errorMessage = data.message as string;
+      }
 
       const errorDetails =
         typeof data === "object" &&

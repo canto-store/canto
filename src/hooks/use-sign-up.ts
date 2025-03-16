@@ -26,48 +26,38 @@ export interface SignUpError {
   errors?: Record<string, string | string[]>;
 }
 
-/**
- * Hook for handling user sign-up with proper error handling
- */
 export function useSignUp() {
   const t = useTranslations("auth");
 
-  return useMutation<SignUpResponse, SignUpError, SignUpRequest>({
+  const mutation = useMutation({
     mutationFn: async (data: SignUpRequest) => {
-      try {
-        // Use the postData utility function for the API call
-        return await postData<SignUpResponse, SignUpRequest>("sign-up", data);
-      } catch (error) {
-        // Handle errors from API calls
-        if (error instanceof ApiError) {
-          // Create a structured error object using the ApiError properties
-          const signUpError: SignUpError = {
-            status: error.status,
-            message: error.isClientError()
-              ? t("registerError") ||
-                "Registration failed. Please check your information and try again."
-              : t("serverError") ||
-                "Something went wrong. Please try again later.",
-            errors: error.errors,
-          };
-
-          throw signUpError;
-        }
-
-        // For any other type of error
-        const signUpError: SignUpError = {
-          status: 500,
-          message:
-            t("serverError") || "Something went wrong. Please try again later.",
-        };
-
-        throw signUpError;
-      }
+      const response = await postData<SignUpResponse, SignUpRequest>(
+        "sign-up",
+        data,
+      );
+      return response;
     },
     onError: (error) => {
-      console.log("Sign-up error:", error);
+      if (error instanceof ApiError) {
+        return {
+          status: error.status,
+          message: error.isServerError() ? t("registerError") : error.message,
+          errors: error.errors,
+        };
+      }
+      throw new Error(t("serverError"));
     },
   });
+
+  return {
+    ...mutation,
+    isSuccess: mutation.isSuccess,
+    isLoading: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
+    signUp: mutation.mutate,
+    signUpAsync: mutation.mutateAsync,
+  };
 }
 
 // Export the hook as default
