@@ -1,5 +1,4 @@
 // Export hooks that don't have conflicts
-export * from "./use-protected-route";
 export * from "./use-sign-up";
 
 // Re-export hooks from the conflicting modules
