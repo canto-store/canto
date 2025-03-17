@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@/lib/query";
-import { fetchData } from "@/lib/api";
+import { api } from "@/lib/api";
 import type { QueryConfig } from "@/lib/query";
 import { QueryClient } from "@tanstack/react-query";
 
@@ -116,7 +116,7 @@ function processCategories(data: CategoriesApiResponse): CategoriesData {
 // Fetch function separated for better testability and reuse
 async function fetchCategories(): Promise<CategoriesData> {
   try {
-    const response = await fetchData<CategoriesApiResponse>("get-categories");
+    const response: CategoriesApiResponse = await api.get("/get-categories");
 
     // Validate response structure
     if (!response || !response.categories) {

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { InstallPWA } from "@/components/pwa";
 import { Store, Settings, LogOut } from "lucide-react";
-import { useAuth } from "@/providers/auth/auth-provider";
+import { useAuth } from "@/providers/auth/use-auth";
 
 interface NavigationItem {
   label: string;
@@ -23,8 +23,7 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
   const t = useTranslations("header");
   const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [isRTL, setIsRTL] = useState(false);
-  const { user, logout } = useAuth(); // Get user and logout from auth provider
-  const isAuthenticated = !!user;
+  const { isAuthenticated, logout } = useAuth(); // Get user and logout from auth provider
 
   // Common navigation items for all users (removed home and browse)
   const commonNavigationItems: NavigationItem[] = [

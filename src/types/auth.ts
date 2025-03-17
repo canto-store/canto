@@ -1,21 +1,11 @@
-export interface User {
-  id: string;
+export interface LoginRequest extends Record<string, unknown> {
   email: string;
-  name?: string;
-  image?: string;
-  role: "user" | "admin";
-  createdAt: Date;
+  password: string;
 }
 
-export interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
-export interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  updateProfile: (data: Partial<User>) => Promise<void>;
+export interface RegisterRequest extends Record<string, unknown> {
+  email: string;
+  password: string;
+  name: string;
+  phoneNumber?: string;
 }

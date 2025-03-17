@@ -4,21 +4,25 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth } from "@/providers/auth/auth-provider";
+import { useAuth } from "@/providers/auth/use-auth";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
-
-export function LoginForm({
-  onClose,
-  switchToRegister,
-}: {
+import { useForm } from "react-hook-form";
+import { LoginRequest } from "@/types/auth";
+interface LoginFormProps {
   onClose?: () => void;
   switchToRegister?: () => void;
-}) {
-  const [email, setEmail] = useState("omar@example.com");
-  const [password, setPassword] = useState("omar");
+}
+
+export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
+  const { register, handleSubmit } = useForm<LoginRequest>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,13 +32,11 @@ export function LoginForm({
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginRequest) => {
     setError(null);
     setIsLoading(true);
-
     try {
-      await login(email, password);
+      await login(data);
       router.push(returnUrl);
       if (onClose) {
         onClose();
@@ -55,17 +57,15 @@ export function LoginForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <ErrorAlert message={error} />
 
       <FormInput
         id="email"
-        name="email"
         label={t("auth.emailLabel")}
         type="email"
         placeholder={t("auth.emailPlaceholder")}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        {...register("email")}
         required
         autoComplete="email"
         disabled={isLoading}
@@ -74,12 +74,10 @@ export function LoginForm({
 
       <FormInput
         id="password"
-        name="password"
         label={t("auth.passwordLabel")}
         type="password"
         placeholder={t("auth.passwordPlaceholder")}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        {...register("password")}
         required
         autoComplete="current-password"
         disabled={isLoading}

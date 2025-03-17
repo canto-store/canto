@@ -1,52 +1,12 @@
 "use client";
 
 import { useQuery } from "@/lib/query";
-import { fetchData } from "@/lib/api";
+import { api } from "@/lib/api";
 import type { QueryConfig } from "@/lib/query";
-import type { Product } from "@/types";
+import type { HomeProductsData, Product } from "@/types";
 import { QueryClient } from "@tanstack/react-query";
+import { ApiProduct, HomeProductsApiResponse } from "@/types/product";
 
-// API response type from the backend
-export type ApiProduct = {
-  id: number;
-  name: string;
-  slug: string;
-  short_desc: string;
-  price: number;
-  sale_price: number | null;
-  review: number;
-  ratings: number;
-  until: string | null;
-  stock: number;
-  top: boolean;
-  featured: boolean;
-  new: boolean;
-  best_seller: boolean;
-  best_deal: boolean;
-  new_arrival: boolean;
-  author: string;
-  sold: number;
-  category: Array<{
-    name: string;
-    slug: string;
-  }>;
-  sm_pictures: Array<{ url: string }>;
-};
-
-export type HomeProductsApiResponse = {
-  products: {
-    Fashion: ApiProduct[];
-    sections: Record<string, unknown>[];
-  };
-};
-
-export type HomeProductsData = {
-  featured: Product[];
-  newArrivals: Product[];
-  bestSellers: Product[];
-};
-
-// Transform API product to app Product type
 function transformProduct(apiProduct: ApiProduct): Product {
   return {
     name: apiProduct.name,
@@ -60,7 +20,6 @@ function transformProduct(apiProduct: ApiProduct): Product {
   };
 }
 
-// Define query keys in a structured way
 export const queryKeys = {
   products: {
     all: ["products"] as const,
@@ -68,11 +27,10 @@ export const queryKeys = {
   },
 };
 
-// Fetch function separated for better testability and reuse
 async function fetchHomeProducts(): Promise<HomeProductsData> {
   try {
-    const response =
-      await fetchData<HomeProductsApiResponse>("get-home-products");
+    const response: HomeProductsApiResponse =
+      await api.get("/get-home-products");
 
     // Validate response structure
     if (!response || !response.products || !response.products.Fashion) {

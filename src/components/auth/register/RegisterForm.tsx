@@ -6,7 +6,7 @@ import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useSignUp } from "@/hooks";
+import { useRegister } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 
@@ -40,10 +40,15 @@ export function RegisterForm({
 
   const t = useTranslations("auth");
   const router = useRouter();
-  const { mutate, isPending, error, isSuccess } = useSignUp();
+  const {
+    mutate: registerMutation,
+    isPending,
+    error,
+    isSuccess,
+  } = useRegister();
 
   const onSubmit = async (data: FormData) => {
-    mutate(data);
+    registerMutation(data);
     if (isSuccess) {
       toast.success(t("signUpSuccess"));
       onSuccess?.(data.email);

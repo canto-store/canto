@@ -1,5 +1,5 @@
 // Export hooks that don't have conflicts
-export * from "./use-sign-up";
+export * from "./use-register";
 
 // Re-export hooks from the conflicting modules
 export { useCategories } from "./use-categories";
@@ -12,8 +12,6 @@ export type {
   SubcategoryTitle,
   CategoriesData,
 } from "./use-categories";
-
-export type { ApiProduct, HomeProductsData } from "./use-home-products";
 
 // Re-export queryKeys with explicit names to avoid conflicts
 export { queryKeys as categoriesQueryKeys } from "./use-categories";

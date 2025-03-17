@@ -5,7 +5,7 @@ import { CircleUser, User, Settings, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
-import { useAuth } from "@/providers/auth/auth-provider";
+import { useAuth } from "@/providers/auth/use-auth";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
 
@@ -17,7 +17,7 @@ export function UserDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { isAuthenticated, logout, name } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -45,7 +45,7 @@ export function UserDropdown() {
   };
 
   const handleButtonClick = () => {
-    if (!user) {
+    if (!isAuthenticated) {
       setLoginModalOpen(true);
       return;
     }
@@ -91,21 +91,19 @@ export function UserDropdown() {
         <button
           className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
           onClick={handleButtonClick}
-          title={user ? user.name || user.email : t("login")}
+          title={isAuthenticated ? name : t("login")}
         >
           <CircleUser className="h-6 w-6" />
         </button>
 
         {/* User Dropdown - Only shown when user is logged in and dropdown is open */}
-        {user && userDropdownOpen && (
+        {isAuthenticated && userDropdownOpen && (
           <div
             onMouseLeave={handleMouseLeave}
             className={`bg-global ring-opacity-5 ring-primary absolute mt-2 w-56 rounded-md py-2 shadow-lg ring-1 ${isRTL ? "left-5" : "right-5"}`}
           >
             <div className="border-primary/10 mb-2 border-b px-4 pb-2">
-              <p className="text-primary font-medium">
-                {t("hello", { name: user.name })}
-              </p>
+              <p className="text-primary font-medium">{t("hello", { name })}</p>
             </div>
 
             {dropDownItems.map((item) => (
