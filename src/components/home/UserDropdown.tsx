@@ -91,7 +91,7 @@ export function UserDropdown() {
         <button
           className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
           onClick={handleButtonClick}
-          title={isAuthenticated ? name : t("login")}
+          title={isAuthenticated ? (name as string) : t("login")}
         >
           <CircleUser className="h-6 w-6" />
         </button>
@@ -103,7 +103,9 @@ export function UserDropdown() {
             className={`bg-global ring-opacity-5 ring-primary absolute mt-2 w-56 rounded-md py-2 shadow-lg ring-1 ${isRTL ? "left-5" : "right-5"}`}
           >
             <div className="border-primary/10 mb-2 border-b px-4 pb-2">
-              <p className="text-primary font-medium">{t("hello", { name })}</p>
+              <p className="text-primary font-medium">
+                {t("hello", { name: name as string })}
+              </p>
             </div>
 
             {dropDownItems.map((item) => (

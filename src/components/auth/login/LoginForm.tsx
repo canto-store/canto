@@ -35,17 +35,20 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   const onSubmit = async (data: LoginRequest) => {
     setError(null);
     setIsLoading(true);
-    try {
-      await login(data);
-      router.push(returnUrl);
-      if (onClose) {
-        onClose();
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("loginError"));
-    } finally {
-      setIsLoading(false);
-    }
+    await login
+      .mutateAsync(data)
+      .then(() => {
+        router.push(returnUrl);
+        if (onClose) {
+          onClose();
+        }
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleSwitchToRegister = () => {

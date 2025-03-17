@@ -46,12 +46,12 @@ export type ApiProduct = {
   sm_pictures: Array<{ url: string }>;
 };
 
-export type HomeProductsApiResponse = {
+export interface HomeProductsApiResponse {
   products: {
     Fashion: ApiProduct[];
     sections: Record<string, unknown>[];
   };
-};
+}
 
 export type HomeProductsData = {
   featured: Product[];

@@ -3,9 +3,9 @@ import axios, { AxiosError } from "axios";
 const BASE_URL = "https://api.canto-store.com";
 
 export const api = {
-  get: async (endpoint: string) => {
+  get: async <T>(endpoint: string): Promise<T> => {
     try {
-      const response = await axios.get(`${BASE_URL}${endpoint}`);
+      const response = await axios.get<T>(`${BASE_URL}${endpoint}`);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -19,7 +19,10 @@ export const api = {
     }
   },
 
-  post: async (endpoint: string, data: Record<string, unknown>) => {
+  post: async (
+    endpoint: string,
+    data: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> => {
     try {
       const response = await axios.post(`${BASE_URL}${endpoint}`, {
         ...data,

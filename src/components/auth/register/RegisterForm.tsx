@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useRegister } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 type FormData = {
   name: string;
@@ -40,19 +41,24 @@ export function RegisterForm({
 
   const t = useTranslations("auth");
   const router = useRouter();
-  const {
-    mutate: registerMutation,
-    isPending,
-    error,
-    isSuccess,
-  } = useRegister();
+  const { mutateAsync: registerMutation } = useRegister();
+  const [isPending, setIsPending] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (data: FormData) => {
-    registerMutation(data);
-    if (isSuccess) {
-      toast.success(t("signUpSuccess"));
-      onSuccess?.(data.email);
-    }
+    setIsPending(true);
+    await registerMutation(data)
+      .then(() => {
+        toast.success(t("signUpSuccess"));
+        onSuccess?.(data.email);
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setIsPending(false);
+      });
   };
 
   const handleSwitchToLogin = () => {
@@ -65,7 +71,7 @@ export function RegisterForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <ErrorAlert message={error?.message || null} />
+      <ErrorAlert message={error || null} />
 
       <FormInput
         id="name"

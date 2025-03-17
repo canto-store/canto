@@ -29,11 +29,11 @@ export const queryKeys = {
 
 async function fetchHomeProducts(): Promise<HomeProductsData> {
   try {
-    const response: HomeProductsApiResponse =
-      await api.get("/get-home-products");
+    const response =
+      await api.get<HomeProductsApiResponse>("/get-home-products");
 
     // Validate response structure
-    if (!response || !response.products || !response.products.Fashion) {
+    if (!response?.products?.Fashion) {
       throw new Error("Invalid API response structure");
     }
 
