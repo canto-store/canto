@@ -47,8 +47,6 @@ export function InstallPWA({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  console.log("isDismissed", isDismissed);
-
   useEffect(() => {
     const isAppInstalled =
       window.matchMedia("(display-mode: standalone)").matches ||
