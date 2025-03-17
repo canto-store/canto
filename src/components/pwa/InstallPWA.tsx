@@ -47,6 +47,19 @@ export function InstallPWA({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
+  console.log("isDismissed", isDismissed);
+
+  useEffect(() => {
+    const isAppInstalled =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+
+    if (isAppInstalled) {
+      setIsDismissed(true);
+      localStorage.setItem(storageDismissalKey, "true");
+    }
+  }, []);
+
   useEffect(() => {
     setIsDismissed(localStorage.getItem(storageDismissalKey) === "true");
     const handler = (e: Event) => {
@@ -67,11 +80,6 @@ export function InstallPWA({
   }, [variant, isDismissed, displayDelay, storageDismissalKey]);
 
   const handleInstall = async () => {
-    const isAppInstalled =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
-    if (isAppInstalled) setIsDismissed(true);
-
     if (isIOSDevice) {
       setShowIOSInstructions(true);
       return;
