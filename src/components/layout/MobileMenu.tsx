@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { InstallPWA } from "@/components/pwa";
-import { Store, Heart, Settings, LogOut } from "lucide-react";
+import { Store, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface NavigationItem {
@@ -36,18 +36,7 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
     },
   ];
 
-  const authenticatedNavigationItems: NavigationItem[] = [
-    {
-      label: t("favorites"),
-      href: "/favorites",
-      icon: <Heart className="h-5 w-5" />,
-    },
-  ];
-
-  const navigationItems = [
-    ...commonNavigationItems,
-    ...(isAuthenticated ? authenticatedNavigationItems : []),
-  ];
+  const navigationItems = [...commonNavigationItems];
 
   useEffect(() => {
     if (typeof window !== "undefined") {
