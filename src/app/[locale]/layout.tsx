@@ -29,19 +29,15 @@ const spaceGrotesk = localFont({
   display: "swap",
   preload: true,
 });
-interface RootLayoutProps {
-  children: ReactNode;
-  params: {
-    locale: "en" | "ar";
-  };
-}
 
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
   params,
-}: RootLayoutProps) {
-  const paramsObj = await params;
-  const { locale } = paramsObj;
+}: {
+  children: ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
 
   const messages = await getMessages();
 

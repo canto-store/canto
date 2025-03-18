@@ -56,7 +56,7 @@ export function InstallPWA({
       setIsDismissed(true);
       localStorage.setItem(storageDismissalKey, "true");
     }
-  }, []);
+  }, [storageDismissalKey]);
 
   useEffect(() => {
     setIsDismissed(localStorage.getItem(storageDismissalKey) === "true");
