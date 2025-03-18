@@ -1,36 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
-import localFont from "next/font/local";
-import { NextIntlClientProvider } from "next-intl";
 import { ReactNode } from "react";
-import { getMessages } from "next-intl/server";
-import { Providers } from "@/providers";
-import { cn } from "@/lib/utils";
-import { AppLayout } from "@/components/layout/AppLayout";
-
-const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
-  variable: "--font-ibm-plex-sans-arabic",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: true,
-});
-
-const opticianSans = localFont({
-  src: "../../public/fonts/Optician-Sans.woff2",
-  variable: "--font-optician-sans",
-  display: "swap",
-  preload: true,
-});
-
-const spaceGrotesk = localFont({
-  src: "../../public/fonts/SpaceGrotesk.woff2",
-  variable: "--font-space-grotesk",
-  display: "swap",
-  preload: true,
-});
 
 export const metadata: Metadata = {
   title: {
@@ -184,28 +154,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-interface RootLayoutProps {
-  children: ReactNode;
-  params: {
-    locale: "en" | "ar";
-  };
-}
-
 export default async function RootLayout({
   children,
-  params,
-}: RootLayoutProps) {
-  const paramsObj = await params;
-  const { locale } = paramsObj;
-
-  const messages = await getMessages();
-
-  const dir = locale === "ar" ? "rtl" : "ltr";
-
-  const localeClass = locale === "ar" ? "font-arabic" : "font-latin";
-
+}: {
+  children: ReactNode;
+}) {
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <head>
         {/* iOS PWA meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -321,23 +276,7 @@ export default async function RootLayout({
         {/* Add theme-color meta tag */}
         <meta name="theme-color" content="#ffffff" />
       </head>
-      <body
-        className={cn(
-          "bg-background font-sans antialiased",
-          spaceGrotesk.variable,
-          opticianSans.variable,
-          ibmPlexSansArabic.variable,
-          localeClass,
-        )}
-        dir={dir}
-      >
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers>
-            <AppLayout>{children}</AppLayout>
-          </Providers>
-          <Toaster />
-        </NextIntlClientProvider>
-      </body>
+      {children}
     </html>
   );
 }

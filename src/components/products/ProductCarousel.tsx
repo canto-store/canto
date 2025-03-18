@@ -30,9 +30,7 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
         // In RTL mode, scrollLeft is negative in most browsers
         // We need to use the absolute value and adjust the calculation
         const normalizedScrollPosition = isRTL
-          ? scrollContainer.scrollWidth -
-            scrollContainer.clientWidth +
-            scrollPosition
+          ? Math.abs(scrollPosition)
           : scrollPosition;
 
         const newIndex = Math.round(normalizedScrollPosition / itemWidth);
@@ -56,13 +54,10 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
       const scrollContainer = scrollContainerRef.current;
       const itemWidth = scrollContainer.scrollWidth / products.length;
 
-      // Calculate the position based on RTL or LTR
       let newPosition = itemWidth * index;
 
-      // For RTL, we need to adjust the scroll position
       if (isRTL) {
-        // In RTL, we need to scroll from the right side
-        newPosition = itemWidth * (products.length - index - 1);
+        newPosition = scrollContainer.scrollWidth - itemWidth * (index + 1);
       }
 
       scrollContainer.scrollTo({
@@ -75,19 +70,13 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
   };
 
   return (
-    <div className="relative" dir={isRTL ? "rtl" : "ltr"}>
+    <div className="relative">
       {title && <h3 className="mb-4 text-xl font-semibold">{title}</h3>}
 
       <div className="relative">
-        {/* Carousel container */}
         <div
           ref={scrollContainerRef}
           className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth pt-1 pb-6"
-          style={{
-            scrollbarWidth: "none",
-            // Force the scroll direction for RTL
-            direction: isRTL ? "rtl" : "ltr",
-          }}
         >
           {products.map((product, index) => (
             <div
@@ -106,10 +95,8 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
         </div>
       </div>
 
-      {/* Enhanced pagination indicators */}
       {products.length > 1 && (
         <div className="mt-6 flex justify-center gap-3">
-          {/* For RTL, we can keep the same order of indicators but adjust the scrollToIndex function */}
           {products.map((_, i) => (
             <button
               key={i}
