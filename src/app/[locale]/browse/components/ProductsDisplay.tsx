@@ -42,7 +42,7 @@ export function ProductsDisplay({
           <TabsContent value="grid">
             <ProductGrid
               products={paginatedProducts}
-              className={`xs:grid-cols-2 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ${isRTL ? "rtl" : ""}`}
+              className={`xs:grid-cols-2 grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ${isRTL ? "rtl" : ""}`}
             />
           </TabsContent>
 
