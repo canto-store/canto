@@ -21,7 +21,7 @@ export default function HomeLoading() {
       </div>
 
       {/* Category Grid Skeleton */}
-      <SectionContainer title="Shop by Category" background="background">
+      <SectionContainer background="background">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-2">
@@ -33,7 +33,7 @@ export default function HomeLoading() {
       </SectionContainer>
 
       {/* Featured Products Skeleton */}
-      <SectionContainer title="Featured Products" background="white">
+      <SectionContainer background="white">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="overflow-hidden rounded-lg shadow-sm">
