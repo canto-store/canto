@@ -56,9 +56,9 @@
     "close": "Close",
     "selectViewMode": "Select view mode",
     "currency": {
-      "symbol": "$",
-      "code": "USD",
-      "format": "${amount}"
+      "symbol": "EGP",
+      "code": "EGP",
+      "format": "EGP {amount}"
     }
   },
   "sort": {
@@ -123,11 +123,11 @@
     "buildingName": "Building Name",
     "buildingNamePlaceholder": "Enter building name",
     "apartmentNumber": "Apartment Number",
-    "apartmentNumberPlaceholder": "Enter apartment number",
+    "apartmentNumberPlaceholder": "e.g. 103",
     "floor": "Floor (Optional)",
-    "floorPlaceholder": "Enter floor number",
+    "floorPlaceholder": "e.g. 10",
     "houseNumber": "House Number",
-    "houseNumberPlaceholder": "Enter house number",
+    "houseNumberPlaceholder": "e.g. 103",
     "companyName": "Company Name",
     "companyNamePlaceholder": "Enter company name",
     "officeNumber": "Office Number",
@@ -150,7 +150,7 @@
     "apply": "Apply",
     "remove": "Remove",
     "percentageDiscount": "{amount}% discount applied",
-    "fixedDiscount": "${amount} discount applied",
+    "fixedDiscount": "EGP {amount} discount applied",
     "edit": "Edit",
     "add": "Add New Address",
     "addressSaved": "Address saved successfully",
@@ -187,7 +187,7 @@
   "features": {
     "payment": {
       "title": "PAYMENT & DELIVERY",
-      "description": "Free shipping for orders over $50"
+      "description": "Free shipping for orders over EGP 50"
     },
     "return": {
       "title": "RETURN & REFUND",

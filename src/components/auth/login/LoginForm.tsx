@@ -106,19 +106,18 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
         </Button>
       </div>
 
-      <div className="text-muted-foreground before:bg-border after:bg-border relative mt-6 text-center text-sm before:absolute before:top-1/2 before:left-0 before:h-px before:w-[calc(50%-1rem)] after:absolute after:top-1/2 after:right-0 after:h-px after:w-[calc(50%-1rem)]">
+      <div className="mt-6 text-center text-sm">
         <span className="bg-background px-4">{t("auth.noAccount")}</span>
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-4 w-full"
+          onClick={handleSwitchToRegister}
+          disabled={isLoading}
+        >
+          {t("auth.registerLink")}
+        </Button>
       </div>
-
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full"
-        onClick={handleSwitchToRegister}
-        disabled={isLoading}
-      >
-        {t("auth.registerLink")}
-      </Button>
     </form>
   );
 }

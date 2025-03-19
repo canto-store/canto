@@ -58,24 +58,24 @@
     "close": "إغلاق",
     "selectViewMode": "اختر وضع العرض",
     "currency": {
-      "symbol": "$",
-      "code": "دولار أمريكي",
-      "format": "${amount}"
+      "symbol": "جنيه مصري",
+      "code": "جنيه مصري",
+      "format": "جنيه مصري {amount}"
     }
   },
   "sort": {
     "featured": "مميز",
     "priceLow": "السعر: من الأقل إلى الأعلى",
     "priceHigh": "السعر: من الأعلى إلى الأقل",
-    "nameAsc": "الاسم: من أ إلى ي",
-    "nameDesc": "الاسم: من ي إلى أ"
+    "nameAsc": "الاسم: من الألف إلى الياء",
+    "nameDesc": "الاسم: من الياء إلى الألف"
   },
   "pagination": {
     "show": "عرض",
     "perPage": "لكل صفحة",
     "next": "التالي",
     "previous": "السابق",
-    "page": "الصفحة"
+    "page": "صفحة"
   },
   "cart": {
     "viewCart": "يمكنك عرض عربتك في أي وقت.",
@@ -102,13 +102,13 @@
     "checkoutNote": "سيتم حساب الشحن والضرائب عند الدفع",
     "freeShipping": "مجاني",
     "itemRemoved": "تمت إزالة العنصر من العربة",
-    "itemAdded": "تمت إضافة العنصر إلى العربة",
+    "itemAdded": "تم إضافة العنصر إلى العربة",
     "cartUpdated": "تم تحديث العربة بنجاح"
   },
   "features": {
     "payment": {
       "title": "الدفع والتوصيل",
-      "description": "شحن مجاني للطلبات التي تزيد عن 50 دولارًا"
+      "description": "شحن مجاني للطلبات التي تزيد عن EGP 50"
     },
     "return": {
       "title": "الإرجاع والاسترداد",
@@ -249,20 +249,20 @@
   },
   "auth": {
     "loginTitle": "مرحبًا بعودتك",
-    "loginDescription": "قم بتسجيل الدخول إلى حسابك",
+    "loginDescription": "تسجيل الدخول إلى حسابك",
     "loginSubtitle": "أدخل بريدك الإلكتروني أدناه للوصول إلى حسابك",
     "loginQuote": "نجعل العالم مكانًا أفضل من خلال ربط الناس.",
     "loginQuoteAuthor": "فريق متجر كانتو",
     "loginButton": "تسجيل الدخول",
-    "loginError": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "loginError": "بريد إلكتروني أو كلمة مرور غير صحيحة",
     "emailLabel": "البريد الإلكتروني",
     "emailPlaceholder": "name@example.com",
     "passwordLabel": "كلمة المرور",
     "passwordPlaceholder": "أدخل كلمة المرور الخاصة بك",
     "forgotPassword": "نسيت كلمة المرور؟",
     "noAccount": "ليس لديك حساب؟",
-    "registerLink": "إنشاء حساب",
-    "registerTitle": "إنشاء حساب",
+    "registerLink": "سجل الآن",
+    "registerTitle": "أنشئ حسابًا",
     "registerSubtitle": "انضم إلى مجتمعنا وابدأ التسوق",
     "registerButton": "سجل الآن",
     "registerError": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
@@ -311,15 +311,15 @@
     }
   },
   "checkout": {
-    "title": "إتمام الشراء",
+    "title": "الدفع",
     "orderSummary": "ملخص الطلب",
-    "subtotal": "المجموع الفرعي",
+    "subtotal": "الإجمالي الفرعي",
     "shipping": "الشحن",
     "discount": "الخصم",
-    "orderTotal": "إجمالي الطلب",
-    "shippingNote": "يتم حساب الشحن بناءً على عنوانك",
-    "calculatedNext": "يتم الحساب لاحقاً",
-    "placeOrder": "إتمام الطلب",
+    "orderTotal": "الإجمالي للطلب",
+    "shippingNote": "تم حساب الشحن بناءً على عنوانك",
+    "calculatedNext": "سيتم حسابه لاحقًا",
+    "placeOrder": "تقديم الطلب",
     "backToCart": "العودة إلى السلة",
     "shippingAddress": "عنوان الشحن",
     "fullName": "الاسم الكامل",
@@ -331,11 +331,11 @@
     "buildingName": "اسم المبنى",
     "buildingNamePlaceholder": "أدخل اسم المبنى",
     "apartmentNumber": "رقم الشقة",
-    "apartmentNumberPlaceholder": "أدخل رقم الشقة",
+    "apartmentNumberPlaceholder": "مثل 103",
     "floor": "الطابق (اختياري)",
-    "floorPlaceholder": "أدخل رقم الطابق",
+    "floorPlaceholder": "مثل 10",
     "houseNumber": "رقم المنزل",
-    "houseNumberPlaceholder": "أدخل رقم المنزل",
+    "houseNumberPlaceholder": "مثل 103",
     "companyName": "اسم الشركة",
     "companyNamePlaceholder": "أدخل اسم الشركة",
     "officeNumber": "رقم المكتب",
@@ -349,7 +349,7 @@
     "directions": "توجيهات إضافية (اختياري)",
     "directionsPlaceholder": "أدخل معالم أو توجيهات",
     "addressLabel": "تسمية العنوان (اختياري)",
-    "addressLabelPlaceholder": "مثل: المنزل، العمل، إلخ",
+    "addressLabelPlaceholder": "مثل: منزل، عمل، إلخ.",
     "phone": "رقم الهاتف",
     "phonePlaceholder": "أدخل رقم هاتفك",
     "saveAddress": "حفظ هذا العنوان للطلبات المستقبلية",
@@ -358,7 +358,7 @@
     "apply": "تطبيق",
     "remove": "إزالة",
     "percentageDiscount": "تم تطبيق خصم {amount}%",
-    "fixedDiscount": "تم تطبيق خصم ${amount}",
+    "fixedDiscount": "تم تطبيق خصم EGP{amount}",
     "edit": "تعديل",
     "add": "إضافة عنوان جديد",
     "addressSaved": "تم حفظ العنوان بنجاح",
@@ -375,7 +375,7 @@
     "viewOrder": "عرض الطلب",
     "errors": {
       "fullNameRequired": "الاسم الكامل مطلوب",
-      "addressTypeRequired": "الرجاء اختيار نوع العنوان",
+      "addressTypeRequired": "يرجى اختيار نوع العنوان",
       "buildingNameRequired": "اسم المبنى مطلوب",
       "apartmentNumberRequired": "رقم الشقة مطلوب",
       "houseNumberRequired": "رقم المنزل مطلوب",

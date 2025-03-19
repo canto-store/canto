@@ -6,13 +6,11 @@ export function LoginPage() {
   const t = useTranslations("auth");
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="space-y-4 text-center">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            {t("loginTitle")}
-          </h1>
-          <p className="text-muted-foreground text-sm">{t("loginSubtitle")}</p>
+    <div className="h-[calc(100vh-6.5rem-5rem)] py-12">
+      <div className="container mx-auto max-w-md px-4">
+        <div className="mb-5 text-center">
+          <h1 className="text-3xl font-bold">{t("loginTitle")}</h1>
+          <p>{t("loginDescription")}</p>
         </div>
         <div className="rounded-lg p-6 shadow-lg">
           <LoginForm />

@@ -97,10 +97,10 @@ export function CartItemComponent({
           <p className="text-xs text-gray-500">{getBrandName()}</p>
           <div className="mt-1 flex items-center justify-between">
             <p className="text-xs font-medium">
-              ${item.price.toFixed(2)} × {item.quantity}
+              EGP {item.price.toFixed(2)} × {item.quantity}
             </p>
             <p className="text-primary text-xs font-medium sm:text-sm">
-              ${(item.price * item.quantity).toFixed(2)}
+              EGP {(item.price * item.quantity).toFixed(2)}
             </p>
           </div>
         </div>
@@ -152,7 +152,7 @@ export function CartItemComponent({
               {getProductName()}
             </h3>
             <p className="text-primary mt-1 text-center text-sm font-medium sm:mt-0 sm:ml-4 sm:text-left">
-              ${(item.price * item.quantity).toFixed(2)}
+              EGP {(item.price * item.quantity).toFixed(2)}
             </p>
           </div>
           <p className="mt-1 text-center text-xs text-gray-500 sm:text-left sm:text-sm">

@@ -17,13 +17,13 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="py-12">
+    <div className="h-[calc(100vh-6.5rem-5rem)] py-12">
       <div className="container mx-auto max-w-md px-4">
-        <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold">{t("signUpTitle")}</h1>
-          <p className="text-muted-foreground">{t("signUpDescription")}</p>
+        <div className="mb-5 text-center">
+          <h1 className="text-3xl font-bold">{t("signUpTitle")}</h1>
+          <p>{t("signUpDescription")}</p>
         </div>
-        <div className="bg-card rounded-lg p-6 shadow-md">
+        <div className="rounded-lg p-6 shadow-lg">
           <RegisterForm onSuccess={handleSuccess} />
         </div>
       </div>

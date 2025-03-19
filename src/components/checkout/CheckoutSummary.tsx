@@ -101,13 +101,13 @@ export function CheckoutSummary({
       <div className="space-y-2 sm:space-y-3">
         <div className="flex justify-between text-xs sm:text-sm">
           <p>{t("checkout.subtotal")}</p>
-          <p className="font-medium">${subtotal.toFixed(2)}</p>
+          <p className="font-medium">EGP {subtotal.toFixed(2)}</p>
         </div>
 
         <div className="flex justify-between text-xs sm:text-sm">
           <p>{t("checkout.shipping")}</p>
           {shippingCost > 0 ? (
-            <p className="font-medium">${shippingCost.toFixed(2)}</p>
+            <p className="font-medium">EGP {shippingCost.toFixed(2)}</p>
           ) : (
             <p className="text-gray-500">{t("checkout.calculatedNext")}</p>
           )}
@@ -117,7 +117,7 @@ export function CheckoutSummary({
           <div className="flex justify-between text-xs sm:text-sm">
             <p>{t("checkout.discount")}</p>
             <p className="font-medium text-green-600">
-              -${discountAmount.toFixed(2)}
+              - EGP {discountAmount.toFixed(2)}
             </p>
           </div>
         )}
@@ -125,7 +125,7 @@ export function CheckoutSummary({
         <div className="border-t border-gray-200 pt-2 sm:pt-3">
           <div className="flex justify-between text-xs font-medium sm:text-sm">
             <p className="text-gray-900">{t("checkout.orderTotal")}</p>
-            <p className="text-primary">${total.toFixed(2)}</p>
+            <p className="text-primary">EGP {total.toFixed(2)}</p>
           </div>
 
           {!shippingAddress && (

@@ -85,9 +85,12 @@ export function CheckoutPage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <p>{shippingAddress.addressLabel}</p>
-                      <p className="mt-1">{shippingAddress.phone}</p>
                       <p>
-                        {shippingAddress.city}, {shippingAddress.phone}
+                        {shippingAddress.apartmentNumber}{" "}
+                        {shippingAddress.street}
+                      </p>
+                      <p>
+                        {shippingAddress.area}, {shippingAddress.city}
                       </p>
                     </div>
                     <button

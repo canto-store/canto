@@ -19,7 +19,7 @@ export function FeaturesBanner() {
         defaultValue: "PAYMENT & DELIVERY",
       }),
       description: t("features.payment.description", {
-        defaultValue: "Free shipping for orders over $50",
+        defaultValue: "Free shipping for orders over EGP50",
       }),
     },
     {

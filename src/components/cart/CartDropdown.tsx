@@ -144,7 +144,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
               <div className="border-t border-gray-100 px-4 py-3">
                 <div className="flex justify-between font-medium">
                   <span>{t("header.total")}:</span>
-                  <span className="text-primary">${total.toFixed(2)}</span>
+                  <span className="text-primary">EGP {total.toFixed(2)}</span>
                 </div>
               </div>
 
