@@ -8,7 +8,7 @@
   /* These variables are defined in layout.tsx */
   --font-arabic: var(--font-ibm-plex-sans-arabic);
   --font-heading: var(--font-optician-sans);
-  --font-body: var(--font-space-grotesk);
+  --font-latin: var(--font-space-grotesk);
 
   /* Color variables */
   --color-light-gray: oklch(0.9431 0 0);
@@ -36,10 +36,10 @@
 
 @layer base {
   body {
-    @apply font-body;
     background-color: var(--background-color);
     --radius: 0.625rem;
     --webkit-tap-highlight-color: transparent;
+    height: 100%;
   }
 
   @media (min-width: 768px) {
