@@ -96,7 +96,7 @@ export function ProductCarousel({ products, title }: ProductCarouselProps) {
       </div>
 
       {products.length > 1 && (
-        <div className="mt-6 flex justify-center gap-3">
+        <div className="flex justify-center gap-3">
           {products.map((_, i) => (
             <button
               key={i}
