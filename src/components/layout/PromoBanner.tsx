@@ -15,11 +15,10 @@ export function PromoBanner() {
 
   return (
     <div
-      className={`to-orange-red from-burgundy relative flex h-8 items-center justify-center bg-gradient-to-r px-4 text-center text-[11px] text-white shadow-md transition-all duration-150 md:h-10 md:text-sm`}
+      className={`to-orange-red from-burgundy relative flex min-h-8 items-center justify-center bg-gradient-to-r px-4 text-center text-[10px] text-white shadow-md transition-all duration-150 md:h-10 md:text-sm`}
     >
       <div className="flex w-full items-center justify-center">
         <div className="flex gap-1 font-medium">
-          <span className="inline">🌟</span>
           <p>
             {t("promo.promoBanner")}
             <span className="mx-1 rounded-md bg-black/20 px-2 py-0.5 font-bold tracking-wide">
@@ -32,7 +31,6 @@ export function PromoBanner() {
               SUMMER25
             </a>
           </p>
-          <span className="inline">🌟</span>
         </div>
       </div>
     </div>

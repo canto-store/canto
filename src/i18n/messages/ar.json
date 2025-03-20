@@ -58,9 +58,9 @@
     "close": "إغلاق",
     "selectViewMode": "اختر وضع العرض",
     "currency": {
-      "symbol": "جنيه مصري",
-      "code": "جنيه مصري",
-      "format": "جنيه مصري {amount}"
+      "symbol": "ج.م",
+      "code": "ج.م",
+      "format": "{amount} ج.م"
     }
   },
   "sort": {

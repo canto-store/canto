@@ -48,8 +48,8 @@ export function FeaturesBanner() {
   ];
 
   return (
-    <section className="border-t border-gray-200 py-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="py-10 md:py-12">
+      <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-4">
           {features.map((feature, index) => (
             <div key={index} className="flex flex-col items-center text-center">

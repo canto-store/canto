@@ -18,6 +18,7 @@ interface SearchBarProps
   buttonText?: string;
   value?: string;
   defaultValue?: string;
+  placeholder?: string;
 }
 
 export function SearchBar({
@@ -31,6 +32,7 @@ export function SearchBar({
   buttonText = "Search",
   value,
   defaultValue,
+  placeholder,
   ...props
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState(
@@ -98,10 +100,11 @@ export function SearchBar({
       <div className="relative flex-1">
         <Input
           type="search"
-          className={cn("w-full pl-10", className)}
+          className={cn("w-full pl-10 placeholder:text-xs", className)}
           value={searchTerm}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          placeholder={placeholder}
           {...props}
         />
         <div
