@@ -14,12 +14,14 @@ interface ProductCardProps {
   product: Product;
   priority?: boolean;
   index?: number;
+  className?: string;
 }
 
 export function ProductCard({
   product,
   priority = false,
   index = 0,
+  className,
 }: ProductCardProps) {
   const t = useTranslations();
   const productsT = useTranslations("products");
@@ -57,7 +59,12 @@ export function ProductCard({
   const shouldPrioritize = priority || index < 2;
 
   return (
-    <div className="flex h-full w-45 snap-center snap-always flex-col rounded-lg shadow-lg hover:shadow-xl md:w-50 lg:w-full">
+    <div
+      className={cn(
+        "flex h-full flex-col rounded-lg shadow-lg hover:shadow-xl",
+        className,
+      )}
+    >
       <button
         onClick={() => handleProductClick(product)}
         className="hover:cursor-pointer"

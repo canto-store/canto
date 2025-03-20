@@ -19,7 +19,7 @@ export function ProductGrid({ products, title, className }: ProductGridProps) {
 
       <div
         className={cn(
-          "xs:gap-3 grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-3 lg:gap-6 xl:grid-cols-5",
+          "grid grid-cols-2 gap-2 lg:grid-cols-5 lg:gap-4",
           className,
         )}
       >
