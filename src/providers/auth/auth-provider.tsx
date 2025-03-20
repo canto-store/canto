@@ -34,9 +34,9 @@ const loadAuthState = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Initialize state from localStorage or use defaults
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [accessToken, setAccessToken] = useState<string | unknown>("");
-  const [refreshToken, setRefreshToken] = useState<string | unknown>("");
-  const [name, setName] = useState<string | unknown>("");
+  const [accessToken, setAccessToken] = useState<string>("");
+  const [refreshToken, setRefreshToken] = useState<string>("");
+  const [name, setName] = useState<string>("");
 
   // Load auth state from localStorage on mount
   useEffect(() => {
@@ -75,17 +75,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     },
     onSuccess: (data) => {
       setIsAuthenticated(true);
-      setAccessToken(data.access);
-      setRefreshToken(data.refresh);
-      setName(data.name);
+      setAccessToken(data.access as string);
+      setRefreshToken(data.refresh as string);
+      setName(data.name as string);
     },
   });
 
   const logout = () => {
     setIsAuthenticated(false);
-    setAccessToken(null);
-    setRefreshToken(null);
-    setName(null);
+    setAccessToken("");
+    setRefreshToken("");
+    setName("");
     if (typeof window !== "undefined") {
       localStorage.removeItem(AUTH_STORAGE_KEY);
     }

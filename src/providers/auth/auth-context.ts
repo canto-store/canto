@@ -6,7 +6,7 @@ export const AuthContext = createContext<{
   isAuthenticated: boolean;
   accessToken: string | unknown;
   refreshToken: string | unknown;
-  name: string | unknown;
+  name: string;
   login: UseMutationResult<unknown, Error, LoginRequest>;
   logout: () => void;
 }>({

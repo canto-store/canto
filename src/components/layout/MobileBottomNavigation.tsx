@@ -4,7 +4,6 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Home, Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/auth/use-auth";
 import { useEffect, useState } from "react";
 import React from "react";
 
@@ -12,7 +11,6 @@ export function MobileBottomNavigation() {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("header");
-  const { isAuthenticated } = useAuth();
   const [isRTL, setIsRTL] = useState(false);
 
   useEffect(() => {
@@ -33,8 +31,8 @@ export function MobileBottomNavigation() {
       icon: <Search className="h-5 w-5" />,
     },
     {
-      label: isAuthenticated ? t("account") : t("login"),
-      href: isAuthenticated ? "/profile" : "/login",
+      label: "Account",
+      href: "/account",
       icon: <User className="h-5 w-5" />,
     },
   ];
