@@ -62,7 +62,6 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "react-icons": "^5.5.0",
     "sharp": "^0.33.5",
-    "tailwind-scrollbar": "^4.0.1",
     "tailwindcss": "^4.0.14",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1"

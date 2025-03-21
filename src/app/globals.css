@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-@plugin 'tailwind-scrollbar' {
-  nocompatible: true;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

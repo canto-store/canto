@@ -84,7 +84,7 @@ export function FilterDrawer({
           </DrawerDescription>
         </DrawerHeader>
         <div
-          className="custom-scrollbar overflow-y-auto px-4"
+          className="overflow-y-auto px-4"
           style={{ maxHeight: "calc(85vh - 180px)" }}
         >
           {/* Active Filters Summary in Drawer */}
