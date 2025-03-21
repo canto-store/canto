@@ -1,12 +1,14 @@
 "use client";
 
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useRef } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { InstallPWA } from "@/components/pwa";
 import { Store, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/providers/auth/use-auth";
+
+import { useClickOutside } from "react-haiku";
 
 interface NavigationItem {
   label: string;
@@ -16,14 +18,20 @@ interface NavigationItem {
 
 interface MobileMenuProps {
   isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
-export function MobileMenu({ isOpen }: MobileMenuProps) {
+export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
   const router = useRouter();
   const t = useTranslations("header");
   const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [isRTL, setIsRTL] = useState(false);
   const { isAuthenticated, logout } = useAuth(); // Get user and logout from auth provider
+  const menuRef = useRef(null);
+
+  const handleClickOutside = () => setIsOpen(false);
+
+  useClickOutside(menuRef, handleClickOutside);
 
   // Common navigation items for all users (removed home and browse)
   const commonNavigationItems: NavigationItem[] = [
@@ -52,16 +60,21 @@ export function MobileMenu({ isOpen }: MobileMenuProps) {
 
   const handleNavigation = (href: string) => {
     router.push(href);
+    setIsOpen(false);
   };
 
   const handleLogout = async () => {
-    await logout();
+    logout();
+    setIsOpen(false);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="border-primary/20 bg-global absolute z-50 container border-t shadow-lg md:hidden">
+    <div
+      ref={menuRef}
+      className="border-primary/20 bg-global absolute z-50 container border-t shadow-lg md:hidden"
+    >
       <ul className="divide-primary/10 divide-y">
         {navigationItems.map((item) => (
           <li key={item.label}>

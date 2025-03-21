@@ -58,7 +58,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
           <CartDropdown />
         </div>
       </div>
-      <MobileMenu isOpen={mobileMenuOpen} />
+      <MobileMenu isOpen={mobileMenuOpen} setIsOpen={setMobileMenuOpen} />
     </>
   );
 }
