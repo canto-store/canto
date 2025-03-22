@@ -26,12 +26,14 @@ interface InstallPWAProps {
   variant?: "menu" | "message";
   className?: string;
   dismissalKey?: string;
+  displayDelay?: number;
 }
 
 export function InstallPWA({
   variant = "message",
   className = "",
   dismissalKey,
+  displayDelay = 2000,
 }: InstallPWAProps) {
   const t = useTranslations("pwa");
   const [installPrompt, setInstallPrompt] =
@@ -43,9 +45,10 @@ export function InstallPWA({
   const isMobile = useMediaQuery("(max-width: 768px)", false);
 
   const storageDismissalKey = dismissalKey || "pwa-message-dismissed";
-  const displayDelay = 2000;
   const locale = useLocale();
   const isRTL = locale === "ar";
+
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const isAppInstalled =
@@ -77,6 +80,14 @@ export function InstallPWA({
     };
   }, [variant, isDismissed, displayDelay, storageDismissalKey]);
 
+  useEffect(() => {
+    if (isDismissed) return;
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, displayDelay);
+    return () => clearTimeout(timer);
+  }, [isDismissed, displayDelay]);
+
   const handleInstall = async () => {
     if (isIOSDevice) {
       setShowIOSInstructions(true);
@@ -101,7 +112,7 @@ export function InstallPWA({
     localStorage.setItem(storageDismissalKey, "true");
   };
 
-  if (!isMobile) return null;
+  if (!isMobile || !isOpen) return null;
 
   if (variant === "message" && showIOSInstructions) {
     return (
