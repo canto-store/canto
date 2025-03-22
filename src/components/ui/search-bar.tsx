@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "@/i18n/navigation";
 
 interface SearchBarProps
   extends Omit<
@@ -38,7 +39,7 @@ export function SearchBar({
   const [searchTerm, setSearchTerm] = useState(
     value !== undefined ? value : defaultValue?.toString() || "",
   );
-
+  const router = useRouter();
   // Update internal state when value prop changes
   useEffect(() => {
     if (value !== undefined) {
@@ -71,15 +72,14 @@ export function SearchBar({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-
-      // Call onSubmit handler if it exists
       if (onSubmit) {
         onSubmit(searchTerm);
       }
-      // If no onSubmit but onSearch exists, call that immediately
-      else if (onSearch) {
+
+      if (onSearch) {
         onSearch(searchTerm);
       }
+      router.push(`/browse?q=${searchTerm}`);
     }
   };
 

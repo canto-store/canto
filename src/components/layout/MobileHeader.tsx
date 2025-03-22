@@ -1,64 +1,82 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
-import { CartDropdown } from "@/components/cart/CartDropdown";
-import { MobileMenu } from "@/components/layout/MobileMenu";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { SearchBar } from "../ui/search-bar";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface MobileHeaderProps {
   className?: string;
 }
 
 export function MobileHeader({ className }: MobileHeaderProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const router = useRouter();
   const handleNavigation = (href: string) => {
     router.push(href);
   };
 
   return (
-    <>
-      <div
-        className={cn(
-          "relative container mx-auto flex h-18 items-center justify-between px-4",
-          className,
-        )}
-      >
-        {/* Left section: Mobile menu button and language selector */}
-        <div className="z-10 flex items-center gap-2">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
-          {/* <LanguageSelector className="h-7 w-[80px] scale-90 transform" /> */}
-        </div>
-
-        {/* Center section: Logo */}
-        <div className="absolute top-1/2 left-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
-          <Image
-            src="/logo.svg"
-            alt="Canto Store Logo"
-            width={90}
-            height={90}
-            onClick={() => handleNavigation("/")}
-          />
-        </div>
-
-        {/* Right section: Cart dropdown */}
-        <div className="z-10 flex items-center">
-          <CartDropdown />
-        </div>
+    <div
+      className={cn(
+        "relative container mx-auto flex h-18 items-center justify-between px-4",
+        className,
+      )}
+    >
+      {/* Left section: Mobile menu button and language selector */}
+      <div className="z-10 flex items-center gap-2">
+        <Image
+          src="/logo.svg"
+          alt="Canto Store Logo"
+          width={90}
+          height={90}
+          onClick={() => handleNavigation("/")}
+        />
       </div>
-      <MobileMenu isOpen={mobileMenuOpen} setIsOpen={setMobileMenuOpen} />
-    </>
+      <AnimatePresence mode="wait">
+        {searchOpen ? (
+          <motion.div
+            key="search-bar"
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "auto" }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="flex items-center"
+          >
+            <SearchBar showButton={false} autoFocus />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSearchOpen(false)}
+              className="transition-transform duration-200 hover:scale-105"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="search-button"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-2"
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSearchOpen(true)}
+              className="transition-all duration-200 hover:scale-105"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

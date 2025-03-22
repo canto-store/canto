@@ -7,6 +7,7 @@ import {
   Bell,
   ChevronRight,
   CreditCard,
+  Download,
   Globe,
   Heart,
   LogOut,
@@ -82,6 +83,11 @@ export default function AccountPage() {
           <Button variant="outline">
             <Bell className="mr-2 h-4 w-4" />
             <p className="w-full text-left">Notifications</p>
+            <ChevronRight className="ml-auto h-4 w-4" />
+          </Button>
+          <Button variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            <p className="w-full text-left">Download App</p>
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
         </div>
