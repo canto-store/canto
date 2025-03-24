@@ -41,7 +41,7 @@ export function CategoryCard({
         <div className="absolute inset-0 bg-black/30 transition-opacity duration-300 group-hover:bg-black/40" />
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-center text-sm font-semibold text-white sm:text-base">
-            {category.name}
+            {category.name.toUpperCase()}
           </span>
         </div>
       </div>

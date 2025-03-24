@@ -4,7 +4,7 @@ import { siInstagram, siX, siFacebook, siYoutube } from "simple-icons";
 import { useTranslations } from "next-intl";
 import { Button } from "../ui/button";
 import Image from "next/image";
-
+import { useRouter } from "@/i18n/navigation";
 type TranslationFunction = (key: string) => string;
 
 const footerNavigation = (t: TranslationFunction) => ({
@@ -14,17 +14,10 @@ const footerNavigation = (t: TranslationFunction) => ({
     { label: t("footer.collections"), href: "#" },
     { label: t("footer.sale"), href: "#" },
   ],
-  company: [
-    { label: t("footer.aboutUs"), href: "#" },
-    { label: t("footer.careers"), href: "#" },
-    { label: t("footer.press"), href: "#" },
-    { label: t("footer.sustainability"), href: "#" },
-  ],
+  company: [{ label: t("footer.aboutUs"), href: "#" }],
   support: [
     { label: t("footer.contactUs"), href: "#" },
-    { label: t("footer.faqs"), href: "#" },
-    { label: t("footer.shippingReturns"), href: "#" },
-    { label: t("footer.sizeGuide"), href: "#" },
+    { label: t("footer.shippingReturns"), href: "/shipping-returns" },
   ],
   legal: [
     { label: t("footer.termsConditions"), href: "#" },
@@ -64,6 +57,7 @@ const socialLinks = [
 export function Footer() {
   const t = useTranslations();
   const navigation = footerNavigation(t);
+  const router = useRouter();
 
   return (
     <footer className="border-t border-gray-200">
@@ -107,7 +101,7 @@ export function Footer() {
                     href={item.href}
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900"
                   >
-                    {item.label}
+                    {item.label.toLocaleUpperCase()}
                   </a>
                 </li>
               ))}
@@ -125,7 +119,7 @@ export function Footer() {
                     href={item.href}
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900"
                   >
-                    {item.label}
+                    {item.label.toLocaleUpperCase()}
                   </a>
                 </li>
               ))}
@@ -140,10 +134,12 @@ export function Footer() {
               {navigation.support.map((item) => (
                 <li key={item.label}>
                   <a
-                    href={item.href}
+                    onClick={() => {
+                      router.push(item.href);
+                    }}
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900"
                   >
-                    {item.label}
+                    {item.label.toLocaleUpperCase()}
                   </a>
                 </li>
               ))}
@@ -161,7 +157,7 @@ export function Footer() {
                     href={item.href}
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900"
                   >
-                    {item.label}
+                    {item.label.toLocaleUpperCase()}
                   </a>
                 </li>
               ))}

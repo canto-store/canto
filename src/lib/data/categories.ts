@@ -5,12 +5,12 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
   {
-    name: "Men's",
+    name: "Men's Fashion",
     image:
       "https://ziccr8vbbc.ufs.sh/f/xxHTfwhqN4kuroY5tkzjlRFYON8tCLs2XwoQgaK1PvZmDfTk",
   },
   {
-    name: "Women's",
+    name: "Women's Fashion",
     image:
       "https://ziccr8vbbc.ufs.sh/f/xxHTfwhqN4kuPcxNQwmGlzjx9XWUTvQhcu6n0E4MqdVsgiL5",
   },

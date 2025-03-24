@@ -1,6 +1,6 @@
 // Export home page components
 export * from "./HeroSlider";
-export * from "./CategoryGrid";
+export * from "./WebCategory";
 export * from "./HomeProducts";
 export * from "./FeaturesBanner";
 export * from "./HomeProductsSkeleton";
