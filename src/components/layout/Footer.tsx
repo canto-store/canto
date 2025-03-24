@@ -74,9 +74,9 @@ export function Footer() {
               <Image
                 src="/logo.svg"
                 alt="Canto"
-                className="h-8 w-auto"
-                width={32}
+                width={80}
                 height={32}
+                className="h-8 w-auto"
               />
               <span className="ml-2 text-xl font-bold">Canto</span>
             </div>

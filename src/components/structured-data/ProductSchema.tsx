@@ -30,9 +30,6 @@ export function ProductSchema({ product, locale }: ProductSchemaProps) {
       url: `${baseUrl}/${locale}/product/${product.slug || product.name.replace(/\s+/g, "-").toLowerCase()}`,
       priceCurrency: "EGP",
       price: product.price,
-      priceValidUntil: new Date(
-        new Date().setFullYear(new Date().getFullYear() + 1),
-      ).toISOString(),
       itemCondition: "https://schema.org/NewCondition",
       availability:
         product.inStock !== false

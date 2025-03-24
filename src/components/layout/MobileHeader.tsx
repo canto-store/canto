@@ -34,6 +34,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
           alt="Canto Store Logo"
           width={90}
           height={90}
+          priority
           onClick={() => handleNavigation("/")}
         />
       </div>

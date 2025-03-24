@@ -40,9 +40,9 @@ export const CATEGORIES: Category[] = [
       "https://plus.unsplash.com/premium_photo-1679811677474-55c03fcb41f4?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    name: "Home & Kitchen",
+    name: "Handmade",
     image:
-      "https://images.unsplash.com/photo-1549862096-dde47b19c64b?q=80&w=1342&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1632649027900-389e810204e6?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     name: "Fragrances",
@@ -50,8 +50,8 @@ export const CATEGORIES: Category[] = [
       "https://plus.unsplash.com/premium_photo-1679064286615-e5e4d4940dfc?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    name: "Handmade",
+    name: "Home & Kitchen",
     image:
-      "https://images.unsplash.com/photo-1632649027900-389e810204e6?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1549862096-dde47b19c64b?q=80&w=1342&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
 ];

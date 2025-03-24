@@ -31,7 +31,8 @@ export function WebHeader({ className }: WebHeaderProps) {
           src="/logo.svg"
           alt="Canto Store Logo"
           width={100}
-          height={100}
+          height={40}
+          priority
           onClick={() => handleNavigation("/")}
           className="hover:cursor-pointer"
         />
