@@ -27,7 +27,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
         className,
       )}
     >
-      {/* Left section: Mobile menu button and language selector */}
+      {/* Left section: Logo */}
       <div className="z-10 flex items-center gap-2">
         <Image
           src="/logo.svg"
@@ -38,46 +38,53 @@ export function MobileHeader({ className }: MobileHeaderProps) {
           onClick={() => handleNavigation("/")}
         />
       </div>
-      <AnimatePresence mode="wait">
-        {searchOpen ? (
-          <motion.div
-            key="search-bar"
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "auto" }}
-            exit={{ opacity: 0, width: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="flex items-center"
-          >
-            <SearchBar showButton={false} autoFocus />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSearchOpen(false)}
-              className="transition-transform duration-200 hover:scale-105"
+
+      {/* Right section: Search functionality */}
+      <div className="relative flex items-center justify-end">
+        <AnimatePresence mode="wait">
+          {searchOpen ? (
+            <motion.div
+              key="search-bar"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.15, ease: "easeInOut" }}
+              className="flex w-full items-center"
             >
-              <X className="h-5 w-5" />
-            </Button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="search-button"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center gap-2"
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSearchOpen(true)}
-              className="transition-all duration-200 hover:scale-105"
+              <SearchBar
+                showButton={false}
+                autoFocus
+                containerClassName="w-full"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchOpen(false)}
+                className="ml-1 transition-transform duration-200 hover:scale-105"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="search-button"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
             >
-              <Search className="h-5 w-5" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchOpen(true)}
+                className="transition-all duration-200 hover:scale-105"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
