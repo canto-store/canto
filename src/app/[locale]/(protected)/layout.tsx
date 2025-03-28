@@ -4,15 +4,15 @@ import { headers } from "next/headers";
 
 export default async function ProtectedLayout({
   children,
-  params: { locale },
 }: {
   children: React.ReactNode;
-  params: { locale: string };
 }) {
   const session = await getSession();
   const headersList = await headers();
 
   const pathname = headersList.get("x-pathname") || "/";
+
+  const locale = headersList.get("NEXT_LOCALE") || "en";
 
   if (!session) {
     redirect({
