@@ -3,6 +3,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMediaQuery } from "react-haiku";
+import { cn } from "@/lib/utils";
 interface SearchFilterBarProps {
   searchQuery: string;
   onSearch: (value: string) => void;
@@ -31,7 +32,10 @@ export function SearchFilterBar({
           placeholder={t("header.placeholder")}
           value={searchQuery}
           onSubmit={onSearch}
-          className="border-light-gray w-full rounded-full border-2"
+          className={cn(
+            "border-light-gray w-full border-2",
+            isMobile && "rounded-full",
+          )}
           buttonText={t("header.search")}
           showButton={!isMobile}
         />

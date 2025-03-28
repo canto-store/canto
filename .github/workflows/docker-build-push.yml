@@ -20,8 +20,8 @@ jobs:
 
       - name: Build & Push
         run: |
-          docker build -t ghcr.io/soubky0/canto-frontend-v2:latest .
-          docker push ghcr.io/soubky0/canto-frontend-v2:latest
+          docker build -t ghcr.io/canto-store/canto-frontend-v2:latest .
+          docker push ghcr.io/canto-store/canto-frontend-v2:latest
 
       - name: Deploy on Remote Server
         uses: appleboy/ssh-action@master
