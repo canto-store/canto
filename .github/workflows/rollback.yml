@@ -1,0 +1,55 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to rollback to"
+        required: false
+
+jobs:
+  deploy:
+    name: Rollback
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Extract previous version
+        id: previous-version
+        run: |
+          if [ -z "${{ inputs.version }}" ]; then
+            # Get the previous version from the tag list
+            TAGS=$(git tag --list)
+            PREVIOUS_VERSION=$(echo "$TAGS" | tail -n 2 | head -n 1)
+          else
+            PREVIOUS_VERSION=${{ inputs.version }}
+          fi
+
+          echo "PREVIOUS_VERSION=${PREVIOUS_VERSION}" >> $GITHUB_ENV
+
+      - name: Deploy on Remote Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker pull ghcr.io/canto-store/canto-frontend-v2:${{ env.PREVIOUS_VERSION }}
+            docker stop canto-frontend-v2 || true
+            docker rm canto-frontend-v2 || true
+            docker run -d \
+              --name canto-frontend-v2 \
+              -p 3030:3030 \
+              --restart unless-stopped \
+              ghcr.io/canto-store/canto-frontend-v2:${{ env.PREVIOUS_VERSION }}
