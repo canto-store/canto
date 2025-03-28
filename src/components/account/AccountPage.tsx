@@ -42,37 +42,39 @@ export default function AccountPage() {
             </Button>
           </div>
         )}
-        <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline">
-            <ShoppingBag className="mr-2 h-4 w-4" />
-            Orders
-          </Button>
-          <Button variant="outline">
-            <Heart className="mr-2 h-4 w-4" />
-            Wishlist
-          </Button>
-          <Button variant="outline">
-            <ArrowLeftRight className="mr-2 h-4 w-4" />
-            Returns
-          </Button>
-          <Button variant="outline">
-            <Wallet className="mr-2 h-4 w-4" />
-            Wallet
-          </Button>
-        </div>
-        <div className="flex flex-col gap-2">
-          <h2 className="text-md">Account</h2>
-          <Button variant="outline">
-            <MapPin className="mr-2 h-4 w-4" />
-            <p className="w-full text-left">Addresses</p>
-            <ChevronRight className="ml-auto h-4 w-4" />
-          </Button>
-          <Button variant="outline">
-            <CreditCard className="mr-2 h-4 w-4" />
-            <p className="w-full text-left">Cards</p>
-            <ChevronRight className="ml-auto h-4 w-4" />
-          </Button>
-        </div>
+        <If isTrue={isAuthenticated}>
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" onClick={() => router.push("/orders")}>
+              <ShoppingBag className="mr-2 h-4 w-4" />
+              Orders
+            </Button>
+            <Button variant="outline">
+              <Heart className="mr-2 h-4 w-4" />
+              Wishlist
+            </Button>
+            <Button variant="outline">
+              <ArrowLeftRight className="mr-2 h-4 w-4" />
+              Returns
+            </Button>
+            <Button variant="outline">
+              <Wallet className="mr-2 h-4 w-4" />
+              Wallet
+            </Button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <h2 className="text-md">Account</h2>
+            <Button variant="outline">
+              <MapPin className="mr-2 h-4 w-4" />
+              <p className="w-full text-left">Addresses</p>
+              <ChevronRight className="ml-auto h-4 w-4" />
+            </Button>
+            <Button variant="outline">
+              <CreditCard className="mr-2 h-4 w-4" />
+              <p className="w-full text-left">Cards</p>
+              <ChevronRight className="ml-auto h-4 w-4" />
+            </Button>
+          </div>
+        </If>
         <div className="flex flex-col gap-2">
           <h2 className="text-md">Settings</h2>
           <Button variant="outline">
