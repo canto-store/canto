@@ -87,19 +87,6 @@ jobs:
 
           echo "Automatically bumped patch version from ${{ env.VERSION }} to ${NEW_VERSION}"
 
-      - name: Commit version bump
-        if: env.NEW_VERSION != ''
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'github-actions@github.com'
-          git add package.json
-          git commit -m "ci: bump version to ${{ env.NEW_VERSION }}"
-          git tag "v${{ env.NEW_VERSION }}"
-
-          # Set the remote URL with a token that has write permissions
-          git remote set-url origin https://x-access-token:${{ secrets.GHCR_TOKEN }}@github.com/${{ github.repository }}.git
-          git push && git push --tags
-
       - name: Set final version for Docker
         run: |
           if [[ -n "${{ env.NEW_VERSION }}" ]]; then
