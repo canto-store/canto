@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-
+import { useMediaQuery } from "react-haiku";
 interface SearchFilterBarProps {
   searchQuery: string;
   onSearch: (value: string) => void;
@@ -22,6 +22,7 @@ export function SearchFilterBar({
 }: SearchFilterBarProps) {
   const t = useTranslations();
   const productsT = useTranslations("products");
+  const isMobile = useMediaQuery("(max-width: 768px)", false);
 
   return (
     <div className="mb-3 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:gap-4">
@@ -30,8 +31,9 @@ export function SearchFilterBar({
           placeholder={t("header.placeholder")}
           value={searchQuery}
           onSubmit={onSearch}
-          className="border-light-gray w-full border-2"
+          className="border-light-gray w-full rounded-full border-2"
           buttonText={t("header.search")}
+          showButton={!isMobile}
         />
       </div>
 
