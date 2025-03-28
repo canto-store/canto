@@ -75,13 +75,6 @@ jobs:
 
           echo "Bumped version from ${{ env.VERSION }} to ${NEW_VERSION}} (${BUMP_TYPE})"
 
-      - name: Commit version bump
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "ci: bump version to ${{ env.NEW_VERSION }}"
-          file_pattern: package.json
-          tagging_message: "v${{ env.NEW_VERSION }}"
-
       - name: Log in to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "soubky0" --password-stdin
 
@@ -91,6 +84,13 @@ jobs:
           docker build -t ghcr.io/canto-store/canto-frontend-v2:v${{ env.NEW_VERSION }} -t ghcr.io/canto-store/canto-frontend-v2:latest .
           docker push ghcr.io/canto-store/canto-frontend-v2:v${{ env.NEW_VERSION }}
           docker push ghcr.io/canto-store/canto-frontend-v2:latest
+
+      - name: Commit version bump
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: bump version to ${{ env.NEW_VERSION }}"
+          file_pattern: package.json
+          tagging_message: "v${{ env.NEW_VERSION }}"
 
       - name: Deploy on Remote Server
         uses: appleboy/ssh-action@master
