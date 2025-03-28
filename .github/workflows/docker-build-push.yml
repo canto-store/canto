@@ -5,6 +5,16 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      version_bump:
+        description: "Version bump type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   deploy:
@@ -14,13 +24,95 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Extract current version
+        id: current-version
+        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Bump version on manual trigger
+        if: github.event_name == 'workflow_dispatch'
+        id: bump-manual
+        run: |
+          # Get current version parts
+          IFS='.' read -r -a version_parts <<< "${{ env.VERSION }}"
+          MAJOR="${version_parts[0]}"
+          MINOR="${version_parts[1]}"
+          PATCH="${version_parts[2]}"
+
+          # Bump version based on input
+          if [[ "${{ github.event.inputs.version_bump }}" == "major" ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [[ "${{ github.event.inputs.version_bump }}" == "minor" ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          else
+            PATCH=$((PATCH + 1))
+          fi
+
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+
+          # Update package.json with new version
+          node -e "const pkg = require('./package.json'); pkg.version = '${NEW_VERSION}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
+
+          echo "Bumped version from ${{ env.VERSION }} to ${NEW_VERSION}"
+
+      - name: Bump patch version on push to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: bump-auto
+        run: |
+          # Get current version parts
+          IFS='.' read -r -a version_parts <<< "${{ env.VERSION }}"
+          MAJOR="${version_parts[0]}"
+          MINOR="${version_parts[1]}"
+          PATCH="${version_parts[2]}"
+
+          # Bump patch version automatically
+          PATCH=$((PATCH + 1))
+
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+
+          # Update package.json with new version
+          node -e "const pkg = require('./package.json'); pkg.version = '${NEW_VERSION}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
+
+          echo "Automatically bumped patch version from ${{ env.VERSION }} to ${NEW_VERSION}"
+
+      - name: Commit version bump
+        if: env.NEW_VERSION != ''
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'github-actions@github.com'
+          git add package.json
+          git commit -m "ci: bump version to ${{ env.NEW_VERSION }}"
+          git tag "v${{ env.NEW_VERSION }}"
+          git push && git push --tags
+
+      - name: Set final version for Docker
+        run: |
+          if [[ -n "${{ env.NEW_VERSION }}" ]]; then
+            echo "DOCKER_VERSION=${{ env.NEW_VERSION }}" >> $GITHUB_ENV
+          else
+            echo "DOCKER_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
+          fi
 
       - name: Log in to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "soubky0" --password-stdin
 
       - name: Build & Push
         run: |
-          docker build -t ghcr.io/canto-store/canto-frontend-v2:latest .
+          # Build and push with specific version tag
+          docker build -t ghcr.io/canto-store/canto-frontend-v2:v${{ env.DOCKER_VERSION }} -t ghcr.io/canto-store/canto-frontend-v2:latest .
+          docker push ghcr.io/canto-store/canto-frontend-v2:v${{ env.DOCKER_VERSION }}
           docker push ghcr.io/canto-store/canto-frontend-v2:latest
 
       - name: Deploy on Remote Server
@@ -30,11 +122,11 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            docker pull ghcr.io/soubky0/canto-frontend-v2:latest
+            docker pull ghcr.io/canto-store/canto-frontend-v2:latest
             docker stop canto-frontend-v2 || true
             docker rm canto-frontend-v2 || true
             docker run -d \
               --name canto-frontend-v2 \
               -p 3030:3030 \
               --restart unless-stopped \
-              ghcr.io/soubky0/canto-frontend-v2:latest
+              ghcr.io/canto-store/canto-frontend-v2:latest
