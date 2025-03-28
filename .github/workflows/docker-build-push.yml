@@ -20,6 +20,8 @@ jobs:
   deploy:
     name: Build, Push & Deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -86,6 +88,14 @@ jobs:
           node -e "const pkg = require('./package.json'); pkg.version = '${NEW_VERSION}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
 
           echo "Automatically bumped patch version from ${{ env.VERSION }} to ${NEW_VERSION}"
+
+      - name: Commit version bump
+        if: env.NEW_VERSION != ''
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: bump version to ${{ env.NEW_VERSION }}"
+          file_pattern: package.json
+          tagging_message: "v${{ env.NEW_VERSION }}"
 
       - name: Set final version for Docker
         run: |
