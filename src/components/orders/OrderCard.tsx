@@ -1,13 +1,10 @@
-"use client";
-
-import { useState } from "react";
 import Image from "next/image";
 import { Order, OrderStatus } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/utils";
-import { OrderTrackingDetails } from "./OrderTrackingDetails";
+import { useRouter } from "@/i18n/navigation";
 
 const statusColorMap: Record<OrderStatus, string> = {
   Processing: "bg-amber-100 text-amber-800 hover:bg-amber-200",
@@ -22,7 +19,7 @@ type OrderCardProps = {
 };
 
 export function OrderCard({ order, onReorder }: OrderCardProps) {
-  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+  const router = useRouter();
 
   const handleReorder = () => {
     onReorder(order.id);
@@ -32,18 +29,17 @@ export function OrderCard({ order, onReorder }: OrderCardProps) {
     <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Order #{order.id.slice(-6)}
-          </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Placed on {formatDate(order.orderDate)}
-          </p>
+          <div className="flex items-center gap-2">
+            <Badge
+              className={`${statusColorMap[order.status]} w-fit text-xs font-medium`}
+            >
+              {order.status}
+            </Badge>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {formatDate(order.orderDate)}
+            </p>
+          </div>
         </div>
-        <Badge
-          className={`${statusColorMap[order.status]} w-fit text-xs font-medium`}
-        >
-          {order.status}
-        </Badge>
       </div>
 
       <Separator className="my-3" />
@@ -68,30 +64,26 @@ export function OrderCard({ order, onReorder }: OrderCardProps) {
             +{order.items.length - 4}
           </div>
         )}
+        <p className="ml-auto text-xs text-gray-500 dark:text-gray-400">
+          {order.items.length} items
+        </p>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="font-medium">Total: EGP{order.totalPrice.toFixed(2)}</p>
-        <div className="flex w-full justify-between">
-          <Button variant="outline" className="w-25" onClick={handleReorder}>
-            Reorder
-          </Button>
-          {order.status !== "Delivered" && order.status !== "Cancelled" && (
-            <Button
-              className="w-25"
-              onClick={() => setIsTrackingOpen(!isTrackingOpen)}
-            >
-              {isTrackingOpen ? "Hide Tracking" : "Track Order"}
-            </Button>
-          )}
+      <div className="mt-4 flex">
+        <div className="flex flex-col">
+          <p className="text-sm font-medium">
+            EGP {order.totalPrice.toFixed(2)}
+          </p>
+          <a onClick={() => router.push(`/orders/${order.id}`)}>
+            <p className="mt-1 cursor-pointer text-xs text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+              View Details
+            </p>
+          </a>
         </div>
+        <Button className="ml-auto" size="sm" onClick={handleReorder}>
+          Reorder
+        </Button>
       </div>
-
-      {isTrackingOpen && order.trackingInfo && (
-        <div className="mt-4">
-          <OrderTrackingDetails trackingInfo={order.trackingInfo} />
-        </div>
-      )}
     </div>
   );
 }
