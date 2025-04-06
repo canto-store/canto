@@ -17,12 +17,23 @@ import {
 } from "lucide-react";
 import { If, useMediaQuery } from "react-haiku";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useLocale } from "next-intl";
 
 export default function AccountPage() {
   const { isAuthenticated, name, logout } = useAuth();
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
+  const locale = useLocale();
+
+  const handleLanguageChange = () => {
+    const value = locale === "en" ? "ar" : "en";
+    router.replace(pathname, { locale: value });
+  };
+
+  const handleNavigation = (href: string) => {
+    router.push(href);
+  };
   if (isMobile) {
     return (
       <div className="mt-2 flex min-h-screen flex-col gap-2">
@@ -35,7 +46,9 @@ export default function AccountPage() {
               className="w-full"
               variant="outline"
               onClick={() =>
-                router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`)
+                handleNavigation(
+                  `/login?returnUrl=${encodeURIComponent(pathname)}`,
+                )
               }
             >
               Login/Register
@@ -44,19 +57,31 @@ export default function AccountPage() {
         )}
         <If isTrue={isAuthenticated}>
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" onClick={() => router.push("/orders")}>
+            <Button
+              variant="outline"
+              onClick={() => handleNavigation("/orders")}
+            >
               <ShoppingBag className="mr-2 h-4 w-4" />
               Orders
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() => handleNavigation("/wishlist")}
+            >
               <Heart className="mr-2 h-4 w-4" />
               Wishlist
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() => handleNavigation("/returns")}
+            >
               <ArrowLeftRight className="mr-2 h-4 w-4" />
               Returns
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() => handleNavigation("/wallet")}
+            >
               <Wallet className="mr-2 h-4 w-4" />
               Wallet
             </Button>
@@ -77,7 +102,7 @@ export default function AccountPage() {
         </If>
         <div className="flex flex-col gap-2">
           <h2 className="text-md">Settings</h2>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleLanguageChange}>
             <Globe className="mr-2 h-4 w-4" />
             <p className="w-full text-left">Language</p>
             <ChevronRight className="ml-auto h-4 w-4" />
