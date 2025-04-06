@@ -31,7 +31,7 @@ export function MobileBottomNavigation() {
       icon: <Search className="h-5 w-5" />,
     },
     {
-      label: "Account",
+      label: t("account"),
       href: "/account",
       icon: <User className="h-5 w-5" />,
     },

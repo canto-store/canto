@@ -87,11 +87,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
                 transition={{ duration: 0.15, ease: "easeInOut" }}
                 className="flex w-full items-center"
               >
-                <SearchBar
-                  showButton={false}
-                  autoFocus
-                  containerClassName="w-full"
-                />
+                <SearchBar showButton={false} autoFocus className="w-48" />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -113,7 +109,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
                   variant="ghost"
                   size="icon"
                   onClick={() => setSearchOpen(true)}
-                  className="transition-all duration-200 hover:scale-105"
+                  className="transition-all duration-200"
                 >
                   <Search className="h-5 w-5" />
                 </Button>
