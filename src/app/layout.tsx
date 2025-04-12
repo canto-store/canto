@@ -167,7 +167,10 @@ export default async function RootLayout({
         <meta name="apple-touch-fullscreen" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
-
+        <meta
+          name="google-site-verification"
+          content="t62WssBi2mhsGZcIt0vYelveU0BcipnG9O1_cqavTQY"
+        />
         {/* iOS splash screens - explicit links for better compatibility */}
         {/* iPad Pro */}
         <link
