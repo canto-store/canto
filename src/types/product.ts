@@ -1,60 +1,32 @@
-export type Product = {
+export type ProductSummary = {
+  name: string;
+  brand: string;
+  slug: string;
+  price: number;
+  sale_price?: number;
+  images: string[];
+};
+
+export type ProductDetails = {
   name: string;
   brand: string;
   price: number;
-  image: string;
-  translationKey?: {
-    name: string;
-    brand: string;
-  };
-};
-
-// Extended product type for structured data
-export type ProductExtended = Product & {
-  id: number;
-  slug: string;
-  description: string;
+  sale_price?: number;
+  images: string[];
   category: string;
-  inStock: boolean;
-  rating?: number;
-  images: { url: string }[];
-};
-
-export type ApiProduct = {
-  id: number;
-  name: string;
-  slug: string;
-  short_desc: string;
-  price: number;
-  sale_price: number | null;
-  review: number;
-  ratings: number;
-  until: string | null;
+  sizes: string[];
+  colors: string[];
   stock: number;
-  top: boolean;
-  featured: boolean;
-  new: boolean;
-  best_seller: boolean;
-  best_deal: boolean;
-  new_arrival: boolean;
-  author: string;
-  sold: number;
-  category: Array<{
-    name: string;
-    slug: string;
-  }>;
-  sm_pictures: Array<{ url: string }>;
+  description: string;
+  reviews: {
+    count: number;
+    rating: number;
+  };
+  relatedProducts: ProductSummary[];
 };
 
-export interface HomeProductsApiResponse {
-  products: {
-    Fashion: ApiProduct[];
-    sections: Record<string, unknown>[];
-  };
-}
-
-export type HomeProductsData = {
-  featured: Product[];
-  newArrivals: Product[];
-  bestSellers: Product[];
+export type HomeProducts = {
+  featured: ProductSummary[];
+  newArrivals: ProductSummary[];
+  bestSellers: ProductSummary[];
 };

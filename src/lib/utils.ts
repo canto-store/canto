@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ALL_PRODUCTS } from "@/lib/data";
-import { Product } from "@/types";
+import { ProductDetails, Product } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -20,8 +21,16 @@ export function formatDate(dateString: string): string {
   }).format(date);
 }
 
-// Get product by slug
-export function getProductBySlug(slug: string): Product | undefined {
+export async function getProductBySlug(slug: string): Promise<ProductDetails> {
+  const product = useQuery({
+    queryKey: [slug],
+    queryFn: () => fetch(`/api/product/${slug}`).then((res) => res.json()),
+  });
+
+  return product.data;
+}
+
+export function getMockProductBySlug(slug: string): Product | undefined {
   return ALL_PRODUCTS.find(
     (p) => p.name.toLowerCase().replace(/\s+/g, "-") === slug,
   );

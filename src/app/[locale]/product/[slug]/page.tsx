@@ -3,11 +3,11 @@
 import React from "react";
 import { ProductGrid } from "@/components/products";
 import { notFound } from "next/navigation";
-import { getProductBySlug, getRelatedProducts } from "@/lib/utils";
+import { getMockProductBySlug, getRelatedProducts } from "@/lib/utils";
 import { ProductDetails } from "@/components/products/ProductDetails";
 import { ProductSchema, BreadcrumbSchema } from "@/components/structured-data";
-import { useParams } from "next/navigation";
-import { ProductExtended } from "@/types/product";
+import { Product } from "@/types";
+import { useLocale } from "next-intl";
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -16,16 +16,14 @@ interface ProductDetailPageProps {
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const resolvedParams = React.use(params);
   const { slug } = resolvedParams;
-  const product = getProductBySlug(slug);
-  const routeParams = useParams();
-  const locale = routeParams.locale as string;
+  const product = getMockProductBySlug(slug);
+  const locale = useLocale();
 
   if (!product) {
     notFound();
   }
 
-  // Create an extended product with additional properties for structured data
-  const extendedProduct: ProductExtended = {
+  const extendedProduct: Product = {
     ...product,
     id: 123, // Placeholder ID
     slug: slug,
