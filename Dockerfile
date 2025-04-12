@@ -1,5 +1,5 @@
 # Base Node.js image
-FROM node:20-alpine AS base
+FROM node:lts-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -52,10 +52,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 # Expose the port the app will run on
-EXPOSE 3030
+EXPOSE 3000
 
 # Set the command to run the app
-ENV PORT=3030
+ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Start the application
