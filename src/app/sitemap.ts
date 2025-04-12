@@ -6,7 +6,7 @@ import {
 } from "@/lib/data/products";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto.com";
+  const baseUrl = "https://canto-store.com";
 
   // Static routes
   const staticRoutes = [
