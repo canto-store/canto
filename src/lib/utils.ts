@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ALL_PRODUCTS } from "@/lib/data";
-import { Product } from "@/types";
+import { ProductSummary } from "@/types";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -20,14 +20,15 @@ export function formatDate(dateString: string): string {
   }).format(date);
 }
 
-export function getMockProductBySlug(slug: string): Product | undefined {
-  return ALL_PRODUCTS.find(
-    (p) => p.name.toLowerCase().replace(/\s+/g, "-") === slug,
-  );
+export function getMockProductBySlug(slug: string): ProductSummary | undefined {
+  return ALL_PRODUCTS.find((p) => p.slug === slug);
 }
 
 // Get related products
-export function getRelatedProducts(product: Product, limit = 4): Product[] {
+export function getRelatedProducts(
+  product: ProductSummary,
+  limit = 4,
+): ProductSummary[] {
   return ALL_PRODUCTS.filter((p) => p.name !== product.name).slice(0, limit);
 }
 
@@ -37,7 +38,7 @@ export function filterProducts(
   category: string,
   priceRange: { min: number; max: number },
   brand: string = "All",
-): Product[] {
+): ProductSummary[] {
   let filtered = ALL_PRODUCTS;
 
   // Filter by search query
@@ -54,7 +55,7 @@ export function filterProducts(
   if (category !== "All") {
     // This is a simplified example - in a real app, products would have category data
     // For now, we'll just filter based on some arbitrary rules
-    const categoryMap: Record<string, (product: Product) => boolean> = {
+    const categoryMap: Record<string, (product: ProductSummary) => boolean> = {
       Streetwear: (p) =>
         p.brand === "STREET CULTURE" || p.brand === "ESSENTIALS",
       Accessories: (p) =>

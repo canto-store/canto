@@ -30,19 +30,6 @@ export function CartItemComponent({
   const { updateQuantity, removeItem } = useCart();
   const [isUpdating, setIsUpdating] = useState(false);
   const router = useRouter();
-  const getProductName = () => {
-    if (item.translationKey && item.translationKey.name) {
-      return t(item.translationKey.name);
-    }
-    return item.name;
-  };
-
-  const getBrandName = () => {
-    if (item.translationKey && item.translationKey.brand) {
-      return t(item.translationKey.brand);
-    }
-    return item.brand;
-  };
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -84,7 +71,7 @@ export function CartItemComponent({
         <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:h-12 sm:w-12">
           <Image
             src={item.image}
-            alt={getProductName()}
+            alt={item.name}
             width={48}
             height={48}
             className="h-full w-full object-cover object-center"
@@ -92,9 +79,9 @@ export function CartItemComponent({
         </div>
         <div className="flex flex-1 flex-col">
           <h4 className="text-primary line-clamp-1 text-xs font-medium sm:text-sm">
-            {getProductName()}
+            {item.name}
           </h4>
-          <p className="text-xs text-gray-500">{getBrandName()}</p>
+          <p className="text-xs text-gray-500">{item.brand}</p>
           <div className="mt-1 flex items-center justify-between">
             <p className="text-xs font-medium">
               EGP {item.price.toFixed(2)} × {item.quantity}
@@ -132,7 +119,7 @@ export function CartItemComponent({
       <div className="mx-auto mb-2 h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 sm:mx-0 sm:mb-0 sm:h-20 sm:w-20">
         <Image
           src={item.image}
-          alt={getProductName()}
+          alt={item.name}
           width={80}
           height={80}
           className="h-full w-full object-cover object-center"
@@ -149,14 +136,14 @@ export function CartItemComponent({
         <div>
           <div className="flex flex-col sm:flex-row sm:justify-between">
             <h3 className="text-center text-sm font-medium text-gray-900 sm:text-left sm:text-base">
-              {getProductName()}
+              {item.name}
             </h3>
             <p className="text-primary mt-1 text-center text-sm font-medium sm:mt-0 sm:ml-4 sm:text-left">
               EGP {(item.price * item.quantity).toFixed(2)}
             </p>
           </div>
           <p className="mt-1 text-center text-xs text-gray-500 sm:text-left sm:text-sm">
-            {getBrandName()}
+            {item.brand}
           </p>
         </div>
 

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
-import { Product } from "@/types";
+import { ProductSummary } from "@/types";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useCart } from "@/providers";
 
 interface ProductListProps {
-  products: Product[];
+  products: ProductSummary[];
   title?: string;
   className?: string;
 }

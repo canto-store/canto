@@ -1,9 +1,9 @@
 "use client";
 
 import { ProductCard } from "./ProductCard";
-import { Product } from "@/types";
+import { ProductSummary } from "@/types";
 
-export function ProductCarousel({ products }: { products: Product[] }) {
+export function ProductCarousel({ products }: { products: ProductSummary[] }) {
   return (
     <div className="flex h-full snap-x snap-mandatory gap-3 overflow-x-scroll">
       {products.map((product, index) => (

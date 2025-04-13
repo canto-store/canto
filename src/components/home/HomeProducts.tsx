@@ -1,9 +1,9 @@
 import { ProductCarousel, ProductGrid } from "@/components/products";
-import { Product } from "@/types";
+import { ProductSummary } from "@/types";
 import { useMediaQuery } from "react-haiku";
 
 interface HomeProductsProps {
-  products: Product[];
+  products: ProductSummary[];
   title: string;
 }
 

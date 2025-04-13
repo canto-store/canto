@@ -2,14 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Pagination } from "@/components/ui/pagination";
 import { ProductGrid, ProductList } from "@/components/products";
-import { Product } from "@/types";
+import { ProductSummary } from "@/types";
 import { useTranslations } from "next-intl";
 
 interface ProductsDisplayProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  filteredProducts: Product[];
-  paginatedProducts: Product[];
+  filteredProducts: ProductSummary[];
+  paginatedProducts: ProductSummary[];
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;

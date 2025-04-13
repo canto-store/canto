@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useParams, useRouter } from "next/navigation";
-import { Product } from "@/types";
+import { ProductSummary } from "@/types";
 import { PRICE_RANGES } from "@/lib/data";
 import { filterProducts } from "@/lib/utils";
 export function useProductFilters() {
@@ -23,13 +23,17 @@ export function useProductFilters() {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedBrand, setSelectedBrand] = useState(initialBrand);
   const [selectedPriceRange, setSelectedPriceRange] = useState(PRICE_RANGES[0]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<ProductSummary[]>(
+    [],
+  );
   const [showFilters, setShowFilters] = useState(false);
   const [sortOption, setSortOption] = useState(initialSort);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
-  const [paginatedProducts, setPaginatedProducts] = useState<Product[]>([]);
+  const [paginatedProducts, setPaginatedProducts] = useState<ProductSummary[]>(
+    [],
+  );
   const [totalPages, setTotalPages] = useState(1);
 
   // Mobile drawer states

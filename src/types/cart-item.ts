@@ -1,5 +1,5 @@
-import { Product } from "./product";
+import { ProductSummary } from "./product";
 
-export type CartItem = Product & {
+export type CartItem = ProductSummary & {
   quantity: number;
 };

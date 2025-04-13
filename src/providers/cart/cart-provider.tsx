@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, ReactNode } from "react";
-import { Product } from "@/types/product";
+import { ProductSummary } from "@/types/product";
 import { CartItem } from "@/types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -44,7 +44,7 @@ export function CartProvider({ children }: CartProviderProps) {
   );
 
   // Add an item to the cart
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: ProductSummary, quantity = 1) => {
     setItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (item) => item.name === product.name,

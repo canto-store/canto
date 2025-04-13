@@ -15,7 +15,7 @@ export default function Image({
   params: { slug: string; locale: string };
 }) {
   const { slug } = params;
-  const { data: product } = useProduct({ slug });
+  const { data: product } = useProduct(slug);
   if (!product) {
     return new ImageResponse(
       (

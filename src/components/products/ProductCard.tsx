@@ -7,11 +7,11 @@ import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useCart } from "@/providers";
-import { Product } from "@/types";
+import { ProductSummary } from "@/types";
 import { BsCartPlus } from "react-icons/bs";
 
 interface ProductCardProps {
-  product: Product;
+  product: ProductSummary;
   priority?: boolean;
   index?: number;
   className?: string;
@@ -23,35 +23,24 @@ export function ProductCard({
   index = 0,
   className,
 }: ProductCardProps) {
-  const t = useTranslations();
   const productsT = useTranslations("products");
   const router = useRouter();
   const locale = useLocale();
   const isRTL = locale === "ar";
 
   const { addToCart } = useCart();
-  // Get translated product name and brand if translation keys are available
-  const productName = product.translationKey?.name
-    ? t(product.translationKey.name)
-    : product.name;
 
-  const brandName = product.translationKey?.brand
-    ? t(product.translationKey.brand)
-    : product.brand;
-
-  // Format price with proper currency symbol and localization
   const formatPrice = (price: number): string => {
-    // Instead of using string replacement, pass the amount as a parameter to the translation function
     return productsT("currency.format", { amount: price.toFixed(2) });
   };
 
-  const handleProductClick = (product: Product) => {
+  const handleProductClick = (product: ProductSummary) => {
     router.push(
       `/product/${encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, "-"))}`,
     );
   };
 
-  const handleBrandClick = (product: Product) => {
+  const handleBrandClick = (product: ProductSummary) => {
     router.push(`/browse?brand=${encodeURIComponent(product.brand)}`);
   };
 
@@ -71,7 +60,7 @@ export function ProductCard({
       >
         <Image
           src={product.image}
-          alt={productName}
+          alt={product.name}
           className="transform rounded-t-lg object-cover transition-transform duration-300 group-hover:scale-110"
           width={600}
           height={600}
@@ -92,7 +81,7 @@ export function ProductCard({
                 isRTL ? "text-right" : "text-left",
               )}
             >
-              {productName}
+              {product.name}
             </h3>
           </button>
           <button
@@ -102,7 +91,7 @@ export function ProductCard({
               isRTL ? "text-right" : "text-left",
             )}
           >
-            <p>{brandName}</p>
+            <p>{product.brand}</p>
           </button>
         </div>
 

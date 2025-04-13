@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/types/product";
+import { ProductSummary } from "@/types/product";
 import { CartItem } from "@/types";
 import { createContext } from "react";
 
@@ -8,7 +8,7 @@ export interface CartContextType {
   items: CartItem[];
   count: number;
   total: number;
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: ProductSummary, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;

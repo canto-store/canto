@@ -4,7 +4,7 @@ export type ProductSummary = {
   slug: string;
   price: number;
   sale_price?: number;
-  images: string[];
+  image: string;
 };
 
 export type ProductDetails = {
