@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://canto.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://canto-store.com"),
   openGraph: {
     type: "website",
     siteName: "Canto",

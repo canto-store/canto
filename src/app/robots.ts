@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         "/cart/*",
       ],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_APP_URL || "https://canto.com"}/sitemap.xml`,
+    sitemap: `${process.env.NEXT_PUBLIC_APP_URL || "https://canto-store.com"}/sitemap.xml`,
   };
 }

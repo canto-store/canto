@@ -25,8 +25,10 @@ export type ProductDetails = {
   relatedProducts: ProductSummary[];
 };
 
-export type HomeProducts = {
-  featured: ProductSummary[];
-  newArrivals: ProductSummary[];
-  bestSellers: ProductSummary[];
-};
+export interface HomeProducts {
+  best_deal: ProductSummary[];
+  best_seller: ProductSummary[];
+  new_arrival: ProductSummary[];
+  products: ProductSummary[];
+  sections: Record<string, unknown>[];
+}

@@ -6,7 +6,7 @@ interface ProductSchemaProps {
 }
 
 export function ProductSchema({ product, locale }: ProductSchemaProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto-store.com";
 
   // Create a simplified product schema with available data
   const productSchema = {

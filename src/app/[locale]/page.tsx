@@ -11,35 +11,8 @@ import {
 } from "@/lib/data/products";
 import { OrganizationSchema } from "@/components/structured-data";
 import { HomeCategories } from "@/components/home/HomeCategories";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { HOME_PRODUCTS_URL } from "@/lib/config";
-import { Product } from "@/types";
 
 export default function Home() {
-  interface HomeProductsResponse {
-    best_deal: Product[];
-    best_seller: Product[];
-    new_arrival: Product[];
-    products: Product[];
-    sections: Record<string, unknown>[];
-  }
-
-  const { data: home_products } = useQuery<HomeProductsResponse, Error>({
-    queryKey: ["home_products"],
-    queryFn: async () => {
-      return axios
-        .get<HomeProductsResponse>(HOME_PRODUCTS_URL)
-        .then((res) => res.data)
-        .catch((error) => {
-          throw new Error(
-            error.response?.data?.message ?? "Failed to fetch data",
-          );
-        });
-    },
-  });
-
-  console.log(home_products);
   return (
     <>
       <OrganizationSchema />

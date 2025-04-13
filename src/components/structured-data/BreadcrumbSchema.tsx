@@ -8,7 +8,7 @@ interface BreadcrumbSchemaProps {
 }
 
 export function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto-store.com";
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",

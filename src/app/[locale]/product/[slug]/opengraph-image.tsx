@@ -1,5 +1,5 @@
+import { useProduct } from "@/lib/product";
 import { ImageResponse } from "next/og";
-import { getProductBySlug } from "@/lib/utils";
 
 export const runtime = "edge";
 export const alt = "Product Image";
@@ -9,13 +9,13 @@ export const size = {
 };
 export const contentType = "image/png";
 
-export default async function Image({
+export default function Image({
   params,
 }: {
   params: { slug: string; locale: string };
 }) {
-  const product = getProductBySlug(params.slug);
-
+  const { slug } = params;
+  const { data: product } = useProduct({ slug });
   if (!product) {
     return new ImageResponse(
       (
@@ -65,7 +65,7 @@ export default async function Image({
           }}
         >
           <img
-            src={product.image}
+            src={product.images[0]}
             alt={product.name}
             style={{
               width: "100%",

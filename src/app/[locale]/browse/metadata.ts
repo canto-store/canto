@@ -6,7 +6,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = params;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto-store.com";
 
   return {
     title: "Browse Products",

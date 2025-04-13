@@ -1,5 +1,5 @@
 export function OrganizationSchema() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto-store.com";
 
   const organizationSchema = {
     "@context": "https://schema.org",
