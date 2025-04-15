@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -23,7 +22,6 @@ export function ProductCard({
   index = 0,
   className,
 }: ProductCardProps) {
-  const productsT = useTranslations("products");
   const router = useRouter();
   const locale = useLocale();
   const isRTL = locale === "ar";
