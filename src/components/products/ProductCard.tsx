@@ -30,10 +30,6 @@ export function ProductCard({
 
   const { addToCart } = useCart();
 
-  const formatPrice = (price: number): string => {
-    return productsT("currency.format", { amount: price.toFixed(2) });
-  };
-
   const handleProductClick = (product: ProductSummary) => {
     router.push(
       `/product/${encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, "-"))}`,
@@ -101,9 +97,24 @@ export function ProductCard({
             isRTL && "flex-row-reverse",
           )}
         >
-          <span className="font-bold sm:text-lg md:text-xl">
-            {formatPrice(product.price)}
-          </span>
+          <div className="flex items-center gap-0.5">
+            <span className="text-xs font-bold md:text-base">EGP</span>
+            {product.sale_price && (
+              <span className="font-bold sm:text-lg md:text-xl">
+                {product.sale_price}
+              </span>
+            )}
+            <span
+              className={cn(
+                product.sale_price
+                  ? "text-gray-500 line-through sm:text-sm md:text-base"
+                  : "font-bold sm:text-lg md:text-xl",
+              )}
+            >
+              {product.price}
+            </span>
+          </div>
+
           <Button onClick={() => addToCart(product)} size="icon">
             <BsCartPlus className="h-5 w-5 md:h-6 md:w-6" />
           </Button>

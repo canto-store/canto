@@ -40,7 +40,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   };
 
   return (
-    <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-4.5rem)] mt-7 grid items-center gap-4 md:mt-0 md:grid-cols-2 md:gap-8">
+    <div className="mt-3 grid flex-1 items-center gap-4 md:grid-cols-2 md:gap-8">
       {/* Product Image */}
       <div className="relative aspect-[4/3] rounded-lg bg-gray-100 md:aspect-square lg:aspect-[4/3]">
         <Image

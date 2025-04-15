@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { CartDropdown } from "@/components/cart/CartDropdown";
-import { LanguageSelector } from "@/components/language/LanguageSelector";
 import { UserDropdown } from "@/components/home/UserDropdown";
 import { MainNavigation } from "@/components/layout/MainNavigation";
+import { Button } from "../ui/button";
 
 interface WebHeaderProps {
   className?: string;
@@ -14,9 +15,15 @@ interface WebHeaderProps {
 
 export function WebHeader({ className }: WebHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
 
   const handleNavigation = (href: string) => {
     router.push(href);
+  };
+  const handleLanguageChange = () => {
+    const value = locale === "en" ? "ar" : "en";
+    router.replace(pathname, { locale: value });
   };
 
   return (
@@ -41,7 +48,20 @@ export function WebHeader({ className }: WebHeaderProps) {
       <MainNavigation />
 
       <div className="flex items-center gap-4 md:w-1/5 md:justify-end">
-        <LanguageSelector />
+        <Button
+          variant="ghost"
+          onClick={handleLanguageChange}
+          aria-label="Select language"
+        >
+          <span
+            className={cn(
+              "text-sm font-medium",
+              locale === "en" && "font-arabic",
+            )}
+          >
+            {locale === "ar" ? "English" : "العربية"}
+          </span>
+        </Button>
         <CartDropdown />
         <UserDropdown />
       </div>

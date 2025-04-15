@@ -5,6 +5,7 @@ export const FEATURED_PRODUCTS: ProductSummary[] = [
     name: "Armchair",
     brand: "ZOYA HOME",
     price: 599.99,
+    sale_price: 499.99,
     image:
       "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=600&h=600",
 

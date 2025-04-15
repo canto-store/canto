@@ -23,12 +23,6 @@ export function ProductList({ products, title, className }: ProductListProps) {
   const isRTL = params?.locale === "ar";
 
   const { addToCart } = useCart();
-  // Format price with proper currency symbol and localization
-  const formatPrice = (price: number): string => {
-    // Pass the amount as a parameter to the translation function
-    return t("currency.format", { amount: price.toFixed(2) });
-  };
-
   return (
     <SectionContainer title={title}>
       <div className={cn("space-y-4", className)} dir={isRTL ? "rtl" : "ltr"}>
@@ -62,9 +56,23 @@ export function ProductList({ products, title, className }: ProductListProps) {
               <div
                 className={`mt-4 flex items-center ${isRTL ? "flex-row-reverse" : ""} justify-between`}
               >
-                <span className="text-xl font-bold text-black">
-                  {formatPrice(product.price)}
-                </span>
+                <div className="flex items-center gap-0.5">
+                  <span className="text-xs font-bold md:text-base">EGP</span>
+                  {product.sale_price && (
+                    <span className="font-bold sm:text-lg md:text-xl">
+                      {product.sale_price}
+                    </span>
+                  )}
+                  <span
+                    className={cn(
+                      product.sale_price
+                        ? "text-gray-500 line-through sm:text-sm md:text-base"
+                        : "font-bold sm:text-lg md:text-xl",
+                    )}
+                  >
+                    {product.price}
+                  </span>
+                </div>
                 <div
                   className={`flex ${isRTL ? "flex-row-reverse" : ""} gap-2`}
                 >
