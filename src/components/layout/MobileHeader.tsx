@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Heart, Search, X } from "lucide-react";
+import { ArrowLeft, Search, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "../ui/search-bar";
 import { AnimatePresence, motion } from "framer-motion";
+import { WishlistIcon, CartIcon } from "@/components";
 interface MobileHeaderProps {
   className?: string;
 }
@@ -38,13 +39,13 @@ export function MobileHeader({ className }: MobileHeaderProps) {
           size="icon"
           onClick={() => handleNavigation("/wishlist")}
         >
-          <Heart className="h-5 w-5" />
+          <WishlistIcon />
         </Button>
       </div>
     );
-  } else if (pathname !== "/") {
+  } else if (pathname.includes("/product")) {
     return (
-      <div className="relative container mx-auto flex h-18 items-center px-4">
+      <div className="relative container mx-auto flex h-18 items-center justify-between px-4">
         <Button
           variant="ghost"
           size="icon"
@@ -52,7 +53,30 @@ export function MobileHeader({ className }: MobileHeaderProps) {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-semibold">{pathname.split("/").pop()}</h1>
+        <h1 className="text-2xl font-semibold">Product</h1>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleNavigation("/cart")}
+        >
+          <CartIcon />
+        </Button>
+      </div>
+    );
+  } else if (pathname !== "/") {
+    return (
+      <div className="relative flex h-18 items-center px-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-4"
+          onClick={() => window.history.back()}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="mx-auto text-2xl font-semibold">
+          {pathname.split("/").pop()}
+        </h1>
       </div>
     );
   } else {

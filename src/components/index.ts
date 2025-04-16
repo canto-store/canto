@@ -8,3 +8,4 @@ export * from "./cart";
 export * from "./auth/login";
 export * from "./auth/register";
 export * from "./checkout";
+export * from "./wishlist";

@@ -24,7 +24,7 @@ export function CheckoutSummary({
   onPlaceOrder,
   isLoading = false,
 }: CheckoutSummaryProps) {
-  const { total: subtotal, count } = useCart();
+  const { totalPrice: subtotal, count } = useCart();
   const t = useTranslations();
   const router = useRouter();
 

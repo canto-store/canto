@@ -38,7 +38,7 @@ export function CartProvider({ children }: CartProviderProps) {
 
   // Calculate total count and price
   const count = items.reduce((total, item) => total + item.quantity, 0);
-  const total = items.reduce(
+  const totalPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
@@ -102,7 +102,7 @@ export function CartProvider({ children }: CartProviderProps) {
       value={{
         items,
         count,
-        total,
+        totalPrice,
         addToCart,
         removeItem,
         updateQuantity,

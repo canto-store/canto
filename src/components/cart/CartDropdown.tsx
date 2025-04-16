@@ -18,7 +18,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { items, count, total } = useCart();
+  const { items, count, totalPrice } = useCart();
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
@@ -144,7 +144,9 @@ export function CartDropdown({ className }: CartDropdownProps) {
               <div className="border-t border-gray-100 px-4 py-3">
                 <div className="flex justify-between font-medium">
                   <span>{t("header.total")}:</span>
-                  <span className="text-primary">EGP {total.toFixed(2)}</span>
+                  <span className="text-primary">
+                    EGP {totalPrice.toFixed(2)}
+                  </span>
                 </div>
               </div>
 
