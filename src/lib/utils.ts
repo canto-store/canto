@@ -1,16 +1,13 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import axios from "axios";
+import { APIError } from "@/types/api";
+import { ProductSummary } from "@/types/product";
 import { ALL_PRODUCTS } from "@/lib/data";
-import { ProductSummary } from "@/types";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Format a date string to a human-readable format
- * @param dateString - ISO date string
- * @returns Formatted date string (e.g., "Apr 21, 2023")
- */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
@@ -18,18 +15,6 @@ export function formatDate(dateString: string): string {
     day: "numeric",
     year: "numeric",
   }).format(date);
-}
-
-export function getMockProductBySlug(slug: string): ProductSummary | undefined {
-  return ALL_PRODUCTS.find((p) => p.slug === slug);
-}
-
-// Get related products
-export function getRelatedProducts(
-  product: ProductSummary,
-  limit = 4,
-): ProductSummary[] {
-  return ALL_PRODUCTS.filter((p) => p.name !== product.name).slice(0, limit);
 }
 
 // Filter products by search query, category, price range, and brand
@@ -47,7 +32,7 @@ export function filterProducts(
     filtered = filtered.filter(
       (product) =>
         product.name.toLowerCase().includes(query) ||
-        product.brand.toLowerCase().includes(query),
+        product.brand.slug.includes(query),
     );
   }
 
@@ -57,14 +42,15 @@ export function filterProducts(
     // For now, we'll just filter based on some arbitrary rules
     const categoryMap: Record<string, (product: ProductSummary) => boolean> = {
       Streetwear: (p) =>
-        p.brand === "STREET CULTURE" || p.brand === "ESSENTIALS",
+        p.brand.name === "STREET CULTURE" || p.brand.name === "ESSENTIALS",
       Accessories: (p) =>
         p.name.includes("Watch") ||
         p.name.includes("Sunglasses") ||
         p.name.includes("Bag"),
       Sneakers: (p) => p.name.includes("Sneakers"),
       Denim: (p) => p.name.includes("Denim") || p.name.includes("Jeans"),
-      Basics: (p) => p.brand === "ESSENTIALS" || p.name.includes("T-Shirt"),
+      Basics: (p) =>
+        p.brand.name === "ESSENTIALS" || p.name.includes("T-Shirt"),
       Luxury: (p) => p.price > 200,
     };
 
@@ -75,7 +61,7 @@ export function filterProducts(
 
   // Filter by brand (skip if "All" is selected)
   if (brand !== "All") {
-    filtered = filtered.filter((product) => product.brand === brand);
+    filtered = filtered.filter((product) => product.brand.name === brand);
   }
 
   // Filter by price range
@@ -85,4 +71,14 @@ export function filterProducts(
   );
 
   return filtered;
+}
+
+export function parseApiError(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const message = (error.response?.data as APIError)?.message;
+    if (message) return message;
+    if (error.message) return error.message;
+  }
+  if (error instanceof Error) return error.message;
+  return "An unknown error occurred";
 }

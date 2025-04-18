@@ -191,19 +191,21 @@ export function FilterDrawer({
               <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 p-2 shadow-sm sm:max-h-40 sm:gap-2">
                 {BRANDS.map((brand) => (
                   <Button
-                    key={brand}
-                    variant={selectedBrand === brand ? "default" : "outline"}
+                    key={brand.name}
+                    variant={
+                      selectedBrand === brand.name ? "default" : "outline"
+                    }
                     size="sm"
                     className={`text-xs font-medium sm:text-sm ${
-                      selectedBrand === brand
+                      selectedBrand === brand.name
                         ? "bg-primary text-primary-foreground"
                         : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => {
-                      setSelectedBrand(brand);
+                      setSelectedBrand(brand.slug);
                     }}
                   >
-                    {brand}
+                    {brand.name}
                   </Button>
                 ))}
               </div>

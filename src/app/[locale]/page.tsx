@@ -3,29 +3,31 @@
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { HomeProducts } from "@/components/home/HomeProducts";
 import { FeaturesBanner } from "@/components/home/FeaturesBanner";
-import { HERO_SLIDES } from "@/lib/data";
-import {
-  BEST_SELLERS,
-  FEATURED_PRODUCTS,
-  NEW_ARRIVALS,
-} from "@/lib/data/products";
+import { HERO_SLIDES } from "@/lib/data/hero-slides";
 import { OrganizationSchema } from "@/components/structured-data";
 import { HomeCategories } from "@/components/home/HomeCategories";
+import { useHomeProducts } from "@/lib/product";
 
 export default function Home() {
+  const { data, isError, isLoading } = useHomeProducts();
+  const { bestDeals, bestSellers, newArrivals } = data || {};
+
   return (
     <>
       <OrganizationSchema />
       <HeroSlider slides={HERO_SLIDES} />
       <FeaturesBanner />
+      {!isLoading && !isError && (
+        <>
+          <HomeProducts products={bestDeals} title="Best Deals" />
 
-      <HomeProducts products={FEATURED_PRODUCTS} title="Best Deals" />
+          <HomeCategories />
 
-      <HomeCategories />
+          <HomeProducts products={bestSellers} title="Best Sellers" />
 
-      <HomeProducts products={BEST_SELLERS} title="Best Sellers" />
-
-      <HomeProducts products={NEW_ARRIVALS} title="New Arrivals" />
+          <HomeProducts products={newArrivals} title="New Arrivals" />
+        </>
+      )}
     </>
   );
 }

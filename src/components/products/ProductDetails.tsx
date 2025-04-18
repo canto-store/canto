@@ -5,18 +5,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Heart, ShoppingCart, Star } from "lucide-react";
-import { SIZES, COLORS } from "@/lib/data";
 import Image from "next/image";
-
-interface Product {
-  name: string;
-  brand: string;
-  price: number;
-  image: string;
-}
-
+import { ProductDetails as ProductDetailsType } from "@/types";
 interface ProductDetailsProps {
-  product: Product;
+  product: ProductDetailsType;
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
@@ -44,7 +36,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {/* Product Image */}
       <div className="relative aspect-[4/3] rounded-lg bg-gray-100 md:aspect-square lg:aspect-[4/3]">
         <Image
-          src={product.image}
+          src={product.images[0]}
           alt={product.name}
           className="h-full w-full object-contain object-center"
           fill
@@ -70,15 +62,47 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </p>
 
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
-          <ProductSizeSelector
-            selectedSize={selectedSize}
-            onSelectSize={setSelectedSize}
-          />
+          <div>
+            <div className="flex items-center justify-between">
+              <h3 className="mb-1 font-medium md:mb-2">Size</h3>
+            </div>
+            {(product.sizes?.length ?? 0) > 0 && (
+              <div className="flex flex-wrap gap-1 md:gap-2">
+                {product.sizes?.map((size) => (
+                  <Button
+                    key={size}
+                    variant={selectedSize === size ? "default" : "outline"}
+                    size="sm"
+                    className="h-auto px-2 py-1 text-xs md:h-9 md:text-sm"
+                    onClick={() => setSelectedSize(size)}
+                  >
+                    {size}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <ProductColorSelector
-            selectedColor={selectedColor}
-            onSelectColor={setSelectedColor}
-          />
+          {(product.colors?.length ?? 0) > 0 && (
+            <div>
+              <h3 className="mb-1 font-medium md:mb-2">Color</h3>
+              <div className="flex flex-wrap gap-2 md:gap-3">
+                {product.colors?.map((color) => (
+                  <button
+                    key={color.name}
+                    className={`h-6 w-6 rounded-full border md:h-8 md:w-8 ${
+                      selectedColor === color.name
+                        ? "ring-2 ring-black ring-offset-1 md:ring-offset-2"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => setSelectedColor(color.name)}
+                    aria-label={`Select ${color.name} color`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           <ProductQuantitySelector
             quantity={quantity}
@@ -168,64 +192,6 @@ function ProductDescription() {
         nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl
         nisl sit amet nisl.
       </p>
-    </div>
-  );
-}
-
-function ProductSizeSelector({
-  selectedSize,
-  onSelectSize,
-}: {
-  selectedSize: string | null;
-  onSelectSize: (size: string) => void;
-}) {
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        <h3 className="mb-1 font-medium md:mb-2">Size</h3>
-      </div>
-      <div className="flex flex-wrap gap-1 md:gap-2">
-        {SIZES.map((size) => (
-          <Button
-            key={size}
-            variant={selectedSize === size ? "default" : "outline"}
-            size="sm"
-            className="h-auto px-2 py-1 text-xs md:h-9 md:text-sm"
-            onClick={() => onSelectSize(size)}
-          >
-            {size}
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ProductColorSelector({
-  selectedColor,
-  onSelectColor,
-}: {
-  selectedColor: string | null;
-  onSelectColor: (color: string) => void;
-}) {
-  return (
-    <div>
-      <h3 className="mb-1 font-medium md:mb-2">Color</h3>
-      <div className="flex flex-wrap gap-2 md:gap-3">
-        {COLORS.map((color) => (
-          <button
-            key={color.name}
-            className={`h-6 w-6 rounded-full border md:h-8 md:w-8 ${
-              selectedColor === color.name
-                ? "ring-2 ring-black ring-offset-1 md:ring-offset-2"
-                : ""
-            }`}
-            style={{ backgroundColor: color.value }}
-            onClick={() => onSelectColor(color.name)}
-            aria-label={`Select ${color.name} color`}
-          />
-        ))}
-      </div>
     </div>
   );
 }

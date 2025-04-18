@@ -81,7 +81,7 @@ export function CartItemComponent({
           <h4 className="text-primary line-clamp-1 text-xs font-medium sm:text-sm">
             {item.name}
           </h4>
-          <p className="text-xs text-gray-500">{item.brand}</p>
+          <p className="text-xs text-gray-500">{item.brand.name}</p>
           <div className="mt-1 flex items-center justify-between">
             <p className="text-xs font-medium">
               EGP {item.price.toFixed(2)} × {item.quantity}
@@ -143,7 +143,7 @@ export function CartItemComponent({
             </p>
           </div>
           <p className="mt-1 text-center text-xs text-gray-500 sm:text-left sm:text-sm">
-            {item.brand}
+            {item.brand.name}
           </p>
         </div>
 

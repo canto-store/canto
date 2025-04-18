@@ -35,7 +35,7 @@ export function ProductCard({
   };
 
   const handleBrandClick = (product: ProductSummary) => {
-    router.push(`/browse?brand=${encodeURIComponent(product.brand)}`);
+    router.push(`/browse?brand=${encodeURIComponent(product.brand.slug)}`);
   };
 
   // Determine if this product should be prioritized
@@ -85,7 +85,7 @@ export function ProductCard({
               isRTL ? "text-right" : "text-left",
             )}
           >
-            <p>{product.brand}</p>
+            <p>{product.brand.name}</p>
           </button>
         </div>
 
@@ -97,14 +97,14 @@ export function ProductCard({
         >
           <div className="flex items-center gap-0.5">
             <span className="text-xs font-bold md:text-base">EGP</span>
-            {product.sale_price && (
+            {product.salePrice && (
               <span className="font-bold sm:text-lg md:text-xl">
-                {product.sale_price}
+                {product.salePrice}
               </span>
             )}
             <span
               className={cn(
-                product.sale_price
+                product.salePrice
                   ? "text-gray-500 line-through sm:text-sm md:text-base"
                   : "font-bold sm:text-lg md:text-xl",
               )}

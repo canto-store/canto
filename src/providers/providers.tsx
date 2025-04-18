@@ -5,21 +5,23 @@ import { CartProvider } from "./cart/cart-provider";
 import { BannerProvider } from "./banner/banner-provider";
 import { AuthProvider } from "./auth/auth-provider";
 import { QueryProvider } from "./query-provider";
-import { CookiesProvider } from "react-cookie";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 interface ProvidersProps {
   children: ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <CookiesProvider>
-      <QueryProvider>
-        <AuthProvider>
-          <BannerProvider>
-            <CartProvider>{children}</CartProvider>
-          </BannerProvider>
-        </AuthProvider>
-      </QueryProvider>
-    </CookiesProvider>
+    <QueryProvider>
+      <AuthProvider>
+        <BannerProvider>
+          <CartProvider>
+            {children}
+
+            <ReactQueryDevtools initialIsOpen={false} />
+          </CartProvider>
+        </BannerProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 }

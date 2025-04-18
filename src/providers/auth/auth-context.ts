@@ -1,15 +1,23 @@
 import { createContext } from "react";
-import { LoginRequest } from "@/types/auth";
-import { UseMutationResult } from "@tanstack/react-query";
+import { LoginRequest, RegisterRequest } from "@/types/auth";
+import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
+
+type User = {
+  firstName: string;
+};
 
 export const AuthContext = createContext<{
+  user: User | null | undefined;
   isAuthenticated: boolean;
-  name: string;
-  login: UseMutationResult<unknown, Error, LoginRequest>;
-  logout: () => void;
+  login: UseMutationResult<User, Error, LoginRequest>;
+  logout: UseMutationResult<void, Error>;
+  userQuery: UseQueryResult<User | null | undefined, Error>;
+  register: UseMutationResult<User, Error, RegisterRequest>;
 }>({
+  user: null,
   isAuthenticated: false,
-  name: "",
-  login: {} as UseMutationResult<unknown, Error, LoginRequest>,
-  logout: () => {},
+  login: {} as UseMutationResult<User, Error, LoginRequest>,
+  logout: {} as UseMutationResult<void, Error>,
+  userQuery: {} as UseQueryResult<User | null | undefined, Error>,
+  register: {} as UseMutationResult<User, Error, RegisterRequest>,
 });

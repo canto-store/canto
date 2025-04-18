@@ -6,10 +6,11 @@ import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useRegister } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useAuth } from "@/providers/auth/use-auth";
+import { parseApiError } from "@/lib/utils";
 
 type FormData = {
   name: string;
@@ -19,7 +20,7 @@ type FormData = {
 };
 
 export function RegisterForm({
-  onSuccess,
+  // onSuccess,
   switchToLogin,
 }: {
   onSuccess?: (email: string) => void;
@@ -41,24 +42,34 @@ export function RegisterForm({
 
   const t = useTranslations("auth");
   const router = useRouter();
-  const { mutateAsync: registerMutation } = useRegister();
+  const { register: registerMutation } = useAuth();
   const [isPending, setIsPending] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
-    await registerMutation(data)
-      .then(() => {
-        toast.success(t("signUpSuccess"));
-        onSuccess?.(data.email);
-      })
-      .catch((error) => {
-        setError(error.message);
-      })
-      .finally(() => {
-        setIsPending(false);
-      });
+    registerMutation.mutate(
+      {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        phoneNumber: "",
+      },
+      {
+        onSuccess: () => {
+          setIsPending(false);
+          setError(null);
+          toast.success(t("registrationSuccess"));
+          router.push("/");
+        },
+        onError: (error) => {
+          setIsPending(false);
+          setError(parseApiError(error));
+          toast.error(t("registrationError"));
+        },
+      },
+    );
   };
 
   const handleSwitchToLogin = () => {

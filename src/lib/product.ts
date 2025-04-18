@@ -1,37 +1,43 @@
 import { useQuery } from "@tanstack/react-query";
-import { BACKEND_URL, HOME_PRODUCTS_URL } from "./config";
-import { HomeProducts, ProductDetails } from "@/types";
+import { HomeProducts, ProductDetails, APIError } from "@/types";
 import axios from "axios";
+import api from "./api";
 
 export const useProduct = (slug: string) => {
-  return useQuery({
-    queryKey: [slug],
-    queryFn: async () => {
-      return axios
-        .get<ProductDetails>(`${BACKEND_URL}/api/product/${slug}`)
-        .then((res) => {
-          return res.data;
-        })
-        .catch((error) => {
-          throw new Error(
-            error.response?.data?.message ?? "Failed to fetch data",
-          );
-        });
+  return useQuery<ProductDetails, Error>({
+    queryKey: ["product", slug],
+    queryFn: async (slug) => {
+      try {
+        const { data } = await api.get<ProductDetails>(`/product/${slug}`);
+        return data;
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const message = (error.response?.data as APIError)?.message;
+          if (message) throw new Error(message);
+        }
+        throw new Error("Failed to fetch data");
+      }
     },
   });
 };
 
 export const useHomeProducts = () =>
   useQuery<HomeProducts, Error>({
-    queryKey: ["home_products"],
+    queryKey: ["home-products"],
     queryFn: async () => {
-      return axios
-        .get<HomeProducts>(HOME_PRODUCTS_URL)
-        .then((res) => res.data)
-        .catch((error) => {
-          throw new Error(
-            error.response?.data?.message ?? "Failed to fetch data",
-          );
-        });
+      try {
+        const { data } = await api.get<HomeProducts>("/home-products");
+        return {
+          bestDeals: data.bestDeals,
+          bestSellers: data.bestSellers,
+          newArrivals: data.newArrivals,
+        };
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const message = (error.response?.data as APIError)?.message;
+          if (message) throw new Error(message);
+        }
+        throw new Error("Failed to fetch data");
+      }
     },
   });

@@ -57,13 +57,13 @@ export function FilterPanel({
           <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto sm:max-h-40 sm:gap-2">
             {BRANDS.map((brand) => (
               <Button
-                key={brand}
-                variant={selectedBrand === brand ? "default" : "outline"}
+                key={brand.slug}
+                variant={selectedBrand === brand.name ? "default" : "outline"}
                 size="sm"
                 className="text-xs sm:text-sm"
-                onClick={() => setSelectedBrand(brand)}
+                onClick={() => setSelectedBrand(brand.slug)}
               >
-                {brand}
+                {brand.name}
               </Button>
             ))}
           </div>

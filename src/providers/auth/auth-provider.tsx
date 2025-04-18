@@ -1,69 +1,74 @@
-import { useState, useEffect } from "react";
 import { AuthContext } from "./auth-context";
-import { useMutation } from "@tanstack/react-query";
-import { api } from "@/lib/api";
-import Cookies from "js-cookie";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LoginRequest, RegisterRequest } from "@/types/auth";
+import api from "@/lib/api";
 
-// Cookie configuration
-const COOKIE_CONFIG = {
-  expires: 7, // 7 days
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+type User = {
+  firstName: string;
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const accessToken = Cookies.get("accessToken");
-    const name = Cookies.get("name");
-    if (accessToken && name) {
-      setIsAuthenticated(true);
-      setName(name);
-    }
-  }, []);
+  const userQuery = useQuery<User | null | undefined>({
+    queryKey: ["me"],
+    queryFn: async () => {
+      const response = await api.get<User>("/me");
+      if (response.status === 200) return response.data;
+      if (response.status === 401) {
+        return null;
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+    throwOnError: false,
+  });
 
-  const login = useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => {
-      const response = await api.post("/login", {
+  const register = useMutation<User, Error, RegisterRequest>({
+    mutationFn: async ({ email, password, name, phoneNumber }) => {
+      const { data } = await api.post<User>("/register", {
         email,
         password,
+        name,
+        phoneNumber,
       });
-      return response;
+      return data;
     },
-    onSuccess: (data) => {
-      Cookies.set("accessToken", data.access as string, COOKIE_CONFIG);
-      Cookies.set("refreshToken", data.refresh as string, COOKIE_CONFIG);
-      Cookies.set("name", data.name as string, COOKIE_CONFIG);
-
-      setIsAuthenticated(true);
-      setName(data.name as string);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 
-  const logout = () => {
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    Cookies.remove("name");
+  const login = useMutation<User, Error, LoginRequest>({
+    mutationFn: async ({ email, password }) => {
+      const { data } = await api.post<User>("/login", { email, password });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
+  const logout = useMutation<void, Error, unknown, unknown>({
+    mutationFn: async () => {
+      const { data } = await api.post("/logout");
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["me"] });
+    },
+  });
 
-    setIsAuthenticated(false);
-    setName("");
-  };
+  const isAuthenticated = !!userQuery.data;
 
   return (
     <AuthContext.Provider
       value={{
+        user: userQuery.data,
         isAuthenticated,
         login,
         logout,
-        name,
+        userQuery,
+        register,
       }}
     >
       {children}

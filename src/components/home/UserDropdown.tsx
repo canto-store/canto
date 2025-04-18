@@ -17,7 +17,7 @@ export function UserDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
-  const { isAuthenticated, logout, name } = useAuth();
+  const { isAuthenticated, logout: logoutMutation, user } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -63,7 +63,7 @@ export function UserDropdown() {
   };
 
   const handleLogout = async () => {
-    await logout();
+    logoutMutation.mutateAsync(undefined);
     setUserDropdownOpen(false);
   };
 
@@ -91,7 +91,7 @@ export function UserDropdown() {
         <button
           className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
           onClick={handleButtonClick}
-          title={isAuthenticated ? (name as string) : t("login")}
+          title={isAuthenticated ? (user?.firstName as string) : t("login")}
         >
           <CircleUser className="h-6 w-6" />
         </button>
@@ -104,7 +104,7 @@ export function UserDropdown() {
           >
             <div className="border-primary/10 mb-2 border-b px-4 pb-2">
               <p className="text-primary font-medium">
-                {t("hello", { name: name as string })}
+                {t("hello", { name: user?.firstName as string })}
               </p>
             </div>
 

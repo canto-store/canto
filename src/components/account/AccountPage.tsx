@@ -20,12 +20,16 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 
 export default function AccountPage() {
-  const { isAuthenticated, name, logout } = useAuth();
+  const { isAuthenticated, user, logout: logoutMutation } = useAuth();
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
 
+  const logout = () => {
+    logoutMutation.mutateAsync(undefined);
+    router.push("/");
+  };
   const handleLanguageChange = () => {
     const value = locale === "en" ? "ar" : "en";
     router.replace(pathname, { locale: value });
@@ -38,7 +42,7 @@ export default function AccountPage() {
     return (
       <div className="mt-2 flex min-h-screen flex-col gap-2">
         {isAuthenticated ? (
-          <h1 className="text-2xl font-bold">Hello, {name}</h1>
+          <h1 className="text-2xl font-bold">Hello, {user?.firstName}</h1>
         ) : (
           <div className="bg-primary-foreground flex flex-col gap-2 rounded-lg p-5">
             <h1 className="text-xl font-bold">Hello! Welcome to Canto</h1>
@@ -119,7 +123,7 @@ export default function AccountPage() {
           </Button>
         </div>
         <If isTrue={isAuthenticated}>
-          <Button variant="ghost" onClick={() => logout()} className="mt-4">
+          <Button variant="ghost" onClick={logout} className="mt-4">
             <LogOut className="text-orange-red mr-2 h-5 w-5" />
             <p className="text-orange-red text-lg">Logout</p>
           </Button>

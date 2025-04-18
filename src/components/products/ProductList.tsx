@@ -51,21 +51,21 @@ export function ProductList({ products, title, className }: ProductListProps) {
                 <h3 className="mb-1 text-lg font-semibold text-black">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-600">{product.brand}</p>
+                <p className="text-sm text-gray-600">{product.brand.name}</p>
               </div>
               <div
                 className={`mt-4 flex items-center ${isRTL ? "flex-row-reverse" : ""} justify-between`}
               >
                 <div className="flex items-center gap-0.5">
                   <span className="text-xs font-bold md:text-base">EGP</span>
-                  {product.sale_price && (
+                  {product.salePrice && (
                     <span className="font-bold sm:text-lg md:text-xl">
-                      {product.sale_price}
+                      {product.salePrice}
                     </span>
                   )}
                   <span
                     className={cn(
-                      product.sale_price
+                      product.salePrice
                         ? "text-gray-500 line-through sm:text-sm md:text-base"
                         : "font-bold sm:text-lg md:text-xl",
                     )}

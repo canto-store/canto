@@ -1,9 +1,12 @@
 export type ProductSummary = {
   name: string;
-  brand: string;
+  brand: {
+    name: string;
+    slug: string;
+  };
   slug: string;
   price: number;
-  sale_price?: number;
+  salePrice?: number;
   image: string;
 };
 
@@ -14,21 +17,24 @@ export type ProductDetails = {
   sale_price?: number;
   images: string[];
   category: string;
-  sizes: string[];
-  colors: string[];
+  sizes?: string[];
+  colors?: Color[];
   stock: number;
   description: string;
   reviews: {
     count: number;
     rating: number;
   };
-  relatedProducts: ProductSummary[];
+  relatedProducts?: ProductSummary[];
+};
+
+export type Color = {
+  name: string;
+  value: string;
 };
 
 export interface HomeProducts {
-  best_deal: ProductSummary[];
-  best_seller: ProductSummary[];
-  new_arrival: ProductSummary[];
-  products: ProductSummary[];
-  sections: Record<string, unknown>[];
+  bestSellers: ProductSummary[];
+  bestDeals: ProductSummary[];
+  newArrivals: ProductSummary[];
 }
