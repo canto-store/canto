@@ -61,18 +61,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
         {/* Related Products */}
         {product.relatedProducts && product.relatedProducts.length > 0 && (
-          <>
-            <div className="mt-10 mb-10">
-              <h3 className="mb-3 text-lg font-semibold sm:mb-4 md:mb-6 md:text-xl">
-                You May Also Like
-              </h3>
-            </div>
-            <ProductGrid
-              products={product.relatedProducts}
-              title="You May Also Like"
-              className="mt-10 mb-10"
-            />
-          </>
+          <ProductGrid
+            products={product.relatedProducts}
+            title="You May Also Like"
+            className="mt-10 mb-10"
+          />
         )}
       </div>
     );
