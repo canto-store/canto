@@ -1,4 +1,5 @@
 "use client";
+
 import { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
