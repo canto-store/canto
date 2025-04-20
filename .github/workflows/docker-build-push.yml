@@ -10,47 +10,61 @@ permissions:
   packages: write
 
 jobs:
-  deploy:
-    name: Build, Push & Deploy
+  deploy_application:
+    name: Build, Publish, and Deploy Next.js App
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Extract Application Version
         uses: actions/setup-node@v4
+        id: extract_version
         with:
-          node-version: "20"
+          node-version: "lts/*"
+        run: echo "APP_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
-      - name: Extract current version
-        id: current-version
-        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-
-      - name: Verify GHCR Login
+      - name: Log in to GitHub Container Registry
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build & Push
+      - name: Build and Publish Docker Image
         run: |
-          docker build -t ghcr.io/canto-store/frontend:v${{ env.VERSION }} -t ghcr.io/canto-store/frontend:latest .
-          docker push ghcr.io/canto-store/frontend:v${{ env.VERSION }}
-          docker push ghcr.io/canto-store/frontend:latest
+          IMAGE_BASE_NAME="ghcr.io/${{ github.repository }}"
+          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ env.APP_VERSION }}"
+          LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
 
-      - name: Deploy on Remote Server
+          docker build -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
+          docker push $VERSIONED_IMAGE_NAME
+          docker push $LATEST_IMAGE_NAME
+
+      - name: Deploy Application to Production Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            docker pull ghcr.io/canto-store/frontend:latest
-            docker stop frontend || true
-            docker rm frontend || true
+            IMAGE_REFERENCE="ghcr.io/${{ github.repository }}:latest"
+            CONTAINER_NAME="${{ github.event.repository.name }}-frontend"
+            APP_EXTERNAL_PORT="3000"
+            APP_INTERNAL_PORT="3000"
+
+            echo "Pulling latest image: $IMAGE_REFERENCE"
+            docker pull $IMAGE_REFERENCE
+
+            echo "Stopping existing container (if any): $CONTAINER_NAME"
+            docker stop $CONTAINER_NAME || true
+
+            echo "Removing existing container (if any): $CONTAINER_NAME"
+            docker rm $CONTAINER_NAME || true
+
+            echo "Starting new container: $CONTAINER_NAME"
             docker run -d \
-              --name frontend \
-              -p 3000:3000 \
+              --name $CONTAINER_NAME \
+              -p $APP_EXTERNAL_PORT:$APP_INTERNAL_PORT \
               --restart unless-stopped \
-              ghcr.io/canto-store/frontend:latest
+              $IMAGE_REFERENCE
