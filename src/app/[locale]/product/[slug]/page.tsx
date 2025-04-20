@@ -37,7 +37,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   if (product)
     return (
       <div className="mt-3 flex flex-col md:mt-7">
-        <Breadcrumb className=" ">
+        <Breadcrumb>
           <BreadcrumbList>
             {breadcrumbItems.map((item, index) => (
               <React.Fragment key={index}>

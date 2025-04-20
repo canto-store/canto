@@ -6,7 +6,7 @@ import api from "./api";
 export const useProduct = (slug: string) => {
   return useQuery<ProductDetails, Error>({
     queryKey: ["product", slug],
-    queryFn: async (slug) => {
+    queryFn: async () => {
       try {
         const { data } = await api.get<ProductDetails>(`/product/${slug}`);
         return data;
