@@ -1,16 +1,10 @@
 "use client";
 
-import { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { useState, useEffect } from "react";
-
-export const metadata: Metadata = {
-  title: "Order Confirmed",
-  description: "Your order has been successfully placed and confirmed.",
-};
 
 export function Page() {
   const t = useTranslations();

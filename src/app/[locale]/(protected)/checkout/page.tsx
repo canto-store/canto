@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -13,13 +12,6 @@ import {
 } from "@/components";
 import { useBanner, useCart } from "@/providers";
 import { toast } from "sonner";
-
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "Checkout",
-    description: "Checkout page",
-  };
-}
 
 export function Page() {
   const t = useTranslations();
