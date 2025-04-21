@@ -13,7 +13,7 @@ import {
 import { useBanner, useCart } from "@/providers";
 import { toast } from "sonner";
 
-export function Page() {
+export default function Page() {
   const t = useTranslations();
   const router = useRouter();
   const { clearCart } = useCart();
