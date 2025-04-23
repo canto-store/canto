@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export function Page() {
+export default function Page() {
   const t = useTranslations();
   const router = useRouter();
   const [orderNumber, setOrderNumber] = useState("ORD-000000");
