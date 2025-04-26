@@ -19,6 +19,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Change directory to Next.js app
+        run: cd apps/web
 
       - name: Extract Application Version
         id: extract_version
