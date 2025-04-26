@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  apps/api:
+  apps/server:
     dependencies:
       '@prisma/client':
         specifier: ^6.6.0
