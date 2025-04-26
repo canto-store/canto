@@ -65,3 +65,11 @@ model Category {
   updated_at  DateTime @updatedAt
 
 }
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
