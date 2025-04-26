@@ -33,8 +33,7 @@ jobs:
           IMAGE_BASE_NAME="ghcr.io/${{ github.repository }}-web"
           VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ env.APP_VERSION }}"
           LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
-          cd apps/web
-          docker build -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
+          docker build -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME -f apps/web/Dockerfile .
           docker push $VERSIONED_IMAGE_NAME
           docker push $LATEST_IMAGE_NAME
 
