@@ -175,8 +175,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.4
       '@tanstack/eslint-plugin-query':
-        specifier: ^5.73.3
-        version: 5.73.3(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)
+        specifier: ^5.74.7
+        version: 5.74.7(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)
       '@types/node':
         specifier: ^20.17.30
         version: 20.17.31
@@ -1318,8 +1318,8 @@ packages:
   '@tailwindcss/postcss@4.1.4':
     resolution: {integrity: sha512-bjV6sqycCEa+AQSt2Kr7wpGF1bOZJ5wsqnLEkqSbM/JEHxx/yhMH8wHmdkPyApF9xhHeMSwnnkDUUMMM/hYnXw==}
 
-  '@tanstack/eslint-plugin-query@5.73.3':
-    resolution: {integrity: sha512-GmUtnOkRzDuNOq96g3eW5ADKC1nWfrM9RI0kRyQVr87rOl6y+PUgkuVaPxh3R2C0EVODxCS07b9aaWphidl/OA==}
+  '@tanstack/eslint-plugin-query@5.74.7':
+    resolution: {integrity: sha512-EeHuaaYiCOD+XOGyB7LMNEx9OEByAa5lkgP+S3ZggjKJpmIO6iRWeoIYYDKo2F8uc3qXcVhTfC7pn7NddQiNtA==}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
 
@@ -4638,7 +4638,7 @@ snapshots:
       postcss: 8.5.3
       tailwindcss: 4.1.4
 
-  '@tanstack/eslint-plugin-query@5.73.3(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)':
+  '@tanstack/eslint-plugin-query@5.74.7(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
       '@typescript-eslint/utils': 8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)
       eslint: 9.25.1(jiti@2.4.2)
