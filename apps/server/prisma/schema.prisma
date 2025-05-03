@@ -40,30 +40,94 @@ model Seller {
   phone_number   String
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
-  brands          Brand[]
+  brands         Brand[]
 }
 
 model Brand {
-  id         Int      @id @default(autoincrement())
-  name       String   @default("Brand")
+  id         Int       @id @default(autoincrement())
+  name       String    @default("Brand")
   slug       String?
-  email      String   @unique
+  email      String    @unique
   logo       String?
-  seller     Seller   @relation(fields: [sellerId], references: [id])
+  seller     Seller    @relation(fields: [sellerId], references: [id])
   sellerId   Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  Product    Product[]
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
-  slug        String   @unique
+  slug        String    @unique
   description String?
   image       String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  Product     Product[]
+}
 
+
+model ProductOption {
+  id     Int                  @id @default(autoincrement())
+  name   String               @unique
+  values ProductOptionValue[]
+}
+
+model ProductOptionValue {
+  id              Int                  @id @default(autoincrement())
+  value           String
+  productOption   ProductOption        @relation(fields: [productOptionId], references: [id])
+  productOptionId Int
+  variantLinks    VariantOptionValue[]
+}
+
+model Product {
+  id          Int              @id @default(autoincrement())
+  name        String
+  slug        String           @unique
+  description String?
+  sizeChart   String?
+  brand       Brand            @relation(fields: [brandId], references: [id])
+  brandId     Int
+  category    Category         @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  variants    ProductVariant[]
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
+}
+
+model ProductVariant {
+  id          Int                   @id @default(autoincrement())
+  product     Product               @relation(fields: [productId], references: [id])
+  productId   Int
+  sku         String                @unique
+  price       Int
+  stock       Int
+  sale_id     Int?
+  optionLinks VariantOptionValue[]
+  images      ProductVariantImage[]
+  created_at  DateTime              @default(now())
+  updated_at  DateTime              @updatedAt
+}
+
+model VariantOptionValue {
+  variant       ProductVariant     @relation(fields: [variantId], references: [id])
+  variantId     Int
+  optionValue   ProductOptionValue @relation(fields: [optionValueId], references: [id])
+  optionValueId Int
+
+  @@id([variantId, optionValueId])
+}
+
+model ProductVariantImage {
+  id         Int            @id @default(autoincrement())
+  variant    ProductVariant @relation(fields: [variantId], references: [id])
+  variantId  Int
+  url        String
+  alt_text   String?
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
 }
 
 model RefreshToken {
