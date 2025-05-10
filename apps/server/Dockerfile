@@ -1,5 +1,7 @@
 FROM node:lts-alpine
 
+ARG DATABASE_URL
+
 # Set working directory
 WORKDIR /app
 
@@ -14,6 +16,8 @@ RUN pnpm run prisma:generate
 
 # Copy the rest of the source code
 COPY . ./
+
+ENV DATABASE_URL=${DATABASE_URL}
 
 RUN pnpm run prisma:migrate
 

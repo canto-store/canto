@@ -34,7 +34,7 @@ jobs:
           VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ env.APP_VERSION }}"
           LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
           cd apps/server
-          docker build -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
+          docker build --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
           docker push $VERSIONED_IMAGE_NAME
           docker push $LATEST_IMAGE_NAME
         env:
