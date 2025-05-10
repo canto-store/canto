@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon"
+    "start": "nodemon",
+    "build": "tsc && mkdir -p build/node_modules/@prisma && cp -r node_modules/@prisma/client build/node_modules/@prisma",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy"
   },
   "keywords": [],
   "author": "",
@@ -22,8 +25,8 @@
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
-    "@types/bcrypt": "^5.0.2",
-    "bcrypt": "^5.1.1",
+    "@types/bcryptjs": "^3.0.0",
+    "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
