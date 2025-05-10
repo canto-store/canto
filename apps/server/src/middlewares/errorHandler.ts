@@ -14,6 +14,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     res.status(500).json({
       status: "error",
       error: "Internal Server Error",
+      details: error.stack || error.message || String(error),
     });
   }
 };
