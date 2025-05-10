@@ -34,10 +34,11 @@ jobs:
           VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ env.APP_VERSION }}"
           LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
           cd apps/server
-          export DATABASE_URL=${{ secrets.DATABASE_URL }}
           docker build -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
           docker push $VERSIONED_IMAGE_NAME
           docker push $LATEST_IMAGE_NAME
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy Application to Production Server
         uses: appleboy/ssh-action@master
