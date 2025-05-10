@@ -10,18 +10,11 @@ COPY package.json pnpm-lock.yaml ./
 RUN corepack enable pnpm
 RUN pnpm install --frozen-lockfile
 
-# Copy Prisma schema for generating client
-COPY prisma ./prisma
-RUN pnpm run prisma:generate
-
-# Copy the rest of the source code
-COPY . ./
-
 ENV DATABASE_URL=${DATABASE_URL}
+COPY prisma ./prisma
+RUN pnpm run db:deploy
 
-RUN pnpm run prisma:migrate
-
-# Build the application
+COPY . ./
 RUN pnpm run build
 
 EXPOSE 8000

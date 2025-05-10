@@ -6,8 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon",
     "build": "tsc && mkdir -p build/node_modules/@prisma && cp -r node_modules/@prisma/client build/node_modules/@prisma",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy"
+    "db:deploy": "npx prisma migrate deploy && npx prisma generate"
   },
   "keywords": [],
   "author": "",
