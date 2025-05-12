@@ -1,0 +1,12 @@
+[
+  {
+    "name": "categories",
+    "executedAt": "2025-05-12T21:20:55.967Z",
+    "description": "Seed for categories"
+  },
+  {
+    "name": "product-options",
+    "executedAt": "2025-05-12T21:20:57.367Z",
+    "description": "Seed for product options: Size and Color"
+  }
+]
