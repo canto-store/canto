@@ -2,7 +2,7 @@
 CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'CUSTOMER');
 
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -14,11 +14,11 @@ CREATE TABLE "User" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Seller" (
+CREATE TABLE "sellers" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -28,11 +28,11 @@ CREATE TABLE "Seller" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Seller_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "sellers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Brand" (
+CREATE TABLE "brands" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL DEFAULT 'Brand',
     "slug" TEXT,
@@ -42,11 +42,11 @@ CREATE TABLE "Brand" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Brand_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "brands_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Category" (
+CREATE TABLE "categories" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
@@ -55,28 +55,28 @@ CREATE TABLE "Category" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "categories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "ProductOption" (
+CREATE TABLE "product_options" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
 
-    CONSTRAINT "ProductOption_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "product_options_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "ProductOptionValue" (
+CREATE TABLE "product_option_values" (
     "id" SERIAL NOT NULL,
     "value" TEXT NOT NULL,
     "productOptionId" INTEGER NOT NULL,
 
-    CONSTRAINT "ProductOptionValue_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "product_option_values_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Product" (
+CREATE TABLE "products" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
@@ -87,11 +87,11 @@ CREATE TABLE "Product" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "ProductVariant" (
+CREATE TABLE "product_variants" (
     "id" SERIAL NOT NULL,
     "productId" INTEGER NOT NULL,
     "sku" TEXT NOT NULL,
@@ -101,19 +101,19 @@ CREATE TABLE "ProductVariant" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ProductVariant_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "product_variants_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "VariantOptionValue" (
+CREATE TABLE "variant_option_values" (
     "variantId" INTEGER NOT NULL,
     "optionValueId" INTEGER NOT NULL,
 
-    CONSTRAINT "VariantOptionValue_pkey" PRIMARY KEY ("variantId","optionValueId")
+    CONSTRAINT "variant_option_values_pkey" PRIMARY KEY ("variantId","optionValueId")
 );
 
 -- CreateTable
-CREATE TABLE "ProductVariantImage" (
+CREATE TABLE "product_variant_images" (
     "id" SERIAL NOT NULL,
     "variantId" INTEGER NOT NULL,
     "url" TEXT NOT NULL,
@@ -121,64 +121,64 @@ CREATE TABLE "ProductVariantImage" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ProductVariantImage_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "product_variant_images_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "RefreshToken" (
+CREATE TABLE "refresh_tokens" (
     "id" SERIAL NOT NULL,
     "token" TEXT NOT NULL,
     "isRevoked" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "expiresAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "refresh_tokens_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Seller_email_key" ON "Seller"("email");
+CREATE UNIQUE INDEX "sellers_email_key" ON "sellers"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Brand_email_key" ON "Brand"("email");
+CREATE UNIQUE INDEX "brands_email_key" ON "brands"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Category_slug_key" ON "Category"("slug");
+CREATE UNIQUE INDEX "categories_slug_key" ON "categories"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ProductOption_name_key" ON "ProductOption"("name");
+CREATE UNIQUE INDEX "product_options_name_key" ON "product_options"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Product_slug_key" ON "Product"("slug");
+CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ProductVariant_sku_key" ON "ProductVariant"("sku");
+CREATE UNIQUE INDEX "product_variants_sku_key" ON "product_variants"("sku");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
+CREATE UNIQUE INDEX "refresh_tokens_token_key" ON "refresh_tokens"("token");
 
 -- AddForeignKey
-ALTER TABLE "Brand" ADD CONSTRAINT "Brand_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "Seller"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "brands" ADD CONSTRAINT "brands_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "sellers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductOptionValue" ADD CONSTRAINT "ProductOptionValue_productOptionId_fkey" FOREIGN KEY ("productOptionId") REFERENCES "ProductOption"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "product_option_values" ADD CONSTRAINT "product_option_values_productOptionId_fkey" FOREIGN KEY ("productOptionId") REFERENCES "product_options"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "brands"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductVariant" ADD CONSTRAINT "ProductVariant_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "product_variants" ADD CONSTRAINT "product_variants_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VariantOptionValue" ADD CONSTRAINT "VariantOptionValue_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "variant_option_values" ADD CONSTRAINT "variant_option_values_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "product_variants"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VariantOptionValue" ADD CONSTRAINT "VariantOptionValue_optionValueId_fkey" FOREIGN KEY ("optionValueId") REFERENCES "ProductOptionValue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "variant_option_values" ADD CONSTRAINT "variant_option_values_optionValueId_fkey" FOREIGN KEY ("optionValueId") REFERENCES "product_option_values"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductVariantImage" ADD CONSTRAINT "ProductVariantImage_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "product_variant_images" ADD CONSTRAINT "product_variant_images_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "product_variants"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

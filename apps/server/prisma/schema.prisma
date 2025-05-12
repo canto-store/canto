@@ -29,6 +29,8 @@ model User {
   last_login     DateTime?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
+
+  @@map("users")
 }
 
 model Seller {
@@ -41,6 +43,8 @@ model Seller {
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   brands         Brand[]
+  
+  @@map("sellers")
 }
 
 model Brand {
@@ -54,6 +58,8 @@ model Brand {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   Product    Product[]
+  
+  @@map("brands")
 }
 
 model Category {
@@ -65,6 +71,8 @@ model Category {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   Product     Product[]
+  
+  @@map("categories")
 }
 
 
@@ -72,6 +80,8 @@ model ProductOption {
   id     Int                  @id @default(autoincrement())
   name   String               @unique
   values ProductOptionValue[]
+  
+  @@map("product_options")
 }
 
 model ProductOptionValue {
@@ -80,6 +90,8 @@ model ProductOptionValue {
   productOption   ProductOption        @relation(fields: [productOptionId], references: [id])
   productOptionId Int
   variantLinks    VariantOptionValue[]
+  
+  @@map("product_option_values")
 }
 
 model Product {
@@ -95,6 +107,8 @@ model Product {
   variants    ProductVariant[]
   created_at  DateTime         @default(now())
   updated_at  DateTime         @updatedAt
+  
+  @@map("products")
 }
 
 model ProductVariant {
@@ -109,6 +123,8 @@ model ProductVariant {
   images      ProductVariantImage[]
   created_at  DateTime              @default(now())
   updated_at  DateTime              @updatedAt
+  
+  @@map("product_variants")
 }
 
 model VariantOptionValue {
@@ -118,6 +134,7 @@ model VariantOptionValue {
   optionValueId Int
 
   @@id([variantId, optionValueId])
+  @@map("variant_option_values")
 }
 
 model ProductVariantImage {
@@ -128,6 +145,8 @@ model ProductVariantImage {
   alt_text   String?
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
+  
+  @@map("product_variant_images")
 }
 
 model RefreshToken {
@@ -136,4 +155,6 @@ model RefreshToken {
   isRevoked Boolean  @default(false)
   createdAt DateTime @default(now())
   expiresAt DateTime
+  
+  @@map("refresh_tokens")
 }
