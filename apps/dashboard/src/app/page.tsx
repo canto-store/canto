@@ -2,12 +2,12 @@
 
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Upload, Plus, Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
+import { UploadButton } from "@/utils/uploadthing";
 
 // Define the form schema with zod
 const productFormSchema = z.object({
@@ -47,7 +48,10 @@ const productFormSchema = z.object({
   color: z.string().optional(),
   style: z.string().optional(),
   material: z.string().optional(),
-  stock: z.coerce.number().int().nonnegative().optional(),
+  stock: z.coerce
+    .number()
+    .int()
+    .nonnegative({ message: "Stock must be a positive number" }),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -66,38 +70,8 @@ export default function Page() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: "1",
-      name: "T-shirt",
-      price: 250,
-      image: "/placeholder.svg?height=80&width=80",
-      progress: 100,
-    },
-    {
-      id: "2",
-      name: "Black Sneaker",
-      price: 1200,
-      image: "/placeholder.svg?height=80&width=80",
-      progress: 100,
-    },
-    {
-      id: "3",
-      name: "Silver Watch",
-      price: 800,
-      image: "/placeholder.svg?height=80&width=80",
-      progress: 100,
-    },
-    {
-      id: "4",
-      name: "Armchair",
-      price: 1500,
-      image: "/placeholder.svg?height=80&width=80",
-      progress: 100,
-    },
-  ]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -110,36 +84,9 @@ export default function Page() {
       color: "",
       style: "",
       material: "",
-      stock: undefined,
+      stock: 1,
     },
   });
-
-  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-
-      const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-      if (!validTypes.includes(file.type)) {
-        toast.error("Invalid file type", {
-          description: "Please upload a JPEG, PNG, WebP, or GIF image.",
-        });
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("File too large", {
-          description: "Image must be less than 5MB.",
-        });
-        return;
-      }
-
-      setSelectedImages([file]);
-
-      // Create a local preview
-      const localPreview = URL.createObjectURL(file);
-      setImagePreview(localPreview);
-    }
-  };
 
   const onSubmit = async (data: ProductFormValues) => {
     if (selectedImages.length === 0) {
@@ -152,9 +99,6 @@ export default function Page() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call with a delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
       // Create a new product object
       const newProduct = {
         id: Date.now().toString(),
@@ -211,50 +155,49 @@ export default function Page() {
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="grid md:grid-cols-[1fr_2fr] gap-6">
         {/* Left panel - Product list */}
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="bg-blue-500 text-white p-2 rounded-md">
-              <Plus className="h-5 w-5" />
-            </div>
-            <h2 className="text-2xl font-bold">Add New Product</h2>
-          </div>
-
-          <div className="space-y-4">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="flex items-center gap-4 p-3 border-b"
-              >
-                <div className="h-16 w-16 relative bg-gray-100 rounded-md overflow-hidden">
-                  <Image
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">{product.name}</h3>
-                      <p className="text-gray-600">
-                        EGP {product.price.toLocaleString()}
-                      </p>
+        <div className="bg-white rounded-lg shadow-sm p-4 overflow-auto min-h-full">
+          {products.length > 0 ? (
+            <div className="space-y-4">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex items-center gap-4 p-3 border-b"
+                >
+                  <div className="h-16 w-16 relative bg-gray-100 rounded-md overflow-hidden">
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">{product.name}</h3>
+                        <p className="text-gray-600">
+                          EGP {product.price.toLocaleString()}
+                        </p>
+                      </div>
+                      <Check className="h-4 w-4 text-gray-400" />
                     </div>
-                    <Check className="h-4 w-4 text-gray-400" />
-                  </div>
-                  {product.progress < 100 ? (
-                    <Progress value={product.progress} className="h-2 mt-2" />
-                  ) : (
-                    <div className="h-2 w-full bg-green-500 mt-2 rounded-full" />
-                  )}
-                  <div className="text-right text-sm text-gray-500 mt-1">
-                    {product.progress}%
+                    {product.progress < 100 ? (
+                      <Progress value={product.progress} className="h-2 mt-2" />
+                    ) : (
+                      <div className="h-2 w-full bg-green-500 mt-2 rounded-full" />
+                    )}
+                    <div className="text-right text-sm text-gray-500 mt-1">
+                      {product.progress}%
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="items-center justify-center flex h-full">
+              <span>no products uploaded yet</span>
+            </div>
+          )}
         </div>
 
         {/* Right panel - Product form */}
@@ -279,47 +222,32 @@ export default function Page() {
                   className="space-y-6"
                 >
                   {/* Image upload area */}
-                  <div
-                    className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    {imagePreview ? (
-                      <div className="relative w-full h-48">
-                        <Image
-                          src={imagePreview || "/placeholder.svg"}
-                          alt="Product preview"
-                          fill
-                          className="object-contain"
-                        />
-                        <button
-                          type="button"
-                          className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setImagePreview(null);
-                            setSelectedImages([]);
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="h-10 w-10 text-gray-400 mb-2" />
-                        <p className="text-lg font-medium">Upload Images</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          Drag and drop or click to browse
-                        </p>
-                      </>
-                    )}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageSelect}
-                    />
-                  </div>
+                  <UploadButton
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res) => {
+                      if (res && res[0]) {
+                        toast("Image Uploaded Successfully!");
+                        setImagePreview(res[0].ufsUrl);
+                      }
+                    }}
+                    onUploadError={(error: Error) => {
+                      toast.error(error.message);
+                    }}
+                  />
+
+                  {imagePreview && (
+                    <div className="relative w-full rounded-md overflow-hidden flex items-center justify-center">
+                      <Image
+                        src={imagePreview}
+                        alt="Product Image"
+                        className="object-cover"
+                        width={200}
+                        height={200}
+                      />
+                    </div>
+                  )}
+
+                  {/* Form fields */}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Product Name */}
@@ -357,7 +285,7 @@ export default function Page() {
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Search" />
+                                <SelectValue placeholder="Categories" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -396,59 +324,15 @@ export default function Page() {
                       )}
                     />
 
-                    {/* Size */}
-                    <FormField
-                      control={form.control}
-                      name="size"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">Size</FormLabel>
-                          <FormControl>
-                            <Input placeholder="S" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Color */}
-                    <FormField
-                      control={form.control}
-                      name="color"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">Color</FormLabel>
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-green-500 rounded-md"></div>
-                            <Input placeholder="GR" {...field} />
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Material */}
-                    <FormField
-                      control={form.control}
-                      name="material"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">Material</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Material" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     {/* Stock */}
                     <FormField
                       control={form.control}
                       name="stock"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Stock</FormLabel>
+                          <FormLabel className="text-base">
+                            Stock <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
                             <Input type="number" placeholder="1" {...field} />
                           </FormControl>
@@ -457,21 +341,6 @@ export default function Page() {
                       )}
                     />
                   </div>
-
-                  {/* Style */}
-                  <FormField
-                    control={form.control}
-                    name="style"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base">Style</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Style" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   {/* Description */}
                   <FormField
@@ -489,6 +358,152 @@ export default function Page() {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Product Variants */}
+                  <div className="space-y-4">
+                    <h3 className="text-base font-medium">
+                      Product Variants{" "}
+                      <span className="text-sm font-normal text-gray-500">
+                        (optional)
+                      </span>
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Size */}
+                      <FormField
+                        control={form.control}
+                        name="size"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Size</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select size" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="XS">XS</SelectItem>
+                                <SelectItem value="S">S</SelectItem>
+                                <SelectItem value="M">M</SelectItem>
+                                <SelectItem value="L">L</SelectItem>
+                                <SelectItem value="XL">XL</SelectItem>
+                                <SelectItem value="XXL">XXL</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Color */}
+                      <FormField
+                        control={form.control}
+                        name="color"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Color</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select color" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="black">Black</SelectItem>
+                                <SelectItem value="white">White</SelectItem>
+                                <SelectItem value="red">Red</SelectItem>
+                                <SelectItem value="blue">Blue</SelectItem>
+                                <SelectItem value="green">Green</SelectItem>
+                                <SelectItem value="yellow">Yellow</SelectItem>
+                                <SelectItem value="purple">Purple</SelectItem>
+                                <SelectItem value="gray">Gray</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Material */}
+                      <FormField
+                        control={form.control}
+                        name="material"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Material</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select material" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="cotton">Cotton</SelectItem>
+                                <SelectItem value="polyester">
+                                  Polyester
+                                </SelectItem>
+                                <SelectItem value="leather">Leather</SelectItem>
+                                <SelectItem value="silk">Silk</SelectItem>
+                                <SelectItem value="wool">Wool</SelectItem>
+                                <SelectItem value="linen">Linen</SelectItem>
+                                <SelectItem value="denim">Denim</SelectItem>
+                                <SelectItem value="metal">Metal</SelectItem>
+                                <SelectItem value="plastic">Plastic</SelectItem>
+                                <SelectItem value="wood">Wood</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Style */}
+                  <FormField
+                    control={form.control}
+                    name="style"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base">Style</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select style" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="casual">Casual</SelectItem>
+                            <SelectItem value="formal">Formal</SelectItem>
+                            <SelectItem value="sporty">Sporty</SelectItem>
+                            <SelectItem value="business">Business</SelectItem>
+                            <SelectItem value="vintage">Vintage</SelectItem>
+                            <SelectItem value="bohemian">Bohemian</SelectItem>
+                            <SelectItem value="streetwear">
+                              Streetwear
+                            </SelectItem>
+                            <SelectItem value="minimalist">
+                              Minimalist
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
