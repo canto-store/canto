@@ -31,6 +31,7 @@ import {
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { UploadButton } from "@/utils/uploadthing";
+import ProductVariants from "@/components/product-variants";
 
 // Define the form schema with zod
 const productFormSchema = z.object({
@@ -78,12 +79,8 @@ export default function Page() {
       name: "",
       category: "",
       price: undefined,
-      size: "",
       description: "",
-      color: "",
-      style: "",
-      material: "",
-      stock: 1,
+      stock: undefined,
     },
   });
 
@@ -363,150 +360,8 @@ export default function Page() {
                   />
 
                   {/* Product Variants */}
-                  <div className="space-y-4">
-                    <h3 className="text-base font-medium">
-                      Product Variants{" "}
-                      <span className="text-sm font-normal text-gray-500">
-                        (optional)
-                      </span>
-                    </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Size */}
-                      <FormField
-                        control={form.control}
-                        name="size"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Size</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select size" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="XS">XS</SelectItem>
-                                <SelectItem value="S">S</SelectItem>
-                                <SelectItem value="M">M</SelectItem>
-                                <SelectItem value="L">L</SelectItem>
-                                <SelectItem value="XL">XL</SelectItem>
-                                <SelectItem value="XXL">XXL</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Color */}
-                      <FormField
-                        control={form.control}
-                        name="color"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Color</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select color" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="black">Black</SelectItem>
-                                <SelectItem value="white">White</SelectItem>
-                                <SelectItem value="red">Red</SelectItem>
-                                <SelectItem value="blue">Blue</SelectItem>
-                                <SelectItem value="green">Green</SelectItem>
-                                <SelectItem value="yellow">Yellow</SelectItem>
-                                <SelectItem value="purple">Purple</SelectItem>
-                                <SelectItem value="gray">Gray</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Material */}
-                      <FormField
-                        control={form.control}
-                        name="material"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Material</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select material" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="cotton">Cotton</SelectItem>
-                                <SelectItem value="polyester">
-                                  Polyester
-                                </SelectItem>
-                                <SelectItem value="leather">Leather</SelectItem>
-                                <SelectItem value="silk">Silk</SelectItem>
-                                <SelectItem value="wool">Wool</SelectItem>
-                                <SelectItem value="linen">Linen</SelectItem>
-                                <SelectItem value="denim">Denim</SelectItem>
-                                <SelectItem value="metal">Metal</SelectItem>
-                                <SelectItem value="plastic">Plastic</SelectItem>
-                                <SelectItem value="wood">Wood</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Style */}
-                  <FormField
-                    control={form.control}
-                    name="style"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base">Style</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select style" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="casual">Casual</SelectItem>
-                            <SelectItem value="formal">Formal</SelectItem>
-                            <SelectItem value="sporty">Sporty</SelectItem>
-                            <SelectItem value="business">Business</SelectItem>
-                            <SelectItem value="vintage">Vintage</SelectItem>
-                            <SelectItem value="bohemian">Bohemian</SelectItem>
-                            <SelectItem value="streetwear">
-                              Streetwear
-                            </SelectItem>
-                            <SelectItem value="minimalist">
-                              Minimalist
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <ProductVariants />
 
                   {/* Form actions */}
                   <div className="flex justify-end gap-4 pt-4">
