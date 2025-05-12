@@ -34,24 +34,23 @@ import { UploadButton } from "@/utils/uploadthing";
 
 // Define the form schema with zod
 const productFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Product name must be at least 2 characters" }),
+  name: z.string(),
   category: z.string().min(1, { message: "Please select a category" }),
   price: z.coerce
     .number()
+    .int()
     .positive({ message: "Price must be a positive number" }),
-  size: z.string().optional(),
   description: z
     .string()
     .min(10, { message: "Description must be at least 10 characters" }),
-  color: z.string().optional(),
-  style: z.string().optional(),
-  material: z.string().optional(),
   stock: z.coerce
     .number()
     .int()
-    .nonnegative({ message: "Stock must be a positive number" }),
+    .positive({ message: "Stock must be a positive number" }),
+  size: z.string().optional(),
+  color: z.string().optional(),
+  style: z.string().optional(),
+  material: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
