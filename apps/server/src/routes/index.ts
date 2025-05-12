@@ -1,17 +1,16 @@
-import { Router } from 'express';
-import authRouter from '../modules/auth/auth.routes';
-import sellerRouter from '../modules/Seller/seller.routes'
-import brandRoutes from '../modules/Seller/brand/brand.routes';
-import categoryRoutes from '../modules/category/category.routes';
-import productRoutes from '../modules/product/product.routes';
+import { Router } from "express";
+import authRouter from "../modules/auth/auth.routes";
+import sellerRouter from "../modules/seller/seller.routes";
+import brandRoutes from "../modules/seller/brand/brand.routes";
+import categoryRoutes from "../modules/category/category.routes";
+import productRoutes from "../modules/product/product.routes";
 
 const router = Router();
 
-router.use('/auth', authRouter);
-router.use('/seller', sellerRouter);
-router.use('/brand', brandRoutes);
-router.use('/categories', categoryRoutes);
-router.use('/product', productRoutes);
-
+router.use("/auth", authRouter);
+router.use("/seller", sellerRouter);
+router.use("/brand", brandRoutes);
+router.use("/categories", categoryRoutes);
+router.use("/product", productRoutes);
 
 export default router;
