@@ -318,8 +318,10 @@
     "emailPlaceholder": "your@email.com",
     "phone": "Phone Number",
     "phonePlaceholder": "+20 1XX XXX XXXX",
-    "storeName": "Store Name",
+    "storeName": "Brand Name",
     "storeNamePlaceholder": "Enter your store name",
+    "instagramUrl": "Instagram URL",
+    "instagramUrlPlaceholder": "https://instagram.com/yourstore",
     "agreement": "By submitting this form, you agree to our Terms of Service and Seller Agreement",
     "submit": "Apply to Become a Seller",
     "submitting": "Submitting..."
