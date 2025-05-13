@@ -14,10 +14,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  useFormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
 const FormSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -52,7 +50,7 @@ export function SellForm() {
 
   const handleSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
-    
+
     try {
       // TODO: Implement API call to register seller
       console.log(values);
@@ -75,11 +73,14 @@ export function SellForm() {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("sell.firstName")}<span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    {t("sell.firstName")}
+                    <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={t("sell.firstNamePlaceholder")} 
-                      {...field} 
+                    <Input
+                      placeholder={t("sell.firstNamePlaceholder")}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage className="text-red-500" />
@@ -92,11 +93,14 @@ export function SellForm() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("sell.lastName")}<span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    {t("sell.lastName")}
+                    <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={t("sell.lastNamePlaceholder")} 
-                      {...field} 
+                    <Input
+                      placeholder={t("sell.lastNamePlaceholder")}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage className="text-red-500" />
@@ -110,12 +114,15 @@ export function SellForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("sell.email")}<span className="text-red-500">*</span></FormLabel>
+                <FormLabel>
+                  {t("sell.email")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
                     type="email"
-                    placeholder={t("sell.emailPlaceholder")} 
-                    {...field} 
+                    placeholder={t("sell.emailPlaceholder")}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500" />
@@ -128,12 +135,15 @@ export function SellForm() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("sell.phone")}<span className="text-red-500">*</span></FormLabel>
+                <FormLabel>
+                  {t("sell.phone")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
                     type="tel"
-                    placeholder={t("sell.phonePlaceholder")} 
-                    {...field} 
+                    placeholder={t("sell.phonePlaceholder")}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500" />
@@ -146,11 +156,14 @@ export function SellForm() {
             name="storeName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("sell.storeName")}<span className="text-red-500">*</span></FormLabel>
+                <FormLabel>
+                  {t("sell.storeName")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder={t("sell.storeNamePlaceholder")} 
-                    {...field} 
+                  <Input
+                    placeholder={t("sell.storeNamePlaceholder")}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500" />
@@ -163,11 +176,14 @@ export function SellForm() {
             name="instagramUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("sell.instagramUrl")}<span className="text-red-500">*</span></FormLabel>
+                <FormLabel>
+                  {t("sell.instagramUrl")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder={t("sell.instagramUrlPlaceholder")} 
-                    {...field} 
+                  <Input
+                    placeholder={t("sell.instagramUrlPlaceholder")}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500" />
@@ -179,7 +195,11 @@ export function SellForm() {
         <div className="space-y-4">
           <p className="text-sm text-gray-500">{t("sell.agreement")}</p>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting || form.formState.isSubmitting}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting || form.formState.isSubmitting}
+          >
             {isSubmitting ? t("sell.submitting") : t("sell.submit")}
           </Button>
         </div>
