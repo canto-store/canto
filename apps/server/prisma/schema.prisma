@@ -58,6 +58,7 @@ model Brand {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   Product    Product[]
+  instagram_url String?
   
   @@map("brands")
 }

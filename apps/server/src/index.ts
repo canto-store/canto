@@ -2,11 +2,13 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import routes from "./routes";
 import errorHandler from "./middlewares/errorHandler";
+import logger from "./middlewares/logger.middleware";
 import cors from "cors";
 
 const app = express();
 
 app.use(cors());
+app.use(logger); // Log all API requests
 app.use(express.json());
 app.use(cookieParser());
 

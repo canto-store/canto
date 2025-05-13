@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,46 +15,66 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
-const FormSchema = z.object({
-  firstName: z.string().min(1, { message: "First name is required" }),
-  lastName: z.string().min(1, { message: "Last name is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  phone: z.string().min(1, { message: "Phone number is required" }),
-  storeName: z.string().min(1, { message: "Store name is required" }),
-  instagramUrl: z
-    .string()
-    .min(1, { message: "Instagram URL is required" })
-    .url({ message: "Instagram URL must be a valid URL" }),
-});
+const FormSchema = z
+  .object({
+    name: z.string().min(1, { message: "First name is required" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    phone_number: z.string().min(1, { message: "Phone number is required" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long" })
+      .regex(/[a-zA-Z]/, {
+        message: "Password must contain at least one letter",
+      })
+      .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[@$!%*?&]/, {
+        message: "Password must contain at least one special character",
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type FormValues = z.infer<typeof FormSchema>;
 
 export function SellForm() {
   const t = useTranslations();
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<FormValues>({
+  const sellerForm = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      name: "",
       email: "",
-      phone: "",
-      storeName: "",
-      instagramUrl: "",
+      phone_number: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
   const handleSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
-
     try {
-      // TODO: Implement API call to register seller
-      console.log(values);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push("/dashboard/seller");
+      const response = await fetch("http://localhost:8000/api/seller", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          phone_number: values.phone_number,
+          password: values.password,
+        }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        toast.error(error.error ?? "Failed to register seller");
+      }
     } catch (error) {
       console.error("Error registering seller:", error);
     } finally {
@@ -64,53 +83,28 @@ export function SellForm() {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+    <Form {...sellerForm}>
+      <form onSubmit={sellerForm.handleSubmit(handleSubmit)}>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("sell.firstName")}
-                    <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("sell.firstNamePlaceholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-500" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("sell.lastName")}
-                    <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("sell.lastNamePlaceholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-500" />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={sellerForm.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("sell.name")}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder={t("sell.namePlaceholder")} {...field} />
+                </FormControl>
+                <FormMessage className="text-red-500" />
+              </FormItem>
+            )}
+          />
 
           <FormField
-            control={form.control}
+            control={sellerForm.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -131,8 +125,8 @@ export function SellForm() {
           />
 
           <FormField
-            control={form.control}
-            name="phone"
+            control={sellerForm.control}
+            name="phone_number"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -150,19 +144,19 @@ export function SellForm() {
               </FormItem>
             )}
           />
-
           <FormField
-            control={form.control}
-            name="storeName"
+            control={sellerForm.control}
+            name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t("sell.storeName")}
+                  {t("auth.password")}
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t("sell.storeNamePlaceholder")}
+                    type="password"
+                    placeholder={t("auth.passwordPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -170,19 +164,19 @@ export function SellForm() {
               </FormItem>
             )}
           />
-
           <FormField
-            control={form.control}
-            name="instagramUrl"
+            control={sellerForm.control}
+            name="confirmPassword"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t("sell.instagramUrl")}
+                  {t("auth.confirmPasswordLabel")}
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t("sell.instagramUrlPlaceholder")}
+                    type="password"
+                    placeholder={t("auth.confirmPasswordPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -192,17 +186,21 @@ export function SellForm() {
           />
         </div>
 
-        <div className="space-y-4">
-          <p className="text-sm text-gray-500">{t("sell.agreement")}</p>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting || form.formState.isSubmitting}
-          >
-            {isSubmitting ? t("sell.submitting") : t("sell.submit")}
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          className="mt-6 w-full"
+          disabled={isSubmitting || sellerForm.formState.isSubmitting}
+        >
+          Sign Up
+        </Button>
+        <Button
+          type="submit"
+          className="mt-2 w-full"
+          disabled={isSubmitting || sellerForm.formState.isSubmitting}
+          variant="outline"
+        >
+          Already signed up? Sign In
+        </Button>
       </form>
     </Form>
   );
