@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import ProductService from './product.service';
+import { Request, Response, NextFunction } from "express";
+import ProductService from "./product.service";
 import {
   CreateProductDto,
   UpdateProductDto,
@@ -7,22 +7,32 @@ import {
   CreateProductOptionValueDto,
   CreateProductVariantDto,
   UpdateProductVariantDto,
-} from './product.types';
+} from "./product.types";
 
 class ProductController {
   private readonly productService = new ProductService();
 
-  async createProduct(request: Request, response: Response, nextFunction: NextFunction) {
+  async createProduct(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const createProductDto = request.body as CreateProductDto;
-      const newProduct = await this.productService.createProduct(createProductDto);
+      const newProduct = await this.productService.createProduct(
+        createProductDto
+      );
       response.status(201).json(newProduct);
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async getAllProducts(request: Request, response: Response, nextFunction: NextFunction) {
+  async getAllProducts(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const products = await this.productService.findAllProducts();
       response.status(200).json(products);
@@ -31,7 +41,11 @@ class ProductController {
     }
   }
 
-  async getProductById(request: Request, response: Response, nextFunction: NextFunction) {
+  async getProductById(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const productId = Number(request.params.id);
       const product = await this.productService.findProduct(productId);
@@ -41,28 +55,43 @@ class ProductController {
     }
   }
 
-  async updateProduct(request: Request, response: Response, nextFunction: NextFunction) {
+  async updateProduct(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const productId = Number(request.params.id);
       const updateProductDto = request.body as UpdateProductDto;
-      const updatedProduct = await this.productService.updateProduct(productId, updateProductDto);
+      const updatedProduct = await this.productService.updateProduct(
+        productId,
+        updateProductDto
+      );
       response.status(200).json(updatedProduct);
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async deleteProduct(request: Request, response: Response, nextFunction: NextFunction) {
+  async deleteProduct(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const productId = Number(request.params.id);
       await this.productService.deleteProduct(productId);
-      response.status(200).json({ message: 'Product deleted' });
+      response.status(200).json({ message: "Product deleted" });
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async getProductBySlug(request: Request, response: Response, nextFunction: NextFunction) {
+  async getProductBySlug(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const productSlug = request.params.slug;
       const product = await this.productService.getProductBySlug(productSlug);
@@ -72,7 +101,11 @@ class ProductController {
     }
   }
 
-  async createOption(request: Request, response: Response, nextFunction: NextFunction) {
+  async createOption(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const createOptionDto = request.body as CreateProductOptionDto;
       const newOption = await this.productService.createOption(createOptionDto);
@@ -82,7 +115,11 @@ class ProductController {
     }
   }
 
-  async getOptions(request: Request, response: Response, nextFunction: NextFunction) {
+  async getOptions(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const options = await this.productService.getOptions();
       response.status(200).json(options);
@@ -91,62 +128,106 @@ class ProductController {
     }
   }
 
-  async deleteOption(request: Request, response: Response, nextFunction: NextFunction) {
+  async deleteOption(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const optionId = Number(request.params.id);
       await this.productService.deleteOption(optionId);
-      response.status(200).json({ message: 'Option deleted' });
+      response.status(200).json({ message: "Option deleted" });
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async createOptionValue(request: Request, response: Response, nextFunction: NextFunction) {
+  async createOptionValue(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const createOptionValueDto = request.body as CreateProductOptionValueDto;
-      const newOptionValue = await this.productService.createOptionValue(createOptionValueDto);
+      const newOptionValue = await this.productService.createOptionValue(
+        createOptionValueDto
+      );
       response.status(201).json(newOptionValue);
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async deleteOptionValue(request: Request, response: Response, nextFunction: NextFunction) {
+  async deleteOptionValue(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const optionValueId = Number(request.params.id);
       await this.productService.deleteOptionValue(optionValueId);
-      response.status(200).json({ message: 'Option value deleted' });
+      response.status(200).json({ message: "Option value deleted" });
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async createVariant(request: Request, response: Response, nextFunction: NextFunction) {
+  async createVariant(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const createVariantDto = request.body as CreateProductVariantDto;
-      const newVariant = await this.productService.createVariant(createVariantDto);
+      const newVariant = await this.productService.createVariant(
+        createVariantDto
+      );
       response.status(201).json(newVariant);
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async updateVariant(request: Request, response: Response, nextFunction: NextFunction) {
+  async updateVariant(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const variantId = Number(request.params.id);
       const updateVariantDto = request.body as UpdateProductVariantDto;
-      const updatedVariant = await this.productService.updateVariant(variantId, updateVariantDto);
+      const updatedVariant = await this.productService.updateVariant(
+        variantId,
+        updateVariantDto
+      );
       response.status(200).json(updatedVariant);
     } catch (error) {
       nextFunction(error);
     }
   }
 
-  async deleteVariant(request: Request, response: Response, nextFunction: NextFunction) {
+  async deleteVariant(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
     try {
       const variantId = Number(request.params.id);
       await this.productService.deleteVariant(variantId);
-      response.status(200).json({ message: 'Variant deleted' });
+      response.status(200).json({ message: "Variant deleted" });
+    } catch (error) {
+      nextFunction(error);
+    }
+  }
+
+  async getHomeProducts(
+    _request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
+    try {
+      const products = await this.productService.getHomeProducts();
+      response.status(200).json(products);
     } catch (error) {
       nextFunction(error);
     }

@@ -1,6 +1,6 @@
 import { PrismaClient, Brand } from "@prisma/client";
 import AppError from "../../../utils/appError";
-
+import { slugify } from "../../../utils/helper";
 class BrandService {
   private prisma: PrismaClient;
 
@@ -10,10 +10,10 @@ class BrandService {
 
   async getAllBrands() {
     return await this.prisma.brand.findMany({
-      select:{
-        name:true,
-        slug:true,
-      }
+      select: {
+        name: true,
+        slug: true,
+      },
     });
   }
 
@@ -27,22 +27,23 @@ class BrandService {
     return brand;
   }
 
-  async createBrand(data: Brand): Promise<Brand> {
-    const existing = await this.prisma.brand.findUnique({
-      where: { email: data.email },
-    });
-    if (existing) {
-      throw new AppError("Brand with this email already exists", 400);
-    }
+  async createBrand(
+    data: Omit<Brand, "sellerId" | "id" | "created_at" | "updated_at">,
+    sellerId: number
+  ): Promise<Brand> {
     const existingSeller = await this.prisma.seller.findUnique({
-      where: { id: data.sellerId },
+      where: { id: sellerId },
     });
     if (!existingSeller) {
       throw new AppError("Seller not found", 404);
     }
-
+    const slug = slugify(data.name);
     return await this.prisma.brand.create({
-      data,
+      data: {
+        ...data,
+        slug,
+        sellerId,
+      },
     });
   }
 
@@ -77,6 +78,16 @@ class BrandService {
     return await this.prisma.brand.delete({
       where: { id },
     });
+  }
+
+  async getMyBrand(sellerId: number): Promise<Brand> {
+    const brand = await this.prisma.brand.findFirst({
+      where: { sellerId },
+    });
+    if (!brand) {
+      throw new AppError("Brand not found", 404);
+    }
+    return brand;
   }
 }
 

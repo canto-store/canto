@@ -237,7 +237,7 @@
     "email": "عنوان البريد الإلكتروني",
     "emailPlaceholder": "your@email.com",
     "phone": "رقم الهاتف",
-    "phonePlaceholder": "+20 1XX XXX XXXX",
+    "phonePlaceholder": "0 1XX XXX XXXX",
     "storeName": "اسم المتجر",
     "storeNamePlaceholder": "أدخل اسم متجرك",
     "agreement": "من خلال تقديم هذا النموذج، فإنك توافق على شروط الخدمة واتفاقية البائع الخاصة بنا",

@@ -8,5 +8,10 @@
     "name": "product-options",
     "executedAt": "2025-05-12T21:20:57.367Z",
     "description": "Seed for product options: Size and Color"
+  },
+  {
+    "name": "products",
+    "executedAt": "2025-05-14T15:39:21.585Z",
+    "description": "Seeds the database with sample products"
   }
 ]

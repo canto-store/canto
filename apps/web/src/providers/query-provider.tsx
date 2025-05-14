@@ -16,7 +16,8 @@ export function QueryProvider({ children }: { children: ReactNode }) {
             retry: 1,
             refetchOnWindowFocus: false,
             throwOnError(error) {
-              throw new Error(parseApiError(error));
+              console.error(parseApiError(error));
+              return false;
             },
           },
           mutations: {

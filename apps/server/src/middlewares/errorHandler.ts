@@ -8,12 +8,12 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (error.isOperational) {
     res.status(error.status).json({
       status: "error",
-      error: error.message,
+      message: error.message,
     });
   } else {
     res.status(500).json({
       status: "error",
-      error: "Internal Server Error",
+      message: "Internal Server Error",
       details: error.stack || error.message || String(error),
     });
   }

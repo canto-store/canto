@@ -19,5 +19,6 @@ RUN pnpm run build
 
 EXPOSE 8000
 
+ENV NODE_ENV=production
 ENV PORT=8000
 CMD ["node", "build/src/index.js"]

@@ -1,7 +1,7 @@
 import { PrismaClient, Seller } from "@prisma/client";
 import AppError from "../../utils/appError";
 import Bcrypt from "../../utils/bcrypt";
-
+import { signJwt, signRefreshToken } from "../../utils/jwt";
 
 class SellerService {
   private prisma: PrismaClient;
@@ -11,9 +11,7 @@ class SellerService {
   }
 
   async getAllSellers() {
-    return await this.prisma.seller.findMany({
-
-    });
+    return await this.prisma.seller.findMany({});
   }
 
   async getSellerById(id: number) {
@@ -28,18 +26,28 @@ class SellerService {
 
   async createSeller(data: Seller) {
     const existingSeller = await this.prisma.seller.findUnique({
-        where: { email: data.email },
-        });
+      where: { email: data.email },
+    });
     if (existingSeller) {
-        throw new AppError('Seller with this email already exists',400);
+      throw new AppError("Seller with this email already exists", 400);
     }
     data.password = await Bcrypt.hash(data.password);
 
     const seller = await this.prisma.seller.create({
-        data,
+      data,
     });
 
-    return {...seller, password: undefined }; 
+    // Generate authentication tokens
+    const accessToken = signJwt({ id: seller.id, role: "SELLER" });
+    const refreshToken = await this.createRefreshToken(seller.id);
+
+    return {
+      seller: { ...seller, password: undefined },
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
+    };
   }
 
   async updateSeller(id: number, data: Seller) {
@@ -47,13 +55,46 @@ class SellerService {
       where: { id },
     });
     if (!existingSeller) {
-      throw new AppError('Seller not found',404);
+      throw new AppError("Seller not found", 404);
     }
 
     return await this.prisma.seller.update({
       where: { id },
       data,
     });
+  }
+
+  async createRefreshToken(sellerId: number, role: string = "SELLER") {
+    const token = signRefreshToken({ id: sellerId, role });
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await this.prisma.refreshToken.create({ data: { token, expiresAt } });
+    return token;
+  }
+
+  async loginSeller(email: string, password: string) {
+    const seller = await this.prisma.seller.findUnique({
+      where: { email },
+    });
+    if (!seller) {
+      throw new AppError("Seller not found", 404);
+    }
+
+    const isPasswordValid = await Bcrypt.compare(password, seller.password);
+    if (!isPasswordValid) {
+      throw new AppError("Invalid credentials", 401);
+    }
+
+    // Generate authentication tokens
+    const accessToken = signJwt({ id: seller.id, role: "SELLER" });
+    const refreshToken = await this.createRefreshToken(seller.id);
+
+    return {
+      seller: { ...seller, password: undefined },
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
+    };
   }
 }
 

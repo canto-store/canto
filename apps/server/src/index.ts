@@ -7,8 +7,24 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors());
-app.use(logger); // Log all API requests
+// Configure CORS with proper settings
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://canto-store.com"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+    ],
+    exposedHeaders: ["Set-Cookie"],
+  })
+);
+
+app.use(logger);
 app.use(express.json());
 app.use(cookieParser());
 

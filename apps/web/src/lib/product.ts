@@ -26,7 +26,7 @@ export const useHomeProducts = () =>
     queryKey: ["home-products"],
     queryFn: async () => {
       try {
-        const { data } = await api.get<HomeProducts>("/home-products");
+        const { data } = await api.get<HomeProducts>("/product/home-products");
         return {
           bestDeals: data.bestDeals,
           bestSellers: data.bestSellers,

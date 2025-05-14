@@ -16,12 +16,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useAuth } from "@/providers/auth/use-auth";
+import { useRouter } from "@/i18n/navigation";
 
-const FormSchema = z
+// SignUp Form Schema
+export const SignUpFormSchema = z
   .object({
     name: z.string().min(1, { message: "First name is required" }),
     email: z.string().email({ message: "Invalid email address" }),
-    phone_number: z.string().min(1, { message: "Phone number is required" }),
+    phone_number: z.string().min(1, { message: "Phone Number is required" }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters long" })
@@ -39,14 +42,20 @@ const FormSchema = z
     path: ["confirmPassword"],
   });
 
-type FormValues = z.infer<typeof FormSchema>;
+export type SignUpFormValues = z.infer<typeof SignUpFormSchema>;
 
-export function SellForm() {
+interface SellerSignUpFormProps {
+  onSwitchToLogin: () => void;
+}
+
+export function SellerSignUpForm({ onSwitchToLogin }: SellerSignUpFormProps) {
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { sellerRegister } = useAuth();
+  const router = useRouter();
 
-  const sellerForm = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<SignUpFormValues>({
+    resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -54,40 +63,37 @@ export function SellForm() {
       password: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   });
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSignUp = async (values: SignUpFormValues) => {
     setIsSubmitting(true);
-    try {
-      const response = await fetch("http://localhost:8000/api/seller", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    sellerRegister.mutate(
+      {
+        email: values.email,
+        password: values.password,
+        name: values.name,
+        phone_number: values.phone_number,
+      },
+      {
+        onSuccess: () => {
+          toast.success(t("auth.registerSuccess"));
+          setIsSubmitting(false);
+          router.refresh();
         },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          phone_number: values.phone_number,
-          password: values.password,
-        }),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        toast.error(error.error ?? "Failed to register seller");
-      }
-    } catch (error) {
-      console.error("Error registering seller:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+        onError: () => {
+          setIsSubmitting(false);
+        },
+      },
+    );
   };
 
   return (
-    <Form {...sellerForm}>
-      <form onSubmit={sellerForm.handleSubmit(handleSubmit)}>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSignUp)} className="w-full">
         <div className="space-y-4">
           <FormField
-            control={sellerForm.control}
+            control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -104,7 +110,7 @@ export function SellForm() {
           />
 
           <FormField
-            control={sellerForm.control}
+            control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -125,7 +131,7 @@ export function SellForm() {
           />
 
           <FormField
-            control={sellerForm.control}
+            control={form.control}
             name="phone_number"
             render={({ field }) => (
               <FormItem>
@@ -145,7 +151,7 @@ export function SellForm() {
             )}
           />
           <FormField
-            control={sellerForm.control}
+            control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -165,7 +171,7 @@ export function SellForm() {
             )}
           />
           <FormField
-            control={sellerForm.control}
+            control={form.control}
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
@@ -189,19 +195,19 @@ export function SellForm() {
         <Button
           type="submit"
           className="mt-6 w-full"
-          disabled={isSubmitting || sellerForm.formState.isSubmitting}
+          disabled={isSubmitting || form.formState.isSubmitting}
         >
           Sign Up
         </Button>
-        <Button
-          type="submit"
-          className="mt-2 w-full"
-          disabled={isSubmitting || sellerForm.formState.isSubmitting}
-          variant="outline"
-        >
-          Already signed up? Sign In
-        </Button>
       </form>
+      <Button
+        type="button"
+        className="mt-2 w-full"
+        variant="outline"
+        onClick={onSwitchToLogin}
+      >
+        Already have an account? Sign In
+      </Button>
     </Form>
   );
 }

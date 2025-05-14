@@ -11,8 +11,11 @@ class AuthController {
     try {
       const dto: CreateUserDto = req.body;
       const user = await this.authService.register(dto);
-      const token = signJwt({ userId: user.id, role: user.role });
-      const refreshToken = await this.authService.createRefreshToken(user.id, user.role);
+      const token = signJwt({ id: user.id, role: user.role });
+      const refreshToken = await this.authService.createRefreshToken(
+        user.id,
+        user.role
+      );
       res
         .cookie("token", token, {
           httpOnly: true,
@@ -37,8 +40,11 @@ class AuthController {
     try {
       const dto: LoginDto = req.body;
       const user = await this.authService.login(dto);
-      const token = signJwt({ userId: user.id, role: user.role });
-      const refreshToken = await this.authService.createRefreshToken(user.id, user.role);
+      const token = signJwt({ id: user.id, role: user.role });
+      const refreshToken = await this.authService.createRefreshToken(
+        user.id,
+        user.role
+      );
       res
         .cookie("token", token, {
           httpOnly: true,
@@ -61,9 +67,7 @@ class AuthController {
 
   public async me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.user!.userId;
-      await this.authService.getById(userId);
-      res.status(200).json();
+      res.status(200).json({ id: req.user.id, role: req.user.role });
     } catch (err) {
       next(err);
     }
@@ -72,18 +76,25 @@ class AuthController {
   public async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const old = req.cookies.refreshToken as string;
-      const { accessToken, refreshToken } = await this.authService.rotateRefresh(old);
+      const { accessToken, refreshToken } =
+        await this.authService.rotateRefresh(old);
       res
-        .cookie("token", accessToken, { httpOnly: true, sameSite: "lax", maxAge: 3600_000 })
-        .cookie("refreshToken", refreshToken, { httpOnly: true, sameSite: "lax", maxAge: 7 * 24 * 3600_000 })
+        .cookie("token", accessToken, {
+          httpOnly: true,
+          sameSite: "lax",
+          maxAge: 3600_000,
+        })
+        .cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          sameSite: "lax",
+          maxAge: 7 * 24 * 3600_000,
+        })
         .status(200)
         .json();
     } catch (err) {
       next(err);
     }
   }
-
-
 }
 
 export default AuthController;

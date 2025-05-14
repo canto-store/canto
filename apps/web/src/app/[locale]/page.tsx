@@ -4,7 +4,6 @@ import { HeroSlider } from "@/components/home/HeroSlider";
 import { HomeProducts } from "@/components/home/HomeProducts";
 import { FeaturesBanner } from "@/components/home/FeaturesBanner";
 import { HERO_SLIDES } from "@/lib/data/hero-slides";
-import { OrganizationSchema } from "@/components/structured-data";
 import { HomeCategories } from "@/components/home/HomeCategories";
 import { useHomeProducts } from "@/lib/product";
 
@@ -14,7 +13,6 @@ export default function Home() {
 
   return (
     <>
-      <OrganizationSchema />
       <HeroSlider slides={HERO_SLIDES} />
       <FeaturesBanner />
       {!isLoading && !isError && (

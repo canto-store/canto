@@ -315,7 +315,7 @@
     "email": "Email Address",
     "emailPlaceholder": "your@email.com",
     "phone": "Phone Number",
-    "phonePlaceholder": "+20 1XX XXX XXXX",
+    "phonePlaceholder": "0 100 XXX XXXX",
     "storeName": "Brand Name",
     "storeNamePlaceholder": "Enter your store name",
     "instagramUrl": "Instagram URL",

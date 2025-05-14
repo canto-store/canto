@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { verifyJwt, JwtPayload } from "../utils/jwt";
 
 export interface AuthRequest extends Request {
-  user?: JwtPayload;
+  user: JwtPayload;
 }
 
 export function authMiddleware(

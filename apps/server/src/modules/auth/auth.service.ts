@@ -37,6 +37,43 @@ class AuthService {
       where: { id },
       select: {
         id: true,
+        role: true,
+      },
+    });
+    if (!user) throw new AppError("User not found", 404);
+    return user;
+  }
+
+  async createRefreshToken(id: number, role: string) {
+    const token = signRefreshToken({ id, role });
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await this.prisma.refreshToken.create({ data: { token, expiresAt } });
+    return token;
+  }
+
+  async rotateRefresh(oldToken: string) {
+    const verifiedUser = verifyJwt<{ userId: number; role: string }>(oldToken);
+    const stored = await this.prisma.refreshToken.findUnique({
+      where: { token: oldToken },
+    });
+    if (!stored || stored.isRevoked || stored.expiresAt < new Date())
+      throw new AppError("Invalid refresh", 401);
+    await this.prisma.refreshToken.update({
+      where: { id: stored.id },
+      data: { isRevoked: true },
+    });
+    const accessToken = signJwt({
+      id: verifiedUser.userId,
+      role: verifiedUser.role,
+    });
+    const refreshToken = await this.createRefreshToken(
+      verifiedUser.userId,
+      verifiedUser.role
+    );
+    const user = await this.prisma.user.findUnique({
+      where: { id: verifiedUser.userId },
+      select: {
+        id: true,
         name: true,
         email: true,
         phone_number: true,
@@ -46,29 +83,7 @@ class AuthService {
       },
     });
     if (!user) throw new AppError("User not found", 404);
-    return user;
-  }
-
-  async createRefreshToken(userId: number, role: string) {
-    const token = signRefreshToken({ userId, role });
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await this.prisma.refreshToken.create({ data: { token, expiresAt } });
-    return token;
-  }
-
-  async rotateRefresh(oldToken: string) {
-    const verifiedUser = verifyJwt<{ userId: number; role: string }>(oldToken);
-    const stored = await this.prisma.refreshToken.findUnique({ where: { token: oldToken } });
-    if (!stored || stored.isRevoked || stored.expiresAt < new Date()) throw new AppError("Invalid refresh", 401);
-    await this.prisma.refreshToken.update({ where: { id: stored.id }, data: { isRevoked: true } });
-    const accessToken = signJwt({ userId: verifiedUser.userId, role: verifiedUser.role });
-    const refreshToken = await this.createRefreshToken(verifiedUser.userId, verifiedUser.role);
-    const user = await this.prisma.user.findUnique({
-      where: { id: verifiedUser.userId },
-      select: { id: true, name: true, email: true, phone_number: true, role: true, created_at: true, updated_at: true }
-    });
-    if (!user) throw new AppError("User not found", 404);
-    return {accessToken, refreshToken };
+    return { accessToken, refreshToken };
   }
 }
 
