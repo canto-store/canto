@@ -7,6 +7,7 @@ const REFRESH_EXPIRES_IN = "7d";
 export interface JwtPayload {
   id: number;
   role: string;
+  firstName: string;
 }
 
 export function signJwt(payload: JwtPayload): string {

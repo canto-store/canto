@@ -10,7 +10,6 @@ import { z } from "zod";
 import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -220,7 +219,7 @@ export default function Page() {
                 {/* Image upload area */}
                 <UploadButton
                   endpoint="imageUploader"
-                  onClientUploadComplete={(res: any) => {
+                  onClientUploadComplete={(res) => {
                     if (res && res[0]) {
                       toast("Image Uploaded Successfully!");
                       setImagePreview(res[0].ufsUrl);

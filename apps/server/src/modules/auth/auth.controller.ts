@@ -11,7 +11,11 @@ class AuthController {
     try {
       const dto: CreateUserDto = req.body;
       const user = await this.authService.register(dto);
-      const token = signJwt({ id: user.id, role: user.role });
+      const token = signJwt({
+        id: user.id,
+        role: user.role,
+        firstName: user.name.split(" ")[0],
+      });
       const refreshToken = await this.authService.createRefreshToken(
         user.id,
         user.role
@@ -40,7 +44,11 @@ class AuthController {
     try {
       const dto: LoginDto = req.body;
       const user = await this.authService.login(dto);
-      const token = signJwt({ id: user.id, role: user.role });
+      const token = signJwt({
+        id: user.id,
+        role: user.role,
+        firstName: user.name.split(" ")[0],
+      });
       const refreshToken = await this.authService.createRefreshToken(
         user.id,
         user.role

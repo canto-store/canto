@@ -13,7 +13,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSubmitBrand, useMyBrand } from "@/lib/brand";
 import { BrandFormValues, brandFormSchema } from "@/types/brand";
@@ -63,7 +63,7 @@ export function BrandForm() {
                 <Input placeholder="Enter your brand name" {...field} />
               </FormControl>
               <FormDescription>
-                This is your brand's public display name.
+                This is your brand&apos;s public display name.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -84,7 +84,7 @@ export function BrandForm() {
                 />
               </FormControl>
               <FormDescription>
-                Give customers a brief overview of your brand's story and
+                Give customers a brief overview of your brand&apos;s story and
                 values.
               </FormDescription>
               <FormMessage />

@@ -44,15 +44,19 @@ class AuthService {
     return user;
   }
 
-  async createRefreshToken(id: number, role: string) {
-    const token = signRefreshToken({ id, role });
+  async createRefreshToken(id: number, role: string, firstName: string) {
+    const token = signRefreshToken({ id, role, firstName });
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await this.prisma.refreshToken.create({ data: { token, expiresAt } });
     return token;
   }
 
   async rotateRefresh(oldToken: string) {
-    const verifiedUser = verifyJwt<{ userId: number; role: string }>(oldToken);
+    const verifiedUser = verifyJwt<{
+      id: number;
+      role: string;
+      firstName: string;
+    }>(oldToken);
     const stored = await this.prisma.refreshToken.findUnique({
       where: { token: oldToken },
     });
@@ -63,15 +67,17 @@ class AuthService {
       data: { isRevoked: true },
     });
     const accessToken = signJwt({
-      id: verifiedUser.userId,
+      id: verifiedUser.id,
       role: verifiedUser.role,
+      firstName: verifiedUser.firstName,
     });
     const refreshToken = await this.createRefreshToken(
-      verifiedUser.userId,
-      verifiedUser.role
+      verifiedUser.id,
+      verifiedUser.role,
+      verifiedUser.firstName
     );
     const user = await this.prisma.user.findUnique({
-      where: { id: verifiedUser.userId },
+      where: { id: verifiedUser.id },
       select: {
         id: true,
         name: true,

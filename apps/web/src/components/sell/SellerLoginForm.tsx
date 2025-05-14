@@ -124,7 +124,7 @@ export function SellerLoginForm({ onSwitchToSignUp }: SellerLoginFormProps) {
           variant="outline"
           onClick={onSwitchToSignUp}
         >
-          Don't have an account? Sign Up
+          Don&apos;t have an account? Sign Up
         </Button>
       </form>
     </Form>
