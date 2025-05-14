@@ -38,8 +38,15 @@ class SellerService {
     });
 
     // Generate authentication tokens
-    const accessToken = signJwt({ id: seller.id, role: "SELLER" });
-    const refreshToken = await this.createRefreshToken(seller.id);
+    const accessToken = signJwt({
+      id: seller.id,
+      role: "SELLER",
+      firstName: seller.name.split(" ")[0],
+    });
+    const refreshToken = await this.createRefreshToken(
+      seller.id,
+      seller.name.split(" ")[0]
+    );
 
     return {
       seller: { ...seller, password: undefined },
@@ -64,8 +71,8 @@ class SellerService {
     });
   }
 
-  async createRefreshToken(sellerId: number, role: string = "SELLER") {
-    const token = signRefreshToken({ id: sellerId, role });
+  async createRefreshToken(sellerId: number, firstName: string) {
+    const token = signRefreshToken({ id: sellerId, role: "SELLER", firstName });
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await this.prisma.refreshToken.create({ data: { token, expiresAt } });
     return token;
@@ -85,8 +92,15 @@ class SellerService {
     }
 
     // Generate authentication tokens
-    const accessToken = signJwt({ id: seller.id, role: "SELLER" });
-    const refreshToken = await this.createRefreshToken(seller.id);
+    const accessToken = signJwt({
+      id: seller.id,
+      role: "SELLER",
+      firstName: seller.name.split(" ")[0],
+    });
+    const refreshToken = await this.createRefreshToken(
+      seller.id,
+      seller.name.split(" ")[0]
+    );
 
     return {
       seller: { ...seller, password: undefined },

@@ -181,7 +181,7 @@ class ProductService {
     if (dto.sku != null) updateData.sku = dto.sku;
     if (dto.price != null) updateData.price = dto.price;
     if (dto.stock != null) updateData.stock = dto.stock;
-    if (dto.sale_id != null) updateData.sale_id = dto.sale_id;
+    if (dto.sale_id != null) updateData.sale = { connect: { id: dto.sale_id } };
 
     const variantRecord = await this.prisma.productVariant.update({
       where: { id },
@@ -344,100 +344,39 @@ class ProductService {
   }
 
   async getHomeProducts() {
-    const [newArrivals, bestDeals, bestSellers] = await Promise.all([
-      // Get new arrivals (newest products based on creation date)
-      this.prisma.product.findMany({
-        take: 8,
-        orderBy: { created_at: "desc" },
-        include: {
-          brand: { select: { name: true, slug: true } },
-          variants: {
-            include: {
-              images: true,
-            },
-          },
-        },
-      }),
-
-      // Get best deals based on products that have sale_id (on discount)
-      this.prisma.product
-        .findMany({
-          include: {
-            brand: { select: { name: true, slug: true } },
-            variants: {
-              include: {
-                images: true,
-              },
-            },
-          },
-          where: {
-            variants: {
-              some: {
-                sale_id: { not: null }, // Only get products with variants on sale
-              },
-            },
-          },
-        })
-        .then((products) => {
-          // Filter products to only those with at least one variant on sale
-          const productsWithDiscount = products.filter((p) =>
-            p.variants.some((v) => v.sale_id !== null)
-          );
-
-          // Sort by discount percentage (would need sale price information)
-          // For now, just return products with discounts
-          return productsWithDiscount.slice(0, 8);
-        }),
-
-      // Get best sellers
-      // In a real application, this might be based on sales count
-      // Here we're just getting some random products as placeholder
-      this.prisma.product.findMany({
-        take: 8,
-        include: {
-          brand: { select: { name: true, slug: true } },
-          variants: {
-            include: {
-              images: true,
-            },
-          },
-        },
-      }),
-    ]);
-
-    // Format the response
-    const formatProduct = (product) => {
-      const priceList = product.variants.map((v) => v.price);
-      const minPrice = priceList.length ? Math.min(...priceList) : 0;
-      const maxPrice = priceList.length ? Math.max(...priceList) : 0;
-
-      return {
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        image: product.variants[0]?.images[0]?.url || "",
-        brand: {
-          name: product.brand.name,
-          slug: product.brand.slug,
-        },
-        price_range: {
-          original: {
-            min_price: minPrice,
-            max_price: maxPrice,
-          },
-          discounted: {
-            min_price: minPrice,
-            max_price: maxPrice,
-          },
-        },
-        on_sale: product.variants.some((v) => v.sale_id !== null),
-      };
-    };
-
+    const products = await this.prisma.product.findMany({
+      select: {
+        name: true,
+        brand: { select: { name: true, slug: true } },
+        slug: true,
+        variants: { select: { images: true, price: true } },
+      },
+    });
+    const bestSellers = products.slice(0, 5).map((product) => ({
+      name: product.name,
+      brand: product.brand,
+      slug: product.slug,
+      price: Math.min(...product.variants.map((v) => v.price)),
+      image: product.variants[0]?.images[0]?.url ?? "",
+    }));
+    const bestDeals = products.slice(5, 10).map((product) => ({
+      name: product.name,
+      brand: product.brand,
+      slug: product.slug,
+      price: Math.min(...product.variants.map((v) => v.price)),
+      image: product.variants[0]?.images[0]?.url ?? "",
+    }));
+    const newArrivals = products.slice(10, 15).map((product) => ({
+      name: product.name,
+      brand: product.brand,
+      slug: product.slug,
+      price: Math.min(...product.variants.map((v) => v.price)),
+      image: product.variants[0]?.images[0]?.url ?? "",
+    }));
     return {
-      newArrivals: newArrivals.map(formatProduct),
-      bestDeals: bestDeals.map(formatProduct),
-      bestSellers: bestSellers.map(formatProduct),
+      bestSellers,
+      bestDeals,
+      newArrivals,
     };
   }
 

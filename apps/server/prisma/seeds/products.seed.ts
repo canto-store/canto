@@ -1,24 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-export const name = "products";
-export const description = "Seeds the database with sample products";
-
-interface Brand {
-  name: string;
-  slug: string;
-}
-
-interface ProductSummary {
-  name: string;
-  brand: Brand;
-  price: number;
-  salePrice?: number;
-  image: string;
-  slug: string;
-}
-
-// Products data
-const FEATURED_PRODUCTS: ProductSummary[] = [
+export const FEATURED_PRODUCTS = [
   {
     name: "Armchair",
     brand: {
@@ -29,6 +9,7 @@ const FEATURED_PRODUCTS: ProductSummary[] = [
     salePrice: 499.99,
     image:
       "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=600&h=600",
+
     slug: "armchair",
   },
   {
@@ -40,6 +21,7 @@ const FEATURED_PRODUCTS: ProductSummary[] = [
     price: 49.99,
     image:
       "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&q=80&w=600&h=600",
+
     slug: "mug-set",
   },
   {
@@ -51,6 +33,7 @@ const FEATURED_PRODUCTS: ProductSummary[] = [
     price: 299.99,
     image:
       "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?auto=format&fit=crop&q=80&w=600&h=600",
+
     slug: "colorful-hills",
   },
   {
@@ -62,6 +45,7 @@ const FEATURED_PRODUCTS: ProductSummary[] = [
     price: 459.99,
     image:
       "https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=600&h=600",
+
     slug: "spine-side-table",
   },
   {
@@ -73,11 +57,12 @@ const FEATURED_PRODUCTS: ProductSummary[] = [
     price: 79.99,
     image:
       "https://images.unsplash.com/photo-1572688484438-313a6e50c333?auto=format&fit=crop&q=80&w=600&h=600",
+
     slug: "snake-plant",
   },
 ];
 
-const NEW_ARRIVALS: ProductSummary[] = [
+export const NEW_ARRIVALS = [
   {
     name: "Basic Crewneck",
     brand: {
@@ -87,6 +72,7 @@ const NEW_ARRIVALS: ProductSummary[] = [
     price: 89.99,
     image:
       "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=600&h=600",
+
     slug: "basic-crewneck",
   },
   {
@@ -135,7 +121,7 @@ const NEW_ARRIVALS: ProductSummary[] = [
   },
 ];
 
-const BEST_SELLERS: ProductSummary[] = [
+export const BEST_SELLERS = [
   {
     name: "Oversized Cotton Hoodie",
     brand: {
@@ -193,173 +179,53 @@ const BEST_SELLERS: ProductSummary[] = [
   },
 ];
 
-const ADDITIONAL_PRODUCTS: ProductSummary[] = [
-  {
-    name: "Cashmere Sweater",
-    brand: {
-      name: "LUXE KNITS",
-      slug: "luxe-knits",
-    },
-    price: 199.99,
-    image:
-      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=600&h=600",
-    slug: "cashmere-sweater",
-  },
-  {
-    name: "Leather Crossbody Bag",
-    brand: {
-      name: "URBAN CARRY",
-      slug: "urban-carry",
-    },
-    price: 149.99,
-    image:
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&q=80&w=600&h=600",
-    slug: "leather-crossbody-bag",
-  },
-  {
-    name: "Aviator Sunglasses",
-    brand: {
-      name: "SHADE MASTERS",
-      slug: "shade-masters",
-    },
-    price: 129.99,
-    image:
-      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=600&h=600",
-    slug: "aviator-sunglasses",
-  },
-  {
-    name: "Wireless Headphones",
-    brand: {
-      name: "AUDIO PRO",
-      slug: "audio-pro",
-    },
-    price: 179.99,
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=600&h=600",
-    slug: "wireless-headphones",
-  },
-  {
-    name: "Graphic T-Shirt",
-    brand: {
-      name: "STREET CULTURE",
-      slug: "street-culture",
-    },
-    price: 39.99,
-    image:
-      "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&q=80&w=600&h=600",
-    slug: "graphic-t-shirt",
-  },
-];
+const ALL_PRODUCTS = [...FEATURED_PRODUCTS, ...NEW_ARRIVALS, ...BEST_SELLERS];
 
-// Combine all products, removing duplicates by slug
-const ALL_PRODUCTS = [
-  ...FEATURED_PRODUCTS,
-  ...NEW_ARRIVALS,
-  ...BEST_SELLERS,
-  ...ADDITIONAL_PRODUCTS,
-].filter(
-  (product, index, self) =>
-    index === self.findIndex((p) => p.slug === product.slug)
-);
+import { PrismaClient } from "@prisma/client";
+
+export const name = "products";
+export const description = "Seed for products";
 
 export async function run(prisma: PrismaClient): Promise<void> {
-  console.log("Seeding products...");
+  console.log("Creating products...");
 
-  // Create default category if none exists
-  let defaultCategory = await prisma.category.findFirst();
-  if (!defaultCategory) {
-    defaultCategory = await prisma.category.create({
+  // Create each product in the ALL_PRODUCTS array
+  for (let i = 0; i < ALL_PRODUCTS.length; i++) {
+    const productInfo = ALL_PRODUCTS[i];
+
+    const product = await prisma.product.create({
       data: {
-        name: "General",
-        slug: "general",
-        description: "General product category",
+        name: productInfo.name,
+        slug: productInfo.slug,
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        brand: { connect: { id: 1 } }, // Assuming 5 brands exist
+        category: { connect: { id: (i % 10) + 1 } }, // Distribute across 5 categories
+        variants: {
+          create: [
+            {
+              sku: `SKU-${String(i + 1).padStart(3, "0")}`,
+              price: Math.round(productInfo.price * 100), // Convert to cents
+              stock: 10 + Math.floor(Math.random() * 90), // Random stock between 10-99
+              sale:
+                "salePrice" in productInfo ? { connect: { id: 1 } } : undefined,
+              images: {
+                create: [
+                  {
+                    url: productInfo.image,
+                    alt_text: productInfo.name,
+                  },
+                ],
+              },
+            },
+          ],
+        },
       },
     });
+    console.log(
+      `🚀 ~ Created Product ${i + 1}/${ALL_PRODUCTS.length}: ${product.id} - ${
+        product.name
+      }`
+    );
   }
-
-  // For discounted products, we'll just note the discount without a formal sale model
-  // since the sale model doesn't seem to exist in the schema
-  const saleId = 1; // We'll use this as a placeholder
-
-  // Process each product
-  for (const product of ALL_PRODUCTS) {
-    // Find or create the brand
-    let brand = await prisma.brand.findFirst({
-      where: { slug: product.brand.slug },
-    });
-
-    if (!brand) {
-      // Create a seller first if none exists
-      let seller = await prisma.seller.findFirst();
-      if (!seller) {
-        seller = await prisma.seller.create({
-          data: {
-            name: "Default Seller",
-            email: "seller@example.com",
-            password: "password123", // In a real app, this would be hashed
-            phone_number: "1234567890",
-          },
-        });
-      }
-
-      // Now create the brand
-      brand = await prisma.brand.create({
-        data: {
-          name: product.brand.name,
-          slug: product.brand.slug,
-          email: `${product.brand.slug}@example.com`,
-          sellerId: seller.id,
-          description: `${product.brand.name} is a premium brand offering quality products.`,
-        },
-      });
-    }
-
-    // Create the product
-    const productRecord = await prisma.product
-      .create({
-        data: {
-          name: product.name,
-          slug: product.slug,
-          description: `This is a description for ${product.name}.`,
-          brandId: brand.id,
-          categoryId: defaultCategory.id,
-        },
-      })
-      .catch((error) => {
-        if (error.code === "P2002") {
-          console.log(
-            `Product with slug ${product.slug} already exists. Skipping.`
-          );
-          return null;
-        }
-        throw error;
-      });
-
-    if (productRecord) {
-      // Create a variant for the product
-      const price = Math.round(product.price * 100); // Convert to cents
-      const hasSalePrice =
-        "salePrice" in product && product.salePrice !== undefined;
-
-      await prisma.productVariant.create({
-        data: {
-          productId: productRecord.id,
-          sku: `SKU-${product.slug}`,
-          price: price,
-          stock: 100,
-          sale_id: hasSalePrice ? saleId : null,
-          images: {
-            create: [
-              {
-                url: product.image,
-                alt_text: product.name,
-              },
-            ],
-          },
-        },
-      });
-    }
-  }
-
-  console.log("Products seeding completed!");
 }

@@ -1,5 +1,5 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// learn more about the docs: https://pris.ly/d/prisma-schema
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
@@ -16,6 +16,11 @@ datasource db {
 enum UserRole {
   ADMIN
   CUSTOMER
+}
+
+enum SaleType {
+  PERCENTAGE
+  FIXED
 }
 
 model User {
@@ -43,24 +48,24 @@ model Seller {
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   brands         Brand[]
-  
+
   @@map("sellers")
 }
 
 model Brand {
-  id         Int       @id @default(autoincrement())
-  name       String    @default("Brand")
-  slug       String?
-  email      String    @unique
-  logo       String?
-  seller     Seller    @relation(fields: [sellerId], references: [id])
-  sellerId   Int
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  Product    Product[]
-  description String?
+  id            Int       @id @default(autoincrement())
+  name          String    @default("Brand")
+  slug          String?
+  email         String    @unique
+  logo          String?
+  seller        Seller    @relation(fields: [sellerId], references: [id])
+  sellerId      Int
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  Product       Product[]
+  description   String?
   instagram_url String?
-  
+
   @@map("brands")
 }
 
@@ -73,16 +78,15 @@ model Category {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   Product     Product[]
-  
+
   @@map("categories")
 }
-
 
 model ProductOption {
   id     Int                  @id @default(autoincrement())
   name   String               @unique
   values ProductOptionValue[]
-  
+
   @@map("product_options")
 }
 
@@ -92,7 +96,7 @@ model ProductOptionValue {
   productOption   ProductOption        @relation(fields: [productOptionId], references: [id])
   productOptionId Int
   variantLinks    VariantOptionValue[]
-  
+
   @@map("product_option_values")
 }
 
@@ -109,7 +113,7 @@ model Product {
   variants    ProductVariant[]
   created_at  DateTime         @default(now())
   updated_at  DateTime         @updatedAt
-  
+
   @@map("products")
 }
 
@@ -120,12 +124,13 @@ model ProductVariant {
   sku         String                @unique
   price       Int
   stock       Int
+  sale        Sale?                 @relation(fields: [sale_id], references: [id])
   sale_id     Int?
   optionLinks VariantOptionValue[]
   images      ProductVariantImage[]
   created_at  DateTime              @default(now())
   updated_at  DateTime              @updatedAt
-  
+
   @@map("product_variants")
 }
 
@@ -147,7 +152,7 @@ model ProductVariantImage {
   alt_text   String?
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
-  
+
   @@map("product_variant_images")
 }
 
@@ -157,6 +162,19 @@ model RefreshToken {
   isRevoked Boolean  @default(false)
   createdAt DateTime @default(now())
   expiresAt DateTime
-  
+
   @@map("refresh_tokens")
+}
+
+model Sale {
+  id         Int              @id @default(autoincrement())
+  type       SaleType
+  start_at   DateTime
+  end_at     DateTime
+  value      Int
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+  variants   ProductVariant[]
+
+  @@map("sales")
 }
