@@ -18,7 +18,8 @@ class AuthController {
       });
       const refreshToken = await this.authService.createRefreshToken(
         user.id,
-        user.role
+        user.role,
+        user.name.split(" ")[0]
       );
       res
         .cookie("token", token, {
@@ -51,7 +52,8 @@ class AuthController {
       });
       const refreshToken = await this.authService.createRefreshToken(
         user.id,
-        user.role
+        user.role,
+        user.name.split(" ")[0]
       );
       res
         .cookie("token", token, {
