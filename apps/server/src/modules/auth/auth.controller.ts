@@ -77,7 +77,11 @@ class AuthController {
 
   public async me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      res.status(200).json({ id: req.user.id, role: req.user.role });
+      res.status(200).json({
+        id: req.user.id,
+        role: req.user.role,
+        firstName: req.user.firstName,
+      });
     } catch (err) {
       next(err);
     }

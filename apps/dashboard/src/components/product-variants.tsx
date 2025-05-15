@@ -36,8 +36,6 @@ export default function ProductVariants() {
   const [selectedVariants, setSelectedVariants] = useState<SelectedVariant[]>(
     []
   );
-  console.log("🚀 ~ ProductVariants ~ selectedVariant:", selectedVariants);
-
   useEffect(() => {
     // fetch("https://api.canto-store.com/api/product/options")
     fetch("http://localhost:8000/api/product/options")

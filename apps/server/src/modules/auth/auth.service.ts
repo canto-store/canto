@@ -76,19 +76,6 @@ class AuthService {
       verifiedUser.role,
       verifiedUser.firstName
     );
-    const user = await this.prisma.user.findUnique({
-      where: { id: verifiedUser.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone_number: true,
-        role: true,
-        created_at: true,
-        updated_at: true,
-      },
-    });
-    if (!user) throw new AppError("User not found", 404);
     return { accessToken, refreshToken };
   }
 }
