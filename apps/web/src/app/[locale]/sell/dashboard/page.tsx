@@ -32,7 +32,6 @@ import { Progress } from "@/components/ui/progress";
 import { UploadButton } from "@/utils/uploadthing";
 import ProductVariants from "@/components/products/product-variants";
 
-// Define the form schema with zod
 const productFormSchema = z.object({
   name: z.string(),
   category: z.string().min(1, { message: "Please select a category" }),
@@ -47,15 +46,10 @@ const productFormSchema = z.object({
     .number()
     .int()
     .positive({ message: "Stock must be a positive number" }),
-  size: z.string().optional(),
-  color: z.string().optional(),
-  style: z.string().optional(),
-  material: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
 
-// Define the product type for the list
 type Product = {
   id: string;
   name: string;
@@ -94,7 +88,6 @@ export default function Page() {
     setIsSubmitting(true);
 
     try {
-      // Create a new product object
       const newProduct = {
         id: Date.now().toString(),
         name: data.name,
@@ -103,13 +96,10 @@ export default function Page() {
         progress: 100,
       };
 
-      // Add the new product to the list
       setProducts([newProduct, ...products]);
 
-      // Show success message
       setShowSuccess(true);
 
-      // Reset form after success
       setTimeout(() => {
         form.reset();
         setSelectedImages([]);

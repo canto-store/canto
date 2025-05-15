@@ -38,7 +38,6 @@ export default function ProductVariants() {
   );
 
   useEffect(() => {
-    // fetch("https://api.canto-store.com/api/product/options")
     fetch("http://localhost:8000/api/product/options")
       .then((res) => res.json())
       .then((data: ProductOption[]) => {
@@ -51,10 +50,10 @@ export default function ProductVariants() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-medium">
-        Product Variants
-        <span className="text-sm font-normal text-gray-500">(optional)</span>
-      </h3>
+      <div className="flex items-center gap-1.5">
+        <span className="font-medium">Product Variants</span>
+        <span className="text-sm text-gray-500">(optional)</span>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {options.map((option) => (
