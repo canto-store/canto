@@ -29,8 +29,9 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
-import { UploadButton } from "@/utils/uploadthing";
+import { UploadDropzone } from "@/utils/uploadthing";
 import ProductVariants from "@/components/products/product-variants";
+import { useCategories } from "@/lib/categories";
 
 const productFormSchema = z.object({
   name: z.string(),
@@ -54,17 +55,19 @@ type Product = {
   id: string;
   name: string;
   price: number;
-  image: string;
+  images: string[];
   progress: number;
 };
 
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagesPreview, setImagesPreview] = useState<string[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const [products, setProducts] = useState<Product[]>([]);
+
+  const { data: categories } = useCategories();
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -92,7 +95,7 @@ export default function Page() {
         id: Date.now().toString(),
         name: data.name,
         price: data.price,
-        image: imagePreview || "/placeholder.svg?height=80&width=80",
+        images: imagesPreview,
         progress: 100,
       };
 
@@ -103,7 +106,7 @@ export default function Page() {
       setTimeout(() => {
         form.reset();
         setSelectedImages([]);
-        setImagePreview(null);
+        setImagesPreview([]);
         setShowSuccess(false);
       }, 2000);
 
@@ -127,7 +130,7 @@ export default function Page() {
       "productDraft",
       JSON.stringify({
         ...values,
-        imagePreview,
+        imagesPreview,
       }),
     );
 
@@ -138,7 +141,6 @@ export default function Page() {
 
   return (
     <div className="container mx-auto max-w-6xl p-4">
-      <h1 className="text-center text-3xl">Products</h1>
       <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
         {/* Left panel - Product list */}
         <div className="min-h-full overflow-auto rounded-lg p-4 shadow-sm">
@@ -151,7 +153,7 @@ export default function Page() {
                 >
                   <div className="relative h-16 w-16 overflow-hidden rounded-md bg-gray-100">
                     <Image
-                      src={product.image || "/placeholder.svg"}
+                      src={product.images[0] || "/placeholder.svg"}
                       alt={product.name}
                       fill
                       className="object-cover"
@@ -207,12 +209,13 @@ export default function Page() {
                 className="space-y-6"
               >
                 {/* Image upload area */}
-                <UploadButton
+                <UploadDropzone
                   endpoint="imageUploader"
+                  className="ut-button:bg-primary ut-button:ut-readying:bg-primary/50 ut-button:px-2 ut-button:ut-readying:px-2"
                   onClientUploadComplete={(res) => {
                     if (res && res[0]) {
                       toast("Image Uploaded Successfully!");
-                      setImagePreview(res[0].ufsUrl);
+                      setImagesPreview((prev) => [...prev, res[0].ufsUrl]);
                     }
                   }}
                   onUploadError={(error: Error) => {
@@ -220,17 +223,18 @@ export default function Page() {
                   }}
                 />
 
-                {imagePreview && (
-                  <div className="relative flex w-full items-center justify-center overflow-hidden rounded-md">
+                <div className="relative flex w-full gap-2">
+                  {imagesPreview.map((image, index) => (
                     <Image
-                      src={imagePreview}
+                      key={index}
+                      src={image}
                       alt="Product Image"
-                      className="object-cover"
+                      className="rounded-md object-cover"
                       width={200}
                       height={200}
                     />
-                  </div>
-                )}
+                  ))}
+                </div>
 
                 {/* Form fields */}
 
@@ -271,15 +275,14 @@ export default function Page() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="clothing">Clothing</SelectItem>
-                            <SelectItem value="shoes">Shoes</SelectItem>
-                            <SelectItem value="accessories">
-                              Accessories
-                            </SelectItem>
-                            <SelectItem value="electronics">
-                              Electronics
-                            </SelectItem>
-                            <SelectItem value="furniture">Furniture</SelectItem>
+                            {categories?.map((category) => (
+                              <SelectItem
+                                key={category.id}
+                                value={category.id.toString()}
+                              >
+                                {category.name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />
