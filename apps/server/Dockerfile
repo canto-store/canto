@@ -9,7 +9,9 @@ RUN corepack enable pnpm
 RUN pnpm install --frozen-lockfile
 
 COPY prisma ./prisma
-RUN pnpm run db:deploy
+RUN --mount=type=secret,id=uploadthing_token \
+  export UPLOADTHING_TOKEN=$(cat /run/secrets/uploadthing_token) && \
+  pnpm run db:deploy
 
 COPY . ./
 RUN pnpm run build
