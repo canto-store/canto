@@ -38,7 +38,7 @@ export function BrandForm() {
 
   useEffect(() => {
     if (hasBrand) {
-      router.push("/dashboard");
+      router.push("/sell/dashboard");
     }
   }, [hasBrand, router]);
 
