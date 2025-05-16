@@ -38,3 +38,14 @@ export interface HomeProducts {
   bestDeals: ProductSummary[];
   newArrivals: ProductSummary[];
 }
+
+export interface OptionValue {
+  id: number;
+  value: string;
+}
+
+export interface ProductOption {
+  id: number;
+  name: string;
+  values: OptionValue[];
+}

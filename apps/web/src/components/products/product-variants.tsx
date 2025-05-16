@@ -13,18 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-// Define types for our data structure
-interface OptionValue {
-  id: number;
-  value: string;
-}
-
-interface ProductOption {
-  id: number;
-  name: string;
-  values: OptionValue[];
-}
+import { useProductOptions } from "@/lib/product";
 
 interface SelectedVariant {
   optionId: number;
@@ -32,21 +21,11 @@ interface SelectedVariant {
 }
 
 export default function ProductVariants() {
-  const [options, setOptions] = useState<ProductOption[]>([]);
   const [selectedVariants, setSelectedVariants] = useState<SelectedVariant[]>(
     [],
   );
 
-  useEffect(() => {
-    fetch("http://localhost:8000/api/product/options")
-      .then((res) => res.json())
-      .then((data: ProductOption[]) => {
-        setOptions(data);
-      })
-      .catch((error) => {
-        console.error("There was a problem with the fetch operation:", error);
-      });
-  }, []);
+  const { data: options } = useProductOptions();
 
   return (
     <div className="space-y-4">
@@ -56,7 +35,7 @@ export default function ProductVariants() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {options.map((option) => (
+        {options?.map((option) => (
           <FormField
             key={option.id}
             name={option.name}

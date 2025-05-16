@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { HomeProducts, ProductDetails, APIError } from "@/types";
+import { HomeProducts, ProductDetails, APIError, ProductOption } from "@/types";
 import axios from "axios";
 import api from "./api";
 
@@ -32,6 +32,22 @@ export const useHomeProducts = () =>
           bestSellers: data.bestSellers,
           newArrivals: data.newArrivals,
         };
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const message = (error.response?.data as APIError)?.message;
+          if (message) throw new Error(message);
+        }
+        throw new Error("Failed to fetch data");
+      }
+    },
+  });
+export const useProductOptions = () =>
+  useQuery<ProductOption[], Error>({
+    queryKey: ["products-options"],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get<ProductOption[]>("/product/options");
+        return data;
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           const message = (error.response?.data as APIError)?.message;
