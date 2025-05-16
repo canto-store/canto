@@ -22,7 +22,7 @@ jobs:
 
       - name: Extract Application Version
         id: extract_version
-        run: echo "APP_VERSION=$(node -p "require('./apps/web/package.json').version")" >> $GITHUB_ENV
+        run: echo "version=$(node -p "require('./apps/web/package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         run: |
@@ -31,12 +31,14 @@ jobs:
       - name: Build and Publish Docker Image
         run: |
           IMAGE_BASE_NAME="ghcr.io/${{ github.repository }}-web"
-          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ env.APP_VERSION }}"
+          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ steps.extract_version.outputs.version }}"
           LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
           cd apps/web
-          docker build -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
+          DOCKER_BUILDKIT=1 docker build --secret id=uploadthing_token,env=UPLOADTHING_TOKEN -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
           docker push $VERSIONED_IMAGE_NAME
           docker push $LATEST_IMAGE_NAME
+        env:
+          UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_TOKEN }}
 
       - name: Deploy Application to Production Server
         uses: appleboy/ssh-action@master
@@ -64,4 +66,5 @@ jobs:
               --name $CONTAINER_NAME \
               -p $APP_EXTERNAL_PORT:$APP_INTERNAL_PORT \
               --restart unless-stopped \
+              -e UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }} \
               $IMAGE_REFERENCE

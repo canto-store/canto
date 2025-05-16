@@ -22,7 +22,7 @@ jobs:
 
       - name: Extract Application Version
         id: extract_version
-        run: echo "APP_VERSION=$(node -p "require('./apps/server/package.json').version")" >> $GITHUB_ENV
+        run: echo "version=$(node -p "require('./apps/server/package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         run: |
@@ -31,10 +31,10 @@ jobs:
       - name: Build and Publish Docker Image
         run: |
           IMAGE_BASE_NAME="ghcr.io/${{ github.repository }}-server"
-          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ env.APP_VERSION }}"
+          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ steps.extract_version.outputs.version }}"
           LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
           cd apps/server
-          docker build --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
+          DOCKER_BUILDKIT=1 docker build --secret id=database_url,env=DATABASE_URL -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
           docker push $VERSIONED_IMAGE_NAME
           docker push $LATEST_IMAGE_NAME
         env:
