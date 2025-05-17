@@ -34,6 +34,7 @@ model User {
   last_login     DateTime?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
+  Address        Address[]
 
   @@map("users")
 }
@@ -177,4 +178,29 @@ model Sale {
   variants   ProductVariant[]
 
   @@map("sales")
+}
+
+enum AddressType {
+  HOUSE
+  APARTMENT
+  OFFICE
+}
+
+model Address {
+  id                   Int         @id @default(autoincrement())
+  user_id              Int
+  type                 AddressType
+  street_name          String
+  building_number      String
+  apartment_number     String? 
+  floor                Int? 
+  area                 String
+  city                 String
+  phone_number         String
+  additional_direction String?
+  address_label        String
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("addresses")
 }

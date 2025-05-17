@@ -1,0 +1,71 @@
+import { PrismaClient } from "@prisma/client";
+import { CreateAddressDto } from "./address.types";
+import AppError from "../../../utils/appError";
+
+class AddressService {
+  private readonly prisma = new PrismaClient();
+
+  async create(dto: CreateAddressDto) {
+    const existingAddress = await this.prisma.address.findFirst({
+      where: {
+        user_id: dto.user_id,
+        type: dto.type,
+        street_name: dto.street_name,
+        building_number: dto.building_number,
+        apartment_number: dto.apartment_number,
+        floor: dto.floor,
+        area: dto.area,
+        city: dto.city,
+        phone_number: dto.phone_number,
+      },
+    });
+    if (existingAddress) {
+      throw new AppError("Address already exists", 400);
+    }
+    return await this.prisma.address.create({ data: dto });
+  }
+
+  async findAll() {
+    return await this.prisma.address.findMany({
+      select: {
+        id: true,
+        user_id: true,
+        type: true,
+        street_name: true,
+        building_number: true,
+        apartment_number: true,
+        floor: true,
+        area: true,
+        city: true,
+        phone_number: true,
+        additional_direction: true,
+        address_label: true,
+      },
+    });
+  }
+
+  async findOne(id: number) {
+    const address = await this.prisma.address.findUnique({ where: { id } });
+    if (!address) throw new AppError("Address not found", 404);
+    return address;
+  }
+
+  async update(id: number, dto: CreateAddressDto) {
+    const address = await this.prisma.address.findUnique({ where: { id } });
+    if (!address) throw new AppError("Address not found", 404);
+    return await this.prisma.address.update({ where: { id }, data: dto });
+  }
+
+  async delete(id: number) {
+    const address = await this.prisma.address.findUnique({ where: { id } });
+    if (!address) throw new AppError("Address not found", 404);
+    return await this.prisma.address.delete({ where: { id } });
+  }
+
+  async findByUserId(userId: number) {
+    return await this.prisma.address.findMany({ where: { user_id: userId } });
+  }
+
+}
+
+export default AddressService;
