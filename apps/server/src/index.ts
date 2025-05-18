@@ -10,7 +10,11 @@ const app = express();
 // Configure CORS with proper settings
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://www.canto-store.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://www.canto-store.com",
+      "https://canto-store.com",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
