@@ -14,7 +14,7 @@ permissions:
 jobs:
   deploy_application:
     name: Build, Publish, and Deploy Next.js App
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Source Code
@@ -33,29 +33,13 @@ jobs:
       - name: Build and Publish Docker Image
         uses: useblacksmith/build-push-action@v1
         with:
-          setup-only: true
           image: ghcr.io/${{ github.repository }}-web
           tags: |
             v${{ steps.extract_version.outputs.version }}
             latest
           context: ./apps/web
           secrets: |
-            "uploadthing_token=${{ secrets.UPLOADTHING_TOKEN }}"
-          build-args: |
-            UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
-
-      - name: Deploy Application to Production Server
-        uses: appleboy/ssh-action@master
-        run: |
-          IMAGE_BASE_NAME="ghcr.io/${{ github.repository }}-web"
-          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ steps.extract_version.outputs.version }}"
-          LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
-          cd apps/web
-          DOCKER_BUILDKIT=1 docker build --secret id=uploadthing_token,env=UPLOADTHING_TOKEN -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
-          docker push $VERSIONED_IMAGE_NAME
-          docker push $LATEST_IMAGE_NAME
-        env:
-          UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_TOKEN }}
+            "UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}"
 
       - name: Deploy Application to Production Server
         uses: appleboy/ssh-action@master
