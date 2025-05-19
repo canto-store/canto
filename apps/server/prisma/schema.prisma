@@ -84,9 +84,10 @@ model Category {
 }
 
 model ProductOption {
-  id     Int                  @id @default(autoincrement())
-  name   String               @unique
-  values ProductOptionValue[]
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  values             ProductOptionValue[]
+  VariantOptionValue VariantOptionValue[]
 
   @@map("product_options")
 }
@@ -136,12 +137,14 @@ model ProductVariant {
 }
 
 model VariantOptionValue {
-  variant       ProductVariant     @relation(fields: [variantId], references: [id])
-  variantId     Int
-  optionValue   ProductOptionValue @relation(fields: [optionValueId], references: [id])
-  optionValueId Int
+  variant         ProductVariant     @relation(fields: [variantId], references: [id])
+  variantId       Int
+  optionValue     ProductOptionValue @relation(fields: [optionValueId], references: [id])
+  optionValueId   Int
+  productOption   ProductOption      @relation(fields: [productOptionId], references: [id])
+  productOptionId Int
 
-  @@id([variantId, optionValueId])
+  @@id([variantId, productOptionId])
   @@map("variant_option_values")
 }
 
@@ -192,8 +195,8 @@ model Address {
   type                 AddressType
   street_name          String
   building_number      String
-  apartment_number     String? 
-  floor                Int? 
+  apartment_number     String?
+  floor                Int?
   area                 String
   city                 String
   phone_number         String
