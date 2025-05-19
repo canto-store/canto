@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import { useState } from "react";
@@ -59,7 +57,7 @@ type Product = {
   progress: number;
 };
 
-export default function Page() {
+export default function ProductsForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagesPreview, setImagesPreview] = useState<string[]>([]);

@@ -1,10 +1,15 @@
 import { Brand } from "@/types/brand";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "./api";
 import { BrandFormValues } from "@/types/brand";
 
-export const useMyBrand = () =>
-  useQuery<Brand, Error>({
+type UseMyBrandOptions = Omit<
+  UseQueryOptions<Brand, Error, Brand, readonly unknown[]>,
+  "queryKey" | "queryFn"
+>;
+
+export const useMyBrand = (options?: UseMyBrandOptions) =>
+  useQuery<Brand, Error, Brand, readonly unknown[]>({
     queryKey: ["my-brand"],
     queryFn: async () => {
       const { data } = await api.get<Brand>("/brand/my-brand");
@@ -12,6 +17,7 @@ export const useMyBrand = () =>
     },
     throwOnError: false,
     staleTime: 0,
+    ...options,
   });
 
 export const useSubmitBrand = () =>

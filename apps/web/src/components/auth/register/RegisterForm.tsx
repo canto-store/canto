@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -11,41 +10,59 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useAuth } from "@/providers/auth/use-auth";
 import { parseApiError } from "@/lib/utils";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-type FormData = {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+// Define the form validation schema with Zod
+const registerFormSchema = z
+  .object({
+    name: z.string().min(1, { message: "Name is required" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    phone_number: z.string().min(11, { message: "Phone number is required" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type FormData = z.infer<typeof registerFormSchema>;
 
 export function RegisterForm({
-  // onSuccess,
+  onSuccess,
   switchToLogin,
 }: {
   onSuccess?: (email: string) => void;
   switchToLogin?: () => void;
 }) {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
   const t = useTranslations("auth");
   const router = useRouter();
   const { register: registerMutation } = useAuth();
   const [isPending, setIsPending] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone_number: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
@@ -54,14 +71,18 @@ export function RegisterForm({
         email: data.email,
         password: data.password,
         name: data.name,
-        phoneNumber: "",
+        phone_number: data.phone_number,
       },
       {
         onSuccess: () => {
           setIsPending(false);
           setError(null);
           toast.success(t("registrationSuccess"));
-          router.push("/");
+          if (onSuccess) {
+            onSuccess(data.email);
+          } else {
+            router.push("/");
+          }
         },
         onError: (error) => {
           setIsPending(false);
@@ -81,100 +102,147 @@ export function RegisterForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <ErrorAlert message={error || null} />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <ErrorAlert message={error || null} />
 
-      <FormInput
-        id="name"
-        label={t("nameLabel")}
-        type="text"
-        placeholder={t("namePlaceholder")}
-        disabled={isPending}
-        required
-        error={errors.name}
-        customErrorMessage={t("errors.firstNameRequired")}
-        {...register("name", {
-          required: t("nameRequired"),
-        })}
-      />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("nameLabel")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t("namePlaceholder")}
+                  disabled={isPending}
+                  autoComplete="name"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormInput
-        id="email"
-        label={t("emailLabel")}
-        type="email"
-        placeholder={t("emailPlaceholder")}
-        autoComplete="email"
-        disabled={isPending}
-        required
-        error={errors.email}
-        customErrorMessage={t("errors.emailRequired")}
-        {...register("email", {
-          required: t("emailRequired"),
-          pattern: {
-            value: /\S+@\S+\.\S+/,
-            message: t("errors.emailInvalid"),
-          },
-        })}
-      />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("emailLabel")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder={t("emailPlaceholder")}
+                  disabled={isPending}
+                  autoComplete="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormInput
-        id="password"
-        label={t("passwordLabel")}
-        type="password"
-        placeholder={t("passwordPlaceholder")}
-        autoComplete="new-password"
-        disabled={isPending}
-        required
-        error={errors.password}
-        customErrorMessage={t("errors.passwordRequired")}
-        {...register("password", {
-          required: t("passwordRequired"),
-          minLength: {
-            value: 8,
-            message: t("errors.passwordTooShort"),
-          },
-        })}
-      />
+        <FormField
+          control={form.control}
+          name="phone_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("phoneNumber")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="tel"
+                  placeholder={t("phonePlaceholder")}
+                  disabled={isPending}
+                  autoComplete="tel"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormInput
-        id="confirmPassword"
-        label={t("confirmPasswordLabel")}
-        type="password"
-        placeholder={t("confirmPasswordPlaceholder")}
-        autoComplete="new-password"
-        disabled={isPending}
-        required
-        error={errors.confirmPassword}
-        customErrorMessage={t("passwordsDoNotMatch")}
-        {...register("confirmPassword", {
-          required: t("confirmPasswordRequired"),
-          validate: (value) =>
-            value === watch("password") || t("passwordsDoNotMatch"),
-        })}
-      />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("passwordLabel")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder={t("passwordPlaceholder")}
+                  disabled={isPending}
+                  autoComplete="new-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <Button type="submit" className="mt-6 w-full" disabled={isPending}>
-        {isPending ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {t("signingUp")}
-          </>
-        ) : (
-          t("signUpButton")
-        )}
-      </Button>
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("confirmPasswordLabel")}
+                <span className="text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder={t("confirmPasswordPlaceholder")}
+                  disabled={isPending}
+                  autoComplete="new-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <div className="mt-4 text-center">
-        <Button
-          type="button"
-          variant="link"
-          className="h-auto px-0 text-sm font-normal"
-          onClick={handleSwitchToLogin}
-          disabled={isPending}
-        >
-          {t("alreadyHaveAccount")} {t("signIn")}
+        <Button type="submit" className="mt-6 w-full" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {t("signingUp")}
+            </>
+          ) : (
+            t("signUpButton")
+          )}
         </Button>
-      </div>
-    </form>
+
+        <div className="mt-4 text-center">
+          <Button
+            type="button"
+            variant="link"
+            className="h-auto px-0 text-sm font-normal"
+            onClick={handleSwitchToLogin}
+            disabled={isPending}
+          >
+            {t("alreadyHaveAccount")} {t("signIn")}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

@@ -8,7 +8,7 @@ export const useProduct = (slug: string) => {
     queryKey: ["product", slug],
     queryFn: async () => {
       try {
-        const { data } = await api.get<ProductDetails>(`/product/${slug}`);
+        const { data } = await api.get<ProductDetails>(`/product/slug/${slug}`);
         return data;
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {

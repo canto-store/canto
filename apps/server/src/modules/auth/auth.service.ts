@@ -78,6 +78,17 @@ class AuthService {
     );
     return { accessToken, refreshToken };
   }
+
+  async logout(token: string) {
+    const stored = await this.prisma.refreshToken.findUnique({
+      where: { token },
+    });
+    if (!stored) throw new AppError("Invalid refresh", 401);
+    await this.prisma.refreshToken.update({
+      where: { id: stored.id },
+      data: { isRevoked: true },
+    });
+  }
 }
 
 export default AuthService;

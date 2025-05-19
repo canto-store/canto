@@ -109,6 +109,16 @@ class AuthController {
       next(err);
     }
   }
+
+  public async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies.refreshToken as string;
+      await this.authService.logout(token);
+      res.clearCookie("token").clearCookie("refreshToken").status(200).json();
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default AuthController;

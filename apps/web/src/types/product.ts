@@ -8,29 +8,46 @@ export type ProductSummary = {
   price: number;
   salePrice?: number;
   image: string;
+  stock: number;
 };
 
 export type ProductDetails = {
   name: string;
-  brand: string;
-  price: number;
-  sale_price?: number;
-  images: string[];
-  category: string;
-  sizes?: string[];
-  colors?: Color[];
-  stock: number;
+  slug: string;
   description: string;
+  brand: {
+    name: string;
+    slug: string;
+  };
+  category: {
+    name: string;
+    slug: string;
+  };
+  options: ProductOptionTemp[];
+  price_range: {
+    min_price: number;
+    max_price: number;
+  };
+  variants: ProductVariants[];
+  size_chart?: string;
   reviews: {
     count: number;
     rating: number;
   };
-  relatedProducts?: ProductSummary[];
+  related_products?: ProductSummary[];
 };
 
 export type Color = {
   name: string;
   value: string;
+};
+
+export type ProductVariants = {
+  sku: string;
+  price: number;
+  stock: number;
+  options: ProductOption[];
+  images: ProductImages[];
 };
 
 export interface HomeProducts {
@@ -44,8 +61,17 @@ export interface OptionValue {
   value: string;
 }
 
+export type ProductImages = {
+  url: string;
+  alt_text: string;
+};
 export interface ProductOption {
   id: number;
   name: string;
   values: OptionValue[];
 }
+
+export type ProductOptionTemp = {
+  name: string;
+  values: string[];
+};

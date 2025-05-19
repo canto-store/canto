@@ -332,12 +332,14 @@ class ProductService {
       brand: productRecord.brand,
       category: productRecord.category,
       price_range: {
-        original: { min_price: minimumPrice, max_price: maximumPrice },
-        discounted: { min_price: minimumPrice, max_price: maximumPrice },
+        min_price: minimumPrice,
+        max_price: maximumPrice,
       },
       options,
       variants,
-      size_chart: productRecord.sizeChart,
+      ...(productRecord.sizeChart
+        ? { sizeChart: productRecord.sizeChart }
+        : {}),
       reviews: { count: 0, rating: 0 },
       related_products: relatedProducts,
     };

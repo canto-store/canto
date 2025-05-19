@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CATEGORIES, BRANDS, PRICE_RANGES, type PriceRange } from "@/lib/data";
+import { CATEGORIES, PRICE_RANGES, type PriceRange } from "@/lib/data";
 
 interface FilterPanelProps {
   selectedCategory: string;
@@ -18,8 +18,8 @@ interface FilterPanelProps {
 export function FilterPanel({
   selectedCategory,
   setSelectedCategory,
-  selectedBrand,
-  setSelectedBrand,
+  // selectedBrand,
+  // setSelectedBrand,
   selectedPriceRange,
   setSelectedPriceRange,
   translations,
@@ -55,7 +55,7 @@ export function FilterPanel({
             {translations.brands}
           </h4>
           <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto sm:max-h-40 sm:gap-2">
-            {BRANDS.map((brand) => (
+            {/* {BRANDS.map((brand) => (
               <Button
                 key={brand.slug}
                 variant={selectedBrand === brand.name ? "default" : "outline"}
@@ -65,7 +65,7 @@ export function FilterPanel({
               >
                 {brand.name}
               </Button>
-            ))}
+            ))} */}
           </div>
         </div>
 

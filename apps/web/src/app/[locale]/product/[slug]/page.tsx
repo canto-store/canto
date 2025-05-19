@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { ProductGrid } from "@/components/products";
 import { notFound } from "next/navigation";
 import { ProductDetails } from "@/components/products/ProductDetails";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useLocale } from "next-intl";
 import { useProduct } from "@/lib/product";
+import ProductDetailLoading from "./loading";
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -21,7 +22,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const resolvedParams = React.use(params);
   const { slug } = resolvedParams;
 
-  const { data: product, isError } = useProduct(slug);
+  const { data: product, isError, isLoading } = useProduct(slug);
   const locale = useLocale();
 
   if (isError) {
@@ -30,9 +31,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const breadcrumbItems = [
     { name: "Home", url: `/${locale}/` },
-    { name: "Category", url: `/${locale}/browse` },
+    {
+      name: product?.category.name,
+      url: `/${locale}/browse?category=${product?.category.slug}`,
+    },
     { name: product?.name, url: `/${locale}/product/${slug}` },
   ];
+
+  if (isLoading) {
+    return <ProductDetailLoading />;
+  }
 
   if (product)
     return (
@@ -57,12 +65,14 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <ProductDetails product={product} />
+        <Suspense fallback={<ProductDetailLoading />}>
+          <ProductDetails product={product} />
+        </Suspense>
 
         {/* Related Products */}
-        {product.relatedProducts && product.relatedProducts.length > 0 && (
+        {product.related_products && product.related_products.length > 0 && (
           <ProductGrid
-            products={product.relatedProducts}
+            products={product.related_products}
             title="You May Also Like"
             className="mt-10 mb-10"
           />

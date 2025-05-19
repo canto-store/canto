@@ -3,31 +3,20 @@
 import React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Bell, Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import { ProductDetails as ProductDetailsType } from "@/types";
+import ProductOptions from "./ProductOptions";
+import { Link } from "@/i18n/navigation";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      toast.error("Please select a size");
-      return;
-    }
-
-    if (!selectedColor) {
-      toast.error("Please select a color");
-      return;
-    }
-
     // TODO: Implement cart functionality
   };
 
@@ -36,8 +25,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {/* Product Image */}
       <div className="relative aspect-[4/3] rounded-lg bg-gray-100 md:aspect-square lg:aspect-[4/3]">
         <Image
-          src={product.images[0]}
-          alt={product.name}
+          src={product.variants[0].images[0].url}
+          alt={product.variants[0].images[0].alt_text}
           className="h-full w-full object-contain object-center"
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 50vw, (max-width: 1536px) 40vw, 33vw"
@@ -51,75 +40,57 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <h1 className="mb-1 text-2xl font-bold md:mb-2 md:text-3xl">
           {product.name}
         </h1>
-        <p className="mb-2 text-base text-gray-600 md:mb-4 md:text-lg">
-          {product.brand}
-        </p>
+        <Link
+          href={`/browse?brand=${product.brand.slug}`}
+          className="mb-2 text-base text-gray-600 md:mb-4 md:text-lg"
+        >
+          {product.brand.name}
+        </Link>
 
-        <ProductRating rating={4} reviewCount={24} />
+        <ProductRating
+          rating={product.reviews.rating}
+          reviewCount={product.reviews.count}
+        />
 
         <p className="mb-3 text-xl font-bold md:mb-6 md:text-2xl">
-          ${product.price.toFixed(2)}
+          EGP {product.price_range.min_price.toFixed(2)}
+          {product.price_range.max_price > product.price_range.min_price && (
+            <span className="text-sm font-normal text-gray-500">
+              {" "}
+              - EGP {product.price_range.max_price.toFixed(2)}
+            </span>
+          )}
         </p>
 
+        <ProductDescription description={product.description} />
+        <ProductOptions options={product.options} />
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
-          <div>
-            <div className="flex items-center justify-between">
-              <h3 className="mb-1 font-medium md:mb-2">Size</h3>
-            </div>
-            {(product.sizes?.length ?? 0) > 0 && (
-              <div className="flex flex-wrap gap-1 md:gap-2">
-                {product.sizes?.map((size) => (
-                  <Button
-                    key={size}
-                    variant={selectedSize === size ? "default" : "outline"}
-                    size="sm"
-                    className="h-auto px-2 py-1 text-xs md:h-9 md:text-sm"
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {(product.colors?.length ?? 0) > 0 && (
-            <div>
-              <h3 className="mb-1 font-medium md:mb-2">Color</h3>
-              <div className="flex flex-wrap gap-2 md:gap-3">
-                {product.colors?.map((color) => (
-                  <button
-                    key={color.name}
-                    className={`h-6 w-6 rounded-full border md:h-8 md:w-8 ${
-                      selectedColor === color.name
-                        ? "ring-2 ring-black ring-offset-1 md:ring-offset-2"
-                        : ""
-                    }`}
-                    style={{ backgroundColor: color.value }}
-                    onClick={() => setSelectedColor(color.name)}
-                    aria-label={`Select ${color.name} color`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
           <ProductQuantitySelector
             quantity={quantity}
             onQuantityChange={setQuantity}
           />
-
-          <ProductAvailability />
+          <ProductAvailability
+            isInStock={product.variants.some((v) => v.stock > 0)}
+          />
         </div>
-
-        <ProductDescription />
 
         {/* Add to Cart - Desktop only */}
         <div className="mb-6 hidden gap-2 md:flex">
-          <Button size="lg" className="flex-1 gap-2" onClick={handleAddToCart}>
-            <ShoppingCart className="h-5 w-5" />
-            Add to Cart
-          </Button>
+          {product.variants.some((v) => v.stock > 0) ? (
+            <Button
+              size="lg"
+              className="flex-1 gap-2"
+              onClick={handleAddToCart}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              <span>Add to Cart</span>
+            </Button>
+          ) : (
+            <Button size="lg" className="flex-1 gap-2" variant="outline">
+              <Bell className="h-5 w-5" />
+              <span>Notify Me</span>
+            </Button>
+          )}
           <Button
             variant="outline"
             size="lg"
@@ -183,15 +154,11 @@ function ProductRating({
   );
 }
 
-function ProductDescription() {
+function ProductDescription({ description }: { description: string }) {
   return (
     <div className="mb-4 md:mb-6">
       <h3 className="mb-1 font-medium md:mb-2">Description</h3>
-      <p className="text-sm text-gray-600">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod,
-        nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl
-        nisl sit amet nisl.
-      </p>
+      <p className="text-sm text-gray-600">{description}</p>
     </div>
   );
 }
@@ -230,8 +197,8 @@ function ProductQuantitySelector({
   );
 }
 
-function ProductAvailability() {
-  return (
+function ProductAvailability({ isInStock }: { isInStock: boolean }) {
+  return isInStock ? (
     <div className="rounded-lg border p-3 md:p-4">
       <div className="mb-1 flex items-center gap-2 md:mb-2">
         <div className="h-2 w-2 rounded-full bg-green-500" />
@@ -239,6 +206,16 @@ function ProductAvailability() {
       </div>
       <p className="text-xs text-gray-600 md:text-sm">
         Free shipping on orders over $50
+      </p>
+    </div>
+  ) : (
+    <div className="rounded-lg border p-3 md:p-4">
+      <div className="mb-1 flex items-center gap-2 md:mb-2">
+        <div className="h-2 w-2 rounded-full bg-red-500" />
+        <span className="text-xs font-medium md:text-sm">Out of stock</span>
+      </div>
+      <p className="text-xs text-gray-600 md:text-sm">
+        Sorry this product is currently out of stock. Please check back later.
       </p>
     </div>
   );

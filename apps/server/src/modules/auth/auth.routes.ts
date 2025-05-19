@@ -14,5 +14,10 @@ router.get(
   authMiddleware.checkAuth.bind(authMiddleware),
   authController.me.bind(authController)
 );
+router.post(
+  "/logout",
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authController.logout.bind(authController)
+);
 
 export default router;

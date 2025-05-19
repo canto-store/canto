@@ -6,23 +6,36 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/providers/auth/use-auth";
 import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/ui/form-input";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { LoginRequest } from "@/types/auth";
+import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { parseApiError } from "@/lib/utils";
+
+const loginFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
+
+type FormData = z.infer<typeof loginFormSchema>;
+
 interface LoginFormProps {
   onClose?: () => void;
   switchToRegister?: () => void;
 }
 
 export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
-  const { register, handleSubmit } = useForm<LoginRequest>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +45,15 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/";
 
-  const onSubmit = async (data: LoginRequest) => {
+  const form = useForm<FormData>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: FormData) => {
     setError(null);
     setIsLoading(true);
     await login
@@ -42,9 +63,10 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
         if (onClose) {
           onClose();
         }
+        toast.success(t("auth.loginSuccess"));
       })
       .catch((error) => {
-        setError(error.message);
+        setError(parseApiError(error));
       })
       .finally(() => {
         setIsLoading(false);
@@ -60,64 +82,88 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <ErrorAlert message={error} />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <ErrorAlert message={error} />
 
-      <FormInput
-        id="email"
-        label={t("auth.emailLabel")}
-        type="email"
-        placeholder={t("auth.emailPlaceholder")}
-        {...register("email")}
-        required
-        autoComplete="email"
-        disabled={isLoading}
-        customErrorMessage={t("form.fieldRequired")}
-      />
-
-      <FormInput
-        id="password"
-        label={t("auth.passwordLabel")}
-        type="password"
-        placeholder={t("auth.passwordPlaceholder")}
-        {...register("password")}
-        required
-        autoComplete="current-password"
-        disabled={isLoading}
-        customErrorMessage={t("form.fieldRequired")}
-      />
-
-      <div className="flex items-center justify-between pt-2">
-        <Button
-          type="button"
-          variant="link"
-          className="h-auto px-0 text-sm font-normal"
-          onClick={() => router.push("/forgot-password")}
-          disabled={isLoading}
-        >
-          {t("auth.forgotPassword")}
-        </Button>
-        <Button type="submit" disabled={isLoading} className="w-24">
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            t("auth.loginButton")
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("auth.emailLabel")}
+                <span className="ml-1 text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder={t("auth.emailPlaceholder")}
+                  autoComplete="email"
+                  disabled={isLoading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </Button>
-      </div>
+        />
 
-      <div className="mt-6 text-center text-sm">
-        <span className="bg-background px-4">{t("auth.noAccount")}</span>
-        <Button
-          type="button"
-          variant="outline"
-          className="mt-4 w-full"
-          onClick={handleSwitchToRegister}
-          disabled={isLoading}
-        >
-          {t("auth.registerLink")}
-        </Button>
-      </div>
-    </form>
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("auth.passwordLabel")}
+                <span className="ml-1 text-red-500">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder={t("auth.passwordPlaceholder")}
+                  autoComplete="current-password"
+                  disabled={isLoading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex items-center justify-between pt-2">
+          <Button
+            type="button"
+            variant="link"
+            className="h-auto px-0 text-sm font-normal"
+            onClick={() => router.push("/forgot-password")}
+            disabled={isLoading}
+          >
+            {t("auth.forgotPassword")}
+          </Button>
+          <Button type="submit" disabled={isLoading} className="w-24">
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              t("auth.loginButton")
+            )}
+          </Button>
+        </div>
+
+        <div className="mt-6 text-center text-sm">
+          <span className="bg-background px-4">{t("auth.noAccount")}</span>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-4 w-full"
+            onClick={handleSwitchToRegister}
+            disabled={isLoading}
+          >
+            {t("auth.registerLink")}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

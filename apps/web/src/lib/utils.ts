@@ -3,7 +3,6 @@ import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { APIError } from "@/types/api";
 import { ProductSummary } from "@/types/product";
-import { ALL_PRODUCTS } from "@/lib/data";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -24,7 +23,7 @@ export function filterProducts(
   priceRange: { min: number; max: number },
   brand: string = "All",
 ): ProductSummary[] {
-  let filtered = ALL_PRODUCTS;
+  let filtered: ProductSummary[] = [];
 
   // Filter by search query
   if (searchQuery) {

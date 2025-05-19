@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
   const logout = useMutation<void, Error, unknown, unknown>({
     mutationFn: async () => {
-      const { data } = await api.post("/logout");
+      const { data } = await api.post("/auth/logout");
       return data;
     },
     onSuccess: () => {

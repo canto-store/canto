@@ -10,7 +10,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { CATEGORIES, BRANDS, PRICE_RANGES, type PriceRange } from "@/lib/data";
+import { CATEGORIES, PRICE_RANGES, type PriceRange } from "@/lib/data";
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -189,7 +189,7 @@ export function FilterDrawer({
                 {translations.brands}
               </h4>
               <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 p-2 shadow-sm sm:max-h-40 sm:gap-2">
-                {BRANDS.map((brand) => (
+                {/* {BRANDS.map((brand) => (
                   <Button
                     key={brand.name}
                     variant={
@@ -207,7 +207,7 @@ export function FilterDrawer({
                   >
                     {brand.name}
                   </Button>
-                ))}
+                ))} */}
               </div>
             </div>
 
