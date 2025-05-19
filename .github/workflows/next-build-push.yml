@@ -10,11 +10,13 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write  # Required for GitHub Container Registry
 
 jobs:
   deploy_application:
     name: Build, Publish, and Deploy Next.js App
     runs-on: blacksmith-4vcpu-ubuntu-2404
+    environment: production  # This ensures secrets are available
 
     steps:
       - name: Checkout Source Code
@@ -34,15 +36,13 @@ jobs:
         uses: useblacksmith/build-push-action@v1
         with:
           setup-only: true
-          IMAGE_BASE_NAME="ghcr.io/${{ github.repository }}-web"
-          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ steps.extract_version.outputs.version }}"
-          LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
-          cd apps/web
-          DOCKER_BUILDKIT=1 docker build --secret id=uploadthing_token,env=UPLOADTHING_TOKEN -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
-          docker push $VERSIONED_IMAGE_NAME
-          docker push $LATEST_IMAGE_NAME
-        env:
-          UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_TOKEN }}
+          image-base-name: ghcr.io/${{ github.repository }}-web
+          versioned-image-name: ghcr.io/${{ github.repository }}-web:v${{ steps.extract_version.outputs.version }}
+          latest-image-name: ghcr.io/${{ github.repository }}-web:latest
+          working-directory: apps/web
+          build-args: |
+            UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
+          push: true
 
       - name: Deploy Application to Production Server
         uses: appleboy/ssh-action@master
