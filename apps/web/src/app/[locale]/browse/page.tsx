@@ -158,5 +158,5 @@
 // }
 
 export default function BrowsePage() {
-  return <div>BrowsePage</div>;
+  return <div>Browsing...</div>;
 }
