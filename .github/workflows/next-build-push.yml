@@ -37,10 +37,10 @@ jobs:
         uses: useblacksmith/build-push-action@v1
         with:
           setup-only: true
-          image-base-name: ghcr.io/${{ github.repository }}-web
-          versioned-image-name: ghcr.io/${{ github.repository }}-web:v${{ steps.extract_version.outputs.version }}
-          latest-image-name: ghcr.io/${{ github.repository }}-web:latest
-          working-directory: apps/web
+          context: apps/web
+          tags: |
+            ghcr.io/${{ github.repository }}-web:v${{ steps.extract_version.outputs.version }}
+            ghcr.io/${{ github.repository }}-web:latest
           build-args: |
             UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
           push: true
