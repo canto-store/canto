@@ -15,7 +15,7 @@ export default function Page() {
   });
 
   // Show loading state while checking auth or brand status
-  if (!isAuthenticated || (isAuthenticated && user?.role === "SELLER" && isLoadingBrand)) {
+  if (isAuthenticated && user?.role === "SELLER" && isLoadingBrand) {
     return <FormSectionSkeleton />;
   }
 
@@ -37,7 +37,6 @@ export default function Page() {
     </div>
   );
 }
-
 
 const FormSectionSkeleton = () => (
   <div
