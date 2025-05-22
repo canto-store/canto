@@ -1,13 +1,11 @@
 "use client";
 import React, { useEffect } from "react";
-import { useTranslations } from "next-intl";
 import { useAuth } from "@/providers/auth/use-auth";
 import { useMyBrand } from "@/lib/brand";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Page() {
-  const t = useTranslations("sell");
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
   const { isSuccess: hasBrand } = useMyBrand({
