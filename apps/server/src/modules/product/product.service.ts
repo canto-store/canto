@@ -140,6 +140,7 @@ class ProductService {
           data: dto.optionValueIds.map((optionValueId) => ({
             variantId: variantRecord.id,
             optionValueId,
+            productOptionId: dto.productOptionId,
           })),
         });
       }
@@ -201,6 +202,7 @@ class ProductService {
               data: dto.optionValueIds.map((optionValueId) => ({
                 variantId: id,
                 optionValueId,
+                productOptionId: dto.productOptionId,
               })),
             });
           }
