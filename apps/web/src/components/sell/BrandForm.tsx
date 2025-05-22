@@ -29,7 +29,11 @@ export function BrandForm() {
     },
   });
 
-  const { mutate, isSuccess: isBrandSubmitted } = useSubmitBrand();
+  const {
+    mutate,
+    isSuccess: isBrandSubmitted,
+    isPending: isBrandSubmitting,
+  } = useSubmitBrand();
 
   const onSubmit = (data: BrandFormValues) => {
     mutate(data);
@@ -121,7 +125,9 @@ export function BrandForm() {
           )}
         />
 
-        <Button type="submit">Submit Brand Information</Button>
+        <Button type="submit" disabled={isBrandSubmitting}>
+          {isBrandSubmitting ? "Submitting..." : "Submit Brand Information"}
+        </Button>
       </form>
     </Form>
   );
