@@ -93,8 +93,6 @@ class BrandController {
     next: NextFunction
   ) => {
     try {
-      console.log("getMyBrand");
-      console.log(req.user);
       const userId = req.user.id;
       const brand = await this.brandService.getMyBrand(userId);
       res.status(200).json(brand);
