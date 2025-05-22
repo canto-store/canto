@@ -10,7 +10,7 @@ import ProductsForm from "@/components/products/ProductsForm";
 export default function Page() {
   const t = useTranslations("sell");
   const { user, isAuthenticated } = useAuth();
-  const { isSuccess: hasBrand, isLoading: isLoadingBrand } = useMyBrand({
+  const { isSuccess: hasBrand } = useMyBrand({
     enabled: isAuthenticated && user?.role === "SELLER",
   });
 
