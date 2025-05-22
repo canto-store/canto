@@ -15,7 +15,12 @@ export default function Page() {
   });
 
   // Show loading state while checking auth or brand status
-  if (isAuthenticated && user?.role === "SELLER" && isLoadingBrand) {
+  if (
+    isAuthenticated &&
+    user?.role === "SELLER" &&
+    isLoadingBrand &&
+    !hasBrand
+  ) {
     return <FormSectionSkeleton />;
   }
 
