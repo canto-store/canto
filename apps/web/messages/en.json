@@ -322,7 +322,19 @@
     "instagramUrlPlaceholder": "https://instagram.com/yourstore",
     "agreement": "By submitting this form, you agree to our Terms of Service and Seller Agreement",
     "submit": "Apply to Become a Seller",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "register": {
+      "title": "Become a Seller",
+      "description": "Join our marketplace and start selling your products"
+    },
+    "brand": {
+      "title": "Create Your Brand",
+      "description": "Set up your brand profile to start selling"
+    },
+    "products": {
+      "title": "Manage Your Products",
+      "description": "Add and manage your product listings"
+    }
   },
   "form": {
     "fieldRequired": "This field is required"
