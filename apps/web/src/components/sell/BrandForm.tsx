@@ -13,9 +13,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { useEffect } from "react";
-import { useRouter } from "@/i18n/navigation";
-import { useSubmitBrand, useMyBrand } from "@/lib/brand";
+import { useSubmitBrand } from "@/lib/brand";
 import { BrandFormValues, brandFormSchema } from "@/types/brand";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -31,9 +29,6 @@ export function BrandForm() {
     },
   });
 
-  const router = useRouter();
-
-  const { isSuccess: hasBrand } = useMyBrand();
   const { mutate, isSuccess: isBrandSubmitted } = useSubmitBrand();
 
   const onSubmit = (data: BrandFormValues) => {
