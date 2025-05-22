@@ -36,17 +36,10 @@ export function BrandForm() {
   const { isSuccess: hasBrand } = useMyBrand();
   const { mutate, isSuccess: isBrandSubmitted } = useSubmitBrand();
 
-  useEffect(() => {
-    if (hasBrand) {
-      router.push("/sell/dashboard");
-    }
-  }, [hasBrand, router]);
-
   const onSubmit = (data: BrandFormValues) => {
     mutate(data);
     if (isBrandSubmitted) {
       toast.success("Brand submitted successfully!");
-      router.push("/sell/dashboard");
     }
   };
 
