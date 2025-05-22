@@ -1,7 +1,7 @@
-name: CD
+name: Web
 
 on:
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch: # Allows manual triggering
   push:
     branches:
       - main
