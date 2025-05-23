@@ -36,11 +36,13 @@ jobs:
           VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ steps.extract_version.outputs.version }}"
           LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
           cd apps/server
-          DOCKER_BUILDKIT=1 docker build --secret id=database_url,env=DATABASE_URL -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
+          DOCKER_BUILDKIT=1 docker build --secret id=database_url,env=DATABASE_URL --secret id=elasticsearch_username,env=ELASTICSEARCH_USERNAME --secret id=elasticsearch_password,env=ELASTICSEARCH_PASSWORD -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
           docker push $VERSIONED_IMAGE_NAME
           docker push $LATEST_IMAGE_NAME
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ELASTICSEARCH_USERNAME: ${{ secrets.ELASTICSEARCH_USERNAME }}
+          ELASTICSEARCH_PASSWORD: ${{ secrets.ELASTICSEARCH_PASSWORD }}
 
       - name: Deploy Application to Production Server
         uses: appleboy/ssh-action@master
@@ -69,4 +71,6 @@ jobs:
               -p $APP_EXTERNAL_PORT:$APP_INTERNAL_PORT \
               --restart unless-stopped \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e ELASTICSEARCH_USERNAME=${{ secrets.ELASTICSEARCH_USERNAME }} \
+              -e ELASTICSEARCH_PASSWORD=${{ secrets.ELASTICSEARCH_PASSWORD }} \
               $IMAGE_REFERENCE
