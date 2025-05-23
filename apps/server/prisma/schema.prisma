@@ -207,3 +207,21 @@ model Address {
 
   @@map("addresses")
 }
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  user      User       @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     CartItem[]
+}
+
+model CartItem {
+  id        Int            @id @default(autoincrement())
+  cart      Cart           @relation(fields: [cartId], references: [id])
+  cartId    Int
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  variantId Int
+  quantity  Int
+}
