@@ -35,6 +35,7 @@ model User {
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
   Address        Address[]
+  Cart           Cart?
 
   @@map("users")
 }
@@ -132,6 +133,7 @@ model ProductVariant {
   images      ProductVariantImage[]
   created_at  DateTime              @default(now())
   updated_at  DateTime              @updatedAt
+  CartItem    CartItem[]
 
   @@map("product_variants")
 }
