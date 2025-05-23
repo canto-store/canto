@@ -47,17 +47,9 @@ async function startServer() {
   try {
     const esConnected = await checkESConnection();
 
-    if (esConnected) {
-      console.log("Elasticsearch connection verified.");
-    }
-
     app.listen(PORT, () => {
+      console.log(`🔗 Elasticsearch connection: ${esConnected}`);
       console.log(`🚀 Server running on http://localhost:${PORT}`);
-      if (!esConnected) {
-        console.warn(
-          "Reminder: Elasticsearch is not connected. Search features will not work."
-        );
-      }
     });
   } catch (error) {
     console.error("Failed to start the server:", error);

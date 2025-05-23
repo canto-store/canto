@@ -3,13 +3,16 @@ import { Client, ClientOptions } from "@elastic/elasticsearch";
 import { ClusterHealthResponse } from "@elastic/elasticsearch/lib/api/types"; // For specific response types
 
 // --- Configuration from Environment Variables ---
-const ELASTICSEARCH_NODE: string = "http://10.114.0.4:9200";
+const ELASTICSEARCH_NODE = process.env.ELASTICSEARCH_NODE;
 const ELASTICSEARCH_USERNAME = process.env.ELASTICSEARCH_USERNAME;
 const ELASTICSEARCH_PASSWORD = process.env.ELASTICSEARCH_PASSWORD;
 
 // --- Client Configuration Object ---
 let clientConfig: ClientOptions = {
   node: ELASTICSEARCH_NODE,
+  tls: {
+    rejectUnauthorized: false, // Set to true in production with proper certificates
+  },
 };
 
 if (ELASTICSEARCH_USERNAME && ELASTICSEARCH_PASSWORD) {
@@ -23,12 +26,7 @@ const esClient: Client = new Client(clientConfig);
 
 async function checkESConnection(): Promise<boolean> {
   try {
-    console.log("Checking Elasticsearch connection...");
     const health: ClusterHealthResponse = await esClient.cluster.health({});
-    console.log(
-      "Successfully connected to Elasticsearch cluster:",
-      health.cluster_name
-    );
     return true;
   } catch (error: any) {
     console.error(
