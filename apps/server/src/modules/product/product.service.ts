@@ -136,12 +136,34 @@ class ProductService {
       });
 
       if (dto.optionValueIds?.length) {
+        const variantOptionValuesData = await Promise.all(
+          dto.optionValueIds.map(async (optionValueId) => {
+            const productOptionValue = await tx.productOptionValue.findUnique({
+              where: { id: optionValueId },
+              select: { productOptionId: true }, 
+            });
+            if (!productOptionValue) {
+              throw new AppError(
+                `ProductOptionValue with id ${optionValueId} not found within transaction.`,
+                404
+              );
+            }
+            if (productOptionValue.productOptionId == null) {
+              throw new AppError(
+                `ProductOptionValue with id ${optionValueId} is missing its productOptionId.`,
+                500
+              );
+            }
+            return {
+              variantId: variantRecord.id,
+              optionValueId,
+              productOptionId: productOptionValue.productOptionId,
+            };
+          })
+        );
+
         await tx.variantOptionValue.createMany({
-          data: dto.optionValueIds.map((optionValueId) => ({
-            variantId: variantRecord.id,
-            optionValueId,
-            productOptionId: dto.productOptionId,
-          })),
+          data: variantOptionValuesData,
         });
       }
 
