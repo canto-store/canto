@@ -4,7 +4,7 @@ export async function checkAuth(): Promise<boolean> {
   try {
     const response = await api.get("/auth/me");
     return response.status === 200;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
