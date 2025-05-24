@@ -39,6 +39,10 @@ app.use(cookieParser());
 
 app.use("/api", routes);
 
+app.get("/", (_req, res) => {
+  res.send("<h1>Server Running</h1>");
+});
+
 app.use(errorHandler);
 
 const PORT: number = parseInt(process.env.PORT || "8000", 10);
