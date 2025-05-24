@@ -23,6 +23,11 @@ enum SaleType {
   FIXED
 }
 
+enum DeliveryStatus {
+  NOT_DELIVERED_YET
+  DELIVERED
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String
@@ -36,6 +41,7 @@ model User {
   updated_at     DateTime  @updatedAt
   Address        Address[]
   Cart           Cart?
+  Order          Order[]
 
   @@map("users")
 }
@@ -94,11 +100,11 @@ model ProductOption {
 }
 
 model ProductOptionValue {
-  id              Int                  @id @default(autoincrement())
-  value           String
-  productOption   ProductOption        @relation(fields: [productOptionId], references: [id])
-  productOptionId Int
-  variantLinks    VariantOptionValue[]
+  id                 Int                  @id @default(autoincrement())
+  value              String
+  productOption      ProductOption        @relation(fields: [productOptionId], references: [id])
+  productOptionId    Int
+  VariantOptionValue VariantOptionValue[]
 
   @@map("product_option_values")
 }
@@ -108,7 +114,7 @@ model Product {
   name        String
   slug        String           @unique
   description String?
-  sizeChart   String?
+  sizeChart   String?          @default("")
   brand       Brand            @relation(fields: [brandId], references: [id])
   brandId     Int
   category    Category         @relation(fields: [categoryId], references: [id])
@@ -122,31 +128,33 @@ model Product {
 
 model ProductVariant {
   id          Int                   @id @default(autoincrement())
-  product     Product               @relation(fields: [productId], references: [id])
   productId   Int
+  product     Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
   sku         String                @unique
-  price       Int
+  price       Float
   stock       Int
-  sale        Sale?                 @relation(fields: [sale_id], references: [id])
   sale_id     Int?
+  sale        Sale?                 @relation(fields: [sale_id], references: [id])
   optionLinks VariantOptionValue[]
   images      ProductVariantImage[]
+  CartItem    CartItem[]
   created_at  DateTime              @default(now())
   updated_at  DateTime              @updatedAt
-  CartItem    CartItem[]
+  OrderItem   OrderItem[]
 
   @@map("product_variants")
 }
 
 model VariantOptionValue {
-  variant         ProductVariant     @relation(fields: [variantId], references: [id])
+  id              Int                @id @default(autoincrement())
+  variant         ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
   variantId       Int
   optionValue     ProductOptionValue @relation(fields: [optionValueId], references: [id])
   optionValueId   Int
   productOption   ProductOption      @relation(fields: [productOptionId], references: [id])
-  productOptionId Int
+  productOptionId Int // Ensures this link is tied to a specific ProductOption type
 
-  @@id([variantId, productOptionId])
+  @@unique([variantId, productOptionId]) // A variant can only have one value for a given option type
   @@map("variant_option_values")
 }
 
@@ -205,7 +213,8 @@ model Address {
   additional_direction String?
   address_label        String
 
-  user User @relation(fields: [user_id], references: [id])
+  user  User    @relation(fields: [user_id], references: [id])
+  Order Order[]
 
   @@map("addresses")
 }
@@ -226,4 +235,32 @@ model CartItem {
   variant   ProductVariant @relation(fields: [variantId], references: [id])
   variantId Int
   quantity  Int
+}
+
+model Order {
+  id             Int            @id @default(autoincrement()) @map("id")
+  orderCode      String         @unique @map("order_code")
+  userId         Int            @map("user_id")
+  user           User           @relation(fields: [userId], references: [id])
+  addressId      Int            @map("address_id")
+  address        Address        @relation(fields: [addressId], references: [id])
+  deliveryStatus DeliveryStatus @default(NOT_DELIVERED_YET) @map("delivery_status")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  items          OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id             Int            @id @default(autoincrement()) @map("id")
+  orderId        Int            @map("order_id")
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId      Int            @map("variant_id")
+  variant        ProductVariant @relation(fields: [variantId], references: [id])
+  quantity       Int            @map("quantity")
+  priceAtOrder   Float          @map("price_at_order")
+  deliveryStatus DeliveryStatus @default(NOT_DELIVERED_YET) @map("delivery_status")
+
+  @@map("order_items")
 }
