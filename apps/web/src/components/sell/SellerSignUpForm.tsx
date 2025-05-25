@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useAuth } from "@/providers/auth/use-auth";
 import { useRouter } from "@/i18n/navigation";
+import { ErrorAlert } from "@/components/ui/error-alert";
+import { parseApiError } from "@/lib/utils";
 
 // SignUp Form Schema
 export const SignUpFormSchema = z
@@ -51,6 +53,7 @@ interface SellerSignUpFormProps {
 export function SellerSignUpForm({ onSwitchToLogin }: SellerSignUpFormProps) {
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { sellerRegister } = useAuth();
   const router = useRouter();
 
@@ -68,6 +71,7 @@ export function SellerSignUpForm({ onSwitchToLogin }: SellerSignUpFormProps) {
 
   const handleSignUp = async (values: SignUpFormValues) => {
     setIsSubmitting(true);
+    setError(null);
     sellerRegister.mutate(
       {
         email: values.email,
@@ -79,9 +83,11 @@ export function SellerSignUpForm({ onSwitchToLogin }: SellerSignUpFormProps) {
         onSuccess: () => {
           toast.success(t("auth.registerSuccess"));
           setIsSubmitting(false);
-          router.refresh();
+          router.push("/sell/brand");
         },
-        onError: () => {
+        onError: (error) => {
+          const errorMessage = parseApiError(error);
+          setError(errorMessage);
           setIsSubmitting(false);
         },
       },
@@ -91,6 +97,7 @@ export function SellerSignUpForm({ onSwitchToLogin }: SellerSignUpFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSignUp)} className="w-full">
+        <ErrorAlert message={error} className="mb-4" />
         <div className="space-y-4">
           <FormField
             control={form.control}

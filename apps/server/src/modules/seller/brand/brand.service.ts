@@ -37,6 +37,12 @@ class BrandService {
     if (!existingSeller) {
       throw new AppError("Seller not found", 404);
     }
+    const existingBrand = await this.prisma.brand.findFirst({
+      where: { email: data.email },
+    });
+    if (existingBrand) {
+      throw new AppError("Email is already in use", 409);
+    }
     const slug = slugify(data.name);
     return await this.prisma.brand.create({
       data: {
@@ -84,9 +90,6 @@ class BrandService {
     const brand = await this.prisma.brand.findFirst({
       where: { sellerId },
     });
-    if (!brand) {
-      throw new AppError("Brand not found", 404);
-    }
     return brand;
   }
 }

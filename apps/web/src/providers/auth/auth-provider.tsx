@@ -2,15 +2,15 @@ import { AuthContext } from "./auth-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoginRequest, RegisterRequest } from "@/types/auth";
 import api from "@/lib/api";
-import { User } from "@/types/user";
+import { Seller, User } from "@/types/user";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
 
-  const userQuery = useQuery<User | null>({
+  const userQuery = useQuery<User | Seller | null>({
     queryKey: ["me"],
     queryFn: async () => {
-      const response = await api.get<User>("/auth/me");
+      const response = await api.get<User | Seller>("/auth/me");
       if (response.status === 200) return response.data;
       return null;
     },
@@ -69,10 +69,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     },
   });
 
-  const sellerLogin = useMutation<User, Error, LoginRequest>({
+  const sellerLogin = useMutation<Seller, Error, LoginRequest>({
     mutationFn: async ({ email, password }) => {
       try {
-        const { data } = await api.post<User>("/seller/login", {
+        const { data } = await api.post<Seller>("/seller/login", {
           email,
           password,
         });
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
-        user: userQuery.data || ({} as User),
+        user: userQuery.data,
         isAuthenticated,
         login,
         logout,

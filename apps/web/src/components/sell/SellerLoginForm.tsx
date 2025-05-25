@@ -54,7 +54,11 @@ export function SellerLoginForm({ onSwitchToSignUp }: SellerLoginFormProps) {
         onSuccess: () => {
           toast.success(t("auth.loginSuccess"));
           setIsSubmitting(false);
-          router.refresh();
+          if (sellerLogin.data?.brandId) {
+            router.push("/sell/products");
+          } else {
+            router.push("/sell/brand");
+          }
         },
         onError: (error) => {
           toast.error(error.message);

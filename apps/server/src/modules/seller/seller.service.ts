@@ -1,4 +1,4 @@
-import { PrismaClient, Seller } from "@prisma/client";
+import { Brand, PrismaClient, Seller } from "@prisma/client";
 import AppError from "../../utils/appError";
 import Bcrypt from "../../utils/bcrypt";
 import { signJwt, signRefreshToken } from "../../utils/jwt";
@@ -79,7 +79,7 @@ class SellerService {
   }
 
   async loginSeller(email: string, password: string) {
-    const seller = await this.prisma.seller.findUnique({
+    const seller: Seller = await this.prisma.seller.findUnique({
       where: { email },
     });
     if (!seller) {
@@ -90,6 +90,13 @@ class SellerService {
     if (!isPasswordValid) {
       throw new AppError("Invalid credentials", 401);
     }
+
+    const brand = await this.prisma.brand.findFirst({
+      where: { sellerId: seller.id },
+      select: {
+        id: true,
+      },
+    });
 
     // Generate authentication tokens
     const accessToken = signJwt({
@@ -108,6 +115,7 @@ class SellerService {
         accessToken,
         refreshToken,
       },
+      brandId: brand?.id ?? null,
     };
   }
 }

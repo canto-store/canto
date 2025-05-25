@@ -3,7 +3,6 @@ import sellerService from "./seller.service";
 import { Request, Response, NextFunction } from "express";
 
 import { Seller } from "@prisma/client";
-import { AuthRequest } from "../../middlewares/auth.middleware";
 
 class SellerController {
   private sellerService: sellerService;
@@ -101,7 +100,7 @@ class SellerController {
           .json({ message: "Email and password are required" });
       }
 
-      const { seller, tokens } = await this.sellerService.loginSeller(
+      const { seller, tokens, brandId } = await this.sellerService.loginSeller(
         email,
         password
       );
@@ -123,7 +122,7 @@ class SellerController {
         // Set headers for CORS
         .header("Access-Control-Allow-Credentials", "true")
         .status(200)
-        .json(seller);
+        .json({ ...seller, brandId });
     } catch (error) {
       next(error);
     }

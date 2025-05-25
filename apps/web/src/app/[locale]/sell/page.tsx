@@ -1,20 +1,17 @@
 "use client";
 import React, { useEffect } from "react";
 import { useAuth } from "@/providers/auth/use-auth";
-import { useMyBrand } from "@/lib/brand";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Seller } from "@/types/user";
 
 export default function Page() {
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
-  const { isSuccess: hasBrand } = useMyBrand({
-    enabled: isAuthenticated && user?.role === "SELLER",
-  });
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "SELLER") {
-      if (hasBrand) {
+      if ((user as Seller).brandId) {
         router.push("/sell/products");
       } else {
         router.push("/sell/brand");
@@ -22,7 +19,7 @@ export default function Page() {
     } else {
       router.push("/sell/register");
     }
-  }, [isAuthenticated, user?.role, hasBrand, router]);
+  }, [isAuthenticated, user?.role, router]);
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center p-10">

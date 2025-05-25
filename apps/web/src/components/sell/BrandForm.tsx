@@ -17,6 +17,9 @@ import { useSubmitBrand } from "@/lib/brand";
 import { BrandFormValues, brandFormSchema } from "@/types/brand";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+import { ErrorAlert } from "@/components/ui/error-alert";
+import { parseApiError } from "@/lib/utils";
+import { useRouter } from "@/i18n/navigation";
 
 export function BrandForm() {
   const form = useForm<BrandFormValues>({
@@ -33,17 +36,25 @@ export function BrandForm() {
     mutate,
     isSuccess: isBrandSubmitted,
     isPending: isBrandSubmitting,
+    isError: isBrandError,
+    error: brandError,
   } = useSubmitBrand();
+
+  const router = useRouter();
 
   const onSubmit = (data: BrandFormValues) => {
     mutate(data);
     if (isBrandSubmitted) {
       toast.success("Brand submitted successfully!");
+      router.push("/sell/products");
     }
   };
 
   return (
     <Form {...form}>
+      {isBrandError && (
+        <ErrorAlert message={parseApiError(brandError)} className="mb-4" />
+      )}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}

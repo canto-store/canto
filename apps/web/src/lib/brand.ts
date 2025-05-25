@@ -16,7 +16,7 @@ export const useMyBrand = (options?: UseMyBrandOptions) =>
       return data;
     },
     throwOnError: false,
-    staleTime: 0,
+    staleTime: 1000 * 60 * 30,
     ...options,
   });
 

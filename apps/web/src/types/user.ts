@@ -3,3 +3,7 @@ export type User = {
   role: string;
   firstName: string;
 };
+
+export type Seller = User & {
+  brandId: number | null;
+};

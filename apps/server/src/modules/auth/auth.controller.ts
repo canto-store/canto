@@ -3,9 +3,11 @@ import AuthService from "./auth.service";
 import { CreateUserDto, LoginDto } from "./auth.types";
 import { signJwt } from "../../utils/jwt";
 import { AuthRequest } from "../../middlewares/auth.middleware";
+import BrandService from "../seller/brand/brand.service";
 
 class AuthController {
   private readonly authService = new AuthService();
+  private readonly brandService = new BrandService();
 
   public async register(req: Request, res: Response, next: NextFunction) {
     try {
@@ -77,6 +79,13 @@ class AuthController {
 
   public async me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      if (req.user.role === "SELLER") {
+        const brand = await this.brandService.getMyBrand(req.user.id);
+        return res.status(200).json({
+          ...req.user,
+          brandId: brand?.id ?? null,
+        });
+      }
       res.status(200).json({
         id: req.user.id,
         role: req.user.role,

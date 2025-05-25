@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import BrandService from "./brand.service";
 import { Brand } from "@prisma/client";
 import { AuthRequest } from "../../../middlewares/auth.middleware";
+import AppError from "../../../utils/appError";
 
 class BrandController {
   private brandService: BrandService;
@@ -95,6 +96,9 @@ class BrandController {
     try {
       const userId = req.user.id;
       const brand = await this.brandService.getMyBrand(userId);
+      if (!brand) {
+        throw new AppError("Brand not found", 404);
+      }
       res.status(200).json(brand);
     } catch (error) {
       next(error);
