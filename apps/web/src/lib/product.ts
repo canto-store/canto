@@ -1,5 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { HomeProducts, ProductDetails, APIError, ProductOption } from "@/types";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  HomeProducts,
+  ProductDetails,
+  APIError,
+  ProductOption,
+  SavedProductForm,
+  SubmitProductFormValues,
+  ProductByBrand,
+} from "@/types";
 import axios from "axios";
 import api from "./api";
 
@@ -55,5 +63,27 @@ export const useProductOptions = () =>
         }
         throw new Error("Failed to fetch data");
       }
+    },
+  });
+
+export const useSubmitProduct = () =>
+  useMutation<SavedProductForm, Error, SubmitProductFormValues>({
+    mutationFn: async (product: SubmitProductFormValues) => {
+      const { data } = await api.post<SavedProductForm>(
+        "/product/submit",
+        product,
+      );
+      return data;
+    },
+  });
+
+export const useProductsByBrand = (brandId: number) =>
+  useQuery<ProductByBrand[], Error>({
+    queryKey: ["products-by-brand", brandId],
+    queryFn: async () => {
+      const { data } = await api.get<ProductByBrand[]>(
+        `/product/brands/${brandId}`,
+      );
+      return data;
     },
   });

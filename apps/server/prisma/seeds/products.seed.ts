@@ -182,6 +182,7 @@ export const BEST_SELLERS = [
 const ALL_PRODUCTS = [...FEATURED_PRODUCTS, ...NEW_ARRIVALS, ...BEST_SELLERS];
 
 import { PrismaClient } from "@prisma/client";
+import { ProductStatus } from "../../src/modules/product/product.types";
 
 export const name = "products";
 export const description = "Seed for products";
@@ -197,6 +198,7 @@ export async function run(prisma: PrismaClient): Promise<void> {
       data: {
         name: productInfo.name,
         slug: productInfo.slug,
+        status: ProductStatus.ACTIVE,
         description:
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
         brand: { connect: { id: 1 } }, // Assuming 5 brands exist

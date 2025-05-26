@@ -7,7 +7,10 @@ import {
   CreateProductOptionValueDto,
   CreateProductVariantDto,
   UpdateProductVariantDto,
+  SubmitProductFormDto,
+  ProductStatus,
 } from "./product.types";
+import { slugify } from "../../utils/helper";
 
 class ProductService {
   private readonly prisma = new PrismaClient();
@@ -140,7 +143,7 @@ class ProductService {
           dto.optionValueIds.map(async (optionValueId) => {
             const productOptionValue = await tx.productOptionValue.findUnique({
               where: { id: optionValueId },
-              select: { productOptionId: true }, 
+              select: { productOptionId: true },
             });
             if (!productOptionValue) {
               throw new AppError(
@@ -404,6 +407,71 @@ class ProductService {
       bestDeals,
       newArrivals,
     };
+  }
+
+  async submitProductForm(dto: SubmitProductFormDto) {
+    return this.prisma.$transaction(async (tx) => {
+      const newProduct = await tx.product.create({
+        data: {
+          name: dto.name,
+          slug: slugify(dto.name),
+          description: dto.description,
+          brandId: dto.brandId,
+          categoryId: dto.category,
+        },
+        include: {
+          brand: true,
+          category: true,
+        },
+      });
+
+      for (const variant of dto.variants) {
+        const variantRecord = await tx.productVariant.create({
+          data: {
+            productId: newProduct.id,
+            sku: slugify(variant.options.map((o) => o.valueId).join("-")),
+            price: variant.price,
+            stock: variant.stock,
+            status: ProductStatus.PENDING,
+          },
+        });
+
+        await tx.productVariantImage.createMany({
+          data: variant.images.map((image) => ({
+            url: image,
+            variantId: variantRecord.id,
+          })),
+        });
+
+        await tx.variantOptionValue.createMany({
+          data: variant.options.map((o) => ({
+            variantId: variantRecord.id,
+            optionValueId: o.valueId,
+            productOptionId: o.optionId,
+          })),
+        });
+      }
+
+      return true;
+    });
+  }
+
+  async getProductsByBrand(brandId: number) {
+    const products = await this.prisma.product.findMany({
+      where: { brandId: Number(brandId) },
+      include: {
+        variants: { include: { images: true } },
+        category: true,
+      },
+    });
+    return products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      image: product.variants[0]?.images[0]?.url ?? "",
+      category: product.category.name,
+      status: product.status,
+    }));
   }
 
   private async ensureProductExists(id: number) {

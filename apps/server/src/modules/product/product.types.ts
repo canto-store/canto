@@ -5,7 +5,33 @@ export interface CreateProductDto {
   sizeChart?: string;
   brandId: number;
   categoryId: number;
+  status: ProductStatus;
 }
+
+export enum ProductStatus {
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export interface SubmitProductFormDto {
+  brandId: number;
+  name: string;
+  category: number;
+  description: string;
+  variants: SelectedVariant[];
+}
+
+export interface SelectedVariant {
+  price: number;
+  stock: number;
+  images: string[];
+  options: {
+    optionId: number;
+    valueId: number;
+  }[];
+}
+
 export interface UpdateProductDto extends Partial<CreateProductDto> {}
 
 export interface CreateProductOptionDto {

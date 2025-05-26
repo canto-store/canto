@@ -7,7 +7,10 @@ import {
   CreateProductOptionValueDto,
   CreateProductVariantDto,
   UpdateProductVariantDto,
+  SubmitProductFormDto,
 } from "./product.types";
+import { AuthRequest } from "../../middlewares/auth.middleware";
+import AppError from "../../utils/appError";
 
 class ProductController {
   private readonly productService = new ProductService();
@@ -227,6 +230,37 @@ class ProductController {
   ) {
     try {
       const products = await this.productService.getHomeProducts();
+      response.status(200).json(products);
+    } catch (error) {
+      nextFunction(error);
+    }
+  }
+
+  async submitProductForm(
+    request: AuthRequest,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
+    const productForm = request.body as SubmitProductFormDto;
+    try {
+      await this.productService.submitProductForm(productForm);
+      response.status(201).json({ message: "Product created" });
+    } catch (error) {
+      nextFunction(error);
+    }
+  }
+
+  async getProductsByBrand(
+    request: AuthRequest,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
+    try {
+      const brandId = Number(request.params.brandId);
+      if (!brandId) {
+        return nextFunction(new AppError("Brand ID is required", 400));
+      }
+      const products = await this.productService.getProductsByBrand(brandId);
       response.status(200).json(products);
     } catch (error) {
       nextFunction(error);

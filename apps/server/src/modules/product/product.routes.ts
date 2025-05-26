@@ -1,8 +1,10 @@
 import { Router } from "express";
 import ProductController from "./product.controller";
+import AuthMiddleware from "../../middlewares/auth.middleware";
 
 const router = Router();
 const productController = new ProductController();
+const authMiddleware = new AuthMiddleware();
 
 router.post("/", productController.createProduct.bind(productController));
 router.get("/", productController.getAllProducts.bind(productController));
@@ -51,4 +53,15 @@ router.delete(
   productController.deleteVariant.bind(productController)
 );
 
+router.post(
+  "/submit",
+  authMiddleware.checkAuth.bind(authMiddleware),
+  productController.submitProductForm.bind(productController)
+);
+
+router.get(
+  "/brands/:brandId",
+  authMiddleware.checkAuth.bind(authMiddleware),
+  productController.getProductsByBrand.bind(productController)
+);
 export default router;
