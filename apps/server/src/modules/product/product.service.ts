@@ -416,6 +416,7 @@ class ProductService {
           name: dto.name,
           slug: slugify(dto.name),
           description: dto.description,
+          status: ProductStatus.PENDING,
           brand: { connect: { id: dto.brandId } },
           category: { connect: { id: dto.category } },
         },
@@ -432,7 +433,6 @@ class ProductService {
             sku: slugify(variant.options.map((o) => o.valueId).join("-")),
             price: variant.price,
             stock: variant.stock,
-            status: ProductStatus.PENDING,
           },
         });
 
