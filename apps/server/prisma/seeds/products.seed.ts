@@ -190,9 +190,93 @@ export const description = "Seed for products";
 export async function run(prisma: PrismaClient): Promise<void> {
   console.log("Creating products...");
 
+  // Fetch existing product options and their values
+  const colorOption = await prisma.productOption.findUnique({
+    where: { name: "Color" },
+    include: { values: true },
+  });
+
+  const sizeOption = await prisma.productOption.findUnique({
+    where: { name: "Size" },
+    include: { values: true },
+  });
+
+  if (!colorOption || !sizeOption) {
+    console.error(
+      "Required product options (Color and Size) not found in database"
+    );
+    return;
+  }
+
   // Create each product in the ALL_PRODUCTS array
   for (let i = 0; i < ALL_PRODUCTS.length; i++) {
     const productInfo = ALL_PRODUCTS[i];
+
+    // Randomly decide how many variants this product will have (1-3)
+    const numVariants = Math.floor(Math.random() * 3) + 1;
+    const variants = [];
+
+    // Create base variant (always present)
+    variants.push({
+      sku: `SKU-${String(i + 1).padStart(3, "0")}-BASE`,
+      price: Math.round(productInfo.price * 100), // Convert to cents
+      stock: 10 + Math.floor(Math.random() * 90), // Random stock between 10-99
+      sale: "salePrice" in productInfo ? { connect: { id: 1 } } : undefined,
+      images: {
+        create: [
+          {
+            url: productInfo.image,
+            alt_text: productInfo.name,
+          },
+        ],
+      },
+    });
+
+    // Add additional variants if numVariants > 1
+    if (numVariants > 1) {
+      // Randomly select a color value for this product's variants
+      const colorValue =
+        colorOption.values[
+          Math.floor(Math.random() * colorOption.values.length)
+        ];
+
+      // Create 1-2 additional variants with the selected color and different sizes
+      for (let j = 1; j < numVariants; j++) {
+        const sizeValue =
+          sizeOption.values[
+            Math.floor(Math.random() * sizeOption.values.length)
+          ];
+
+        variants.push({
+          sku: `SKU-${String(i + 1).padStart(3, "0")}-${colorValue.value}-${
+            sizeValue.value
+          }`,
+          price: Math.round(productInfo.price * 100),
+          stock: 10 + Math.floor(Math.random() * 90),
+          sale: "salePrice" in productInfo ? { connect: { id: 1 } } : undefined,
+          images: {
+            create: [
+              {
+                url: productInfo.image,
+                alt_text: `${productInfo.name} - ${colorValue.value} - ${sizeValue.value}`,
+              },
+            ],
+          },
+          optionLinks: {
+            create: [
+              {
+                optionValue: { connect: { id: colorValue.id } },
+                productOption: { connect: { id: colorOption.id } },
+              },
+              {
+                optionValue: { connect: { id: sizeValue.id } },
+                productOption: { connect: { id: sizeOption.id } },
+              },
+            ],
+          },
+        });
+      }
+    }
 
     const product = await prisma.product.create({
       data: {
@@ -204,30 +288,14 @@ export async function run(prisma: PrismaClient): Promise<void> {
         brand: { connect: { id: 1 } }, // Assuming 5 brands exist
         category: { connect: { id: (i % 10) + 1 } }, // Distribute across 5 categories
         variants: {
-          create: [
-            {
-              sku: `SKU-${String(i + 1).padStart(3, "0")}`,
-              price: Math.round(productInfo.price * 100), // Convert to cents
-              stock: 10 + Math.floor(Math.random() * 90), // Random stock between 10-99
-              sale:
-                "salePrice" in productInfo ? { connect: { id: 1 } } : undefined,
-              images: {
-                create: [
-                  {
-                    url: productInfo.image,
-                    alt_text: productInfo.name,
-                  },
-                ],
-              },
-            },
-          ],
+          create: variants,
         },
       },
     });
     console.log(
       `🚀 ~ Created Product ${i + 1}/${ALL_PRODUCTS.length}: ${product.id} - ${
         product.name
-      }`
+      } with ${variants.length} variants`
     );
   }
 }

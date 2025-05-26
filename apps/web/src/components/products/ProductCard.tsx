@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useCart } from "@/providers";
 import { ProductSummary } from "@/types";
-import { BsCartPlus } from "react-icons/bs";
+import { BsCartPlus, BsEye } from "react-icons/bs";
 
 interface ProductCardProps {
   product: ProductSummary;
@@ -89,6 +89,16 @@ export function ProductCard({
           </button>
         </div>
 
+        <div className="mt-1 flex gap-1">
+          {product.colorVariants?.map((color, index) => (
+            <div
+              key={index}
+              className="h-4 w-4 rounded-full border-1 border-black"
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
+
         <div
           className={cn(
             "flex items-center justify-between",
@@ -112,10 +122,18 @@ export function ProductCard({
               {product.price}
             </span>
           </div>
-
-          <Button onClick={() => addToCart(product)} size="icon">
-            <BsCartPlus className="h-5 w-5 md:h-6 md:w-6" />
-          </Button>
+          {product.hasVariants ? (
+            <Button
+              onClick={() => router.push(`/product/${product.slug}`)}
+              size="icon"
+            >
+              <BsEye className="h-5 w-5 md:h-6 md:w-6" />
+            </Button>
+          ) : (
+            <Button onClick={() => addToCart(product)} size="icon">
+              <BsCartPlus className="h-5 w-5 md:h-6 md:w-6" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

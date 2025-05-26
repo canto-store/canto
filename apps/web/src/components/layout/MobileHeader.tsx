@@ -100,7 +100,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
         </div>
 
         {/* Right section: Search functionality */}
-        <div className="relative flex items-center justify-end">
+        <div className="flex items-center gap-2">
           <AnimatePresence mode="wait">
             {searchOpen ? (
               <motion.div
@@ -109,14 +109,14 @@ export function MobileHeader({ className }: MobileHeaderProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.15, ease: "easeInOut" }}
-                className="flex w-full items-center"
+                className="flex items-center"
               >
                 <SearchBar showButton={false} autoFocus className="w-48" />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setSearchOpen(false)}
-                  className="ml-1 transition-transform duration-200 hover:scale-105"
+                  className="transition-transform duration-200 hover:scale-105"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -140,6 +140,13 @@ export function MobileHeader({ className }: MobileHeaderProps) {
               </motion.div>
             )}
           </AnimatePresence>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleNavigation("/cart")}
+          >
+            <CartIcon />
+          </Button>
         </div>
       </div>
     );

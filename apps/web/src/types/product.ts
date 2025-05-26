@@ -25,6 +25,7 @@ export type ProductByBrand = {
   category: string;
   status: ProductStatus;
 };
+
 export type ProductSummary = {
   name: string;
   brand: {
@@ -36,6 +37,8 @@ export type ProductSummary = {
   salePrice?: number;
   image: string;
   stock: number;
+  hasVariants: boolean;
+  colorVariants: string[] | null;
 };
 
 export type ProductDetails = {

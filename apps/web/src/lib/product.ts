@@ -48,6 +48,7 @@ export const useHomeProducts = () =>
         throw new Error("Failed to fetch data");
       }
     },
+    staleTime: 1000 * 60 * 15, // 15 minutes
   });
 export const useProductOptions = () =>
   useQuery<ProductOption[], Error>({

@@ -378,7 +378,28 @@ class ProductService {
         name: true,
         brand: { select: { name: true, slug: true } },
         slug: true,
-        variants: { select: { images: true, price: true } },
+        variants: { select: { images: true, price: true, id: true } },
+      },
+    });
+    const colorVariantOption = await this.prisma.productOption.findUnique({
+      where: { name: "Color" },
+    });
+    const colorVariantValues = await this.prisma.variantOptionValue.findMany({
+      where: {
+        productOptionId: colorVariantOption.id,
+        variant: {
+          productId: {
+            in: products.flatMap((p) => p.variants.map((v) => v.id)),
+          },
+        },
+      },
+      select: {
+        variantId: true,
+        optionValue: {
+          select: {
+            value: true,
+          },
+        },
       },
     });
     const bestSellers = products.slice(0, 5).map((product) => ({
@@ -387,6 +408,14 @@ class ProductService {
       slug: product.slug,
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
+      hasVariants: product.variants.length > 1,
+      colorVariants: [
+        ...new Set(
+          colorVariantValues
+            .filter((v) => product.variants.some((p) => p.id === v.variantId))
+            .map((v) => v.optionValue.value)
+        ),
+      ],
     }));
     const bestDeals = products.slice(5, 10).map((product) => ({
       name: product.name,
@@ -394,6 +423,14 @@ class ProductService {
       slug: product.slug,
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
+      hasVariants: product.variants.length > 1,
+      colorVariants: [
+        ...new Set(
+          colorVariantValues
+            .filter((v) => product.variants.some((p) => p.id === v.variantId))
+            .map((v) => v.optionValue.value)
+        ),
+      ],
     }));
     const newArrivals = products.slice(10, 15).map((product) => ({
       name: product.name,
@@ -401,6 +438,14 @@ class ProductService {
       slug: product.slug,
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
+      hasVariants: product.variants.length > 1,
+      colorVariants: [
+        ...new Set(
+          colorVariantValues
+            .filter((v) => product.variants.some((p) => p.id === v.variantId))
+            .map((v) => v.optionValue.value)
+        ),
+      ],
     }));
     return {
       bestSellers,

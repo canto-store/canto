@@ -86,9 +86,6 @@ export function CartItemComponent({
             <p className="text-xs font-medium">
               EGP {item.price.toFixed(2)} × {item.quantity}
             </p>
-            <p className="text-primary text-xs font-medium sm:text-sm">
-              EGP {(item.price * item.quantity).toFixed(2)}
-            </p>
           </div>
         </div>
 
