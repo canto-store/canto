@@ -17,7 +17,7 @@ export default function RegisterPage() {
   }, [isAuthenticated, user?.role, router]);
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-center p-10">
+    <div className="mx-auto flex max-w-2xl flex-col items-center justify-center p-10">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold tracking-tight">
           {t("register.title")}

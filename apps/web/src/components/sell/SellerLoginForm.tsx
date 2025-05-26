@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useAuth } from "@/providers/auth/use-auth";
 import { useRouter } from "@/i18n/navigation";
+import { parseApiError } from "@/lib/utils";
+import { ErrorAlert } from "../ui/error-alert";
 
 // Login Form Schema
 export const LoginFormSchema = z.object({
@@ -35,6 +37,7 @@ export function SellerLoginForm({ onSwitchToSignUp }: SellerLoginFormProps) {
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { sellerLogin } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm<LoginFormValues>({
@@ -61,7 +64,7 @@ export function SellerLoginForm({ onSwitchToSignUp }: SellerLoginFormProps) {
           }
         },
         onError: (error) => {
-          toast.error(error.message);
+          setError(parseApiError(error));
           setIsSubmitting(false);
         },
       },
@@ -71,6 +74,7 @@ export function SellerLoginForm({ onSwitchToSignUp }: SellerLoginFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleLogin)} className="w-full">
+        <ErrorAlert message={error || ""} className="mb-4" />
         <div className="space-y-4">
           <FormField
             control={form.control}

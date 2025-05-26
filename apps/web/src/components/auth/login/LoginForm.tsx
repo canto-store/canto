@@ -132,7 +132,7 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
           )}
         />
 
-        <div className="flex items-center justify-between pt-2">
+        {/* <div className="flex items-center justify-between pt-2">
           <Button
             type="button"
             variant="link"
@@ -149,7 +149,15 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
               t("auth.loginButton")
             )}
           </Button>
-        </div>
+        </div> */}
+
+        <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            t("auth.loginButton")
+          )}
+        </Button>
 
         <div className="mt-6 text-center text-sm">
           <span className="bg-background px-4">{t("auth.noAccount")}</span>
