@@ -19,7 +19,7 @@ export default function Page() {
     } else {
       router.push("/sell/register");
     }
-  }, [isAuthenticated, user?.role, router]);
+  }, [isAuthenticated, user, router]);
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center p-10">

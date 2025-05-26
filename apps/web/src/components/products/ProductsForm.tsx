@@ -1,6 +1,5 @@
 import type React from "react";
 
-import { useState } from "react";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,16 +23,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
-import { UploadDropzone } from "@/utils/uploadthing";
 import ProductVariants from "@/components/products/product-variants";
 import { useCategories } from "@/lib/categories";
 import {
   productFormSchema,
   ProductFormValues,
   ProductStatus,
-  SavedProductForm,
 } from "@/types/product";
 import { useProductsByBrand, useSubmitProduct } from "@/lib/product";
 import { useMyBrand } from "@/lib/brand";

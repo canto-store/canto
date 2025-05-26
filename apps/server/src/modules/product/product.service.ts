@@ -416,8 +416,8 @@ class ProductService {
           name: dto.name,
           slug: slugify(dto.name),
           description: dto.description,
-          brandId: dto.brandId,
-          categoryId: dto.category,
+          brand: { connect: { id: dto.brandId } },
+          category: { connect: { id: dto.category } },
         },
         include: {
           brand: true,
