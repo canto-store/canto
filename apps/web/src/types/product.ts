@@ -6,17 +6,17 @@ export enum ProductStatus {
   INACTIVE = "INACTIVE",
 }
 
-export type Product = {
-  id: number;
-  name: string;
-  slug: string;
-  description: string | null;
-  sizeChart: string | null;
-  brandId: number;
-  categoryId: number;
-  created_at: Date;
-  updated_at: Date;
-};
+// export type Product = {
+//   id: number;
+//   name: string;
+//   slug: string;
+//   description: string | null;
+//   sizeChart: string | null;
+//   brandId: number;
+//   categoryId: number;
+//   created_at: Date;
+//   updated_at: Date;
+// };
 export type ProductByBrand = {
   id: number;
   name: string;
