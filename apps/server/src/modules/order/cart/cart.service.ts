@@ -1,9 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { CartItem, PrismaClient } from "@prisma/client";
 import AppError from "../../../utils/appError";
-import {
-  CreateCartItemDto,
-  UpdateCartItemDto,
-} from "./cart.types";
+import { CreateCartItemDto, UpdateCartItemDto } from "./cart.types";
 
 class CartService {
   private readonly prisma = new PrismaClient();
@@ -25,7 +22,7 @@ class CartService {
   }
 
   async getCartByUser(userId: number) {
-    const cart = await this.prisma.cart.findUnique({
+    let cart = await this.prisma.cart.findUnique({
       where: { userId },
       include: {
         items: {
@@ -33,8 +30,36 @@ class CartService {
         },
       },
     });
-    if (!cart) throw new AppError("Cart not found", 404);
-    return cart;
+    if (!cart)
+      cart = await this.prisma.cart.create({
+        data: { userId },
+        include: {
+          items: {
+            include: { variant: { include: { product: true, images: true } } },
+          },
+        },
+      });
+    const items = await Promise.all(
+      cart.items.map(async (item) => {
+        const brand = await this.prisma.brand.findUnique({
+          where: { id: item.variant.product.brandId },
+        });
+        return {
+          name: item.variant.product.name,
+          brand: {
+            name: brand?.name,
+            slug: brand?.slug,
+          },
+          slug: item.variant.product.slug,
+          price: item.variant.price,
+          image: item.variant.images[0].url,
+          stock: item.variant.stock,
+          variantId: item.variant.id,
+          quantity: item.quantity,
+        };
+      })
+    );
+    return items;
   }
 
   async clearCart(userId: number) {
@@ -58,8 +83,7 @@ class CartService {
       where: { id: variantId },
     });
     if (!variant) throw new AppError("Variant not found", 404);
-    if (variant.stock < quantity)
-      throw new AppError("Insufficient stock", 400);
+    if (variant.stock < quantity) throw new AppError("Insufficient stock", 400);
 
     // 2) get or create the cart
     const cart = await this.getOrCreateCart(userId);
@@ -110,12 +134,65 @@ class CartService {
   }
 
   /** Remove one cart item */
-  async deleteItem(id: number) {
-    const found = await this.prisma.cartItem.findUnique({
-      where: { id },
+  async deleteItem(variantId: number, userId: number) {
+    const found = await this.prisma.cartItem.findFirst({
+      where: {
+        variantId,
+        cart: {
+          userId,
+        },
+      },
     });
     if (!found) throw new AppError("Cart item not found", 404);
-    return this.prisma.cartItem.delete({ where: { id } });
+    return this.prisma.cartItem.delete({ where: { id: found.id } });
+  }
+
+  async syncCart(
+    userId: number,
+    items: { variantId: number; quantity: number }[]
+  ) {
+    // 1) Get or create cart
+    const cart = await this.getOrCreateCart(userId);
+
+    const existingItems = await this.prisma.cartItem.findMany({
+      where: {
+        cartId: cart.id,
+        variantId: { in: items.map((item) => item.variantId) },
+      },
+    });
+    // start transaction
+    await this.prisma.$transaction(async (tx) => {
+      // 2 Increase quantity of existing cart items
+      if (existingItems.length > 0) {
+        await tx.cartItem.updateMany({
+          where: {
+            cartId: cart.id,
+            variantId: { in: items.map((item) => item.variantId) },
+          },
+          data: {
+            quantity: {
+              increment:
+                items.find((item) => item.variantId === item.variantId)
+                  ?.quantity ?? 0,
+            },
+          },
+        });
+      }
+
+      // 3) Create new cart items
+      await tx.cartItem.createMany({
+        data: items
+          .filter(
+            (item) => !existingItems.some((i) => i.variantId === item.variantId)
+          )
+          .map((item) => ({
+            cartId: cart.id,
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+      });
+    });
+    return true;
   }
 }
 

@@ -1,16 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import CartService from "./cart.service";
-import {
-  CreateCartItemDto,
-  UpdateCartItemDto,
-} from "./cart.types";
+import { UpdateCartItemDto } from "./cart.types";
+import { AuthRequest } from "../../../middlewares/auth.middleware";
 
 class CartController {
   private readonly service = new CartService();
 
-  async getCartByUser(req: Request, res: Response, next: NextFunction) {
+  async getCartByUser(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = Number(req.params.userId);
+      const userId = req.user.id;
       const cart = await this.service.getCartByUser(userId);
       res.status(200).json(cart);
     } catch (err) {
@@ -28,10 +26,11 @@ class CartController {
     }
   }
 
-  async addItem(req: Request, res: Response, next: NextFunction) {
+  async addItem(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const dto = req.body as CreateCartItemDto;
-      const item = await this.service.addItem(dto);
+      const userId = req.user.id;
+      const { variantId, quantity } = req.body;
+      const item = await this.service.addItem({ userId, variantId, quantity });
       res.status(201).json(item);
     } catch (err) {
       next(err);
@@ -49,11 +48,22 @@ class CartController {
     }
   }
 
-  async deleteItem(req: Request, res: Response, next: NextFunction) {
+  async deleteItem(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = Number(req.params.id);
-      await this.service.deleteItem(id);
+      const userId = req.user.id;
+      const variantId = req.body.variantId;
+      await this.service.deleteItem(variantId, userId);
       res.status(200).json({ message: "Cart item removed" });
+    } catch (err) {
+      next(err);
+    }
+  }
+  async syncCart(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user.id;
+      const items = req.body.items;
+      const result = await this.service.syncCart(userId, items);
+      res.status(200).json(result);
     } catch (err) {
       next(err);
     }

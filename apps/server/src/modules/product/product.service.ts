@@ -409,6 +409,7 @@ class ProductService {
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
       hasVariants: product.variants.length > 1,
+      variantId: product.variants[0]?.id,
       colorVariants: [
         ...new Set(
           colorVariantValues
@@ -423,6 +424,7 @@ class ProductService {
       slug: product.slug,
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
+      variantId: product.variants[0]?.id,
       hasVariants: product.variants.length > 1,
       colorVariants: [
         ...new Set(
@@ -439,6 +441,7 @@ class ProductService {
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
       hasVariants: product.variants.length > 1,
+      variantId: product.variants[0]?.id,
       colorVariants: [
         ...new Set(
           colorVariantValues

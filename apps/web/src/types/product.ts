@@ -38,6 +38,7 @@ export type ProductSummary = {
   image: string;
   stock: number;
   hasVariants: boolean;
+  variantId: number;
   colorVariants: string[] | null;
 };
 

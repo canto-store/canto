@@ -3,10 +3,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoginRequest, RegisterRequest } from "@/types/auth";
 import api from "@/lib/api";
 import { Seller, User } from "@/types/user";
+import { useState, useEffect } from "react";
+import { CartItem } from "@/types";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const userQuery = useQuery<User | Seller | null>({
     queryKey: ["me"],
     queryFn: async () => {
@@ -19,6 +21,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     retry: false,
     throwOnError: false,
   });
+
+  useEffect(() => {
+    if (userQuery.data) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [userQuery.data]);
 
   const register = useMutation<User, Error, RegisterRequest>({
     mutationFn: async ({ email, password, name, phone_number }) => {
@@ -57,6 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.fetchQuery({ queryKey: ["cart"] });
     },
   });
   const logout = useMutation<void, Error, unknown, unknown>({
@@ -66,6 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     },
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: ["me"] });
+      setIsAuthenticated(false);
     },
   });
 
@@ -86,8 +98,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
-
-  const isAuthenticated = !!userQuery.data;
 
   return (
     <AuthContext.Provider

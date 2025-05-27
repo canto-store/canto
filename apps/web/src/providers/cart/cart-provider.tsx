@@ -6,6 +6,9 @@ import { CartItem } from "@/types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { CartContext } from "./cart-context";
+import { useAddToCart, useDeleteFromCart, useGetCart } from "@/lib/cart";
+import { useAuth } from "@/providers/auth/use-auth";
+import api from "@/lib/api";
 
 interface CartProviderProps {
   children: ReactNode;
@@ -13,28 +16,53 @@ interface CartProviderProps {
 
 export function CartProvider({ children }: CartProviderProps) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [, setIsInitialized] = useState(false);
+  const [hasSynced, setHasSynced] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const { data: serverCart, isLoading, refetch } = useGetCart();
 
+  const { mutate: addToCartMutation } = useAddToCart();
+  const { mutate: deleteFromCartMutation } = useDeleteFromCart();
   const t = useTranslations();
 
-  // Load cart from localStorage on mount
+  // Initialize cart from localStorage on client-side only
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      try {
-        setItems(JSON.parse(storedCart));
-      } catch (error) {
-        console.error("Failed to parse cart from localStorage:", error);
-        setItems([]);
-      }
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      setItems(JSON.parse(savedCart));
     }
-    setIsInitialized(true);
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Reset sync flag when user logs out
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(items));
-  }, [items]);
+    if (!isAuthenticated) {
+      setHasSynced(false);
+    }
+  }, [isAuthenticated]);
+
+  // Sync local cart with server when user authenticates
+  useEffect(() => {
+    const syncCartWithServer = async () => {
+      if (isAuthenticated && items.length > 0 && !hasSynced) {
+        try {
+          const { status } = await api.post("/cart/user", {
+            items: items.map((item) => ({
+              variantId: item.variantId,
+              quantity: item.quantity,
+            })),
+          });
+          if (status === 200) {
+            localStorage.removeItem("cart");
+            setHasSynced(true);
+            refetch(); // Refresh the server cart data
+          }
+        } catch (error) {
+          console.error("Failed to sync cart with server:", error);
+        }
+      }
+    };
+
+    syncCartWithServer();
+  }, [isAuthenticated, items, refetch, hasSynced]);
 
   // Calculate total count and price
   const count = items.reduce((total, item) => total + item.quantity, 0);
@@ -43,52 +71,67 @@ export function CartProvider({ children }: CartProviderProps) {
     0,
   );
 
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(items));
+  }, [items]);
+
+  useEffect(() => {
+    if (serverCart && isAuthenticated) {
+      setItems(serverCart);
+    }
+  }, [serverCart, isAuthenticated]);
+
   // Add an item to the cart
   const addToCart = (product: ProductSummary, quantity = 1) => {
-    setItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex(
-        (item) => item.name === product.name,
-      );
+    if (!product.variantId) return toast.error("ERROR");
 
-      if (existingItemIndex >= 0) {
-        // Item exists, update quantity
-        const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex] = {
-          ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + quantity,
-        };
-        return updatedItems;
+    if (isAuthenticated) {
+      addToCartMutation({ variantId: product.variantId, quantity });
+    } else {
+      const existingItem = items.find(
+        (item) => item.variantId === product.variantId,
+      );
+      if (existingItem) {
+        existingItem.quantity += quantity;
       } else {
-        // Item doesn't exist, add new item
-        return [...prevItems, { ...product, quantity }];
+        setItems([...items, { ...product, quantity }]);
       }
-    });
+    }
     toast(t("products.addedToCart", { productName: product.name }));
   };
 
   // Remove an item from the cart
-  const removeItem = (productId: string) => {
-    setItems((prevItems) =>
-      prevItems.filter((item) => item.name !== productId),
-    );
+  const removeItem = (productId: number) => {
+    if (isAuthenticated) {
+      deleteFromCartMutation({ variantId: productId });
+    } else {
+      setItems(items.filter((item) => item.variantId !== productId));
+    }
   };
 
   // Update item quantity
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(productId);
-      return;
+  const updateQuantity = (productId: number, quantity: number) => {
+    if (!isAuthenticated) {
+      if (quantity <= 0) {
+        removeItem(productId);
+        return;
+      }
+      setItems(
+        items.map((item) =>
+          item.variantId === productId ? { ...item, quantity } : item,
+        ),
+      );
     }
-
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.name === productId ? { ...item, quantity } : item,
-      ),
-    );
   };
 
   // Clear the cart
   const clearCart = () => {
+    if (!isAuthenticated) {
+      setItems([]);
+    }
+  };
+
+  const clearLocalCart = () => {
     setItems([]);
   };
 
@@ -108,6 +151,8 @@ export function CartProvider({ children }: CartProviderProps) {
         updateQuantity,
         clearCart,
         isInCart,
+        isLoading,
+        clearLocalCart,
       }}
     >
       {children}

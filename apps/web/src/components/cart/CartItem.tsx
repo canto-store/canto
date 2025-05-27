@@ -27,24 +27,17 @@ export function CartItemComponent({
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { updateQuantity, removeItem } = useCart();
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { updateQuantity, removeItem, isLoading: isUpdating } = useCart();
   const router = useRouter();
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity < 1) return;
 
-    setIsUpdating(true);
-    updateQuantity(item.name, newQuantity);
-
-    // Simulate network delay for UI feedback
-    setTimeout(() => {
-      setIsUpdating(false);
-    }, 300);
+    updateQuantity(item.variantId, newQuantity);
   };
 
   const handleRemove = () => {
-    removeItem(item.name);
+    removeItem(item.variantId);
   };
 
   const handleProductClick = () => {
