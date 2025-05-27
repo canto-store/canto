@@ -232,16 +232,13 @@
     "copyright": "© 2025 Canto. All rights reserved."
   },
   "heroSlider": {
-    "summerCollection": "Summer Collection 2025",
+    "summer": "Summer Collection 2025",
     "summerSubtitle": "Discover the latest trends in luxury fashion",
-    "exclusiveBrands": "Exclusive Brands",
-    "exclusiveCollection": "Exclusive Brands",
+    "exclusive": "Exclusive Brands",
     "exclusiveSubtitle": "Shop designer collections",
     "newArrivals": "New Arrivals",
-    "newArrivalsCollection": "New Arrivals",
     "newArrivalsSubtitle": "Be the first to shop new styles",
     "accessories": "Accessories Collection",
-    "accessoriesCollection": "Accessories Collection",
     "accessoriesSubtitle": "Complete your look with premium accessories",
     "shopNow": "Shop Now"
   },

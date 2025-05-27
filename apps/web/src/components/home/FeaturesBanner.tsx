@@ -15,35 +15,23 @@ export function FeaturesBanner() {
   const features: FeatureItem[] = [
     {
       icon: <Truck className="h-8 w-8 text-gray-500" />,
-      title: t("features.payment.title", {
-        defaultValue: "PAYMENT & DELIVERY",
-      }),
-      description: t("features.payment.description", {
-        defaultValue: "Free shipping for orders over EGP50",
-      }),
+      title: t("features.payment.title"),
+      description: t("features.payment.description"),
     },
     {
       icon: <RotateCcw className="h-8 w-8 text-gray-500" />,
-      title: t("features.return.title", { defaultValue: "RETURN & REFUND" }),
-      description: t("features.return.description", {
-        defaultValue: "Free 100% money back guarantee",
-      }),
+      title: t("features.return.title"),
+      description: t("features.return.description"),
     },
     {
       icon: <Headset className="h-8 w-8 text-gray-500" />,
-      title: t("features.support.title", { defaultValue: "QUALITY SUPPORT" }),
-      description: t("features.support.description", {
-        defaultValue: "Always online feedback 24/7",
-      }),
+      title: t("features.support.title"),
+      description: t("features.support.description"),
     },
     {
       icon: <Mail className="h-8 w-8 text-gray-500" />,
-      title: t("features.newsletter.title", {
-        defaultValue: "JOIN OUR NEWSLETTER",
-      }),
-      description: t("features.newsletter.description", {
-        defaultValue: "10% off by subscribing to our newsletter",
-      }),
+      title: t("features.newsletter.title"),
+      description: t("features.newsletter.description"),
     },
   ];
 

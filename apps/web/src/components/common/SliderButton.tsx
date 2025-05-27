@@ -25,11 +25,7 @@ export function SliderButton({
         "/20 hover:/40 flex h-10 w-10 items-center justify-center rounded-full text-white shadow-md backdrop-blur-md transition-all hover:cursor-pointer focus:ring-2 focus:ring-white/50 focus:outline-none active:scale-95",
         className,
       )}
-      aria-label={
-        direction === "left"
-          ? t("previousSlide", { defaultValue: "Previous slide" })
-          : t("nextSlide", { defaultValue: "Next slide" })
-      }
+      aria-label={direction === "left" ? t("previousSlide") : t("nextSlide")}
     >
       {children}
     </button>

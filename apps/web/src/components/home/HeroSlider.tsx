@@ -107,12 +107,8 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
       return { title: slide.title, subtitle: slide.subtitle };
 
     return {
-      title: t(`${slide.translationKey}Collection`, {
-        defaultValue: slide.title,
-      }),
-      subtitle: t(`${slide.translationKey}Subtitle`, {
-        defaultValue: slide.subtitle,
-      }),
+      title: t(slide.translationKey),
+      subtitle: t(`${slide.translationKey}Subtitle`),
     };
   };
 
@@ -183,7 +179,7 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
                       className="text-sm sm:text-base"
                       onClick={() => router.push("/browse")}
                     >
-                      <span>{t("shopNow", { defaultValue: "Shop Now" })}</span>
+                      <span>{t("shopNow")}</span>
                     </Button>
                   </div>
                 </div>
