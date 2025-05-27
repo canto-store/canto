@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Minus, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";

@@ -4,7 +4,6 @@ import { LoginRequest, RegisterRequest } from "@/types/auth";
 import api from "@/lib/api";
 import { Seller, User } from "@/types/user";
 import { useState, useEffect } from "react";
-import { CartItem } from "@/types";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
