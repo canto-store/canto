@@ -77,7 +77,7 @@ export function RegisterForm({
         onSuccess: () => {
           setIsPending(false);
           setError(null);
-          toast.success(t("registrationSuccess"));
+          toast.success(t("registerSuccess"));
           if (onSuccess) {
             onSuccess(data.email);
           } else {
