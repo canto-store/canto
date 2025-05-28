@@ -4,11 +4,12 @@ import { Minus, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/providers";
+import { useCartStore, useDeleteFromCart, useUpdateCartItem } from "@/lib/cart";
 import { CartItem } from "@/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/providers/auth/use-auth";
 
 interface CartItemProps {
   item: CartItem;
@@ -26,16 +27,27 @@ export function CartItemComponent({
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { updateQuantity, removeItem, isLoading: isUpdating } = useCart();
+  const { updateItem, removeItem } = useCartStore();
+  const { mutate: deleteFromCart } = useDeleteFromCart();
+  const { mutate: updateCartItem } = useUpdateCartItem();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
 
-  const handleQuantityChange = (newQuantity: number) => {
+  const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return;
-
-    updateQuantity(item.variantId, newQuantity);
+    if (isAuthenticated) {
+      updateCartItem({
+        variantId: item.variantId,
+        quantity: newQuantity,
+      });
+    }
+    updateItem(item.variantId, newQuantity);
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    if (isAuthenticated) {
+      deleteFromCart({ variantId: item.variantId });
+    }
     removeItem(item.variantId);
   };
 
@@ -145,7 +157,7 @@ export function CartItemComponent({
                   size="icon"
                   className="h-7 w-7 rounded-none sm:h-8 sm:w-8"
                   onClick={() => handleQuantityChange(item.quantity - 1)}
-                  disabled={isUpdating || item.quantity <= 1}
+                  disabled={item.quantity <= 1}
                 >
                   <Minus className="h-3 w-3" />
                   <span className="sr-only">Decrease quantity</span>
@@ -158,7 +170,6 @@ export function CartItemComponent({
                   size="icon"
                   className="h-7 w-7 rounded-none sm:h-8 sm:w-8"
                   onClick={() => handleQuantityChange(item.quantity + 1)}
-                  disabled={isUpdating}
                 >
                   <Plus className="h-3 w-3" />
                   <span className="sr-only">Increase quantity</span>

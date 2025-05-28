@@ -12,7 +12,7 @@ router.get(
   controller.getCartByUser.bind(controller)
 );
 
-router.post(
+router.put(
   "/user",
   authMiddleware.checkAuth.bind(authMiddleware),
   controller.syncCart.bind(controller)
@@ -26,7 +26,11 @@ router.post(
   controller.addItem.bind(controller)
 );
 
-router.put("/items/:id", controller.updateItem.bind(controller));
+router.put(
+  "/items",
+  authMiddleware.checkAuth.bind(authMiddleware),
+  controller.updateItem.bind(controller)
+);
 
 router.delete(
   "/items",

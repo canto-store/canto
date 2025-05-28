@@ -10,13 +10,14 @@ import {
   CouponData,
   CheckoutSummary,
 } from "@/components";
-import { useBanner, useCart } from "@/providers";
+import { useBanner } from "@/providers";
+import { useCartStore } from "@/lib/cart";
 import { toast } from "sonner";
 
 export default function Page() {
   const t = useTranslations();
   const router = useRouter();
-  const { clearCart } = useCart();
+  const { clearCart } = useCartStore();
 
   const [shippingAddress, setShippingAddress] =
     useState<ShippingAddress | null>(null);

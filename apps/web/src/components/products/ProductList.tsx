@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
-import { ProductSummary } from "@/types";
+import { CartItem, ProductSummary } from "@/types";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useCart } from "@/providers";
+import { useAddToCart, useCartStore } from "@/lib/cart";
 
 interface ProductListProps {
   products: ProductSummary[];
@@ -22,7 +22,13 @@ export function ProductList({ products, title, className }: ProductListProps) {
   const params = useParams();
   const isRTL = params?.locale === "ar";
 
-  const { addToCart } = useCart();
+  const { addItem } = useCartStore();
+  const { mutateAsync: addToCart } = useAddToCart();
+
+  const handleAddToCart = (product: CartItem) => {
+    addItem(product);
+    addToCart({ variantId: product.variantId, quantity: 1 });
+  };
   return (
     <SectionContainer title={title}>
       <div className={cn("space-y-4", className)} dir={isRTL ? "rtl" : "ltr"}>
@@ -77,7 +83,7 @@ export function ProductList({ products, title, className }: ProductListProps) {
                   className={`flex ${isRTL ? "flex-row-reverse" : ""} gap-2`}
                 >
                   <Button
-                    onClick={() => addToCart(product)}
+                    onClick={() => handleAddToCart({ ...product, quantity: 1 })}
                     size="sm"
                     className="gap-1"
                   >

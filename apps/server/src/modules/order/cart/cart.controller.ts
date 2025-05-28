@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import CartService from "./cart.service";
-import { UpdateCartItemDto } from "./cart.types";
 import { AuthRequest } from "../../../middlewares/auth.middleware";
 
 class CartController {
@@ -37,11 +36,11 @@ class CartController {
     }
   }
 
-  async updateItem(req: Request, res: Response, next: NextFunction) {
+  async updateItem(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = Number(req.params.id);
-      const dto = req.body as UpdateCartItemDto;
-      await this.service.updateItem(id, dto);
+      const userId = req.user.id;
+      const { variantId, quantity } = req.body;
+      await this.service.updateItem(userId, variantId, quantity);
       res.status(200).json({ message: "Cart item updated" });
     } catch (err) {
       next(err);
@@ -61,7 +60,7 @@ class CartController {
   async syncCart(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user.id;
-      const items = req.body.items;
+      const { items } = req.body;
       const result = await this.service.syncCart(userId, items);
       res.status(200).json(result);
     } catch (err) {

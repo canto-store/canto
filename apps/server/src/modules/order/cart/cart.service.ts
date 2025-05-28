@@ -104,31 +104,30 @@ class CartService {
     }
 
     // 4) otherwise create new cartItem
-    return this.prisma.cartItem.create({
+    await this.prisma.cartItem.create({
       data: { cartId: cart.id, variantId, quantity },
     });
   }
 
   /** Update quantity (0 will remove) */
-  async updateItem(id: number, dto: UpdateCartItemDto) {
-    const item = await this.prisma.cartItem.findUnique({
-      where: { id },
-      include: { variant: true },
+  async updateItem(userId: number, variantId: number, quantity: number) {
+    const cart = await this.prisma.cart.findUnique({
+      where: { userId },
+    });
+    if (!cart) throw new AppError("Cart not found", 404);
+    const item = await this.prisma.cartItem.findFirst({
+      where: { cartId: cart.id, variantId },
     });
     if (!item) throw new AppError("Cart item not found", 404);
 
-    const { quantity } = dto;
     if (quantity == null || quantity < 0)
       throw new AppError("quantity must be ≥ 0", 400);
     if (quantity === 0) {
-      await this.prisma.cartItem.delete({ where: { id } });
+      await this.prisma.cartItem.delete({ where: { id: item.id } });
       return;
     }
-    if (quantity > item.variant.stock)
-      throw new AppError("Insufficient stock", 400);
-
     return this.prisma.cartItem.update({
-      where: { id },
+      where: { id: item.id },
       data: { quantity },
     });
   }
@@ -151,48 +150,40 @@ class CartService {
     userId: number,
     items: { variantId: number; quantity: number }[]
   ) {
-    // 1) Get or create cart
+    console.log("syncCart", userId, items);
     const cart = await this.getOrCreateCart(userId);
-
     const existingItems = await this.prisma.cartItem.findMany({
       where: {
         cartId: cart.id,
         variantId: { in: items.map((item) => item.variantId) },
       },
     });
-    // start transaction
-    await this.prisma.$transaction(async (tx) => {
-      // 2 Increase quantity of existing cart items
-      if (existingItems.length > 0) {
-        await tx.cartItem.updateMany({
-          where: {
-            cartId: cart.id,
-            variantId: { in: items.map((item) => item.variantId) },
+    existingItems.forEach(async (item) => {
+      await this.prisma.cartItem.update({
+        where: { id: item.id },
+        data: {
+          quantity: {
+            increment: items.find((i) => i.variantId === item.variantId)
+              .quantity,
           },
-          data: {
-            quantity: {
-              increment:
-                items.find((item) => item.variantId === item.variantId)
-                  ?.quantity ?? 0,
-            },
-          },
-        });
-      }
+        },
+      });
+    });
 
-      // 3) Create new cart items
-      await tx.cartItem.createMany({
-        data: items
-          .filter(
-            (item) => !existingItems.some((i) => i.variantId === item.variantId)
-          )
-          .map((item) => ({
+    items
+      .filter(
+        (item) => !existingItems.some((i) => i.variantId === item.variantId)
+      )
+      .forEach(async (item) => {
+        await this.prisma.cartItem.create({
+          data: {
             cartId: cart.id,
             variantId: item.variantId,
             quantity: item.quantity,
-          })),
+          },
+        });
       });
-    });
-    return true;
+    return this.getCartByUser(userId);
   }
 }
 

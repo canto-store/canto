@@ -15,10 +15,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
             gcTime: 5 * 60 * 1000,
             retry: 1,
             refetchOnWindowFocus: false,
-            throwOnError(error) {
-              console.error(parseApiError(error));
-              return false;
-            },
           },
           mutations: {
             retry: 1,

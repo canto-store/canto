@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { useAuth } from "@/providers/auth/use-auth";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
+import { useCartStore } from "@/lib/cart";
 
 export function UserDropdown() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -17,6 +18,7 @@ export function UserDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
+  const { clearCart } = useCartStore();
   const { isAuthenticated, logout: logoutMutation, user } = useAuth();
 
   useEffect(() => {
@@ -64,6 +66,7 @@ export function UserDropdown() {
 
   const handleLogout = async () => {
     logoutMutation.mutateAsync(undefined);
+    clearCart();
     setUserDropdownOpen(false);
   };
 

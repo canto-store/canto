@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/providers";
+import { useCartStore } from "@/lib/cart";
 import { cn } from "@/lib/utils";
 
 interface CartSummaryProps {
@@ -11,7 +11,7 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ className }: CartSummaryProps) {
-  const { totalPrice, count } = useCart();
+  const { price, count } = useCartStore();
   const t = useTranslations();
   const router = useRouter();
 
@@ -53,13 +53,13 @@ export function CartSummary({ className }: CartSummaryProps) {
       <div className="space-y-2 sm:space-y-3">
         <div className="flex justify-between text-xs sm:text-sm">
           <p>{t("cart.subtotal")}</p>
-          <p className="font-medium">${totalPrice.toFixed(2)}</p>
+          <p className="font-medium">${price.toFixed(2)}</p>
         </div>
 
         <div className="border-t border-gray-200 pt-2 sm:pt-3">
           <div className="flex justify-between text-xs font-medium sm:text-sm">
             <p className="text-gray-900">{t("cart.orderTotal")}</p>
-            <p className="text-primary">${totalPrice.toFixed(2)}</p>
+            <p className="text-primary">${price.toFixed(2)}</p>
           </div>
           <p className="mt-1 text-xs text-gray-500">{t("cart.shippingNote")}</p>
         </div>

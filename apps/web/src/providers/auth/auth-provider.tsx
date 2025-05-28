@@ -66,7 +66,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
-      queryClient.fetchQuery({ queryKey: ["cart"] });
     },
   });
   const logout = useMutation<void, Error, unknown, unknown>({

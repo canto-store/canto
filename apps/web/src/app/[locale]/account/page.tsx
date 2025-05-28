@@ -18,6 +18,7 @@ import {
 import { If, useMediaQuery } from "react-haiku";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
+import { useCartStore } from "@/lib/cart";
 
 export default function Page() {
   const { isAuthenticated, user, logout: logoutMutation } = useAuth();
@@ -25,9 +26,11 @@ export default function Page() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
+  const { clearCart } = useCartStore();
 
   const logout = () => {
     logoutMutation.mutateAsync(undefined);
+    clearCart();
     router.push("/");
   };
   const handleLanguageChange = () => {

@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCartStore, useSyncCart } from "@/lib/cart";
 
 // Define the form validation schema with Zod
 const registerFormSchema = z
@@ -50,6 +51,8 @@ export function RegisterForm({
   const t = useTranslations("auth");
   const router = useRouter();
   const { register: registerMutation } = useAuth();
+  const { items, addItems } = useCartStore();
+  const { mutateAsync: syncCart } = useSyncCart();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,31 +69,36 @@ export function RegisterForm({
 
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
-    registerMutation.mutate(
-      {
+    registerMutation
+      .mutateAsync({
         email: data.email,
         password: data.password,
         name: data.name,
         phone_number: data.phone_number,
-      },
-      {
-        onSuccess: () => {
-          setIsPending(false);
-          setError(null);
-          toast.success(t("registerSuccess"));
-          if (onSuccess) {
-            onSuccess(data.email);
-          } else {
-            router.push("/");
-          }
-        },
-        onError: (error) => {
-          setIsPending(false);
-          setError(parseApiError(error));
-          toast.error(t("registrationError"));
-        },
-      },
-    );
+      })
+      .then((data) => {
+        setIsPending(false);
+        setError(null);
+        toast.success(t("registerSuccess"));
+        if (onSuccess) {
+          onSuccess(data.email);
+        } else {
+          router.push("/");
+        }
+        syncCart(
+          items.map((item) => ({
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+        ).then((data) => {
+          addItems(data);
+        });
+      })
+      .catch((error) => {
+        setIsPending(false);
+        setError(parseApiError(error));
+        toast.error(t("registrationError"));
+      });
   };
 
   const handleSwitchToLogin = () => {

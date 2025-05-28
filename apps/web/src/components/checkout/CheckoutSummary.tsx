@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/providers";
+import { useCartStore } from "@/lib/cart";
 import { cn } from "@/lib/utils";
 import { CouponData } from "./CouponForm";
 import { ShippingAddress } from "./ShippingAddressForm";
@@ -24,7 +24,7 @@ export function CheckoutSummary({
   onPlaceOrder,
   isLoading = false,
 }: CheckoutSummaryProps) {
-  const { totalPrice: subtotal, count } = useCart();
+  const { price: subtotal, count } = useCartStore();
   const t = useTranslations();
   const router = useRouter();
 

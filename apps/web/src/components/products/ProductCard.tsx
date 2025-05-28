@@ -5,9 +5,10 @@ import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useCart } from "@/providers";
+import { useAddToCart, useCartStore } from "@/lib/cart";
 import { ProductSummary } from "@/types";
 import { BsCartPlus, BsEye } from "react-icons/bs";
+import { useAuth } from "@/providers/auth/use-auth";
 
 interface ProductCardProps {
   product: ProductSummary;
@@ -26,7 +27,16 @@ export function ProductCard({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const { addToCart } = useCart();
+  const { addItem } = useCartStore();
+  const { mutateAsync: addToCart } = useAddToCart();
+  const { isAuthenticated } = useAuth();
+
+  const handleAddToCart = (product: ProductSummary) => {
+    if (isAuthenticated) {
+      addToCart({ variantId: product.variantId, quantity: 1 });
+    }
+    addItem({ ...product, quantity: 1 });
+  };
 
   const handleProductClick = (product: ProductSummary) => {
     router.push(
@@ -130,7 +140,7 @@ export function ProductCard({
               <BsEye className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
           ) : (
-            <Button onClick={() => addToCart(product)} size="icon">
+            <Button onClick={() => handleAddToCart(product)} size="icon">
               <BsCartPlus className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
           )}

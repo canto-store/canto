@@ -1,9 +1,9 @@
-import { useCart } from "@/providers";
+import { useCartStore } from "@/lib/cart";
 import { ShoppingCart } from "lucide-react";
 import React from "react";
 
 export const CartIcon: React.FC = () => {
-  const { count } = useCart();
+  const { count } = useCartStore();
   return (
     <span className="inline-block">
       <ShoppingCart className="h-5 w-5" />

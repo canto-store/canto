@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { parseApiError } from "@/lib/utils";
+import { useCartStore, useSyncCart } from "@/lib/cart";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -43,6 +44,8 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { items, addItems } = useCartStore();
+  const { mutateAsync: syncCart } = useSyncCart();
   const returnUrl = searchParams.get("returnUrl") || "/";
 
   const form = useForm<FormData>({
@@ -59,6 +62,14 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
     await login
       .mutateAsync(data)
       .then(() => {
+        syncCart(
+          items.map((item) => ({
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+        ).then((data) => {
+          addItems(data);
+        });
         router.push(returnUrl);
         if (onClose) {
           onClose();

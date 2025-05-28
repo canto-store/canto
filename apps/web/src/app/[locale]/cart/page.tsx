@@ -7,9 +7,9 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { CartItemComponent, CartSummary } from "@/components/cart";
 import { cn } from "@/lib/utils";
-import { useCart } from "@/providers";
+import { useCartStore } from "@/lib/cart";
 export default function CartPage() {
-  const { items, count } = useCart();
+  const { items, count } = useCartStore();
   const t = useTranslations();
   const router = useRouter();
   const [isUpdating] = useState(false);
