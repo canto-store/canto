@@ -12,8 +12,8 @@ export function RegisterPage() {
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/";
 
-  function handleSuccess(email: string) {
-    router.push(`/register/success?email=${email}&returnUrl=${returnUrl}`);
+  function handleSuccess() {
+    router.push(`/${returnUrl}`);
   }
 
   return (
@@ -24,7 +24,7 @@ export function RegisterPage() {
           <p>{t("signUpDescription")}</p>
         </div>
         <div className="rounded-lg p-6 shadow-lg">
-          <RegisterForm onSuccess={handleSuccess} />
+          <RegisterForm onClose={handleSuccess} />
         </div>
       </div>
     </div>
