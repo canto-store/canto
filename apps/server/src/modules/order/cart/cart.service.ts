@@ -150,7 +150,6 @@ class CartService {
     userId: number,
     items: { variantId: number; quantity: number }[]
   ) {
-    console.log("syncCart", userId, items);
     const cart = await this.getOrCreateCart(userId);
     const existingItems = await this.prisma.cartItem.findMany({
       where: {

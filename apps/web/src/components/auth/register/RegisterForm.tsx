@@ -42,11 +42,11 @@ const registerFormSchema = z
 type FormData = z.infer<typeof registerFormSchema>;
 
 export function RegisterForm({
-  onSuccess,
   switchToLogin,
+  onClose,
 }: {
-  onSuccess?: (email: string) => void;
   switchToLogin?: () => void;
+  onClose?: () => void;
 }) {
   const t = useTranslations("auth");
   const router = useRouter();
@@ -76,15 +76,10 @@ export function RegisterForm({
         name: data.name,
         phone_number: data.phone_number,
       })
-      .then((data) => {
+      .then(() => {
         setIsPending(false);
         setError(null);
         toast.success(t("registerSuccess"));
-        if (onSuccess) {
-          onSuccess(data.email);
-        } else {
-          router.push("/");
-        }
         syncCart(
           items.map((item) => ({
             variantId: item.variantId,
@@ -93,6 +88,11 @@ export function RegisterForm({
         ).then((data) => {
           addItems(data);
         });
+        if (onClose) {
+          onClose();
+        } else {
+          router.push("/");
+        }
       })
       .catch((error) => {
         setIsPending(false);
