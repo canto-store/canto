@@ -6,19 +6,11 @@ class AddressService {
   private readonly prisma = new PrismaClient();
 
   async create(dto: CreateAddressDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: dto.user_id },
-    });
-    if (!user) {
-      throw new AppError("User not found", 404);
-    }
-
     const existingAddress = await this.prisma.address.findFirst({
       where: {
         user_id: dto.user_id,
         type: dto.type,
         street_name: dto.street_name,
-        building_number: dto.building_number,
         apartment_number: dto.apartment_number,
         floor: dto.floor,
         area: dto.area,
@@ -70,7 +62,10 @@ class AddressService {
   }
 
   async findByUserId(userId: number) {
-    return await this.prisma.address.findMany({ where: { user_id: userId } });
+    return await this.prisma.address.findMany({
+      where: { user_id: userId },
+      orderBy: { createdAt: "desc" },
+    });
   }
 }
 

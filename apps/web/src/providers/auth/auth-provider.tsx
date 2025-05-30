@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     },
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.removeQueries({ queryKey: ["address"] });
       setIsAuthenticated(false);
     },
   });

@@ -1,42 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { FormInput } from "@/components/ui/form-input";
-
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Building2, Home, Briefcase } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-export type AddressType = "apartment" | "house" | "office";
-
-export interface ShippingAddress {
-  addressType: AddressType;
-  // Apartment fields
-  apartmentNumber?: string;
-  floor?: string;
-  // House fields
-  houseNumber?: string;
-  // Office fields
-  companyName?: string;
-  officeNumber?: string;
-  // Common fields
-  street: string;
-  area: string;
-  city: string;
-  directions?: string;
-  phone: string;
-  addressLabel?: string;
-  saveAddress: boolean;
-}
-
-interface ShippingAddressFormProps {
-  onAddressSubmit: (address: ShippingAddress) => void;
-  className?: string;
-}
+import { cn, parseApiError } from "@/lib/utils";
+import { useCreateAddress } from "@/lib/address";
+import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { AddressType, userAddressFormSchema } from "@/types/user";
+import { UserAddressForm } from "@/types/user";
+import { ErrorAlert } from "../ui/error-alert";
 
 interface AddressTypeTabProps {
   label: string;
@@ -69,274 +54,319 @@ function AddressTypeTab({
 }
 
 export function ShippingAddressForm({
-  onAddressSubmit,
-  className,
-}: ShippingAddressFormProps) {
+  onClose,
+}: {
+  onClose: (addressId: number) => void;
+}) {
   const t = useTranslations();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formErrors, setFormErrors] = useState<
-    Partial<Record<keyof ShippingAddress, string>>
-  >({});
-  const [formData, setFormData] = useState<Partial<ShippingAddress>>({
-    addressType: "apartment",
-    saveAddress: false,
+  const { mutateAsync: createAddress } = useCreateAddress();
+  const form = useForm<UserAddressForm>({
+    resolver: zodResolver(userAddressFormSchema),
+    defaultValues: {
+      type: AddressType.APARTMENT,
+      address_label: "",
+      street_name: "",
+      building_number: "",
+      apartment_number: "",
+      floor: undefined,
+      area: "",
+      city: "",
+      phone_number: "",
+      additional_direction: "",
+      company_name: "",
+      office_number: "",
+    },
   });
 
-  // Define validation schema
-  const validateForm = (): boolean => {
-    const errors: Partial<Record<keyof ShippingAddress, string>> = {};
+  const { formState, watch, handleSubmit, setValue, control } = form;
+  const addressType = watch("type");
 
-    if (!formData.addressType) {
-      errors.addressType = t("checkout.errors.addressTypeRequired");
-    }
-
-    // Validate based on address type
-    if (formData.addressType === "apartment") {
-      if (!formData.apartmentNumber || formData.apartmentNumber.length < 1) {
-        errors.apartmentNumber = t("checkout.errors.apartmentNumberRequired");
-      }
-    } else if (formData.addressType === "house") {
-      if (!formData.houseNumber || formData.houseNumber.length < 1) {
-        errors.houseNumber = t("checkout.errors.houseNumberRequired");
-      }
-    } else if (formData.addressType === "office") {
-      if (!formData.companyName || formData.companyName.length < 2) {
-        errors.companyName = t("checkout.errors.companyNameRequired");
-      }
-      if (!formData.officeNumber || formData.officeNumber.length < 1) {
-        errors.officeNumber = t("checkout.errors.officeNumberRequired");
-      }
-    }
-
-    // Common field validation
-    if (!formData.street || formData.street.length < 3) {
-      errors.street = t("checkout.errors.streetRequired");
-    }
-
-    if (!formData.area || formData.area.length < 2) {
-      errors.area = t("checkout.errors.areaRequired");
-    }
-
-    if (!formData.city || formData.city.length < 2) {
-      errors.city = t("checkout.errors.cityRequired");
-    }
-
-    if (!formData.phone || formData.phone.length < 10) {
-      errors.phone = t("checkout.errors.phoneRequired");
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddressTypeChange = (value: AddressType) => {
-    setFormData((prev) => ({ ...prev, addressType: value }));
-  };
-
-  const handleCheckboxChange = (checked: boolean) => {
-    setFormData((prev) => ({ ...prev, saveAddress: checked }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      onAddressSubmit(formData as ShippingAddress);
-    } catch (error) {
-      console.error("Error submitting address:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = async (data: UserAddressForm) => {
+    await createAddress(data)
+      .then((res) => {
+        toast.success("Address created successfully");
+        onClose(res.id);
+      })
+      .catch((err) => {
+        toast.error(parseApiError(err));
+      });
   };
 
   return (
-    <div className={className}>
+    <div>
       <h2 className="mb-4 text-lg font-medium text-gray-900 sm:text-xl">
         {t("checkout.shippingAddress")}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
-            {t("checkout.addressType")}
-            <span className="ml-1 text-red-500">*</span>
-          </Label>
-          <div className="flex gap-2">
-            <AddressTypeTab
-              label={t("checkout.apartment")}
-              icon={<Building2 className="h-5 w-5" />}
-              isActive={formData.addressType === "apartment"}
-              onClick={() => handleAddressTypeChange("apartment")}
-            />
-            <AddressTypeTab
-              label={t("checkout.house")}
-              icon={<Home className="h-5 w-5" />}
-              isActive={formData.addressType === "house"}
-              onClick={() => handleAddressTypeChange("house")}
-            />
-            <AddressTypeTab
-              label={t("checkout.office")}
-              icon={<Briefcase className="h-5 w-5" />}
-              isActive={formData.addressType === "office"}
-              onClick={() => handleAddressTypeChange("office")}
-            />
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <ErrorAlert message={formState.errors?.root?.message || ""} />
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">
+              {t("checkout.addressType")}
+              <span className="ml-1 text-red-500">*</span>
+            </Label>
+            <div className="flex gap-2">
+              <AddressTypeTab
+                label={t("checkout.apartment")}
+                icon={<Building2 className="h-5 w-5" />}
+                isActive={addressType === AddressType.APARTMENT}
+                onClick={() => setValue("type", AddressType.APARTMENT)}
+              />
+              <AddressTypeTab
+                label={t("checkout.house")}
+                icon={<Home className="h-5 w-5" />}
+                isActive={addressType === AddressType.HOUSE}
+                onClick={() => setValue("type", AddressType.HOUSE)}
+              />
+              <AddressTypeTab
+                label={t("checkout.office")}
+                icon={<Briefcase className="h-5 w-5" />}
+                isActive={addressType === AddressType.OFFICE}
+                onClick={() => setValue("type", AddressType.OFFICE)}
+              />
+            </div>
+            <FormMessage />
           </div>
-          {formErrors.addressType && (
-            <p className="text-sm text-red-500">{formErrors.addressType}</p>
-          )}
-        </div>
 
-        {/* Apartment specific fields */}
-        {formData.addressType === "apartment" && (
-          <div className="space-y-4">
-            <div className="flex flex-row gap-4">
-              <div className="flex-1">
-                <FormInput
-                  name="apartmentNumber"
-                  label={t("checkout.apartmentNumber")}
-                  placeholder={t("checkout.apartmentNumberPlaceholder")}
-                  value={formData.apartmentNumber || ""}
-                  onChange={handleInputChange}
-                  error={formErrors.apartmentNumber}
-                  required
-                />
-              </div>
-              <div className="flex-1">
-                <FormInput
-                  name="floor"
-                  label={t("checkout.floor")}
-                  placeholder={t("checkout.floorPlaceholder")}
-                  value={formData.floor || ""}
-                  onChange={handleInputChange}
-                  error={formErrors.floor}
-                />
+          {/* Apartment specific fields */}
+          {addressType === AddressType.APARTMENT && (
+            <div className="space-y-4">
+              <div className="flex flex-row gap-4">
+                <div className="flex-1">
+                  <FormField
+                    control={control}
+                    name="apartment_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("checkout.apartmentNumber")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t(
+                              "checkout.apartmentNumberPlaceholder",
+                            )}
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex-1">
+                  <FormField
+                    control={control}
+                    name="floor"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("checkout.floor")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder={t("checkout.floorPlaceholder")}
+                            {...field}
+                            value={field.value || ""}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value ? Number(e.target.value) : 0,
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* House specific fields */}
-        {formData.addressType === "house" && (
-          <FormInput
-            name="houseNumber"
-            label={t("checkout.houseNumber")}
-            placeholder={t("checkout.houseNumberPlaceholder")}
-            value={formData.houseNumber || ""}
-            onChange={handleInputChange}
-            error={formErrors.houseNumber}
-            required
+          {/* House specific fields */}
+          {addressType === AddressType.HOUSE && (
+            <FormField
+              control={control}
+              name="building_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("checkout.houseNumber")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("checkout.houseNumberPlaceholder")}
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
+          {/* Office specific fields */}
+          {addressType === AddressType.OFFICE && (
+            <div className="space-y-4">
+              <FormField
+                control={control}
+                name="company_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("checkout.companyName")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("checkout.companyNamePlaceholder")}
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="office_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("checkout.officeNumber")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("checkout.officeNumberPlaceholder")}
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {/* Common fields for all address types */}
+          <FormField
+            control={control}
+            name="street_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("checkout.street")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("checkout.streetPlaceholder")}
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        )}
 
-        {/* Office specific fields */}
-        {formData.addressType === "office" && (
-          <div className="space-y-4">
-            <FormInput
-              name="companyName"
-              label={t("checkout.companyName")}
-              placeholder={t("checkout.companyNamePlaceholder")}
-              value={formData.companyName || ""}
-              onChange={handleInputChange}
-              error={formErrors.companyName}
-              required
+          <FormField
+            control={control}
+            name="area"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("checkout.area")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("checkout.areaPlaceholder")}
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField
+              control={control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("checkout.city")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("checkout.cityPlaceholder")}
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
-            <FormInput
-              name="officeNumber"
-              label={t("checkout.officeNumber")}
-              placeholder={t("checkout.officeNumberPlaceholder")}
-              value={formData.officeNumber || ""}
-              onChange={handleInputChange}
-              error={formErrors.officeNumber}
-              required
+            <FormField
+              control={control}
+              name="additional_direction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("checkout.directions")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("checkout.directionsPlaceholder")}
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
-        )}
 
-        {/* Common fields for all address types */}
-        <FormInput
-          name="street"
-          label={t("checkout.street")}
-          placeholder={t("checkout.streetPlaceholder")}
-          value={formData.street || ""}
-          onChange={handleInputChange}
-          error={formErrors.street}
-          required
-        />
-
-        <FormInput
-          name="area"
-          label={t("checkout.area")}
-          placeholder={t("checkout.areaPlaceholder")}
-          value={formData.area || ""}
-          onChange={handleInputChange}
-          error={formErrors.area}
-          required
-        />
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormInput
-            name="city"
-            label={t("checkout.city")}
-            placeholder={t("checkout.cityPlaceholder")}
-            value={formData.city || ""}
-            onChange={handleInputChange}
-            error={formErrors.city}
-            required
+          <FormField
+            control={control}
+            name="phone_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("checkout.phone")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("checkout.phonePlaceholder")}
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
-          <FormInput
-            name="directions"
-            label={t("checkout.directions")}
-            placeholder={t("checkout.directionsPlaceholder")}
-            value={formData.directions || ""}
-            onChange={handleInputChange}
+          <FormField
+            control={control}
+            name="address_label"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("checkout.addressLabel")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("checkout.addressLabelPlaceholder")}
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        <FormInput
-          name="phone"
-          label={t("checkout.phone")}
-          placeholder={t("checkout.phonePlaceholder")}
-          value={formData.phone || ""}
-          onChange={handleInputChange}
-          error={formErrors.phone}
-          required
-        />
-
-        <FormInput
-          name="addressLabel"
-          label={t("checkout.addressLabel")}
-          placeholder={t("checkout.addressLabelPlaceholder")}
-          value={formData.addressLabel || ""}
-          onChange={handleInputChange}
-        />
-
-        <div className="flex items-start space-x-3 pt-2">
-          <Checkbox
-            id="saveAddress"
-            checked={formData.saveAddress}
-            onCheckedChange={handleCheckboxChange}
-          />
-          <div className="space-y-1 leading-none">
-            <Label htmlFor="saveAddress">{t("checkout.saveAddress")}</Label>
-          </div>
-        </div>
-
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? t("common.saving") : t("checkout.saveAddress")}
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={formState.isSubmitting}
+          >
+            {formState.isSubmitting
+              ? t("common.saving")
+              : t("checkout.saveAddress")}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

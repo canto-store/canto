@@ -8,6 +8,8 @@ import Image from "next/image";
 import { ProductDetails as ProductDetailsType } from "@/types";
 import ProductOptions from "./ProductOptions";
 import { Link } from "@/i18n/navigation";
+import { toast } from "sonner";
+
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
@@ -17,7 +19,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality
+    // TODO: Add to cart
+  };
+
+  const handleAddToWishlist = () => {
+    setIsFavorite(!isFavorite);
+    if (isFavorite) {
+      toast.success("Removed from wishlist");
+    } else {
+      toast.success("Added to wishlist");
+    }
   };
 
   return (
@@ -91,11 +102,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <span>Notify Me</span>
             </Button>
           )}
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => setIsFavorite(!isFavorite)}
-          >
+          <Button variant="outline" size="lg" onClick={handleAddToWishlist}>
             <Heart
               className="h-5 w-5"
               fill={isFavorite ? "currentColor" : "none"}

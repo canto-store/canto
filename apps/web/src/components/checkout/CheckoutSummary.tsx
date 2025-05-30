@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/cart";
 import { cn } from "@/lib/utils";
 import { CouponData } from "./CouponForm";
-import { ShippingAddress } from "./ShippingAddressForm";
+import { UserAddress } from "@/types/user";
 
 interface CheckoutSummaryProps {
   className?: string;
   coupon: CouponData | null;
-  shippingAddress: ShippingAddress | null;
+  shippingAddress: UserAddress | null;
   onPlaceOrder?: () => void;
   isLoading?: boolean;
 }

@@ -211,14 +211,18 @@ model Address {
   user_id              Int
   type                 AddressType
   street_name          String
-  building_number      String
+  building_number      String?
   apartment_number     String?
   floor                Int?
   area                 String
   city                 String
   phone_number         String
   additional_direction String?
-  address_label        String
+  address_label        String?
+  company_name         String?
+  office_number        String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   user  User    @relation(fields: [user_id], references: [id])
   Order Order[]

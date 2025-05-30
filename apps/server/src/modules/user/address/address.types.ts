@@ -12,4 +12,7 @@ export type CreateAddressDto = {
   phone_number: string;
   additional_direction?: string;
   address_label: string;
+  company_name?: string;
+  office_number?: string;
+  save_address: boolean;
 };
