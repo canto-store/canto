@@ -60,3 +60,19 @@ export interface UpdateProductVariantDto
   extends Partial<CreateProductVariantDto> {
   productOptionId: any;
 }
+
+export interface ProductQueryParams {
+  search?: string;
+  categoryId?: string;
+  brandId?: string;
+  status?: ProductStatus;
+  minPrice?: string;
+  maxPrice?: string;
+  colors?: string; // comma-separated color values
+  sizes?: string; // comma-separated size values
+  inStock?: string; 
+  sortBy?: 'name' | 'price' | 'created_at' | 'popularity';
+  sortOrder?: 'asc' | 'desc';
+  page?: string;
+  limit?: string;
+}

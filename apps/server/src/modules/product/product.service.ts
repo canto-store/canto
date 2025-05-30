@@ -9,6 +9,7 @@ import {
   UpdateProductVariantDto,
   SubmitProductFormDto,
   ProductStatus,
+  ProductQueryParams,
 } from "./product.types";
 import { slugify } from "../../utils/helper";
 
@@ -36,6 +37,163 @@ class ProductService {
       include: { brand: true, category: true },
     });
   }
+
+async findProductsWithFilters(queryParams: ProductQueryParams) {
+  const {
+    search,
+    categoryId,
+    brandId,
+    status,
+    minPrice,
+    maxPrice,
+    colors,
+    sizes,
+    inStock,
+    sortBy = "created_at",
+    sortOrder = "desc",
+    page = "1",
+    limit = "10",
+  } = queryParams;
+
+  // 1) Top-level product filters (AND semantics)
+  const where: Prisma.ProductWhereInput = {};
+
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+    ];
+  }
+  if (categoryId) where.categoryId = Number(categoryId);
+  if (brandId)    where.brandId    = Number(brandId);
+  if (status)     where.status     = status as ProductStatus;
+
+  // 2) Build variant-level filters so we only pull back matching variants
+  const variantFilters: Prisma.ProductVariantWhereInput[] = [];
+
+  if (minPrice)   variantFilters.push({ price: { gte: parseFloat(minPrice) } });
+  if (maxPrice)   variantFilters.push({ price: { lte: parseFloat(maxPrice) } });
+  if (inStock === "true") variantFilters.push({ stock: { gt: 0 } });
+
+  if (colors) {
+    const vals = colors.split(",").map((c) => c.trim());
+    variantFilters.push({
+      optionLinks: {
+        some: {
+          productOption: { name: { equals: "Color", mode: "insensitive" } },
+          optionValue:   { value:  { in: vals, mode:"insensitive" } },
+        },
+      },
+    });
+  }
+
+  if (sizes) {
+    const vals = sizes.split(",").map((s) => s.trim());
+    variantFilters.push({
+      optionLinks: {
+        some: {
+          productOption: { name: { equals: "Size", mode: "insensitive" } },
+          optionValue:   { value:  { in: vals, mode:"insensitive" } },
+        },
+      },
+    });
+  }
+
+  // Apply the variant-filters to the top-level `where` so we only fetch
+  // products that have at least one variant matching _all_ of them:
+  if (variantFilters.length > 0) {
+    where.variants = { some: { AND: variantFilters } };
+  }
+
+  // 3) Pagination & sorting setup
+  const pageNum  = Number(page);
+  const limitNum = Number(limit);
+  const skip     = (pageNum - 1) * limitNum;
+
+  // 4) Fetch matching products + total count
+  const [products, total] = await Promise.all([
+    this.prisma.product.findMany({
+      where,
+      include: {
+        brand: true,
+        category: true,
+        variants: {
+          // Only return the variants that matched our filters
+          where: variantFilters.length ? { AND: variantFilters } : {},
+          include: {
+            images: true,
+            optionLinks: {
+              include: { optionValue: true, productOption: true },
+            },
+          },
+        },
+      },
+      // If sorting by price, we'll sort in JS afterwards
+      orderBy: sortBy === "price"
+        ? { created_at: "desc" }
+        : { [sortBy]: sortOrder },
+      skip,
+      take: limitNum,
+    }),
+    this.prisma.product.count({ where }),
+  ]);
+
+  // 5)sort products by their min-variant price
+  if (sortBy === "price") {
+    products.sort((a, b) => {
+      const aMin = Math.min(...a.variants.map((v) => v.price));
+      const bMin = Math.min(...b.variants.map((v) => v.price));
+      return sortOrder === "asc" ? aMin - bMin : bMin - aMin;
+    });
+  }
+
+  const formatted = products.map((p) => ({
+    id:          p.id,
+    name:        p.name,
+    slug:        p.slug,
+    description: p.description,
+    status:      p.status,
+    brand: {
+      id:   p.brand.id,
+      name: p.brand.name,
+      slug: p.brand.slug,
+    },
+    category: {
+      id:   p.category.id,
+      name: p.category.name,
+      slug: p.category.slug,
+    },
+    variants: p.variants.map((v) => ({
+      id:    v.id,
+      sku:   v.sku,
+      price: v.price,
+      stock: v.stock,
+      images: v.images.map((img) => ({
+        url:      img.url,
+        alt_text: img.alt_text,
+      })),
+      options: v.optionLinks.reduce((acc, link) => {
+        const optName  = link.productOption.name;
+        const optValue = link.optionValue.value;
+        acc[optName] = optValue;
+        return acc;
+      }, {} as Record<string, string>),
+    })),
+    created_at: p.created_at,
+    updated_at: p.updated_at,
+  }));
+
+  return {
+    products: formatted,
+    pagination: {
+      page:       pageNum,
+      limit:      limitNum,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+    },
+  };
+}
+
 
   async findProduct(id: number) {
     await this.ensureProductExists(id);
@@ -567,6 +725,66 @@ class ProductService {
       where: { id },
     });
     if (!optionValueRecord) throw new AppError("Option value not found", 404);
+  }
+
+  async getProductFilters() {
+    // Get all available filter options
+    const [categories, brands, priceRange] = await Promise.all([
+      this.prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          _count: {
+            select: { Product: true },
+          },
+        },
+      }),
+      this.prisma.brand.findMany({
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          _count: {
+            select: { Product: true },
+          },
+        },
+      }),
+      this.prisma.productVariant.aggregate({
+        _min: { price: true },
+        _max: { price: true },
+      }),
+    ]);
+
+    // Get available colors and sizes from product options
+    const colorOption = await this.prisma.productOption.findFirst({
+      where: { name: { equals: "Color", mode: "insensitive" } },
+      include: { values: true },
+    });
+
+    const sizeOption = await this.prisma.productOption.findFirst({
+      where: { name: { equals: "Size", mode: "insensitive" } },
+      include: { values: true },
+    });
+
+    return {
+      categories: categories.filter((cat) => cat._count.Product > 0),
+      brands: brands.filter((brand) => brand._count.Product > 0),
+      price_range: {
+        min: priceRange._min.price || 0,
+        max: priceRange._max.price || 0,
+      },
+      colors:
+        colorOption?.values.map((v) => ({
+          id: v.id,
+          value: v.value,
+        })) || [],
+      sizes:
+        sizeOption?.values.map((v) => ({
+          id: v.id,
+          value: v.value,
+        })) || [],
+    };
   }
 }
 

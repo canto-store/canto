@@ -8,6 +8,7 @@ import {
   CreateProductVariantDto,
   UpdateProductVariantDto,
   SubmitProductFormDto,
+  ProductQueryParams,
 } from "./product.types";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import AppError from "../../utils/appError";
@@ -39,6 +40,47 @@ class ProductController {
     try {
       const products = await this.productService.findAllProducts();
       response.status(200).json(products);
+    } catch (error) {
+      nextFunction(error);
+    }
+  }
+  async searchProducts(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
+    try {
+      const queryParams: ProductQueryParams = {
+        search: request.query.search as string,
+        categoryId: request.query.categoryId as string,
+        brandId: request.query.brandId as string,
+        status: request.query.status as any,
+        minPrice: request.query.minPrice as string,
+        maxPrice: request.query.maxPrice as string,
+        colors: request.query.colors as string,
+        sizes: request.query.sizes as string,
+        inStock: request.query.inStock as string,
+        sortBy: request.query.sortBy as any,
+        sortOrder: request.query.sortOrder as any,
+        page: request.query.page as string,
+        limit: request.query.limit as string,
+      };
+
+      const result = await this.productService.findProductsWithFilters(queryParams);
+      response.status(200).json(result);
+    } catch (error) {
+      nextFunction(error);
+    }
+  }
+
+  async getProductFilters(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
+    try {
+      const filters = await this.productService.getProductFilters();
+      response.status(200).json(filters);
     } catch (error) {
       nextFunction(error);
     }
