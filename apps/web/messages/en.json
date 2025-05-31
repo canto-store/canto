@@ -103,6 +103,10 @@
     "cartUpdated": "Cart updated successfully"
   },
   "checkout": {
+    "deliveryStatus": {
+      "delivered": "Delivered",
+      "not_delivered_yet": "Not Delivered Yet"
+    },
     "title": "Checkout",
     "orderSummary": "Order Summary",
     "subtotal": "Subtotal",
