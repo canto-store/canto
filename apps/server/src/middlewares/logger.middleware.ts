@@ -12,7 +12,8 @@ import { AuthRequest } from "./auth.middleware";
 const logger = morgan((tokens, req: Request, res: Response) => {
   const authReq = req as AuthRequest;
   const userId = authReq.user?.id;
-  const userInfo = userId ? ` [userId:${userId}]` : "";
+  const role = authReq.user?.role?.toLowerCase();
+  const userInfo = role && userId ? ` [${role}Id:${userId}]` : "";
 
   return [
     tokens.method(req, res),
