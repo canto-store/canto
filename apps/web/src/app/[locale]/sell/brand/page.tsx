@@ -2,7 +2,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { BrandForm } from "@/components/sell/BrandForm";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 import { useMyBrand } from "@/lib/brand";
 import { useRouter } from "next/navigation";
 
@@ -11,7 +11,7 @@ export default function BrandPage() {
   const { user } = useAuth();
   const router = useRouter();
   const { isSuccess: hasBrand } = useMyBrand({
-    enabled: user && user?.role === "SELLER",
+    enabled: Boolean(user && user?.role === "SELLER"),
   });
 
   React.useEffect(() => {

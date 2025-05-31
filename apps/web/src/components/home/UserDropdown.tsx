@@ -5,7 +5,7 @@ import { CircleUser, User, Settings, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
 import { useCartStore } from "@/lib/cart";

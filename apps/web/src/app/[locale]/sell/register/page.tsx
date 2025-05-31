@@ -2,7 +2,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { SellerForm } from "@/components/sell/SellerForm";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {

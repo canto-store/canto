@@ -1,8 +1,8 @@
 "use client";
 
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 import { useRouter } from "@/i18n/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 export default function ProtectedLayout({

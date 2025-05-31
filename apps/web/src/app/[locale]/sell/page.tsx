@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Seller } from "@/types/user";

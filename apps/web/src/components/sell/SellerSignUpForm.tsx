@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 import { useRouter } from "@/i18n/navigation";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { parseApiError } from "@/lib/utils";

@@ -5,7 +5,7 @@ import { CartItem } from "@/types/cart-item";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { calculateTotals, processNewItem } from "./cart-helpers";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 interface AddToCartInput {
   variantId: number;
   quantity: number;

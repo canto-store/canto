@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useAddToCart, useCartStore } from "@/lib/cart";
 import { ProductSummary } from "@/types";
 import { BsCartPlus, BsEye } from "react-icons/bs";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 
 interface ProductCardProps {
   product: ProductSummary;

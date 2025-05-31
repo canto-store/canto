@@ -9,7 +9,7 @@ import { CartItem } from "@/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth } from "@/providers/auth/use-auth";
+import { useAuth } from "@/hooks/auth";
 
 interface CartItemProps {
   item: CartItem;
