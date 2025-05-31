@@ -8,19 +8,19 @@ import { useRouter } from "next/navigation";
 
 export default function ProductsPage() {
   const t = useTranslations("sell");
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const { isSuccess: hasBrand } = useMyBrand({
-    enabled: isAuthenticated && user?.role === "SELLER",
+    enabled: user && user?.role === "SELLER",
   });
 
   React.useEffect(() => {
-    if (!isAuthenticated || user?.role !== "SELLER") {
+    if (!user || user?.role !== "SELLER") {
       router.push("/sell/register");
     } else if (!hasBrand) {
       router.push("/sell/brand");
     }
-  }, [isAuthenticated, user?.role, hasBrand, router]);
+  }, [user?.role, hasBrand, router]);
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center p-10">

@@ -36,7 +36,7 @@ export function CheckoutSuccess({ order }: { order: Order }) {
   const t = useTranslations();
   const router = useRouter();
   return (
-    <div className="bg-global mx-auto max-w-md rounded-lg border border-gray-200 p-6 shadow-sm sm:p-8">
+    <div className="bg-global mx-auto my-32 max-w-md rounded-lg border border-gray-200 p-6 shadow-sm sm:p-8">
       <div className="mb-4 flex justify-center">
         <div className="rounded-full bg-green-100 p-3">
           <CheckCircle className="h-12 w-12 text-green-600" />
@@ -64,7 +64,7 @@ export function CheckoutSuccess({ order }: { order: Order }) {
           <span className="font-medium">{formatDate(order.createdAt)}</span>
         </p>
         <p className="text-sm text-gray-600">
-          {t("checkout.deliveryStatus")}:{" "}
+          {t("checkout.deliveryStatus.label")}:{" "}
           <span className="font-medium">
             {t(`checkout.deliveryStatus.${order.deliveryStatus.toLowerCase()}`)}
           </span>

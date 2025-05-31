@@ -5,6 +5,7 @@ import { CartItem } from "@/types/cart-item";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { calculateTotals, processNewItem } from "./cart-helpers";
+import { useAuth } from "@/providers/auth/use-auth";
 interface AddToCartInput {
   variantId: number;
   quantity: number;
@@ -23,12 +24,15 @@ export const useAddToCart = () => {
 };
 
 export const useGetCart = () => {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ["cart"],
     queryFn: async () => {
       const response = await api.get<CartItem[]>("/cart/user");
       return response.data;
     },
+    enabled: Boolean(user),
+    staleTime: 0,
   });
 };
 
@@ -75,6 +79,7 @@ interface CartState {
   removeItem: (variantId: number) => void;
   updateItem: (variantId: number, quantity: number) => void;
   addItems: (items: CartItem[]) => void;
+  setItems: (items: CartItem[]) => void;
   clearCart: () => void;
   setSynced: (synced: boolean) => void;
 }
@@ -128,6 +133,13 @@ export const useCartStore = create<CartState>()(
           const updatedItems = [...existingItems, ...newItems];
           const { price, count } = calculateTotals(updatedItems);
           return { items: updatedItems, price, count };
+        });
+      },
+      setItems: (items: CartItem[]) => {
+        set({
+          items,
+          price: calculateTotals(items).price,
+          count: calculateTotals(items).count,
         });
       },
       clearCart: () => {

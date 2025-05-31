@@ -12,6 +12,7 @@ import { useBanner } from "@/providers";
 import { toast } from "sonner";
 import { useGetAddress } from "@/lib/address";
 import { useCreateOrder } from "@/lib/order";
+import { useCartStore } from "@/lib/cart";
 import { LoadingAddress } from "@/components/checkout/LoadingAddress";
 import { UserAddress } from "@/components/checkout/UserAddress";
 import { CheckoutSuccess } from "@/components/checkout/CheckoutSuccess";
@@ -26,6 +27,7 @@ export default function Page() {
 
   const [coupon, setCoupon] = useState<CouponData | null>(null);
   const { setShowBanner } = useBanner();
+  const { clearCart } = useCartStore();
 
   const { data: userAddresses, isLoading: isLoadingUserAddresses } =
     useGetAddress();
@@ -51,6 +53,7 @@ export default function Page() {
       return;
     }
     await createOrder(selectedAddressId).then(() => {
+      clearCart();
       toast.success(t("checkout.orderSuccess"));
     });
   };

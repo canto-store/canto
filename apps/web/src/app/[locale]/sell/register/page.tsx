@@ -7,14 +7,14 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const t = useTranslations("sell");
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   React.useEffect(() => {
-    if (isAuthenticated && user?.role === "SELLER") {
+    if (user && user?.role === "SELLER") {
       router.push("/sell");
     }
-  }, [isAuthenticated, user?.role, router]);
+  }, [user?.role, router]);
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center justify-center p-10">

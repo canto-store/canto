@@ -104,8 +104,9 @@
   },
   "checkout": {
     "deliveryStatus": {
+      "label": "Delivery Status",
       "delivered": "Delivered",
-      "not_delivered_yet": "Not Delivered Yet"
+      "not_delivered_yet": "Processing"
     },
     "title": "Checkout",
     "orderSummary": "Order Summary",

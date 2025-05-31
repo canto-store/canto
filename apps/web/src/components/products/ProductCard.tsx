@@ -29,10 +29,10 @@ export function ProductCard({
 
   const { addItem } = useCartStore();
   const { mutateAsync: addToCart } = useAddToCart();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
   const handleAddToCart = (product: ProductSummary) => {
-    if (isAuthenticated) {
+    if (user) {
       addToCart({ variantId: product.variantId, quantity: 1 });
     }
     addItem({ ...product, quantity: 1 });

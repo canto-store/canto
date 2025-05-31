@@ -21,7 +21,7 @@ import { useLocale } from "next-intl";
 import { useCartStore } from "@/lib/cart";
 
 export default function Page() {
-  const { isAuthenticated, user, logout: logoutMutation } = useAuth();
+  const { user, logout: logoutMutation } = useAuth();
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
@@ -31,7 +31,6 @@ export default function Page() {
   const logout = () => {
     logoutMutation.mutateAsync(undefined);
     clearCart();
-    router.push("/");
   };
   const handleLanguageChange = () => {
     const value = locale === "en" ? "ar" : "en";
@@ -44,7 +43,7 @@ export default function Page() {
   if (isMobile) {
     return (
       <div className="mt-2 flex min-h-screen flex-col gap-2">
-        {isAuthenticated ? (
+        {user ? (
           <h1 className="text-2xl font-bold">Hello, {user?.firstName}</h1>
         ) : (
           <div className="bg-primary-foreground flex flex-col gap-2 rounded-lg p-5">
@@ -62,7 +61,7 @@ export default function Page() {
             </Button>
           </div>
         )}
-        <If isTrue={isAuthenticated}>
+        <If isTrue={Boolean(user)}>
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
@@ -125,7 +124,7 @@ export default function Page() {
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
         </div>
-        <If isTrue={isAuthenticated}>
+        <If isTrue={Boolean(user)}>
           <Button variant="ghost" onClick={logout} className="mt-4">
             <LogOut className="text-orange-red mr-2 h-5 w-5" />
             <p className="text-orange-red text-lg">Logout</p>

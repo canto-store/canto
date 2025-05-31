@@ -30,12 +30,12 @@ export function CartItemComponent({
   const { updateItem, removeItem } = useCartStore();
   const { mutate: deleteFromCart } = useDeleteFromCart();
   const { mutate: updateCartItem } = useUpdateCartItem();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return;
-    if (isAuthenticated) {
+    if (user) {
       updateCartItem({
         variantId: item.variantId,
         quantity: newQuantity,
@@ -45,7 +45,7 @@ export function CartItemComponent({
   };
 
   const handleRemove = async () => {
-    if (isAuthenticated) {
+    if (user) {
       deleteFromCart({ variantId: item.variantId });
     }
     removeItem(item.variantId);

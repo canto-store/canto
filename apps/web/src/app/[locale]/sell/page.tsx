@@ -6,11 +6,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Seller } from "@/types/user";
 
 export default function Page() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === "SELLER") {
+    if (user && user?.role === "SELLER") {
       if ((user as Seller).brandId) {
         router.push("/sell/products");
       } else {
@@ -19,7 +19,7 @@ export default function Page() {
     } else {
       router.push("/sell/register");
     }
-  }, [isAuthenticated, user, router]);
+  }, [user, router]);
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center p-10">

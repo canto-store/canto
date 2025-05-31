@@ -3,11 +3,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoginRequest, RegisterRequest } from "@/types/auth";
 import api from "@/lib/api";
 import { Seller, User } from "@/types/user";
-import { useState, useEffect } from "react";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const userQuery = useQuery<User | Seller | null>({
     queryKey: ["me"],
     queryFn: async () => {
@@ -16,18 +14,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return null;
     },
     initialData: null,
-    staleTime: 0,
+    staleTime: 60 * 60 * 1000, // 1 hour
     retry: false,
     throwOnError: false,
   });
-
-  useEffect(() => {
-    if (userQuery.data) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-  }, [userQuery.data]);
 
   const register = useMutation<User, Error, RegisterRequest>({
     mutationFn: async ({ email, password, name, phone_number }) => {
@@ -76,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: ["me"] });
       queryClient.removeQueries({ queryKey: ["address"] });
-      setIsAuthenticated(false);
+      queryClient.removeQueries({ queryKey: ["cart"] });
     },
   });
 
@@ -102,7 +92,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         user: userQuery.data,
-        isAuthenticated,
         login,
         logout,
         userQuery,

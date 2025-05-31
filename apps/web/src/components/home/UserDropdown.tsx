@@ -19,7 +19,7 @@ export function UserDropdown() {
   const t = useTranslations("header");
   const router = useRouter();
   const { clearCart } = useCartStore();
-  const { isAuthenticated, logout: logoutMutation, user } = useAuth();
+  const { logout: logoutMutation, user } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -47,7 +47,7 @@ export function UserDropdown() {
   };
 
   const handleButtonClick = () => {
-    if (!isAuthenticated) {
+    if (!user) {
       setLoginModalOpen(true);
       return;
     }
@@ -94,13 +94,13 @@ export function UserDropdown() {
         <button
           className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
           onClick={handleButtonClick}
-          title={isAuthenticated ? (user?.firstName as string) : t("login")}
+          title={user ? (user?.firstName as string) : t("login")}
         >
           <CircleUser className="h-6 w-6" />
         </button>
 
         {/* User Dropdown - Only shown when user is logged in and dropdown is open */}
-        {isAuthenticated && userDropdownOpen && (
+        {user && userDropdownOpen && (
           <div
             onMouseLeave={handleMouseLeave}
             className={`bg-global ring-opacity-5 ring-primary absolute mt-2 w-56 rounded-md py-2 shadow-lg ring-1 ${isRTL ? "left-5" : "right-5"}`}

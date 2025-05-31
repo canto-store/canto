@@ -5,7 +5,6 @@ import { Seller, User } from "@/types/user";
 
 export const AuthContext = createContext<{
   user: User | Seller | null;
-  isAuthenticated: boolean;
   login: UseMutationResult<User, Error, LoginRequest>;
   sellerLogin: UseMutationResult<Seller, Error, LoginRequest>;
   logout: UseMutationResult<void, Error>;
@@ -14,7 +13,6 @@ export const AuthContext = createContext<{
   sellerRegister: UseMutationResult<User, Error, RegisterRequest>;
 }>({
   user: {} as User,
-  isAuthenticated: false,
   login: {} as UseMutationResult<User, Error, LoginRequest>,
   sellerLogin: {} as UseMutationResult<Seller, Error, LoginRequest>,
   logout: {} as UseMutationResult<void, Error>,
