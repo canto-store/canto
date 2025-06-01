@@ -10,7 +10,7 @@ import { useCartStore, useGetCart } from "@/lib/cart";
 import { useEffect } from "react";
 
 export default function Home() {
-  const { data, isError, isLoading } = useHomeProducts();
+  const { data, isLoading } = useHomeProducts();
   const { bestDeals, bestSellers, newArrivals } = data || {};
   const { data: cart, isStale } = useGetCart();
   const { setItems } = useCartStore();
@@ -25,14 +25,26 @@ export default function Home() {
     <>
       <HeroSlider slides={HERO_SLIDES} />
       <FeaturesBanner />
-      
-      <HomeProducts products={bestDeals} title="Best Deals" isLoading={isLoading} />
+
+      <HomeProducts
+        products={bestDeals}
+        title="Best Deals"
+        isLoading={isLoading}
+      />
 
       <HomeCategories />
 
-      <HomeProducts products={bestSellers} title="Best Sellers" isLoading={isLoading} />
+      <HomeProducts
+        products={bestSellers}
+        title="Best Sellers"
+        isLoading={isLoading}
+      />
 
-      <HomeProducts products={newArrivals} title="New Arrivals" isLoading={isLoading} />
+      <HomeProducts
+        products={newArrivals}
+        title="New Arrivals"
+        isLoading={isLoading}
+      />
     </>
   );
 }
