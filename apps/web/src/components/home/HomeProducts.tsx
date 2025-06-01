@@ -1,14 +1,20 @@
 import { ProductCarousel, ProductGrid } from "@/components/products";
 import { ProductSummary } from "@/types";
 import { useMediaQuery } from "react-haiku";
+import { HomeProductsSkeleton } from "./HomeProductsSkeleton";
 
 interface HomeProductsProps {
   products?: ProductSummary[];
   title: string;
+  isLoading?: boolean;
 }
 
-export function HomeProducts({ products, title }: HomeProductsProps) {
+export function HomeProducts({ products, title, isLoading }: HomeProductsProps) {
   const isMobile = useMediaQuery("(max-width: 768px)", false);
+
+  if (isLoading || products === undefined) {
+    return <HomeProductsSkeleton />;
+  }
 
   if (products && products.length > 0) {
     return (

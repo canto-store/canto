@@ -25,17 +25,14 @@ export default function Home() {
     <>
       <HeroSlider slides={HERO_SLIDES} />
       <FeaturesBanner />
-      {!isLoading && !isError && (
-        <>
-          <HomeProducts products={bestDeals} title="Best Deals" />
+      
+      <HomeProducts products={bestDeals} title="Best Deals" isLoading={isLoading} />
 
-          <HomeCategories />
+      <HomeCategories />
 
-          <HomeProducts products={bestSellers} title="Best Sellers" />
+      <HomeProducts products={bestSellers} title="Best Sellers" isLoading={isLoading} />
 
-          <HomeProducts products={newArrivals} title="New Arrivals" />
-        </>
-      )}
+      <HomeProducts products={newArrivals} title="New Arrivals" isLoading={isLoading} />
     </>
   );
 }
