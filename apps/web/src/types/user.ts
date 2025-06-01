@@ -11,11 +11,7 @@ export type Seller = User & {
   brandId: number | null;
 };
 
-export enum AddressType {
-  HOUSE = "HOUSE",
-  APARTMENT = "APARTMENT",
-  OFFICE = "OFFICE",
-}
+export type AddressType = "HOUSE" | "APARTMENT" | "OFFICE";
 
 export type UserAddress = {
   id: number;
@@ -33,11 +29,7 @@ export type UserAddress = {
 
 export const userAddressFormSchema = z
   .object({
-    type: z.enum([
-      AddressType.HOUSE,
-      AddressType.APARTMENT,
-      AddressType.OFFICE,
-    ]),
+    type: z.enum(["HOUSE", "APARTMENT", "OFFICE"]),
     street_name: z.string().min(3, "checkout.errors.streetRequired"),
     building_number: z.string().optional(),
     apartment_number: z.string().optional(),

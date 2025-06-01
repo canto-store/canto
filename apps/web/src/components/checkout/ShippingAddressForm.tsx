@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { AddressType, userAddressFormSchema } from "@/types/user";
+import { userAddressFormSchema } from "@/types/user";
 import { UserAddressForm } from "@/types/user";
 import { ErrorAlert } from "../ui/error-alert";
 
@@ -39,7 +39,10 @@ function AddressTypeTab({
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
       className={cn(
         "flex flex-1 flex-col items-center justify-center rounded-md border p-3 text-center transition-all",
         isActive
@@ -63,7 +66,7 @@ export function ShippingAddressForm({
   const form = useForm<UserAddressForm>({
     resolver: zodResolver(userAddressFormSchema),
     defaultValues: {
-      type: AddressType.APARTMENT,
+      type: "APARTMENT",
       address_label: "",
       street_name: "",
       building_number: "",
@@ -106,31 +109,39 @@ export function ShippingAddressForm({
               {t("checkout.addressType")}
               <span className="ml-1 text-red-500">*</span>
             </Label>
-            <div className="flex gap-2">
-              <AddressTypeTab
-                label={t("checkout.apartment")}
-                icon={<Building2 className="h-5 w-5" />}
-                isActive={addressType === AddressType.APARTMENT}
-                onClick={() => setValue("type", AddressType.APARTMENT)}
-              />
-              <AddressTypeTab
-                label={t("checkout.house")}
-                icon={<Home className="h-5 w-5" />}
-                isActive={addressType === AddressType.HOUSE}
-                onClick={() => setValue("type", AddressType.HOUSE)}
-              />
-              <AddressTypeTab
-                label={t("checkout.office")}
-                icon={<Briefcase className="h-5 w-5" />}
-                isActive={addressType === AddressType.OFFICE}
-                onClick={() => setValue("type", AddressType.OFFICE)}
-              />
-            </div>
-            <FormMessage />
+            <FormField
+              control={control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2">
+                    <AddressTypeTab
+                      label={t("checkout.apartment")}
+                      icon={<Building2 className="h-5 w-5" />}
+                      isActive={field.value === "APARTMENT"}
+                      onClick={() => field.onChange("APARTMENT")}
+                    />
+                    <AddressTypeTab
+                      label={t("checkout.house")}
+                      icon={<Home className="h-5 w-5" />}
+                      isActive={field.value === "HOUSE"}
+                      onClick={() => field.onChange("HOUSE")}
+                    />
+                    <AddressTypeTab
+                      label={t("checkout.office")}
+                      icon={<Briefcase className="h-5 w-5" />}
+                      isActive={field.value === "OFFICE"}
+                      onClick={() => field.onChange("OFFICE")}
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           {/* Apartment specific fields */}
-          {addressType === AddressType.APARTMENT && (
+          {addressType === "APARTMENT" && (
             <div className="space-y-4">
               <div className="flex flex-row gap-4">
                 <div className="flex-1">
@@ -184,7 +195,7 @@ export function ShippingAddressForm({
           )}
 
           {/* House specific fields */}
-          {addressType === AddressType.HOUSE && (
+          {addressType === "HOUSE" && (
             <FormField
               control={control}
               name="building_number"
@@ -205,7 +216,7 @@ export function ShippingAddressForm({
           )}
 
           {/* Office specific fields */}
-          {addressType === AddressType.OFFICE && (
+          {addressType === "OFFICE" && (
             <div className="space-y-4">
               <FormField
                 control={control}

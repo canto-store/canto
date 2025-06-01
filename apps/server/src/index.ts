@@ -17,6 +17,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
+      "http://localhost:3001",
       "https://www.canto-store.com",
       "https://canto-store.com",
     ],
