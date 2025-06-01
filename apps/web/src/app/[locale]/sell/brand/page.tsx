@@ -20,7 +20,7 @@ export default function BrandPage() {
     } else if (hasBrand) {
       router.push("/sell/products");
     }
-  }, [user?.role, hasBrand, router]);
+  }, [user, user?.role, hasBrand, router]);
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center justify-center p-10">

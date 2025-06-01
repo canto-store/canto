@@ -19,7 +19,7 @@ export default function Home() {
     if (cart && !isStale) {
       setItems(cart);
     }
-  }, [cart]);
+  }, [cart, isStale, setItems]);
 
   return (
     <>

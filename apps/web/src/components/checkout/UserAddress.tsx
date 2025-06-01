@@ -1,4 +1,4 @@
-import { AddressType, type UserAddress } from "@/types/user";
+import { type UserAddress } from "@/types/user";
 import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
 
@@ -44,18 +44,18 @@ export function UserAddress({
                 <div className="flex flex-col gap-1">
                   <p className="font-bold">{address.address_label}</p>
                   <p className="text-xs text-gray-500">{address.type}</p>
-                  {address.type === AddressType.HOUSE && (
+                  {address.type === "HOUSE" && (
                     <p>
                       {address.building_number}, {address.street_name}
                     </p>
                   )}
-                  {address.type === AddressType.APARTMENT && (
+                  {address.type === "APARTMENT" && (
                     <p>
                       {address.street_name}, {address.apartment_number},{" "}
                       {address.floor}
                     </p>
                   )}
-                  {address.type === AddressType.OFFICE && (
+                  {address.type === "OFFICE" && (
                     <p>
                       {address.office_number} {address.company_name}
                     </p>

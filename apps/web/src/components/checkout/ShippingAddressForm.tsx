@@ -81,7 +81,7 @@ export function ShippingAddressForm({
     },
   });
 
-  const { formState, watch, handleSubmit, setValue, control } = form;
+  const { formState, watch, handleSubmit, control } = form;
   const addressType = watch("type");
 
   const onSubmit = async (data: UserAddressForm) => {
