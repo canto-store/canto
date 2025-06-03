@@ -738,6 +738,7 @@ class ProductService {
         await tx.productVariantImage.createMany({
           data: variant.images.map((image) => ({
             url: image,
+            alt_text: dto.name,
             variantId: variantRecord.id,
           })),
         });
