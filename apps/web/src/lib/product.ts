@@ -92,8 +92,8 @@ export const useProductsByBrand = (brandId: number) =>
 
 export interface ProductSearchParams {
   search?: string;
-  categoryId?: string;
-  brandId?: string;
+  category?: string;
+  brand?: string;
   minPrice?: string;
   maxPrice?: string;
   colors?: string;
@@ -122,9 +122,9 @@ export const useProductSearch = (params: ProductSearchParams) =>
         Object.entries(params).forEach(([key, value]) => {
           if (value) searchParams.append(key, value);
         });
-        
+
         const { data } = await api.get<ProductSearchResult>(
-          `/product/search?${searchParams.toString()}`
+          `/product/search?${searchParams.toString()}`,
         );
         return data;
       } catch (error: unknown) {
@@ -135,5 +135,7 @@ export const useProductSearch = (params: ProductSearchParams) =>
         throw new Error("Failed to search products");
       }
     },
-    enabled: Object.values(params).some(value => value !== undefined && value !== ""),
+    enabled: Object.values(params).some(
+      (value) => value !== undefined && value !== "",
+    ),
   });

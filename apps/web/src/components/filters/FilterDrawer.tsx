@@ -10,7 +10,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { CATEGORIES, PRICE_RANGES, type PriceRange } from "@/lib/data";
+import { PRICE_RANGES, type PriceRange } from "@/lib/data";
+import { useCategories } from "@/lib/categories";
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -56,6 +57,7 @@ export function FilterDrawer({
   hasActiveFilters,
   translations,
 }: FilterDrawerProps) {
+  const { data: categories } = useCategories();
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>
@@ -161,7 +163,7 @@ export function FilterDrawer({
                 {translations.categories}
               </h4>
               <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 p-2 shadow-sm sm:max-h-40 sm:gap-2">
-                {CATEGORIES.map((category) => (
+                {categories?.map((category) => (
                   <Button
                     key={category.name}
                     variant={

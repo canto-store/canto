@@ -52,8 +52,8 @@ class ProductController {
     try {
       const queryParams: ProductQueryParams = {
         search: request.query.search as string,
-        categoryId: request.query.categoryId as string,
-        brandId: request.query.brandId as string,
+        categorySlug: request.query.category as string,
+        brandSlug: request.query.brand as string,
         status: request.query.status as any,
         minPrice: request.query.minPrice as string,
         maxPrice: request.query.maxPrice as string,
@@ -65,8 +65,11 @@ class ProductController {
         page: request.query.page as string,
         limit: request.query.limit as string,
       };
+      console.log("🚀 ~ ProductController ~ queryParams:", request.query);
 
-      const result = await this.productService.findProductsWithFilters(queryParams);
+      const result = await this.productService.findProductsWithFilters(
+        queryParams
+      );
       response.status(200).json(result);
     } catch (error) {
       nextFunction(error);

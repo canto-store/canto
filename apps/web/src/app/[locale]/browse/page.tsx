@@ -52,11 +52,13 @@ export default function BrowsePage() {
     };
 
     if (searchQuery) params.search = searchQuery;
-    if (selectedCategory !== "All") params.categoryId = selectedCategory;
-    if (selectedBrand !== "All") params.brandId = selectedBrand;
-    if (selectedPriceRange.min > 0) params.minPrice = selectedPriceRange.min.toString();
-    if (selectedPriceRange.max < Infinity) params.maxPrice = selectedPriceRange.max.toString();
-    
+    if (selectedCategory !== "All") params.category = selectedCategory;
+    if (selectedBrand !== "All") params.brand = selectedBrand;
+    if (selectedPriceRange.min > 0)
+      params.minPrice = selectedPriceRange.min.toString();
+    if (selectedPriceRange.max < Infinity)
+      params.maxPrice = selectedPriceRange.max.toString();
+
     // Map sort options to API format
     switch (sortOption) {
       case "price-low":
@@ -78,10 +80,22 @@ export default function BrowsePage() {
     }
 
     return params;
-  }, [searchQuery, selectedCategory, selectedBrand, selectedPriceRange, sortOption, currentPage, itemsPerPage]);
+  }, [
+    searchQuery,
+    selectedCategory,
+    selectedBrand,
+    selectedPriceRange,
+    sortOption,
+    currentPage,
+    itemsPerPage,
+  ]);
 
   // Fetch products using the API
-  const { data: searchResult, isLoading, error } = useProductSearch(searchApiParams);
+  const {
+    data: searchResult,
+    isLoading,
+    error,
+  } = useProductSearch(searchApiParams);
 
   // Calculate active filters count
   const activeFiltersCount = useMemo(() => {
@@ -122,7 +136,12 @@ export default function BrowsePage() {
     params.locale,
   ]);
 
-  const { filterTranslations, viewOptionsTranslations, sortTranslations, sortOptionTranslations } = useProductTranslations();
+  const {
+    filterTranslations,
+    viewOptionsTranslations,
+    sortTranslations,
+    sortOptionTranslations,
+  } = useProductTranslations();
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
@@ -228,12 +247,9 @@ export default function BrowsePage() {
           setSelectedCategory={setSelectedCategory}
           selectedBrand={selectedBrand}
           setSelectedBrand={setSelectedBrand}
-          selectedPriceRange={selectedPriceRange}
-          setSelectedPriceRange={setSelectedPriceRange}
           translations={{
             categories: filterTranslations.categories,
             brands: filterTranslations.brands,
-            priceRange: filterTranslations.priceRange,
           }}
         />
       )}

@@ -54,7 +54,7 @@ export function SearchFilterBar({
           ) : (
             <Filter className="h-4 w-4" />
           )}
-          {showFilters ? productsT("clearFilters") : productsT("filters")}
+          {showFilters ? "Close" : productsT("filters")}
         </Button>
 
         {hasActiveFilters && (

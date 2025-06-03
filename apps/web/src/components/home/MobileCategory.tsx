@@ -1,4 +1,4 @@
-import { Category } from "@/lib/data";
+import { Category } from "@/types/category";
 import React from "react";
 import { CategoryCard } from "../common";
 

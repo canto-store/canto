@@ -46,8 +46,8 @@ class ProductService {
   async findProductsWithFilters(queryParams: ProductQueryParams) {
     const {
       search,
-      categoryId,
-      brandId,
+      categorySlug,
+      brandSlug,
       status,
       minPrice,
       maxPrice,
@@ -60,7 +60,6 @@ class ProductService {
       limit = "10",
     } = queryParams;
 
-    // 1) Top-level product filters (AND semantics)
     const where: Prisma.ProductWhereInput = {};
 
     if (search) {
@@ -69,11 +68,11 @@ class ProductService {
         { description: { contains: search, mode: "insensitive" } },
       ];
     }
-    if (categoryId) where.categoryId = Number(categoryId);
-    if (brandId) where.brandId = Number(brandId);
+    if (categorySlug) where.category = { slug: categorySlug };
+    if (brandSlug) where.brand = { slug: brandSlug };
     if (status) where.status = status as ProductStatus;
-
-    // 2) Build variant-level filters so we only pull back matching variants
+    console.log(where);
+    console.log(categorySlug, brandSlug);
     const variantFilters: Prisma.ProductVariantWhereInput[] = [];
 
     if (minPrice) variantFilters.push({ price: { gte: parseFloat(minPrice) } });
@@ -110,12 +109,12 @@ class ProductService {
       where.variants = { some: { AND: variantFilters } };
     }
 
-    // 3) Pagination & sorting setup
+    // 4) Pagination & sorting setup
     const pageNum = Number(page);
     const limitNum = Number(limit);
     const skip = (pageNum - 1) * limitNum;
 
-    // 4) Fetch matching products + total count
+    // 5) Fetch matching products + total count
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
@@ -142,7 +141,7 @@ class ProductService {
       this.prisma.product.count({ where }),
     ]);
 
-    // 5)sort products by their min-variant price
+    // 6) Sort products by their min-variant price
     if (sortBy === "price") {
       products.sort((a, b) => {
         const aMin = Math.min(...a.variants.map((v) => v.price));
@@ -152,10 +151,27 @@ class ProductService {
     }
 
     const formatted = products.map((p) => {
+      if (!p.variants || p.variants.length === 0) {
+        return {
+          name: p.name,
+          slug: p.slug,
+          brand: {
+            name: p.brand.name,
+            slug: p.brand.slug,
+          },
+          price: 0,
+          image: "/placeholder-image.jpg",
+          stock: 0,
+          hasVariants: false,
+          default_variant_id: null,
+          colorVariants: [],
+        };
+      }
+
       const prices = p.variants.map((v) => v.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
-      
+
       return {
         name: p.name,
         slug: p.slug,
@@ -171,12 +187,13 @@ class ProductService {
         default_variant_id: p.variants.length === 1 ? p.variants[0]?.id : null,
         colorVariants: [
           ...new Set(
-            p.variants
-              .flatMap((v) => 
-                v.optionLinks
-                  .filter((link) => link.productOption.name.toLowerCase() === "color")
-                  .map((link) => link.optionValue.value)
-              )
+            p.variants.flatMap((v) =>
+              v.optionLinks
+                .filter(
+                  (link) => link.productOption.name.toLowerCase() === "color"
+                )
+                .map((link) => link.optionValue.value)
+            )
           ),
         ],
       };
@@ -541,7 +558,9 @@ class ProductService {
         name: true,
         brand: { select: { name: true, slug: true } },
         slug: true,
-        variants: { select: { images: true, price: true, id: true, stock: true } },
+        variants: {
+          select: { images: true, price: true, id: true, stock: true },
+        },
       },
     });
     const colorVariantOption = await this.prisma.productOption.findUnique({
@@ -566,10 +585,24 @@ class ProductService {
       },
     });
     const bestSellers = products.slice(0, 5).map((product) => {
+      if (!product.variants || product.variants.length === 0) {
+        return {
+          name: product.name,
+          brand: product.brand,
+          slug: product.slug,
+          price: 0,
+          image: "/placeholder-image.jpg",
+          stock: 0,
+          hasVariants: false,
+          default_variant_id: null,
+          colorVariants: [],
+        };
+      }
+
       const prices = product.variants.map((v) => v.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
-      
+
       return {
         name: product.name,
         brand: product.brand,
@@ -591,10 +624,24 @@ class ProductService {
       };
     });
     const bestDeals = products.slice(5, 10).map((product) => {
+      if (!product.variants || product.variants.length === 0) {
+        return {
+          name: product.name,
+          brand: product.brand,
+          slug: product.slug,
+          price: 0,
+          image: "/placeholder-image.jpg",
+          stock: 0,
+          hasVariants: false,
+          default_variant_id: null,
+          colorVariants: [],
+        };
+      }
+
       const prices = product.variants.map((v) => v.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
-      
+
       return {
         name: product.name,
         brand: product.brand,
@@ -616,10 +663,24 @@ class ProductService {
       };
     });
     const newArrivals = products.slice(10, 15).map((product) => {
+      if (!product.variants || product.variants.length === 0) {
+        return {
+          name: product.name,
+          brand: product.brand,
+          slug: product.slug,
+          price: 0,
+          image: "/placeholder-image.jpg",
+          stock: 0,
+          hasVariants: false,
+          default_variant_id: null,
+          colorVariants: [],
+        };
+      }
+
       const prices = product.variants.map((v) => v.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
-      
+
       return {
         name: product.name,
         brand: product.brand,

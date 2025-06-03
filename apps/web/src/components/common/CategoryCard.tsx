@@ -1,5 +1,5 @@
 import { useRouter } from "@/i18n/navigation";
-import { type Category } from "@/lib/data/categories";
+import { type Category } from "@/types/category";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -16,7 +16,7 @@ export function CategoryCard({
 }: CategoryCardProps) {
   const router = useRouter();
   const handleCategoryClick = (category: Category) => {
-    router.push(`/browse?category=${encodeURIComponent(category.name)}`);
+    router.push(`/browse?category=${category.slug}`);
   };
   return (
     <button

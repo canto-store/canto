@@ -1,92 +1,99 @@
 import { Button } from "@/components/ui/button";
-import { CATEGORIES, PRICE_RANGES, type PriceRange } from "@/lib/data";
+import { useCategories } from "@/lib/categories";
+import { useBrands } from "@/lib/brand";
 
 interface FilterPanelProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
   selectedBrand: string;
   setSelectedBrand: (brand: string) => void;
-  selectedPriceRange: PriceRange;
-  setSelectedPriceRange: (range: PriceRange) => void;
   translations: {
     categories: string;
     brands: string;
-    priceRange: string;
   };
 }
 
 export function FilterPanel({
   selectedCategory,
   setSelectedCategory,
-  // selectedBrand,
-  // setSelectedBrand,
-  selectedPriceRange,
-  setSelectedPriceRange,
+  selectedBrand,
+  setSelectedBrand,
   translations,
 }: FilterPanelProps) {
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: brands, isLoading: brandsLoading } = useBrands();
+
   return (
-    <div className="mb-6 hidden rounded-lg border p-3 shadow-sm sm:block sm:p-4">
-      <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
+    <div className="mb-6 rounded-lg border bg-white p-4 shadow-sm">
+      <div className="grid gap-6 md:grid-cols-2">
         {/* Categories */}
         <div>
-          <h4 className="mb-2 text-sm font-medium text-gray-700">
+          <h4 className="mb-3 text-sm font-medium text-gray-700">
             {translations.categories}
           </h4>
-          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto sm:max-h-40 sm:gap-2">
-            {CATEGORIES.map((category) => (
-              <Button
-                key={category.name}
-                variant={
-                  selectedCategory === category.name ? "default" : "outline"
-                }
-                size="sm"
-                className="text-xs sm:text-sm"
-                onClick={() => setSelectedCategory(category.name)}
-              >
-                {category.name}
-              </Button>
-            ))}
-          </div>
+          {categoriesLoading ? (
+            <div className="flex flex-wrap gap-2">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-8 w-20 animate-pulse rounded bg-gray-200"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
+              {categories
+                ?.filter((category) => category.name && category.slug)
+                .map((category) => (
+                  <Button
+                    key={category.slug}
+                    variant={
+                      selectedCategory === category.slug ? "default" : "outline"
+                    }
+                    size="sm"
+                    className="text-sm"
+                    onClick={() => setSelectedCategory(category.slug)}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+            </div>
+          )}
         </div>
 
         {/* Brands */}
         <div>
-          <h4 className="mb-2 text-sm font-medium text-gray-700">
+          <h4 className="mb-3 text-sm font-medium text-gray-700">
             {translations.brands}
           </h4>
-          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto sm:max-h-40 sm:gap-2">
-            {/* {BRANDS.map((brand) => (
-              <Button
-                key={brand.slug}
-                variant={selectedBrand === brand.name ? "default" : "outline"}
-                size="sm"
-                className="text-xs sm:text-sm"
-                onClick={() => setSelectedBrand(brand.slug)}
-              >
-                {brand.name}
-              </Button>
-            ))} */}
-          </div>
-        </div>
-
-        {/* Price Ranges */}
-        <div>
-          <h4 className="mb-2 text-sm font-medium text-gray-700">
-            {translations.priceRange}
-          </h4>
-          <div className="flex flex-wrap gap-1.5 sm:gap-2">
-            {PRICE_RANGES.map((range) => (
-              <Button
-                key={range.label}
-                variant={selectedPriceRange === range ? "default" : "outline"}
-                size="sm"
-                className="text-xs sm:text-sm"
-                onClick={() => setSelectedPriceRange(range)}
-              >
-                {range.label}
-              </Button>
-            ))}
-          </div>
+          {brandsLoading ? (
+            <div className="flex flex-wrap gap-2">
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-8 w-24 animate-pulse rounded bg-gray-200"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
+              {brands
+                ?.filter((brand) => brand.name && brand.slug)
+                .map((brand) => (
+                  <Button
+                    key={brand.slug}
+                    variant={
+                      selectedBrand === brand.slug ? "default" : "outline"
+                    }
+                    size="sm"
+                    className="text-sm"
+                    onClick={() => setSelectedBrand(brand.slug || "")}
+                  >
+                    {brand.name}
+                  </Button>
+                ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

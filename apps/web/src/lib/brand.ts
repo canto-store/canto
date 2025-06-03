@@ -21,6 +21,16 @@ export const useMyBrand = (options?: UseMyBrandOptions) =>
     ...options,
   });
 
+export const useBrands = () =>
+  useQuery<Brand[], Error>({
+    queryKey: ["brands"],
+    queryFn: async () => {
+      const { data } = await api.get<Brand[]>("/brand");
+      return data;
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes
+  });
+
 export const useSubmitBrand = () =>
   useMutation<Brand, Error, BrandFormValues>({
     mutationFn: async ({ name, description, email, instagramUrl }) => {
