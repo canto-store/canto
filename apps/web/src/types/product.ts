@@ -34,6 +34,7 @@ export type ProductSummary = {
   };
   slug: string;
   price: number;
+  maxPrice?: number;
   salePrice?: number;
   image: string;
   stock: number;

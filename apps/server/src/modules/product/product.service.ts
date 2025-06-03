@@ -151,50 +151,43 @@ class ProductService {
       });
     }
 
-    const formatted = products.map((p) => ({
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      description: p.description,
-      status: p.status,
-      brand: {
-        id: p.brand.id,
-        name: p.brand.name,
-        slug: p.brand.slug,
-      },
-      category: {
-        id: p.category.id,
-        name: p.category.name,
-        slug: p.category.slug,
-      },
-      variants: p.variants.map((v) => ({
-        id: v.id,
-        sku: v.sku,
-        price: v.price,
-        stock: v.stock,
-        images: v.images.map((img) => ({
-          url: img.url,
-          alt_text: img.alt_text,
-        })),
-        options: v.optionLinks.reduce((acc, link) => {
-          const optName = link.productOption.name;
-          const optValue = link.optionValue.value;
-          acc[optName] = optValue;
-          return acc;
-        }, {} as Record<string, string>),
-      })),
-      created_at: p.created_at,
-      updated_at: p.updated_at,
-    }));
+    const formatted = products.map((p) => {
+      const prices = p.variants.map((v) => v.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      
+      return {
+        name: p.name,
+        slug: p.slug,
+        brand: {
+          name: p.brand.name,
+          slug: p.brand.slug,
+        },
+        price: minPrice,
+        maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
+        image: p.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        stock: p.variants.reduce((sum, v) => sum + v.stock, 0),
+        hasVariants: p.variants.length > 1,
+        default_variant_id: p.variants.length === 1 ? p.variants[0]?.id : null,
+        colorVariants: [
+          ...new Set(
+            p.variants
+              .flatMap((v) => 
+                v.optionLinks
+                  .filter((link) => link.productOption.name.toLowerCase() === "color")
+                  .map((link) => link.optionValue.value)
+              )
+          ),
+        ],
+      };
+    });
 
     return {
       products: formatted,
-      pagination: {
-        page: pageNum,
-        limit: limitNum,
-        total,
-        totalPages: Math.ceil(total / limitNum),
-      },
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
     };
   }
 
@@ -548,7 +541,7 @@ class ProductService {
         name: true,
         brand: { select: { name: true, slug: true } },
         slug: true,
-        variants: { select: { images: true, price: true, id: true } },
+        variants: { select: { images: true, price: true, id: true, stock: true } },
       },
     });
     const colorVariantOption = await this.prisma.productOption.findUnique({
@@ -572,57 +565,81 @@ class ProductService {
         },
       },
     });
-    const bestSellers = products.slice(0, 5).map((product) => ({
-      name: product.name,
-      brand: product.brand,
-      slug: product.slug,
-      price: Math.min(...product.variants.map((v) => v.price)),
-      image: product.variants[0]?.images[0]?.url ?? "",
-      hasVariants: product.variants.length > 1,
-      default_variant_id:
-        product.variants.length === 1 ? product.variants[0]?.id : null,
-      colorVariants: [
-        ...new Set(
-          colorVariantValues
-            .filter((v) => product.variants.some((p) => p.id === v.variantId))
-            .map((v) => v.optionValue.value)
-        ),
-      ],
-    }));
-    const bestDeals = products.slice(5, 10).map((product) => ({
-      name: product.name,
-      brand: product.brand,
-      slug: product.slug,
-      price: Math.min(...product.variants.map((v) => v.price)),
-      image: product.variants[0]?.images[0]?.url ?? "",
-      default_variant_id:
-        product.variants.length === 1 ? product.variants[0]?.id : null,
-      hasVariants: product.variants.length > 1,
-      colorVariants: [
-        ...new Set(
-          colorVariantValues
-            .filter((v) => product.variants.some((p) => p.id === v.variantId))
-            .map((v) => v.optionValue.value)
-        ),
-      ],
-    }));
-    const newArrivals = products.slice(10, 15).map((product) => ({
-      name: product.name,
-      brand: product.brand,
-      slug: product.slug,
-      price: Math.min(...product.variants.map((v) => v.price)),
-      image: product.variants[0]?.images[0]?.url ?? "",
-      hasVariants: product.variants.length > 1,
-      default_variant_id:
-        product.variants.length === 1 ? product.variants[0]?.id : null,
-      colorVariants: [
-        ...new Set(
-          colorVariantValues
-            .filter((v) => product.variants.some((p) => p.id === v.variantId))
-            .map((v) => v.optionValue.value)
-        ),
-      ],
-    }));
+    const bestSellers = products.slice(0, 5).map((product) => {
+      const prices = product.variants.map((v) => v.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      
+      return {
+        name: product.name,
+        brand: product.brand,
+        slug: product.slug,
+        price: minPrice,
+        maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
+        image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
+        hasVariants: product.variants.length > 1,
+        default_variant_id:
+          product.variants.length === 1 ? product.variants[0]?.id : null,
+        colorVariants: [
+          ...new Set(
+            colorVariantValues
+              .filter((v) => product.variants.some((p) => p.id === v.variantId))
+              .map((v) => v.optionValue.value)
+          ),
+        ],
+      };
+    });
+    const bestDeals = products.slice(5, 10).map((product) => {
+      const prices = product.variants.map((v) => v.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      
+      return {
+        name: product.name,
+        brand: product.brand,
+        slug: product.slug,
+        price: minPrice,
+        maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
+        image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
+        default_variant_id:
+          product.variants.length === 1 ? product.variants[0]?.id : null,
+        hasVariants: product.variants.length > 1,
+        colorVariants: [
+          ...new Set(
+            colorVariantValues
+              .filter((v) => product.variants.some((p) => p.id === v.variantId))
+              .map((v) => v.optionValue.value)
+          ),
+        ],
+      };
+    });
+    const newArrivals = products.slice(10, 15).map((product) => {
+      const prices = product.variants.map((v) => v.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      
+      return {
+        name: product.name,
+        brand: product.brand,
+        slug: product.slug,
+        price: minPrice,
+        maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
+        image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
+        hasVariants: product.variants.length > 1,
+        default_variant_id:
+          product.variants.length === 1 ? product.variants[0]?.id : null,
+        colorVariants: [
+          ...new Set(
+            colorVariantValues
+              .filter((v) => product.variants.some((p) => p.id === v.variantId))
+              .map((v) => v.optionValue.value)
+          ),
+        ],
+      };
+    });
     return {
       bestSellers,
       bestDeals,
@@ -689,7 +706,7 @@ class ProductService {
       id: product.id,
       name: product.name,
       description: product.description,
-      image: product.variants[0]?.images[0]?.url ?? "",
+      image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
       category: product.category.name,
       status: product.status,
     }));

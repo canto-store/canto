@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Pagination } from "@/components/ui/pagination";
-import { ProductGrid, ProductList } from "@/components/products";
+import { ProductGrid, ProductList, ProductGridSkeleton } from "@/components/products";
 import { ProductSummary } from "@/types";
 import { useTranslations } from "next-intl";
 
@@ -15,6 +15,7 @@ interface ProductsDisplayProps {
   onPageChange: (page: number) => void;
   clearFilters: () => void;
   isRTL: boolean;
+  isLoading?: boolean;
 }
 
 export function ProductsDisplay({
@@ -27,6 +28,7 @@ export function ProductsDisplay({
   onPageChange,
   clearFilters,
   isRTL,
+  isLoading = false,
 }: ProductsDisplayProps) {
   const productsT = useTranslations("products");
 
@@ -37,7 +39,11 @@ export function ProductsDisplay({
       id="products-section"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      {filteredProducts.length > 0 ? (
+      {isLoading ? (
+        <TabsContent value={activeTab}>
+          <ProductGridSkeleton />
+        </TabsContent>
+      ) : filteredProducts.length > 0 ? (
         <>
           <TabsContent value="grid">
             <ProductGrid

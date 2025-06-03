@@ -87,9 +87,9 @@ export function ProductCard({
         className="hover:cursor-pointer"
       >
         <Image
-          src={product.image}
+          src={product.image || "/placeholder-image.jpg"}
           alt={product.name}
-          className="transform rounded-t-lg object-cover transition-transform duration-300 group-hover:scale-110"
+          className="aspect-square w-full transform rounded-t-lg object-contain transition-transform duration-300 group-hover:scale-110"
           width={600}
           height={600}
           priority={shouldPrioritize}
@@ -154,6 +154,11 @@ export function ProductCard({
               )}
             >
               {product.price}
+              {product.maxPrice && (
+                <span className="font-bold sm:text-lg md:text-xl">
+                  {" "}- {product.maxPrice}
+                </span>
+              )}
             </span>
           </div>
           {product.hasVariants ? (
