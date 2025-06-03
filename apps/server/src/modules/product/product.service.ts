@@ -11,7 +11,12 @@ import {
   ProductStatus,
   ProductQueryParams,
 } from "./product.types";
-import { slugify } from "../../utils/helper";
+import {
+  slugify,
+  formatPrice,
+  calculateOriginalPrice,
+  calculateDiscountPercentage,
+} from "../../utils/helper";
 
 class ProductService {
   private readonly prisma = new PrismaClient();
@@ -38,162 +43,160 @@ class ProductService {
     });
   }
 
-async findProductsWithFilters(queryParams: ProductQueryParams) {
-  const {
-    search,
-    categoryId,
-    brandId,
-    status,
-    minPrice,
-    maxPrice,
-    colors,
-    sizes,
-    inStock,
-    sortBy = "created_at",
-    sortOrder = "desc",
-    page = "1",
-    limit = "10",
-  } = queryParams;
+  async findProductsWithFilters(queryParams: ProductQueryParams) {
+    const {
+      search,
+      categoryId,
+      brandId,
+      status,
+      minPrice,
+      maxPrice,
+      colors,
+      sizes,
+      inStock,
+      sortBy = "created_at",
+      sortOrder = "desc",
+      page = "1",
+      limit = "10",
+    } = queryParams;
 
-  // 1) Top-level product filters (AND semantics)
-  const where: Prisma.ProductWhereInput = {};
+    // 1) Top-level product filters (AND semantics)
+    const where: Prisma.ProductWhereInput = {};
 
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { description: { contains: search, mode: "insensitive" } },
-    ];
-  }
-  if (categoryId) where.categoryId = Number(categoryId);
-  if (brandId)    where.brandId    = Number(brandId);
-  if (status)     where.status     = status as ProductStatus;
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
+    if (categoryId) where.categoryId = Number(categoryId);
+    if (brandId) where.brandId = Number(brandId);
+    if (status) where.status = status as ProductStatus;
 
-  // 2) Build variant-level filters so we only pull back matching variants
-  const variantFilters: Prisma.ProductVariantWhereInput[] = [];
+    // 2) Build variant-level filters so we only pull back matching variants
+    const variantFilters: Prisma.ProductVariantWhereInput[] = [];
 
-  if (minPrice)   variantFilters.push({ price: { gte: parseFloat(minPrice) } });
-  if (maxPrice)   variantFilters.push({ price: { lte: parseFloat(maxPrice) } });
-  if (inStock === "true") variantFilters.push({ stock: { gt: 0 } });
+    if (minPrice) variantFilters.push({ price: { gte: parseFloat(minPrice) } });
+    if (maxPrice) variantFilters.push({ price: { lte: parseFloat(maxPrice) } });
+    if (inStock === "true") variantFilters.push({ stock: { gt: 0 } });
 
-  if (colors) {
-    const vals = colors.split(",").map((c) => c.trim());
-    variantFilters.push({
-      optionLinks: {
-        some: {
-          productOption: { name: { equals: "Color", mode: "insensitive" } },
-          optionValue:   { value:  { in: vals, mode:"insensitive" } },
+    if (colors) {
+      const vals = colors.split(",").map((c) => c.trim());
+      variantFilters.push({
+        optionLinks: {
+          some: {
+            productOption: { name: { equals: "Color", mode: "insensitive" } },
+            optionValue: { value: { in: vals, mode: "insensitive" } },
+          },
         },
-      },
-    });
-  }
+      });
+    }
 
-  if (sizes) {
-    const vals = sizes.split(",").map((s) => s.trim());
-    variantFilters.push({
-      optionLinks: {
-        some: {
-          productOption: { name: { equals: "Size", mode: "insensitive" } },
-          optionValue:   { value:  { in: vals, mode:"insensitive" } },
+    if (sizes) {
+      const vals = sizes.split(",").map((s) => s.trim());
+      variantFilters.push({
+        optionLinks: {
+          some: {
+            productOption: { name: { equals: "Size", mode: "insensitive" } },
+            optionValue: { value: { in: vals, mode: "insensitive" } },
+          },
         },
-      },
-    });
-  }
+      });
+    }
 
-  // Apply the variant-filters to the top-level `where` so we only fetch
-  // products that have at least one variant matching _all_ of them:
-  if (variantFilters.length > 0) {
-    where.variants = { some: { AND: variantFilters } };
-  }
+    // Apply the variant-filters to the top-level `where` so we only fetch
+    // products that have at least one variant matching _all_ of them:
+    if (variantFilters.length > 0) {
+      where.variants = { some: { AND: variantFilters } };
+    }
 
-  // 3) Pagination & sorting setup
-  const pageNum  = Number(page);
-  const limitNum = Number(limit);
-  const skip     = (pageNum - 1) * limitNum;
+    // 3) Pagination & sorting setup
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
 
-  // 4) Fetch matching products + total count
-  const [products, total] = await Promise.all([
-    this.prisma.product.findMany({
-      where,
-      include: {
-        brand: true,
-        category: true,
-        variants: {
-          // Only return the variants that matched our filters
-          where: variantFilters.length ? { AND: variantFilters } : {},
-          include: {
-            images: true,
-            optionLinks: {
-              include: { optionValue: true, productOption: true },
+    // 4) Fetch matching products + total count
+    const [products, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        include: {
+          brand: true,
+          category: true,
+          variants: {
+            // Only return the variants that matched our filters
+            where: variantFilters.length ? { AND: variantFilters } : {},
+            include: {
+              images: true,
+              optionLinks: {
+                include: { optionValue: true, productOption: true },
+              },
             },
           },
         },
+        // If sorting by price, we'll sort in JS afterwards
+        orderBy:
+          sortBy === "price" ? { created_at: "desc" } : { [sortBy]: sortOrder },
+        skip,
+        take: limitNum,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+
+    // 5)sort products by their min-variant price
+    if (sortBy === "price") {
+      products.sort((a, b) => {
+        const aMin = Math.min(...a.variants.map((v) => v.price));
+        const bMin = Math.min(...b.variants.map((v) => v.price));
+        return sortOrder === "asc" ? aMin - bMin : bMin - aMin;
+      });
+    }
+
+    const formatted = products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      description: p.description,
+      status: p.status,
+      brand: {
+        id: p.brand.id,
+        name: p.brand.name,
+        slug: p.brand.slug,
       },
-      // If sorting by price, we'll sort in JS afterwards
-      orderBy: sortBy === "price"
-        ? { created_at: "desc" }
-        : { [sortBy]: sortOrder },
-      skip,
-      take: limitNum,
-    }),
-    this.prisma.product.count({ where }),
-  ]);
-
-  // 5)sort products by their min-variant price
-  if (sortBy === "price") {
-    products.sort((a, b) => {
-      const aMin = Math.min(...a.variants.map((v) => v.price));
-      const bMin = Math.min(...b.variants.map((v) => v.price));
-      return sortOrder === "asc" ? aMin - bMin : bMin - aMin;
-    });
-  }
-
-  const formatted = products.map((p) => ({
-    id:          p.id,
-    name:        p.name,
-    slug:        p.slug,
-    description: p.description,
-    status:      p.status,
-    brand: {
-      id:   p.brand.id,
-      name: p.brand.name,
-      slug: p.brand.slug,
-    },
-    category: {
-      id:   p.category.id,
-      name: p.category.name,
-      slug: p.category.slug,
-    },
-    variants: p.variants.map((v) => ({
-      id:    v.id,
-      sku:   v.sku,
-      price: v.price,
-      stock: v.stock,
-      images: v.images.map((img) => ({
-        url:      img.url,
-        alt_text: img.alt_text,
+      category: {
+        id: p.category.id,
+        name: p.category.name,
+        slug: p.category.slug,
+      },
+      variants: p.variants.map((v) => ({
+        id: v.id,
+        sku: v.sku,
+        price: v.price,
+        stock: v.stock,
+        images: v.images.map((img) => ({
+          url: img.url,
+          alt_text: img.alt_text,
+        })),
+        options: v.optionLinks.reduce((acc, link) => {
+          const optName = link.productOption.name;
+          const optValue = link.optionValue.value;
+          acc[optName] = optValue;
+          return acc;
+        }, {} as Record<string, string>),
       })),
-      options: v.optionLinks.reduce((acc, link) => {
-        const optName  = link.productOption.name;
-        const optValue = link.optionValue.value;
-        acc[optName] = optValue;
-        return acc;
-      }, {} as Record<string, string>),
-    })),
-    created_at: p.created_at,
-    updated_at: p.updated_at,
-  }));
+      created_at: p.created_at,
+      updated_at: p.updated_at,
+    }));
 
-  return {
-    products: formatted,
-    pagination: {
-      page:       pageNum,
-      limit:      limitNum,
-      total,
-      totalPages: Math.ceil(total / limitNum),
-    },
-  };
-}
-
+    return {
+      products: formatted,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    };
+  }
 
   async findProduct(id: number) {
     await this.ensureProductExists(id);
@@ -437,6 +440,7 @@ async findProductsWithFilters(queryParams: ProductQueryParams) {
                 },
               },
             },
+            sale: true,
           },
         },
       },
@@ -448,19 +452,11 @@ async findProductsWithFilters(queryParams: ProductQueryParams) {
     const minimumPrice = priceList.length ? Math.min(...priceList) : 0;
     const maximumPrice = priceList.length ? Math.max(...priceList) : 0;
 
-    const optionMap = new Map<string, Set<string>>();
-    productRecord.variants.forEach((variant) =>
-      variant.optionLinks.forEach((link) => {
-        const optionName = link.optionValue.productOption.name;
-        const optionValueText = link.optionValue.value;
-        if (!optionMap.has(optionName)) optionMap.set(optionName, new Set());
-        optionMap.get(optionName)!.add(optionValueText);
-      })
+    const totalStock = productRecord.variants.reduce(
+      (sum, variant) => sum + variant.stock,
+      0
     );
-    const options = [...optionMap.entries()].map(([name, valueSet]) => ({
-      name,
-      values: [...valueSet],
-    }));
+    const inStock = totalStock > 0;
 
     const variants = productRecord.variants.map((variant) => {
       const variantOptions: Record<string, string> = {};
@@ -468,9 +464,23 @@ async findProductsWithFilters(queryParams: ProductQueryParams) {
         variantOptions[link.optionValue.productOption.name] =
           link.optionValue.value;
       });
+
+      const originalPrice = variant.sale
+        ? calculateOriginalPrice(variant.price, variant.sale)
+        : null;
+
+      const discountPercentage = originalPrice
+        ? calculateDiscountPercentage(originalPrice, variant.price)
+        : null;
+
       return {
+        id: variant.id,
         sku: variant.sku,
         price: variant.price,
+        price_formatted: formatPrice(variant.price),
+        original_price: originalPrice,
+        original_price_formatted: formatPrice(originalPrice),
+        discount_percentage: discountPercentage,
         stock: variant.stock,
         options: variantOptions,
         images: variant.images.map((image) => ({
@@ -516,15 +526,17 @@ async findProductsWithFilters(queryParams: ProductQueryParams) {
       description: productRecord.description,
       brand: productRecord.brand,
       category: productRecord.category,
+      in_stock: inStock,
+      total_stock: totalStock,
       price_range: {
-        min_price: minimumPrice,
-        max_price: maximumPrice,
+        min_price: formatPrice(minimumPrice),
+        max_price: formatPrice(maximumPrice),
       },
-      options,
       variants,
-      ...(productRecord.sizeChart
-        ? { sizeChart: productRecord.sizeChart }
-        : {}),
+      default_variant_id:
+        productRecord.variants.length === 1
+          ? productRecord.variants[0].id
+          : null,
       reviews: { count: 0, rating: 0 },
       related_products: relatedProducts,
     };
@@ -567,7 +579,8 @@ async findProductsWithFilters(queryParams: ProductQueryParams) {
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
       hasVariants: product.variants.length > 1,
-      variantId: product.variants[0]?.id,
+      default_variant_id:
+        product.variants.length === 1 ? product.variants[0]?.id : null,
       colorVariants: [
         ...new Set(
           colorVariantValues
@@ -582,7 +595,8 @@ async findProductsWithFilters(queryParams: ProductQueryParams) {
       slug: product.slug,
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
-      variantId: product.variants[0]?.id,
+      default_variant_id:
+        product.variants.length === 1 ? product.variants[0]?.id : null,
       hasVariants: product.variants.length > 1,
       colorVariants: [
         ...new Set(
@@ -599,7 +613,8 @@ async findProductsWithFilters(queryParams: ProductQueryParams) {
       price: Math.min(...product.variants.map((v) => v.price)),
       image: product.variants[0]?.images[0]?.url ?? "",
       hasVariants: product.variants.length > 1,
-      variantId: product.variants[0]?.id,
+      default_variant_id:
+        product.variants.length === 1 ? product.variants[0]?.id : null,
       colorVariants: [
         ...new Set(
           colorVariantValues

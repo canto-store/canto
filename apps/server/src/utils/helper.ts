@@ -27,3 +27,28 @@ export function getColorStatus(status: string): string {
   // Default to no color for other status codes
   return status;
 }
+
+export const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("en-EG", {
+    style: "currency",
+    currency: "EGP",
+  }).format(price);
+};
+
+export const calculateOriginalPrice = (
+  salePrice: number,
+  sale: { type: "PERCENTAGE" | "FIXED"; value: number }
+) => {
+  if (sale.type === "PERCENTAGE") {
+    return Math.round(salePrice / (1 - sale.value / 100));
+  } else {
+    return salePrice + sale.value;
+  }
+};
+
+export const calculateDiscountPercentage = (
+  originalPrice: number,
+  salePrice: number
+) => {
+  return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+};

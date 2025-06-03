@@ -3,7 +3,7 @@ import { Order, OrderStatus } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatPrice } from "@/lib/utils";
 import { useRouter } from "@/i18n/navigation";
 
 const statusColorMap: Record<OrderStatus, string> = {
@@ -71,9 +71,7 @@ export function OrderCard({ order, onReorder }: OrderCardProps) {
 
       <div className="mt-4 flex">
         <div className="flex flex-col">
-          <p className="text-sm font-medium">
-            EGP {order.totalPrice.toFixed(2)}
-          </p>
+          <p className="text-sm font-medium">{formatPrice(order.totalPrice)}</p>
           <a onClick={() => router.push(`/orders/${order.id}`)}>
             <p className="mt-1 cursor-pointer text-xs text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
               View Details

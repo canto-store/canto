@@ -16,6 +16,13 @@ export function formatDate(dateString: string): string {
   }).format(date);
 }
 
+export const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("en-EG", {
+    style: "currency",
+    currency: "EGP",
+  }).format(price);
+};
+
 // Filter products by search query, category, price range, and brand
 export function filterProducts(
   searchQuery: string,

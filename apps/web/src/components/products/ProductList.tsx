@@ -83,7 +83,13 @@ export function ProductList({ products, title, className }: ProductListProps) {
                   className={`flex ${isRTL ? "flex-row-reverse" : ""} gap-2`}
                 >
                   <Button
-                    onClick={() => handleAddToCart({ ...product, quantity: 1 })}
+                    onClick={() =>
+                      handleAddToCart({
+                        ...product,
+                        quantity: 1,
+                        variantId: product.default_variant_id!,
+                      })
+                    }
                     size="sm"
                     className="gap-1"
                   >

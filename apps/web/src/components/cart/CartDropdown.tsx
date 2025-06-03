@@ -8,7 +8,7 @@ import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/cart";
 import { CartItemComponent } from "./CartItem";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 
 interface CartDropdownProps {
   className?: string;
@@ -144,7 +144,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
               <div className="border-t border-gray-100 px-4 py-3">
                 <div className="flex justify-between font-medium">
                   <span>{t("header.total")}:</span>
-                  <span className="text-primary">EGP {price.toFixed(2)}</span>
+                  <span className="text-primary">{formatPrice(price)}</span>
                 </div>
               </div>
 

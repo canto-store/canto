@@ -6,7 +6,7 @@ import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useCartStore, useDeleteFromCart, useUpdateCartItem } from "@/lib/cart";
 import { CartItem } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/auth";
@@ -88,7 +88,7 @@ export function CartItemComponent({
           <p className="text-xs text-gray-500">{item.brand.name}</p>
           <div className="mt-1 flex items-center justify-between">
             <p className="text-xs font-medium">
-              EGP {item.price.toFixed(2)} × {item.quantity}
+              {formatPrice(item.price * item.quantity)}
             </p>
           </div>
         </div>
@@ -140,7 +140,7 @@ export function CartItemComponent({
               {item.name}
             </h3>
             <p className="text-primary mt-1 text-center text-sm font-medium sm:mt-0 sm:ml-4 sm:text-left">
-              EGP {(item.price * item.quantity).toFixed(2)}
+              {formatPrice(item.price * item.quantity)}
             </p>
           </div>
           <p className="mt-1 text-center text-xs text-gray-500 sm:text-left sm:text-sm">

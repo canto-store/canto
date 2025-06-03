@@ -38,7 +38,7 @@ export type ProductSummary = {
   image: string;
   stock: number;
   hasVariants: boolean;
-  variantId: number;
+  default_variant_id: number | null;
   colorVariants: string[] | null;
 };
 
@@ -54,18 +54,38 @@ export type ProductDetails = {
     name: string;
     slug: string;
   };
-  options: ProductOptionTemp[];
+  in_stock: boolean;
+  total_stock: number;
   price_range: {
-    min_price: number;
-    max_price: number;
+    min_price: string;
+    max_price: string;
   };
-  variants: ProductVariants[];
+  variants: ProductVariant[];
+  default_variant_id: number | null;
   size_chart?: string;
   reviews: {
     count: number;
     rating: number;
   };
   related_products?: ProductSummary[];
+};
+
+export type ProductVariant = {
+  id: number;
+  sku: string;
+  price: number;
+  price_formatted: string;
+  original_price: number | null;
+  original_price_formatted: string | null;
+  discount_percentage: number | null;
+  stock: number;
+  options: Record<string, string>;
+  images: ProductImage[];
+};
+
+export type ProductImage = {
+  url: string;
+  alt_text: string;
 };
 
 export type Color = {
@@ -101,11 +121,6 @@ export interface ProductOption {
   name: string;
   values: OptionValue[];
 }
-
-export type ProductOptionTemp = {
-  name: string;
-  values: string[];
-};
 
 export const selectedVariantSchema = z.object({
   price: z.number().positive(),

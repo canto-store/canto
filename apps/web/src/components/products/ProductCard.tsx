@@ -33,9 +33,33 @@ export function ProductCard({
 
   const handleAddToCart = (product: ProductSummary) => {
     if (user) {
-      addToCart({ variantId: product.variantId, quantity: 1 });
+      addToCart({
+        variantId: product.default_variant_id!,
+        quantity: 1,
+      }).then(() => {
+        addItem({
+          brand: product.brand,
+          name: product.name,
+          slug: product.slug,
+          price: product.price,
+          image: product.image,
+          stock: product.stock,
+          variantId: product.default_variant_id!,
+          quantity: 1,
+        });
+      });
+    } else {
+      addItem({
+        brand: product.brand,
+        name: product.name,
+        slug: product.slug,
+        price: product.price,
+        image: product.image,
+        stock: product.stock,
+        quantity: 1,
+        variantId: product.default_variant_id!,
+      });
     }
-    addItem({ ...product, quantity: 1 });
   };
 
   const handleProductClick = (product: ProductSummary) => {

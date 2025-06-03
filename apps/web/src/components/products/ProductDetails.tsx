@@ -1,14 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
-import { ProductDetails as ProductDetailsType } from "@/types";
+import { ProductDetails as ProductDetailsType, ProductVariant } from "@/types";
 import ProductOptions from "./ProductOptions";
 import { Link } from "@/i18n/navigation";
 import { toast } from "sonner";
+import { useAddToCart, useCartStore } from "@/lib/cart";
+import { useAuth } from "@/hooks/auth";
 
 interface ProductDetailsProps {
   product: ProductDetailsType;
@@ -17,9 +19,52 @@ interface ProductDetailsProps {
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<
+    ProductVariant | undefined
+  >(undefined);
 
-  const handleAddToCart = () => {
-    // TODO: Add to cart
+  const { mutateAsync: addToCart } = useAddToCart();
+  const { addItem } = useCartStore();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (product.default_variant_id) {
+      setSelectedVariant(
+        product.variants.find((v) => v.id === product.default_variant_id),
+      );
+    }
+  }, [product]);
+
+  const handleAddToCart = async () => {
+    if (!selectedVariant) return;
+    if (user) {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity,
+      }).then(() => {
+        addItem({
+          brand: product.brand,
+          name: product.name,
+          slug: product.slug,
+          price: selectedVariant.price,
+          image: selectedVariant.images[0].url,
+          stock: selectedVariant.stock,
+          variantId: selectedVariant.id,
+          quantity,
+        });
+      });
+    } else {
+      addItem({
+        brand: product.brand,
+        name: product.name,
+        slug: product.slug,
+        price: selectedVariant.price,
+        image: selectedVariant.images[0].url,
+        stock: selectedVariant.stock,
+        variantId: selectedVariant.id,
+        quantity,
+      });
+    }
   };
 
   const handleAddToWishlist = () => {
@@ -64,17 +109,20 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         />
 
         <p className="mb-3 text-xl font-bold md:mb-6 md:text-2xl">
-          EGP {product.price_range.min_price.toFixed(2)}
+          {product.price_range.min_price}
           {product.price_range.max_price > product.price_range.min_price && (
             <span className="text-sm font-normal text-gray-500">
               {" "}
-              - EGP {product.price_range.max_price.toFixed(2)}
+              - {product.price_range.max_price}
             </span>
           )}
         </p>
 
         <ProductDescription description={product.description} />
-        <ProductOptions options={product.options} />
+        <ProductOptions
+          variants={product.variants}
+          onVariantChange={setSelectedVariant}
+        />
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
           <ProductQuantitySelector
             quantity={quantity}
@@ -92,6 +140,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               size="lg"
               className="flex-1 gap-2"
               onClick={handleAddToCart}
+              disabled={!selectedVariant || selectedVariant.stock === 0}
             >
               <ShoppingCart className="h-5 w-5" />
               <span>Add to Cart</span>
@@ -125,6 +174,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           />
         </Button>
         <Button
+          disabled={!selectedVariant || selectedVariant.stock === 0}
           size="lg"
           className="h-12 flex-1 gap-2"
           onClick={handleAddToCart}
