@@ -65,7 +65,6 @@ class ProductController {
         page: request.query.page as string,
         limit: request.query.limit as string,
       };
-      console.log("🚀 ~ ProductController ~ queryParams:", request.query);
 
       const result = await this.productService.findProductsWithFilters(
         queryParams
