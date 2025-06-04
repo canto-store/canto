@@ -40,6 +40,11 @@ export const api = {
     return response.data;
   },
 
+  updateProductStatus: async (productId: number, status: string) => {
+    const response = await apiClient.put(`/product/id/${productId}`, { status });
+    return response.data;
+  },
+
   // Brands
   getBrands: async () => {
     const response = await apiClient.get("/brand");

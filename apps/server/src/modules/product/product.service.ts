@@ -40,6 +40,7 @@ class ProductService {
   async findAllProducts() {
     return this.prisma.product.findMany({
       include: { brand: true, category: true },
+      orderBy: { id: "desc" },
     });
   }
 

@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import { useState, useEffect } from "preact/hooks";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSellers } from "@/hooks/useData";
 
 interface Seller {
@@ -14,6 +16,31 @@ interface Seller {
   status?: "active" | "inactive" | "pending";
   totalSales?: number;
   created_at?: string;
+}
+
+// Hook to delay showing loading state
+function useDelayedLoading(isLoading: boolean, delay: number = 300) {
+  const [showLoading, setShowLoading] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isLoading) {
+      timeoutId = setTimeout(() => {
+        setShowLoading(true);
+      }, delay);
+    } else {
+      setShowLoading(false);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isLoading, delay]);
+
+  return showLoading;
 }
 
 const columns: ColumnDef<Seller>[] = [
@@ -40,56 +67,6 @@ const columns: ColumnDef<Seller>[] = [
     header: "Phone",
   },
   {
-    accessorKey: "company",
-    header: "Company",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      if (!status) return "-";
-      const statusColors = {
-        active: "bg-green-100 text-green-800",
-        inactive: "bg-red-100 text-red-800",
-        pending: "bg-yellow-100 text-yellow-800",
-      };
-      return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            statusColors[status as keyof typeof statusColors] || "bg-gray-100 text-gray-800"
-          }`}
-        >
-          {status}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "totalSales",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Total Sales
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const salesValue = row.getValue("totalSales");
-      if (!salesValue) return "-";
-      const sales = parseFloat(salesValue as string);
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(sales);
-      return formatted;
-    },
-  },
-  {
     accessorKey: "created_at",
     header: "Joined",
     cell: ({ row }) => {
@@ -105,15 +82,37 @@ export const Route = createFileRoute("/dashboard/sellers")({
   component: SellersPage,
 });
 
+// Loading skeleton component
+function SellersTableSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <Skeleton className="h-9 w-32 mb-2" />
+        <Skeleton className="h-5 w-96" />
+      </div>
+      <div className="space-y-3">
+        <Skeleton className="h-10 w-full" />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex space-x-4">
+            <Skeleton className="h-12 w-48" />
+            <Skeleton className="h-12 w-56" />
+            <Skeleton className="h-12 w-32" />
+            <Skeleton className="h-12 w-24" />
+            <Skeleton className="h-12 w-32" />
+            <Skeleton className="h-12 w-24" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SellersPage() {
   const { data: sellers = [], isLoading, error } = useSellers();
+  const showSkeleton = useDelayedLoading(isLoading);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div>Loading sellers...</div>
-      </div>
-    );
+  if (showSkeleton) {
+    return <SellersTableSkeleton />;
   }
 
   if (error) {
