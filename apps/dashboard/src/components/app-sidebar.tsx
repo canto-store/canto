@@ -76,9 +76,6 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <div className="p-4 space-y-2">
-          <div className="text-sm text-muted-foreground">
-            Logged in as: {user?.email}
-          </div>
           <Button
             onClick={handleLogout}
             variant="outline"
