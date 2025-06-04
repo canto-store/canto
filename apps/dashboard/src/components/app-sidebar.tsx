@@ -41,7 +41,6 @@ const menuItems = [
 export function AppSidebar() {
   const logout = useLogout();
   const router = useRouter();
-  const { user } = useAuthStore();
 
   const handleLogout = async () => {
     await logout.mutateAsync();
