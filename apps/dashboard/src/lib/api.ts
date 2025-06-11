@@ -40,8 +40,31 @@ export const api = {
     return response.data;
   },
 
+  getProductById: async (productId: number) => {
+    const response = await apiClient.get(`/product/id/${productId}`);
+    return response.data;
+  },
+
+  updateProduct: async (productId: number, data: any) => {
+    const response = await apiClient.put(`/product/id/${productId}`, data);
+    return response.data;
+  },
+
   updateProductStatus: async (productId: number, status: string) => {
-    const response = await apiClient.put(`/product/id/${productId}`, { status });
+    const response = await apiClient.put(`/product/id/${productId}`, {
+      status,
+    });
+    return response.data;
+  },
+
+  getProductFilters: async () => {
+    const response = await apiClient.get("/product/filters");
+    return response.data;
+  },
+
+  // Categories
+  getCategories: async () => {
+    const response = await apiClient.get("/categories");
     return response.data;
   },
 

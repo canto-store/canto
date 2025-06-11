@@ -103,7 +103,7 @@ class ProductController {
   }
 
   async updateProduct(
-    request: Request,
+    request: AuthRequest,
     response: Response,
     nextFunction: NextFunction
   ) {

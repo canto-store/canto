@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import preact from "@preact/preset-vite";
+import react from "@vitejs/plugin-react";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
@@ -11,7 +11,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     tailwindcss(),
-    preact(),
+    react(),
   ],
   resolve: {
     alias: {

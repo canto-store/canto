@@ -3,7 +3,7 @@ import { z } from "zod";
 export type User = {
   id: number;
   role: string;
-  firstName: string;
+  name: string;
   email: string;
 };
 

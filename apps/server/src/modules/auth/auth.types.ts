@@ -25,3 +25,9 @@ export type LoginDto = {
   email: string;
   password: string;
 };
+
+export type AdminLoginDto = {
+  username: string;
+  password: string;
+  ip_address: string;
+};

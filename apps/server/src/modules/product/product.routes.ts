@@ -9,13 +9,20 @@ const authMiddleware = new AuthMiddleware();
 router.post("/", productController.createProduct.bind(productController));
 router.get("/", productController.getAllProducts.bind(productController));
 router.get("/search", productController.searchProducts.bind(productController));
-router.get("/filters", productController.getProductFilters.bind(productController));
+router.get(
+  "/filters",
+  productController.getProductFilters.bind(productController)
+);
 router.get(
   "/home-products",
   productController.getHomeProducts.bind(productController)
 );
 router.get("/id/:id", productController.getProductById.bind(productController));
-router.put("/id/:id", productController.updateProduct.bind(productController));
+router.put(
+  "/id/:id",
+  authMiddleware.checkAuth.bind(authMiddleware),
+  productController.updateProduct.bind(productController)
+);
 router.delete(
   "/id/:id",
   productController.deleteProduct.bind(productController)

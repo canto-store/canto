@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon",
     "build": "tsc && mkdir -p build/node_modules/@prisma && cp -r node_modules/@prisma/client build/node_modules/@prisma",
-    "db:deploy": "npx prisma migrate deploy && npx prisma generate"
+    "db:deploy": "npx prisma migrate deploy && npx prisma generate",
+    "db:migrate": "npx prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -18,14 +19,14 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.14.1",
     "nodemon": "^3.1.10",
-    "prisma": "6.8.2",
+    "prisma": "6.9.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^9.0.2",
-    "@prisma/client": "6.8.2",
+    "@prisma/client": "6.9.0",
     "@types/morgan": "^1.9.9",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",

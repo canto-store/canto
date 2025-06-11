@@ -115,6 +115,8 @@ class ProductService {
     const limitNum = Number(limit);
     const skip = (pageNum - 1) * limitNum;
 
+    where.status = ProductStatus.ACTIVE;
+
     // 5) Fetch matching products + total count
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({

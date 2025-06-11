@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import { apiClient } from "@/lib/api";
 
 interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -16,7 +16,7 @@ interface User {
 
 const api = {
   login: async (credentials: LoginCredentials): Promise<User> => {
-    const response = await apiClient.post("/auth/login", credentials);
+    const response = await apiClient.post("/auth/admin-login", credentials);
     return response.data;
   },
 

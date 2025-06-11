@@ -1,18 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { useState, useEffect } from "preact/hooks";
+import { ArrowUpDown, Edit } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProducts, useUpdateProductStatus } from "@/hooks/useData";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useProducts } from "@/hooks/useData";
 
 interface Product {
   id: number;
@@ -59,35 +52,34 @@ function useDelayedLoading(isLoading: boolean, delay: number = 300) {
   return showLoading;
 }
 
-// Map user-friendly status names to server statuses
-const statusMapping = {
-  Pending: "PENDING",
-  Accepted: "ACTIVE",
-  Rejected: "INACTIVE",
-} as const;
-
 const reverseStatusMapping = {
   PENDING: "Pending",
   ACTIVE: "Accepted",
   INACTIVE: "Rejected",
 } as const;
 
-// Status dropdown component
-function StatusDropdown({
-  productId,
-  currentStatus,
-}: {
-  productId: number;
-  currentStatus: ProductStatusUpdate;
-}) {
-  const updateStatusMutation = useUpdateProductStatus();
+// Action cell component with router navigation
+function ActionCell({ productId }: { productId: number }) {
+  const router = useRouter();
 
-  const handleStatusChange = (newStatus: string) => {
-    const serverStatus = statusMapping[newStatus as keyof typeof statusMapping];
-    updateStatusMutation.mutate({ productId, status: serverStatus });
+  const handleEditClick = () => {
+    router.navigate({
+      to: "/dashboard/products/$productId/edit",
+      params: { productId: productId.toString() },
+    });
   };
 
-  const currentDisplayStatus = reverseStatusMapping[currentStatus];
+  return (
+    <Button variant="outline" size="sm" onClick={handleEditClick}>
+      <Edit className="h-4 w-4 mr-1" />
+      Edit
+    </Button>
+  );
+}
+
+// Status display component
+function StatusDisplay({ status }: { status: ProductStatusUpdate }) {
+  const displayStatus = reverseStatusMapping[status];
 
   const statusColors = {
     Pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -95,47 +87,23 @@ function StatusDropdown({
     Rejected: "bg-red-100 text-red-800 border-red-200",
   };
 
-  const currentColor = statusColors[currentDisplayStatus];
+  const currentColor = statusColors[displayStatus];
 
   return (
-    <Select value={currentDisplayStatus} onValueChange={handleStatusChange}>
-      <SelectTrigger className={`w-32 ${currentColor}`}>
-        <SelectValue>
-          <span className="flex items-center">
-            <div
-              className={`w-2 h-2 rounded-full mr-2 ${
-                currentDisplayStatus === "Pending"
-                  ? "bg-yellow-500"
-                  : currentDisplayStatus === "Accepted"
-                  ? "bg-green-500"
-                  : "bg-red-500"
-              }`}
-            />
-            {currentDisplayStatus}
-          </span>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="Pending">
-          <div className="flex items-center">
-            <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2" />
-            Pending
-          </div>
-        </SelectItem>
-        <SelectItem value="Accepted">
-          <div className="flex items-center">
-            <div className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-            Accepted
-          </div>
-        </SelectItem>
-        <SelectItem value="Rejected">
-          <div className="flex items-center">
-            <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
-            Rejected
-          </div>
-        </SelectItem>
-      </SelectContent>
-    </Select>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${currentColor}`}
+    >
+      <div
+        className={`w-2 h-2 rounded-full mr-2 ${
+          displayStatus === "Pending"
+            ? "bg-yellow-500"
+            : displayStatus === "Accepted"
+            ? "bg-green-500"
+            : "bg-red-500"
+        }`}
+      />
+      {displayStatus}
+    </span>
   );
 }
 
@@ -167,13 +135,19 @@ const columns: ColumnDef<Product>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as ProductStatusUpdate;
-      const productId = row.original.id;
-      return <StatusDropdown productId={productId} currentStatus={status} />;
+      return <StatusDisplay status={status} />;
+    },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      return <ActionCell productId={row.original.id} />;
     },
   },
 ];
 
-export const Route = createFileRoute("/dashboard/products")({
+export const Route = createFileRoute("/dashboard/products/")({
   component: ProductsPage,
 });
 

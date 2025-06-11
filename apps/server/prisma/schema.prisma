@@ -13,11 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  CUSTOMER
-}
-
 enum SaleType {
   PERCENTAGE
   FIXED
@@ -41,7 +36,6 @@ model User {
   password       String
   email_verified Boolean   @default(true)
   phone_number   String
-  role           UserRole  @default(CUSTOMER)
   last_login     DateTime?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
@@ -50,6 +44,17 @@ model User {
   Order          Order[]
 
   @@map("users")
+}
+
+model Admin{
+  id             Int       @id @default(autoincrement())
+  username       String    @unique
+  password       String
+  last_login     DateTime?
+  ip_address     String?
+  created_at     DateTime  @default(now())
+
+  @@map("admins")
 }
 
 model Seller {

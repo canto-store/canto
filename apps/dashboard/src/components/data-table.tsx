@@ -9,7 +9,7 @@ import {
   getFilteredRowModel,
   type ColumnFiltersState,
 } from "@tanstack/react-table";
-import { useState } from "preact/hooks";
+import { useState } from "react";
 import {
   Table,
   TableBody,

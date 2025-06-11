@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/auth";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -34,7 +34,10 @@ export function LoginForm({
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await login.mutateAsync(data);
+      await login.mutateAsync({
+        username: data.username,
+        password: data.password,
+      });
       router.navigate({ to: "/dashboard" });
     } catch (error) {
       console.error("Login failed:", error);
@@ -59,15 +62,17 @@ export function LoginForm({
           </div>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="admin@canto.com"
-                {...register("email")}
+                id="username"
+                type="text"
+                placeholder="username"
+                {...register("username")}
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              {errors.username && (
+                <p className="text-red-500 text-sm">
+                  {errors.username.message}
+                </p>
               )}
               <Label htmlFor="password">Password</Label>
               <Input
