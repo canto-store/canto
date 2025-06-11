@@ -94,7 +94,7 @@ export function UserDropdown() {
         <button
           className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
           onClick={handleButtonClick}
-          title={user ? (user?.firstName as string) : t("login")}
+          title={user ? (user?.name as string) : t("login")}
         >
           <CircleUser className="h-6 w-6" />
         </button>
@@ -107,7 +107,7 @@ export function UserDropdown() {
           >
             <div className="border-primary/10 mb-2 border-b px-4 pb-2">
               <p className="text-primary font-medium">
-                {t("hello", { name: user?.firstName as string })}
+                {t("hello", { name: user?.name as string })}
               </p>
             </div>
 
