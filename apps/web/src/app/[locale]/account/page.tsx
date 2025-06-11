@@ -44,7 +44,7 @@ export default function Page() {
     return (
       <div className="mt-2 flex min-h-screen flex-col gap-2">
         {user ? (
-          <h1 className="text-2xl font-bold">Hello, {user?.firstName}</h1>
+          <h1 className="text-2xl font-bold">Hello, {user?.name}</h1>
         ) : (
           <div className="bg-primary-foreground flex flex-col gap-2 rounded-lg p-5">
             <h1 className="text-xl font-bold">Hello! Welcome to Canto</h1>
