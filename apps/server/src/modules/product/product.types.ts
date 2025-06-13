@@ -12,6 +12,7 @@ export enum ProductStatus {
   PENDING = "PENDING",
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
+  REJECTED = "REJECTED",
 }
 
 export interface SubmitProductFormDto {
@@ -32,7 +33,9 @@ export interface SelectedVariant {
   }[];
 }
 
-export interface UpdateProductDto extends Partial<CreateProductDto> {}
+export interface UpdateProductDto extends Partial<CreateProductDto> {
+  rejectionReason?: string;
+}
 
 export interface CreateProductOptionDto {
   name: string;

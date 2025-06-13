@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import type { ProductFormValues } from "@/types/product";
 
 // Products hook
 export function useProducts() {
@@ -10,19 +11,23 @@ export function useProducts() {
 }
 
 // Product status update mutation
-export function useUpdateProductStatus() {
+export function useUpdateProduct() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       productId,
-      status,
+      product,
     }: {
       productId: number;
-      status: string;
-    }) => api.updateProductStatus(productId, status),
+      product: ProductFormValues;
+    }) => {
+      const response = await api.updateProduct(productId, product);
+      return response;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
     },
   });
 }

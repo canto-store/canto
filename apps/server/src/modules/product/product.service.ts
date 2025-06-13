@@ -213,28 +213,77 @@ class ProductService {
 
   async findProduct(id: number) {
     await this.ensureProductExists(id);
-    return this.prisma.product.findUnique({ where: { id } });
+    return this.prisma.product.findUnique({
+      where: { id },
+      include: { rejection: true },
+    });
   }
 
   async updateProduct(id: number, dto: UpdateProductDto) {
+    // This part is good, keep it.
     const existingProduct = await this.ensureProductExists(id);
 
     if (dto.slug && dto.slug !== existingProduct.slug) {
       const existingProductWithSlug = await this.prisma.product.findUnique({
         where: { slug: dto.slug },
       });
-      if (existingProductWithSlug)
+      if (existingProductWithSlug) {
         throw new AppError("slug already in use", 409);
+      }
     }
 
-    if (dto.brandId && dto.brandId !== existingProduct.brandId) {
-      await this.ensureBrandExists(dto.brandId);
-    }
-    if (dto.categoryId && dto.categoryId !== existingProduct.categoryId) {
-      await this.ensureCategoryExists(dto.categoryId);
+    // 1. Create a dynamic data object for the update operation.
+    // This is the object we will pass to Prisma.
+    const updateData: Prisma.ProductUpdateInput = {};
+
+    // 2. Conditionally build the updateData object based on the DTO.
+    // For simple fields, just copy them if they exist.
+    if (dto.name) updateData.name = dto.name;
+    if (dto.description) updateData.description = dto.description;
+    if (dto.slug) updateData.slug = dto.slug;
+    if (dto.status) updateData.status = dto.status;
+    // ... add any other simple/scalar fields from your DTO
+
+    // For the brand relation, use 'connect'.
+    // Prisma will throw an error if the brandId doesn't exist, so
+    // your 'ensureBrandExists' check is no longer needed.
+    if (dto.brandId) {
+      updateData.brand = {
+        connect: { id: dto.brandId },
+      };
     }
 
-    return this.prisma.product.update({ where: { id }, data: dto });
+    // For the category relation, use 'connect'.
+    if (dto.categoryId) {
+      updateData.category = {
+        connect: { id: dto.categoryId },
+      };
+    }
+
+    // 3. Handle the rejection logic atomically.
+    if (dto.status === ProductStatus.REJECTED && dto.rejectionReason) {
+      // Use a nested 'upsert' on the relation itself.
+      updateData.rejection = {
+        upsert: {
+          // The 'where' clause is implicit here for a 1-to-1,
+          // but we can be explicit for clarity if needed.
+          create: { reason: dto.rejectionReason },
+          update: { reason: dto.rejectionReason },
+        },
+      };
+    } else if (dto.status === ProductStatus.ACTIVE) {
+      // If the product is becoming active, delete the related rejection record.
+      // This is much safer and more idiomatic than a separate DB call.
+      updateData.rejection = {
+        delete: true,
+      };
+    }
+
+    // 4. Execute a single, atomic, and correct update call.
+    return this.prisma.product.update({
+      where: { id },
+      data: updateData, // Use our dynamically built object
+    });
   }
 
   async deleteProduct(id: number) {

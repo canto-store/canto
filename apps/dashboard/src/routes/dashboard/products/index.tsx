@@ -12,7 +12,7 @@ interface Product {
   name: string;
   slug: string;
   description: string | null;
-  status: "PENDING" | "ACTIVE" | "INACTIVE";
+  status: "PENDING" | "ACTIVE" | "INACTIVE" | "REJECTED";
   brandId: number;
   categoryId: number;
   created_at: string;
@@ -25,7 +25,7 @@ interface Product {
   };
 }
 
-type ProductStatusUpdate = "PENDING" | "ACTIVE" | "INACTIVE";
+type ProductStatusUpdate = "PENDING" | "ACTIVE" | "INACTIVE" | "REJECTED";
 
 // Hook to delay showing loading state
 function useDelayedLoading(isLoading: boolean, delay: number = 300) {
@@ -55,7 +55,8 @@ function useDelayedLoading(isLoading: boolean, delay: number = 300) {
 const reverseStatusMapping = {
   PENDING: "Pending",
   ACTIVE: "Accepted",
-  INACTIVE: "Rejected",
+  INACTIVE: "Inactive",
+  REJECTED: "Rejected",
 } as const;
 
 // Action cell component with router navigation
@@ -84,6 +85,7 @@ function StatusDisplay({ status }: { status: ProductStatusUpdate }) {
   const statusColors = {
     Pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
     Accepted: "bg-green-100 text-green-800 border-green-200",
+    Inactive: "bg-gray-100 text-gray-800 border-gray-200",
     Rejected: "bg-red-100 text-red-800 border-red-200",
   };
 
@@ -99,6 +101,8 @@ function StatusDisplay({ status }: { status: ProductStatusUpdate }) {
             ? "bg-yellow-500"
             : displayStatus === "Accepted"
             ? "bg-green-500"
+            : displayStatus === "Inactive"
+            ? "bg-gray-500"
             : "bg-red-500"
         }`}
       />
@@ -108,6 +112,20 @@ function StatusDisplay({ status }: { status: ProductStatusUpdate }) {
 }
 
 const columns: ColumnDef<Product>[] = [
+  {
+    accessorKey: "id",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
   {
     accessorKey: "name",
     header: ({ column }) => {

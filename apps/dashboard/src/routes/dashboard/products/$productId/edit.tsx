@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { api } from "@/lib/api";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 
@@ -34,7 +33,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { AlertCircleIcon, ArrowLeft, ArrowRight } from "lucide-react";
+import { productFormSchema, type ProductFormValues } from "@/types/product";
+import { useUpdateProduct } from "@/hooks/useData";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { parseApiError } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/products/$productId/edit")({
   loader: async ({ params }) => {
@@ -42,18 +45,11 @@ export const Route = createFileRoute("/dashboard/products/$productId/edit")({
     const categories = await api.getCategories();
     return { product, categories };
   },
+  gcTime: 0,
   component: EditProduct,
 });
 
 // Form schema
-const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  categoryId: z.number().min(1, "Category is required"),
-  status: z.enum(["PENDING", "ACTIVE", "INACTIVE"] as const),
-});
-
-type ProductFormValues = z.infer<typeof formSchema>;
 
 export default function EditProduct() {
   const { productId } = Route.useParams();
@@ -64,19 +60,24 @@ export default function EditProduct() {
     Record<string, { old: any; new: any }>
   >({});
   const router = useRouter();
+  const {
+    mutateAsync: updateProduct,
+    isPending,
+    isError,
+    error,
+  } = useUpdateProduct();
 
-  // Initialize form
   const form = useForm<ProductFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: product.name,
       description: product.description || "",
       categoryId: product.categoryId,
       status: product.status,
+      rejectionReason: product.rejection?.reason || "",
     },
   });
 
-  // Add beforeunload event listener
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (form.formState.isDirty) {
@@ -121,6 +122,12 @@ export default function EditProduct() {
     if (data.status !== product.status) {
       changes.status = { old: product.status, new: data.status };
     }
+    if (data.status === "REJECTED") {
+      changes.rejectionReason = {
+        old: product.rejectionReason || "",
+        new: data.rejectionReason,
+      };
+    }
 
     return changes;
   };
@@ -137,20 +144,23 @@ export default function EditProduct() {
   };
 
   const onConfirmSubmit = async () => {
-    try {
-      await api.updateProduct(Number(productId), {
-        name: form.getValues("name"),
-        description: form.getValues("description"),
-        categoryId: form.getValues("categoryId"),
-        status: form.getValues("status"),
-      });
-      setShowConfirmDialog(false);
-      // Navigate after successful save
+    const currentValues = form.getValues();
+    const changedData = Object.entries(changedFields).reduce((acc, [field]) => {
+      // Map the field name back to the actual data field name
+      const dataField = field === "category" ? "categoryId" : field;
+      if (dataField in currentValues) {
+        const key = dataField as keyof ProductFormValues;
+        acc[key] = currentValues[key];
+      }
+      return acc;
+    }, {} as Record<keyof ProductFormValues, any>);
+
+    updateProduct({
+      productId: Number(productId),
+      product: changedData as ProductFormValues,
+    }).then(() => {
       router.navigate({ to: "/dashboard/products" });
-    } catch (error) {
-      console.error("Error updating product:", error);
-      setShowConfirmDialog(false);
-    }
+    });
   };
 
   return (
@@ -166,6 +176,16 @@ export default function EditProduct() {
         <h1 className="text-2xl font-bold">Edit Product</h1>
       </div>
       <Form {...form}>
+        {isError && (
+          <Alert variant="destructive">
+            <AlertCircleIcon />
+            <AlertTitle>Unable to update product.</AlertTitle>
+            <AlertDescription>
+              <p>Please try again.</p>
+              <p>{parseApiError(error)}</p>
+            </AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <FormField
             control={form.control}
@@ -244,12 +264,28 @@ export default function EditProduct() {
                     <SelectItem value="PENDING">Pending</SelectItem>
                     <SelectItem value="ACTIVE">Active</SelectItem>
                     <SelectItem value="INACTIVE">Inactive</SelectItem>
+                    <SelectItem value="REJECTED">Rejected</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
+          {form.watch("status") === "REJECTED" && (
+            <FormField
+              control={form.control}
+              name="rejectionReason"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rejection Reason</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <div className="flex gap-4 justify-end">
             <Button
@@ -259,7 +295,9 @@ export default function EditProduct() {
             >
               Cancel
             </Button>
-            <Button type="submit">Save Changes</Button>
+            <Button disabled={isPending} type="submit">
+              {isPending ? "Saving..." : "Save Changes"}
+            </Button>
           </div>
         </form>
       </Form>
