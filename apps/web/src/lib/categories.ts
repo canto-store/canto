@@ -12,6 +12,7 @@ export const useCategories = () =>
         name: category.name,
         image: category.image,
         slug: category.slug,
+        aspect: category.aspect,
       }));
     },
     staleTime: 30 * 60 * 1000, // 30 minutes

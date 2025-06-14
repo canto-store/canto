@@ -1,32 +1,32 @@
 [
   {
     "name": "categories",
-    "executedAt": "2025-05-26T10:19:02.576Z",
+    "executedAt": "2025-06-14T16:24:24.350Z",
     "description": "Seed for categories"
   },
   {
     "name": "seller",
-    "executedAt": "2025-05-26T10:19:26.122Z",
+    "executedAt": "2025-06-14T16:24:24.758Z",
     "description": "Seed for seller"
   },
   {
     "name": "brand",
-    "executedAt": "2025-05-26T10:19:44.310Z",
+    "executedAt": "2025-06-14T16:24:25.484Z",
     "description": "Seed for brand"
   },
   {
     "name": "sale",
-    "executedAt": "2025-05-26T10:19:57.018Z",
+    "executedAt": "2025-06-14T16:24:25.778Z",
     "description": "Seed for sale"
   },
   {
     "name": "product-options",
-    "executedAt": "2025-05-26T10:20:13.200Z",
+    "executedAt": "2025-06-14T16:24:27.003Z",
     "description": "Seed for product options: Size and Color"
   },
   {
     "name": "products",
-    "executedAt": "2025-05-26T18:48:09.425Z",
+    "executedAt": "2025-06-14T16:24:37.546Z",
     "description": "Seed for products"
   }
 ]

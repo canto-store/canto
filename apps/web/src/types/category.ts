@@ -3,4 +3,5 @@ export type Category = {
   name: string;
   image: string;
   slug: string;
+  aspect: "SQUARE" | "RECTANGLE";
 };

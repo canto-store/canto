@@ -1,7 +1,7 @@
 export type CreateCategoryDto = {
-    name: string;
-    slug: string;
-    description?: string;
-    image?: string;
-  }
-  
+  name: string;
+  slug: string;
+  aspect: "SQUARE" | "RECTANGLE";
+  description?: string;
+  image?: string;
+};

@@ -18,7 +18,7 @@ class CategoryService {
 
   async findAll() {
     return await this.prisma.category.findMany({
-      select: { id: true, name: true, image: true, slug: true },
+      select: { id: true, name: true, image: true, slug: true, aspect: true },
     });
   }
 

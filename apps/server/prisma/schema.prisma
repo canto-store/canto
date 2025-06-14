@@ -95,6 +95,7 @@ model Category {
   slug        String    @unique
   description String?
   image       String?
+  aspect      String
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   Product     Product[]
