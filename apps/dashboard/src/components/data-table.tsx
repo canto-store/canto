@@ -8,8 +8,8 @@ import {
   type SortingState,
   getFilteredRowModel,
   type ColumnFiltersState,
-} from "@tanstack/react-table";
-import { useState } from "react";
+} from '@tanstack/react-table'
+import { useState } from 'react'
 import {
   Table,
   TableBody,
@@ -17,26 +17,26 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  searchKey?: string;
-  searchPlaceholder?: string;
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  searchKey?: string
+  searchPlaceholder?: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = 'Search...',
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const table = useReactTable({
     data,
@@ -51,7 +51,7 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
     },
-  });
+  })
 
   return (
     <div className="space-y-4">
@@ -60,9 +60,9 @@ export function DataTable<TData, TValue>({
           <Input
             placeholder={searchPlaceholder}
             value={
-              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
             }
-            onChange={(event) =>
+            onChange={event =>
               table
                 .getColumn(searchKey)
                 ?.setFilterValue(event.currentTarget.value)
@@ -74,9 +74,9 @@ export function DataTable<TData, TValue>({
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map(header => {
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder
@@ -86,19 +86,19 @@ export function DataTable<TData, TValue>({
                             header.getContext()
                           )}
                     </TableHead>
-                  );
+                  )
                 })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map(row => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -147,5 +147,5 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
     </div>
-  );
+  )
 }

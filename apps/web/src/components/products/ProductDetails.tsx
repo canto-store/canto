@@ -111,9 +111,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <p className="mb-3 text-xl font-bold md:mb-6 md:text-2xl">
           {selectedVariant ? (
             <>
-              {selectedVariant.original_price && selectedVariant.discount_percentage ? (
+              {selectedVariant.original_price &&
+              selectedVariant.discount_percentage ? (
                 <>
-                  <span className="text-green-600">{selectedVariant.price_formatted}</span>
+                  <span className="text-green-600">
+                    {selectedVariant.price_formatted}
+                  </span>
                   <span className="ml-2 text-sm font-normal text-gray-500 line-through">
                     {selectedVariant.original_price_formatted}
                   </span>
@@ -128,11 +131,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           ) : (
             <>
               {product.price_range.min_price}
-              {product.price_range.max_price > product.price_range.min_price && (
-                <span>
-                  {" "}
-                  - {product.price_range.max_price}
-                </span>
+              {product.price_range.max_price >
+                product.price_range.min_price && (
+                <span> - {product.price_range.max_price}</span>
               )}
             </>
           )}

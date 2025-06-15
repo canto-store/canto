@@ -1,70 +1,70 @@
-import { createFileRoute } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useBrands } from "@/hooks/useData";
+import { createFileRoute } from '@tanstack/react-router'
+import type { ColumnDef } from '@tanstack/react-table'
+import { ArrowUpDown } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { DataTable } from '@/components/data-table'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useBrands } from '@/hooks/useData'
 
 interface Brand {
-  name: string;
-  slug: string | null;
+  name: string
+  slug: string | null
 }
 
 // Hook to delay showing loading state
 function useDelayedLoading(isLoading: boolean, delay: number = 300) {
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false)
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout
 
     if (isLoading) {
       timeoutId = setTimeout(() => {
-        setShowLoading(true);
-      }, delay);
+        setShowLoading(true)
+      }, delay)
     } else {
-      setShowLoading(false);
+      setShowLoading(false)
     }
 
     return () => {
       if (timeoutId) {
-        clearTimeout(timeoutId);
+        clearTimeout(timeoutId)
       }
-    };
-  }, [isLoading, delay]);
+    }
+  }, [isLoading, delay])
 
-  return showLoading;
+  return showLoading
 }
 
 const columns: ColumnDef<Brand>[] = [
   {
-    accessorKey: "name",
+    accessorKey: 'name',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      );
+      )
     },
   },
   {
-    accessorKey: "slug",
-    header: "Slug",
+    accessorKey: 'slug',
+    header: 'Slug',
     cell: ({ row }) => {
-      const slug = row.getValue("slug") as string;
-      return slug || "-";
+      const slug = row.getValue('slug') as string
+      return slug || '-'
     },
   },
-];
+]
 
-export const Route = createFileRoute("/dashboard/brands")({
+export const Route = createFileRoute('/dashboard/brands')({
   component: BrandsPage,
-});
+})
 
 // Loading skeleton component
 function BrandsTableSkeleton() {
@@ -84,15 +84,15 @@ function BrandsTableSkeleton() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 function BrandsPage() {
-  const { data: brands = [], isLoading, error } = useBrands();
-  const showSkeleton = useDelayedLoading(isLoading);
+  const { data: brands = [], isLoading, error } = useBrands()
+  const showSkeleton = useDelayedLoading(isLoading)
 
   if (showSkeleton) {
-    return <BrandsTableSkeleton />;
+    return <BrandsTableSkeleton />
   }
 
   if (error) {
@@ -100,7 +100,7 @@ function BrandsPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-red-500">Error loading brands</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -118,5 +118,5 @@ function BrandsPage() {
         searchPlaceholder="Search brands..."
       />
     </div>
-  );
+  )
 }

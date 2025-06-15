@@ -1,53 +1,53 @@
-import { PrismaClient } from "@prisma/client";
-import { AdminLoginDto, CreateUserDto, LoginDto, UserRole } from "./auth.types";
-import { signJwt, signRefreshToken, verifyJwt } from "../../utils/jwt";
-import Bcrypt from "../../utils/bcrypt";
-import AppError from "../../utils/appError";
+import { PrismaClient } from '@prisma/client'
+import { AdminLoginDto, CreateUserDto, LoginDto } from './auth.types'
+import { signJwt, signRefreshToken, verifyJwt } from '../../utils/jwt'
+import Bcrypt from '../../utils/bcrypt'
+import AppError from '../../utils/appError'
 
 class AuthService {
-  private readonly prisma = new PrismaClient();
+  private readonly prisma = new PrismaClient()
 
   async register(dto: CreateUserDto) {
     const exists = await this.prisma.user.findUnique({
       where: { email: dto.email },
-    });
-    if (exists) throw new AppError("User already exists", 409);
+    })
+    if (exists) throw new AppError('User already exists', 409)
 
-    dto.password = await Bcrypt.hash(dto.password);
-    const user = await this.prisma.user.create({ data: dto });
-    const { password, ...rest } = user;
-    return rest;
+    dto.password = await Bcrypt.hash(dto.password)
+    const user = await this.prisma.user.create({ data: dto })
+    const { password, ...rest } = user
+    return rest
   }
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
-    });
-    if (!user) throw new AppError("User not found", 404);
+    })
+    if (!user) throw new AppError('User not found', 404)
 
-    const valid = await Bcrypt.compare(dto.password, user.password);
-    if (!valid) throw new AppError("Invalid credentials", 401);
+    const valid = await Bcrypt.compare(dto.password, user.password)
+    if (!valid) throw new AppError('Invalid credentials', 401)
 
-    const { password, ...rest } = user;
-    return rest;
+    const { password, ...rest } = user
+    return rest
   }
 
   async adminLogin(dto: AdminLoginDto) {
     const user = await this.prisma.admin.findUnique({
       where: { username: dto.username },
-    });
-    if (!user) throw new AppError("User not found", 404);
+    })
+    if (!user) throw new AppError('User not found', 404)
 
-    const valid = await Bcrypt.compare(dto.password, user.password);
-    if (!valid) throw new AppError("Invalid credentials", 401);
+    const valid = await Bcrypt.compare(dto.password, user.password)
+    if (!valid) throw new AppError('Invalid credentials', 401)
 
     await this.prisma.admin.update({
       where: { id: user.id },
       data: { ip_address: dto.ip_address, last_login: new Date() },
-    });
+    })
 
-    const { password, ...rest } = user;
-    return rest;
+    const { password, ...rest } = user
+    return rest
   }
 
   async getById(id: number) {
@@ -56,56 +56,56 @@ class AuthService {
       select: {
         id: true,
       },
-    });
-    if (!user) throw new AppError("User not found", 404);
-    return user;
+    })
+    if (!user) throw new AppError('User not found', 404)
+    return user
   }
 
   async createRefreshToken(id: number, role: string, name: string) {
-    const token = signRefreshToken({ id, role, name });
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await this.prisma.refreshToken.create({ data: { token, expiresAt } });
-    return token;
+    const token = signRefreshToken({ id, role, name })
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    await this.prisma.refreshToken.create({ data: { token, expiresAt } })
+    return token
   }
 
   async rotateRefresh(oldToken: string) {
     const verifiedUser = verifyJwt<{
-      id: number;
-      role: string;
-      name: string;
-    }>(oldToken);
+      id: number
+      role: string
+      name: string
+    }>(oldToken)
     const stored = await this.prisma.refreshToken.findUnique({
       where: { token: oldToken },
-    });
+    })
     if (!stored || stored.isRevoked || stored.expiresAt < new Date())
-      throw new AppError("Invalid refresh", 401);
+      throw new AppError('Invalid refresh', 401)
     await this.prisma.refreshToken.update({
       where: { id: stored.id },
       data: { isRevoked: true },
-    });
+    })
     const accessToken = signJwt({
       id: verifiedUser.id,
       role: verifiedUser.role,
       name: verifiedUser.name,
-    });
+    })
     const refreshToken = await this.createRefreshToken(
       verifiedUser.id,
       verifiedUser.role,
       verifiedUser.name
-    );
-    return { accessToken, refreshToken };
+    )
+    return { accessToken, refreshToken }
   }
 
   async logout(token: string) {
     const stored = await this.prisma.refreshToken.findUnique({
       where: { token },
-    });
-    if (!stored) throw new AppError("Invalid refresh", 401);
+    })
+    if (!stored) throw new AppError('Invalid refresh', 401)
     await this.prisma.refreshToken.update({
       where: { id: stored.id },
       data: { isRevoked: true },
-    });
+    })
   }
 }
 
-export default AuthService;
+export default AuthService

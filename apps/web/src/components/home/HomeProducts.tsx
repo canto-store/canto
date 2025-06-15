@@ -9,7 +9,11 @@ interface HomeProductsProps {
   isLoading?: boolean;
 }
 
-export function HomeProducts({ products, title, isLoading }: HomeProductsProps) {
+export function HomeProducts({
+  products,
+  title,
+  isLoading,
+}: HomeProductsProps) {
   const isMobile = useMediaQuery("(max-width: 768px)", false);
 
   if (isLoading || products === undefined) {

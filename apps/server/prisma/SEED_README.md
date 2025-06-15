@@ -60,15 +60,15 @@ npx prisma db seed -- --seed seed-name --force
 2. Use the following template:
 
 ```typescript
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client'
 
-export const name = "your-seed-name";
-export const description = "Description of what this seed does";
+export const name = 'your-seed-name'
+export const description = 'Description of what this seed does'
 
 export async function run(prisma: PrismaClient): Promise<void> {
   // Your seeding logic here
 
-  console.log("Your seed completed!");
+  console.log('Your seed completed!')
 }
 ```
 
@@ -81,10 +81,10 @@ If your seed depends on data from another seed, you should check for that data's
 1. Inform the user to run the dependency first:
 
 ```typescript
-const data = await prisma.someModel.findFirst();
+const data = await prisma.someModel.findFirst()
 if (!data) {
-  console.log("Required data not found. Run the dependency-seed first.");
-  return;
+  console.log('Required data not found. Run the dependency-seed first.')
+  return
 }
 ```
 

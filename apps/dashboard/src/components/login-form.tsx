@@ -1,28 +1,28 @@
-import { GalleryVerticalEnd } from "lucide-react";
-import { useRouter } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { GalleryVerticalEnd } from 'lucide-react'
+import { useRouter } from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useLogin } from "@/hooks/auth";
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useLogin } from '@/hooks/auth'
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-});
+  username: z.string().min(1, 'Username is required'),
+  password: z.string().min(1, 'Password is required'),
+})
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<typeof loginSchema>
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentProps<"div">) {
-  const login = useLogin();
-  const router = useRouter();
+}: React.ComponentProps<'div'>) {
+  const login = useLogin()
+  const router = useRouter()
 
   const {
     register,
@@ -30,22 +30,22 @@ export function LoginForm({
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-  });
+  })
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login.mutateAsync({
         username: data.username,
         password: data.password,
-      });
-      router.navigate({ to: "/dashboard" });
+      })
+      router.navigate({ to: '/dashboard' })
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error('Login failed:', error)
     }
-  };
+  }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6 min-w-md">
           <div className="flex flex-col items-center gap-2">
@@ -67,7 +67,7 @@ export function LoginForm({
                 id="username"
                 type="text"
                 placeholder="username"
-                {...register("username")}
+                {...register('username')}
               />
               {errors.username && (
                 <p className="text-red-500 text-sm">
@@ -79,7 +79,7 @@ export function LoginForm({
                 id="password"
                 type="password"
                 placeholder="********"
-                {...register("password")}
+                {...register('password')}
               />
               {errors.password && (
                 <p className="text-red-500 text-sm">
@@ -97,11 +97,11 @@ export function LoginForm({
               className="w-full"
               disabled={isSubmitting || login.isPending}
             >
-              {isSubmitting || login.isPending ? "Logging in..." : "Login"}
+              {isSubmitting || login.isPending ? 'Logging in...' : 'Login'}
             </Button>
           </div>
         </div>
       </form>
     </div>
-  );
+  )
 }

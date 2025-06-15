@@ -5,46 +5,64 @@ on:
     branches:
       - main
     paths:
-      - "apps/server/**"
+      - 'apps/server/**'
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  deploy_application:
-    name: Build, Publish, and Deploy Express App
+  build-and-push:
+    name: Build and Push Docker Image
     runs-on: blacksmith-4vcpu-ubuntu-2404
 
     steps:
-      - name: Checkout Source Code
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Extract Application Version
-        id: extract_version
-        run: echo "version=$(node -p "require('./apps/server/package.json').version")" >> $GITHUB_OUTPUT
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Publish Docker Image
-        run: |
-          IMAGE_BASE_NAME="ghcr.io/${{ github.repository }}-server"
-          VERSIONED_IMAGE_NAME="${IMAGE_BASE_NAME}:v${{ steps.extract_version.outputs.version }}"
-          LATEST_IMAGE_NAME="${IMAGE_BASE_NAME}:latest"
-          cd apps/server
-          DOCKER_BUILDKIT=1 docker build --secret id=database_url,env=DATABASE_URL --secret id=elasticsearch_node,env=ELASTICSEARCH_NODE --secret id=elasticsearch_username,env=ELASTICSEARCH_USERNAME --secret id=elasticsearch_password,env=ELASTICSEARCH_PASSWORD -t $VERSIONED_IMAGE_NAME -t $LATEST_IMAGE_NAME .
-          docker push $VERSIONED_IMAGE_NAME
-          docker push $LATEST_IMAGE_NAME
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          ELASTICSEARCH_NODE: ${{ secrets.ELASTICSEARCH_NODE }}
-          ELASTICSEARCH_USERNAME: ${{ secrets.ELASTICSEARCH_USERNAME }}
-          ELASTICSEARCH_PASSWORD: ${{ secrets.ELASTICSEARCH_PASSWORD }}
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}-server
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/server/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          secrets: |
+            database_url=${{ secrets.DATABASE_URL }}
+            elasticsearch_node=${{ secrets.ELASTICSEARCH_NODE }}
+            elasticsearch_username=${{ secrets.ELASTICSEARCH_USERNAME }}
+            elasticsearch_password=${{ secrets.ELASTICSEARCH_PASSWORD }}
+
+  deploy:
+    name: Deploy to Production
+    needs: build-and-push
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+
+    steps:
       - name: Deploy Application to Production Server
         uses: appleboy/ssh-action@master
         with:

@@ -1,7 +1,7 @@
-import morgan from "morgan";
-import { Request, Response } from "express";
-import { getColorStatus } from "../utils/helper";
-import { AuthRequest } from "./auth.middleware";
+import morgan from 'morgan'
+import { Request, Response } from 'express'
+import { getColorStatus } from '../utils/helper'
+import { AuthRequest } from './auth.middleware'
 
 /**
  * HTTP request logger middleware
@@ -10,20 +10,20 @@ import { AuthRequest } from "./auth.middleware";
  * Example: GET /api/users 200 in 5.123 ms [user:123]
  */
 const logger = morgan((tokens, req: Request, res: Response) => {
-  const authReq = req as AuthRequest;
-  const userId = authReq.user?.id;
-  const role = authReq.user?.role?.toLowerCase();
-  const userInfo = role && userId ? ` [${role}Id:${userId}]` : "";
+  const authReq = req as AuthRequest
+  const userId = authReq.user?.id
+  const role = authReq.user?.role?.toLowerCase()
+  const userInfo = role && userId ? ` [${role}Id:${userId}]` : ''
 
   return [
     tokens.method(req, res),
     tokens.url(req, res),
-    getColorStatus(tokens.status(req, res) ?? ""),
-    "in",
-    tokens["response-time"](req, res),
-    "ms",
+    getColorStatus(tokens.status(req, res) ?? ''),
+    'in',
+    tokens['response-time'](req, res),
+    'ms',
     userInfo,
-  ].join(" ");
-});
+  ].join(' ')
+})
 
-export default logger;
+export default logger

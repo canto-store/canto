@@ -1,5 +1,5 @@
-import { Package, Building2, Users, Home } from "lucide-react";
-import { Link, useRouter } from "@tanstack/react-router";
+import { Package, Building2, Users, Home } from 'lucide-react'
+import { Link, useRouter } from '@tanstack/react-router'
 import {
   Sidebar,
   SidebarContent,
@@ -10,42 +10,41 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { useLogout } from "@/hooks/auth";
-import { useAuthStore } from "@/stores/auth";
+} from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button'
+import { useLogout } from '@/hooks/auth'
 
 const menuItems = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
+    title: 'Dashboard',
+    url: '/dashboard',
     icon: Home,
   },
   {
-    title: "Products",
-    url: "/dashboard/products",
+    title: 'Products',
+    url: '/dashboard/products',
     icon: Package,
   },
   {
-    title: "Brands",
-    url: "/dashboard/brands",
+    title: 'Brands',
+    url: '/dashboard/brands',
     icon: Building2,
   },
   {
-    title: "Sellers",
-    url: "/dashboard/sellers",
+    title: 'Sellers',
+    url: '/dashboard/sellers',
     icon: Users,
   },
-];
+]
 
 export function AppSidebar() {
-  const logout = useLogout();
-  const router = useRouter();
+  const logout = useLogout()
+  const router = useRouter()
 
   const handleLogout = async () => {
-    await logout.mutateAsync();
-    router.navigate({ to: "/" });
-  };
+    await logout.mutateAsync()
+    router.navigate({ to: '/' })
+  }
 
   return (
     <Sidebar>
@@ -59,7 +58,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {menuItems.map(item => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>
@@ -86,5 +85,5 @@ export function AppSidebar() {
         </div>
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }

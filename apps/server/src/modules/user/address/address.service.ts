@@ -1,9 +1,9 @@
-import { PrismaClient } from "@prisma/client";
-import { CreateAddressDto } from "./address.types";
-import AppError from "../../../utils/appError";
+import { PrismaClient } from '@prisma/client'
+import { CreateAddressDto } from './address.types'
+import AppError from '../../../utils/appError'
 
 class AddressService {
-  private readonly prisma = new PrismaClient();
+  private readonly prisma = new PrismaClient()
 
   async create(dto: CreateAddressDto) {
     const existingAddress = await this.prisma.address.findFirst({
@@ -17,11 +17,11 @@ class AddressService {
         city: dto.city,
         phone_number: dto.phone_number,
       },
-    });
+    })
     if (existingAddress) {
-      throw new AppError("Address already exists", 400);
+      throw new AppError('Address already exists', 400)
     }
-    return await this.prisma.address.create({ data: dto });
+    return await this.prisma.address.create({ data: dto })
   }
 
   async findAll() {
@@ -40,33 +40,33 @@ class AddressService {
         additional_direction: true,
         address_label: true,
       },
-    });
+    })
   }
 
   async findOne(id: number) {
-    const address = await this.prisma.address.findUnique({ where: { id } });
-    if (!address) throw new AppError("Address not found", 404);
-    return address;
+    const address = await this.prisma.address.findUnique({ where: { id } })
+    if (!address) throw new AppError('Address not found', 404)
+    return address
   }
 
   async update(id: number, dto: CreateAddressDto) {
-    const address = await this.prisma.address.findUnique({ where: { id } });
-    if (!address) throw new AppError("Address not found", 404);
-    return await this.prisma.address.update({ where: { id }, data: dto });
+    const address = await this.prisma.address.findUnique({ where: { id } })
+    if (!address) throw new AppError('Address not found', 404)
+    return await this.prisma.address.update({ where: { id }, data: dto })
   }
 
   async delete(id: number) {
-    const address = await this.prisma.address.findUnique({ where: { id } });
-    if (!address) throw new AppError("Address not found", 404);
-    return await this.prisma.address.delete({ where: { id } });
+    const address = await this.prisma.address.findUnique({ where: { id } })
+    if (!address) throw new AppError('Address not found', 404)
+    return await this.prisma.address.delete({ where: { id } })
   }
 
   async findByUserId(userId: number) {
     return await this.prisma.address.findMany({
       where: { user_id: userId },
-      orderBy: { createdAt: "desc" },
-    });
+      orderBy: { createdAt: 'desc' },
+    })
   }
 }
 
-export default AddressService;
+export default AddressService

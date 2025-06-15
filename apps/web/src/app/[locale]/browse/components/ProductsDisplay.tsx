@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Pagination } from "@/components/ui/pagination";
-import { ProductGrid, ProductList, ProductGridSkeleton } from "@/components/products";
+import {
+  ProductGrid,
+  ProductList,
+  ProductGridSkeleton,
+} from "@/components/products";
 import { ProductSummary } from "@/types";
 import { useTranslations } from "next-intl";
 

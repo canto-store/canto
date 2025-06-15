@@ -3,21 +3,33 @@ FROM node:lts-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy only dependency files first for caching
-COPY package.json pnpm-lock.yaml ./
+# Copy workspace configuration files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy all app package.json files for dependency resolution
+COPY apps/server/package.json ./apps/server/
+COPY apps/web/package.json ./apps/web/
+COPY apps/dashboard/package.json ./apps/dashboard/
+
+# Enable pnpm and install dependencies
 RUN corepack enable pnpm
 RUN pnpm install --frozen-lockfile
 
-COPY prisma ./prisma
+# Copy prisma schema and run database deployment
+COPY apps/server/prisma ./apps/server/prisma
 RUN --mount=type=secret,id=database_url \
   export DATABASE_URL=$(cat /run/secrets/database_url) && \
+  cd apps/server && \
   pnpm run db:deploy
 
-COPY . ./
-RUN pnpm run build
+# Copy the server app source code
+COPY apps/server ./apps/server
+
+# Build the server app
+RUN cd apps/server && pnpm run build
 
 EXPOSE 8000
 
 ENV NODE_ENV=production
 ENV PORT=8000
-CMD ["node", "build/src/index.js"]
+CMD ["node", "apps/server/build/src/index.js"]

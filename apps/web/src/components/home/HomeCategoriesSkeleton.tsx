@@ -24,7 +24,7 @@ export function HomeCategoriesSkeleton() {
   return (
     <section className="py-10 md:py-12">
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-5 gap-4">
+        <div className="grid gap-4 md:grid-cols-5">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="aspect-square rounded-lg" />
           ))}

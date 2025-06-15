@@ -6,7 +6,7 @@ import { useAuthStore } from "@/stores/auth-store";
 
 export const useUserQuery = () => {
   const { setUser } = useAuthStore();
-  
+
   return useQuery<User | Seller | null>({
     queryKey: ["me"],
     queryFn: async () => {

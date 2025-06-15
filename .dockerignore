@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+*/dist/
+*/build/
+*/.next/
+*/.tanstack/
+
+# Development files
+.git/
+.gitignore
+README.md
+.prettierrc*
+.prettierignore
+eslint.config.*
+*.log
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env*
+!.env.example
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Testing
+coverage/
+*.test.*
+*.spec.*
+
+# Misc
+.claude/
+.husky/ 

@@ -1,6 +1,6 @@
-import { parseApiError } from "@/lib/utils";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { parseApiError } from '@/lib/utils'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useState, type ReactNode } from 'react'
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -15,15 +15,15 @@ export function QueryProvider({ children }: { children: ReactNode }) {
           },
           mutations: {
             onError(error) {
-              const message = parseApiError(error);
-              console.error(message);
+              const message = parseApiError(error)
+              console.error(message)
             },
           },
         },
       })
-  );
+  )
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  )
 }

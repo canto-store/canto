@@ -1,5 +1,5 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import AppError from "../../utils/appError";
+import { Prisma, PrismaClient } from '@prisma/client'
+import AppError from '../../utils/appError'
 import {
   CreateProductDto,
   UpdateProductDto,
@@ -10,38 +10,38 @@ import {
   SubmitProductFormDto,
   ProductStatus,
   ProductQueryParams,
-} from "./product.types";
+} from './product.types'
 import {
   slugify,
   formatPrice,
   calculateOriginalPrice,
   calculateDiscountPercentage,
-} from "../../utils/helper";
+} from '../../utils/helper'
 
 class ProductService {
-  private readonly prisma = new PrismaClient();
+  private readonly prisma = new PrismaClient()
 
   async createProduct(dto: CreateProductDto) {
-    if (!dto.name?.trim()) throw new AppError("name is required", 400);
-    if (!dto.slug?.trim()) throw new AppError("slug is required", 400);
+    if (!dto.name?.trim()) throw new AppError('name is required', 400)
+    if (!dto.slug?.trim()) throw new AppError('slug is required', 400)
 
-    await this.ensureBrandExists(dto.brandId);
-    await this.ensureCategoryExists(dto.categoryId);
+    await this.ensureBrandExists(dto.brandId)
+    await this.ensureCategoryExists(dto.categoryId)
 
     const existingProductWithSlug = await this.prisma.product.findUnique({
       where: { slug: dto.slug },
-    });
+    })
     if (existingProductWithSlug)
-      throw new AppError("Product with this slug already exists", 409);
+      throw new AppError('Product with this slug already exists', 409)
 
-    return this.prisma.product.create({ data: dto });
+    return this.prisma.product.create({ data: dto })
   }
 
   async findAllProducts() {
     return this.prisma.product.findMany({
       include: { brand: true, category: true },
-      orderBy: { id: "desc" },
-    });
+      orderBy: { id: 'desc' },
+    })
   }
 
   async findProductsWithFilters(queryParams: ProductQueryParams) {
@@ -55,67 +55,67 @@ class ProductService {
       colors,
       sizes,
       inStock,
-      sortBy = "created_at",
-      sortOrder = "desc",
-      page = "1",
-      limit = "10",
-    } = queryParams;
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      page = '1',
+      limit = '10',
+    } = queryParams
 
-    const where: Prisma.ProductWhereInput = {};
+    const where: Prisma.ProductWhereInput = {}
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-      ];
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ]
     }
-    if (categorySlug) where.category = { slug: categorySlug };
-    if (brandSlug) where.brand = { slug: brandSlug };
-    if (status) where.status = status as ProductStatus;
-    console.log(where);
-    console.log(categorySlug, brandSlug);
-    const variantFilters: Prisma.ProductVariantWhereInput[] = [];
+    if (categorySlug) where.category = { slug: categorySlug }
+    if (brandSlug) where.brand = { slug: brandSlug }
+    if (status) where.status = status as ProductStatus
+    console.log(where)
+    console.log(categorySlug, brandSlug)
+    const variantFilters: Prisma.ProductVariantWhereInput[] = []
 
-    if (minPrice) variantFilters.push({ price: { gte: parseFloat(minPrice) } });
-    if (maxPrice) variantFilters.push({ price: { lte: parseFloat(maxPrice) } });
-    if (inStock === "true") variantFilters.push({ stock: { gt: 0 } });
+    if (minPrice) variantFilters.push({ price: { gte: parseFloat(minPrice) } })
+    if (maxPrice) variantFilters.push({ price: { lte: parseFloat(maxPrice) } })
+    if (inStock === 'true') variantFilters.push({ stock: { gt: 0 } })
 
     if (colors) {
-      const vals = colors.split(",").map((c) => c.trim());
+      const vals = colors.split(',').map(c => c.trim())
       variantFilters.push({
         optionLinks: {
           some: {
-            productOption: { name: { equals: "Color", mode: "insensitive" } },
-            optionValue: { value: { in: vals, mode: "insensitive" } },
+            productOption: { name: { equals: 'Color', mode: 'insensitive' } },
+            optionValue: { value: { in: vals, mode: 'insensitive' } },
           },
         },
-      });
+      })
     }
 
     if (sizes) {
-      const vals = sizes.split(",").map((s) => s.trim());
+      const vals = sizes.split(',').map(s => s.trim())
       variantFilters.push({
         optionLinks: {
           some: {
-            productOption: { name: { equals: "Size", mode: "insensitive" } },
-            optionValue: { value: { in: vals, mode: "insensitive" } },
+            productOption: { name: { equals: 'Size', mode: 'insensitive' } },
+            optionValue: { value: { in: vals, mode: 'insensitive' } },
           },
         },
-      });
+      })
     }
 
     // Apply the variant-filters to the top-level `where` so we only fetch
     // products that have at least one variant matching _all_ of them:
     if (variantFilters.length > 0) {
-      where.variants = { some: { AND: variantFilters } };
+      where.variants = { some: { AND: variantFilters } }
     }
 
     // 4) Pagination & sorting setup
-    const pageNum = Number(page);
-    const limitNum = Number(limit);
-    const skip = (pageNum - 1) * limitNum;
+    const pageNum = Number(page)
+    const limitNum = Number(limit)
+    const skip = (pageNum - 1) * limitNum
 
-    where.status = ProductStatus.ACTIVE;
+    where.status = ProductStatus.ACTIVE
 
     // 5) Fetch matching products + total count
     const [products, total] = await Promise.all([
@@ -137,23 +137,23 @@ class ProductService {
         },
         // If sorting by price, we'll sort in JS afterwards
         orderBy:
-          sortBy === "price" ? { created_at: "desc" } : { [sortBy]: sortOrder },
+          sortBy === 'price' ? { created_at: 'desc' } : { [sortBy]: sortOrder },
         skip,
         take: limitNum,
       }),
       this.prisma.product.count({ where }),
-    ]);
+    ])
 
     // 6) Sort products by their min-variant price
-    if (sortBy === "price") {
+    if (sortBy === 'price') {
       products.sort((a, b) => {
-        const aMin = Math.min(...a.variants.map((v) => v.price));
-        const bMin = Math.min(...b.variants.map((v) => v.price));
-        return sortOrder === "asc" ? aMin - bMin : bMin - aMin;
-      });
+        const aMin = Math.min(...a.variants.map(v => v.price))
+        const bMin = Math.min(...b.variants.map(v => v.price))
+        return sortOrder === 'asc' ? aMin - bMin : bMin - aMin
+      })
     }
 
-    const formatted = products.map((p) => {
+    const formatted = products.map(p => {
       if (!p.variants || p.variants.length === 0) {
         return {
           name: p.name,
@@ -163,17 +163,17 @@ class ProductService {
             slug: p.brand.slug,
           },
           price: 0,
-          image: "/placeholder-image.jpg",
+          image: '/placeholder-image.jpg',
           stock: 0,
           hasVariants: false,
           default_variant_id: null,
           colorVariants: [],
-        };
+        }
       }
 
-      const prices = p.variants.map((v) => v.price);
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
+      const prices = p.variants.map(v => v.price)
+      const minPrice = Math.min(...prices)
+      const maxPrice = Math.max(...prices)
 
       return {
         name: p.name,
@@ -184,23 +184,23 @@ class ProductService {
         },
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: p.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        image: p.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
         stock: p.variants.reduce((sum, v) => sum + v.stock, 0),
         hasVariants: p.variants.length > 1,
         default_variant_id: p.variants.length === 1 ? p.variants[0]?.id : null,
         colorVariants: [
           ...new Set(
-            p.variants.flatMap((v) =>
+            p.variants.flatMap(v =>
               v.optionLinks
                 .filter(
-                  (link) => link.productOption.name.toLowerCase() === "color"
+                  link => link.productOption.name.toLowerCase() === 'color'
                 )
-                .map((link) => link.optionValue.value)
+                .map(link => link.optionValue.value)
             )
           ),
         ],
-      };
-    });
+      }
+    })
 
     return {
       products: formatted,
@@ -208,40 +208,40 @@ class ProductService {
       page: pageNum,
       limit: limitNum,
       totalPages: Math.ceil(total / limitNum),
-    };
+    }
   }
 
   async findProduct(id: number) {
-    await this.ensureProductExists(id);
+    await this.ensureProductExists(id)
     return this.prisma.product.findUnique({
       where: { id },
       include: { rejection: true },
-    });
+    })
   }
 
   async updateProduct(id: number, dto: UpdateProductDto) {
     // This part is good, keep it.
-    const existingProduct = await this.ensureProductExists(id);
+    const existingProduct = await this.ensureProductExists(id)
 
     if (dto.slug && dto.slug !== existingProduct.slug) {
       const existingProductWithSlug = await this.prisma.product.findUnique({
         where: { slug: dto.slug },
-      });
+      })
       if (existingProductWithSlug) {
-        throw new AppError("slug already in use", 409);
+        throw new AppError('slug already in use', 409)
       }
     }
 
     // 1. Create a dynamic data object for the update operation.
     // This is the object we will pass to Prisma.
-    const updateData: Prisma.ProductUpdateInput = {};
+    const updateData: Prisma.ProductUpdateInput = {}
 
     // 2. Conditionally build the updateData object based on the DTO.
     // For simple fields, just copy them if they exist.
-    if (dto.name) updateData.name = dto.name;
-    if (dto.description) updateData.description = dto.description;
-    if (dto.slug) updateData.slug = dto.slug;
-    if (dto.status) updateData.status = dto.status;
+    if (dto.name) updateData.name = dto.name
+    if (dto.description) updateData.description = dto.description
+    if (dto.slug) updateData.slug = dto.slug
+    if (dto.status) updateData.status = dto.status
     // ... add any other simple/scalar fields from your DTO
 
     // For the brand relation, use 'connect'.
@@ -250,14 +250,14 @@ class ProductService {
     if (dto.brandId) {
       updateData.brand = {
         connect: { id: dto.brandId },
-      };
+      }
     }
 
     // For the category relation, use 'connect'.
     if (dto.categoryId) {
       updateData.category = {
         connect: { id: dto.categoryId },
-      };
+      }
     }
 
     // 3. Handle the rejection logic atomically.
@@ -270,87 +270,87 @@ class ProductService {
           create: { reason: dto.rejectionReason },
           update: { reason: dto.rejectionReason },
         },
-      };
+      }
     } else if (dto.status === ProductStatus.ACTIVE) {
       // If the product is becoming active, delete the related rejection record.
       // This is much safer and more idiomatic than a separate DB call.
       updateData.rejection = {
         delete: true,
-      };
+      }
     }
 
     // 4. Execute a single, atomic, and correct update call.
     return this.prisma.product.update({
       where: { id },
       data: updateData, // Use our dynamically built object
-    });
+    })
   }
 
   async deleteProduct(id: number) {
-    await this.ensureProductExists(id);
-    return this.prisma.product.delete({ where: { id } });
+    await this.ensureProductExists(id)
+    return this.prisma.product.delete({ where: { id } })
   }
 
   async createOption(dto: CreateProductOptionDto) {
-    if (!dto.name?.trim()) throw new AppError("name is required", 400);
+    if (!dto.name?.trim()) throw new AppError('name is required', 400)
 
     const existingOptionWithName = await this.prisma.productOption.findUnique({
       where: { name: dto.name },
-    });
+    })
     if (existingOptionWithName)
-      throw new AppError("Option with this name already exists", 409);
+      throw new AppError('Option with this name already exists', 409)
 
-    return this.prisma.productOption.create({ data: dto });
+    return this.prisma.productOption.create({ data: dto })
   }
 
   async getOptions() {
-    return this.prisma.productOption.findMany({ include: { values: true } });
+    return this.prisma.productOption.findMany({ include: { values: true } })
   }
 
   async deleteOption(id: number) {
-    await this.ensureOptionExists(id);
-    return this.prisma.productOption.delete({ where: { id } });
+    await this.ensureOptionExists(id)
+    return this.prisma.productOption.delete({ where: { id } })
   }
 
   async createOptionValue(dto: CreateProductOptionValueDto) {
-    if (!dto.value?.trim()) throw new AppError("value is required", 400);
-    await this.ensureOptionExists(dto.productOptionId);
+    if (!dto.value?.trim()) throw new AppError('value is required', 400)
+    await this.ensureOptionExists(dto.productOptionId)
 
     const existingOptionValue = await this.prisma.productOptionValue.findFirst({
       where: { productOptionId: dto.productOptionId, value: dto.value },
-    });
+    })
     if (existingOptionValue)
-      throw new AppError("Value already exists under this option", 409);
+      throw new AppError('Value already exists under this option', 409)
 
-    return this.prisma.productOptionValue.create({ data: dto });
+    return this.prisma.productOptionValue.create({ data: dto })
   }
 
   async deleteOptionValue(id: number) {
-    await this.ensureOptionValueExists(id);
-    return this.prisma.productOptionValue.delete({ where: { id } });
+    await this.ensureOptionValueExists(id)
+    return this.prisma.productOptionValue.delete({ where: { id } })
   }
 
   async createVariant(dto: CreateProductVariantDto) {
-    await this.ensureProductExists(dto.productId);
-    if (!dto.sku?.trim()) throw new AppError("sku is required", 400);
+    await this.ensureProductExists(dto.productId)
+    if (!dto.sku?.trim()) throw new AppError('sku is required', 400)
     if (dto.price == null || dto.price < 0)
-      throw new AppError("price must be >= 0", 400);
+      throw new AppError('price must be >= 0', 400)
     if (dto.stock == null || dto.stock < 0)
-      throw new AppError("stock must be >= 0", 400);
+      throw new AppError('stock must be >= 0', 400)
 
     const existingVariantSku = await this.prisma.productVariant.findUnique({
       where: { sku: dto.sku },
-    });
+    })
     if (existingVariantSku)
-      throw new AppError("Variant with this SKU already exists", 409);
+      throw new AppError('Variant with this SKU already exists', 409)
 
     if (dto.optionValueIds?.length) {
       await Promise.all(
-        dto.optionValueIds.map((id) => this.ensureOptionValueExists(id))
-      );
+        dto.optionValueIds.map(id => this.ensureOptionValueExists(id))
+      )
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async tx => {
       const variantRecord = await tx.productVariant.create({
         data: {
           productId: dto.productId,
@@ -359,47 +359,47 @@ class ProductService {
           stock: dto.stock,
           sale_id: dto.sale_id ?? null,
         },
-      });
+      })
 
       if (dto.optionValueIds?.length) {
         const variantOptionValuesData = await Promise.all(
-          dto.optionValueIds.map(async (optionValueId) => {
+          dto.optionValueIds.map(async optionValueId => {
             const productOptionValue = await tx.productOptionValue.findUnique({
               where: { id: optionValueId },
               select: { productOptionId: true },
-            });
+            })
             if (!productOptionValue) {
               throw new AppError(
                 `ProductOptionValue with id ${optionValueId} not found within transaction.`,
                 404
-              );
+              )
             }
             if (productOptionValue.productOptionId == null) {
               throw new AppError(
                 `ProductOptionValue with id ${optionValueId} is missing its productOptionId.`,
                 500
-              );
+              )
             }
             return {
               variantId: variantRecord.id,
               optionValueId,
               productOptionId: productOptionValue.productOptionId,
-            };
+            }
           })
-        );
+        )
 
         await tx.variantOptionValue.createMany({
           data: variantOptionValuesData,
-        });
+        })
       }
 
       if (dto.images?.length) {
         await tx.productVariantImage.createMany({
-          data: dto.images.map((image) => ({
+          data: dto.images.map(image => ({
             ...image,
             variantId: variantRecord.id,
           })),
-        });
+        })
       }
 
       return tx.productVariant.findUnique({
@@ -408,29 +408,29 @@ class ProductService {
           images: true,
           optionLinks: { include: { optionValue: true } },
         },
-      });
-    });
+      })
+    })
   }
 
   async updateVariant(id: number, dto: UpdateProductVariantDto) {
-    const existingVariant = await this.ensureVariantExists(id);
+    const existingVariant = await this.ensureVariantExists(id)
 
     if (dto.sku && dto.sku !== existingVariant.sku) {
       const existingVariantSku = await this.prisma.productVariant.findUnique({
         where: { sku: dto.sku },
-      });
-      if (existingVariantSku) throw new AppError("SKU already in use", 409);
+      })
+      if (existingVariantSku) throw new AppError('SKU already in use', 409)
     }
     if (dto.price != null && dto.price < 0)
-      throw new AppError("price must be >= 0", 400);
+      throw new AppError('price must be >= 0', 400)
     if (dto.stock != null && dto.stock < 0)
-      throw new AppError("stock must be >= 0", 400);
+      throw new AppError('stock must be >= 0', 400)
 
-    const updateData: Prisma.ProductVariantUpdateInput = {};
-    if (dto.sku != null) updateData.sku = dto.sku;
-    if (dto.price != null) updateData.price = dto.price;
-    if (dto.stock != null) updateData.stock = dto.stock;
-    if (dto.sale_id != null) updateData.sale = { connect: { id: dto.sale_id } };
+    const updateData: Prisma.ProductVariantUpdateInput = {}
+    if (dto.sku != null) updateData.sku = dto.sku
+    if (dto.price != null) updateData.price = dto.price
+    if (dto.stock != null) updateData.stock = dto.stock
+    if (dto.sale_id != null) updateData.sale = { connect: { id: dto.sale_id } }
 
     const variantRecord = await this.prisma.productVariant.update({
       where: { id },
@@ -439,29 +439,29 @@ class ProductService {
         images: true,
         optionLinks: { include: { optionValue: true } },
       },
-    });
+    })
 
     if (dto.optionValueIds || dto.images) {
-      return this.prisma.$transaction(async (tx) => {
+      return this.prisma.$transaction(async tx => {
         if (dto.optionValueIds) {
-          await tx.variantOptionValue.deleteMany({ where: { variantId: id } });
+          await tx.variantOptionValue.deleteMany({ where: { variantId: id } })
           if (dto.optionValueIds.length) {
             await tx.variantOptionValue.createMany({
-              data: dto.optionValueIds.map((optionValueId) => ({
+              data: dto.optionValueIds.map(optionValueId => ({
                 variantId: id,
                 optionValueId,
                 productOptionId: dto.productOptionId,
               })),
-            });
+            })
           }
         }
 
         if (dto.images) {
-          await tx.productVariantImage.deleteMany({ where: { variantId: id } });
+          await tx.productVariantImage.deleteMany({ where: { variantId: id } })
           if (dto.images.length) {
             await tx.productVariantImage.createMany({
-              data: dto.images.map((image) => ({ ...image, variantId: id })),
-            });
+              data: dto.images.map(image => ({ ...image, variantId: id })),
+            })
           }
         }
 
@@ -471,16 +471,16 @@ class ProductService {
             images: true,
             optionLinks: { include: { optionValue: true } },
           },
-        });
-      });
+        })
+      })
     }
 
-    return variantRecord;
+    return variantRecord
   }
 
   async deleteVariant(id: number) {
-    await this.ensureVariantExists(id);
-    return this.prisma.productVariant.delete({ where: { id } });
+    await this.ensureVariantExists(id)
+    return this.prisma.productVariant.delete({ where: { id } })
   }
 
   async getProductBySlug(slug: string) {
@@ -506,34 +506,34 @@ class ProductService {
           },
         },
       },
-    });
+    })
 
-    if (!productRecord) throw new AppError("Product not found", 404);
+    if (!productRecord) throw new AppError('Product not found', 404)
 
-    const priceList = productRecord.variants.map((v) => v.price);
-    const minimumPrice = priceList.length ? Math.min(...priceList) : 0;
-    const maximumPrice = priceList.length ? Math.max(...priceList) : 0;
+    const priceList = productRecord.variants.map(v => v.price)
+    const minimumPrice = priceList.length ? Math.min(...priceList) : 0
+    const maximumPrice = priceList.length ? Math.max(...priceList) : 0
 
     const totalStock = productRecord.variants.reduce(
       (sum, variant) => sum + variant.stock,
       0
-    );
-    const inStock = totalStock > 0;
+    )
+    const inStock = totalStock > 0
 
-    const variants = productRecord.variants.map((variant) => {
-      const variantOptions: Record<string, string> = {};
-      variant.optionLinks.forEach((link) => {
+    const variants = productRecord.variants.map(variant => {
+      const variantOptions: Record<string, string> = {}
+      variant.optionLinks.forEach(link => {
         variantOptions[link.optionValue.productOption.name] =
-          link.optionValue.value;
-      });
+          link.optionValue.value
+      })
 
       const originalPrice = variant.sale
         ? calculateOriginalPrice(variant.price, variant.sale)
-        : null;
+        : null
 
       const discountPercentage = originalPrice
         ? calculateDiscountPercentage(originalPrice, variant.price)
-        : null;
+        : null
 
       return {
         id: variant.id,
@@ -545,12 +545,12 @@ class ProductService {
         discount_percentage: discountPercentage,
         stock: variant.stock,
         options: variantOptions,
-        images: variant.images.map((image) => ({
+        images: variant.images.map(image => ({
           url: image.url,
           alt_text: image.alt_text,
         })),
-      };
-    });
+      }
+    })
 
     const relatedRaw = await this.prisma.product.findMany({
       where: {
@@ -559,15 +559,15 @@ class ProductService {
       },
       take: 4,
       include: { brand: true, variants: { include: { images: true } } },
-    });
+    })
 
-    const relatedProducts = relatedRaw.map((related) => {
-      const relatedPrices = related.variants.map((v) => v.price);
+    const relatedProducts = relatedRaw.map(related => {
+      const relatedPrices = related.variants.map(v => v.price)
       return {
         id: related.id,
         name: related.name,
         slug: related.slug,
-        image: related.variants[0]?.images[0]?.url ?? "",
+        image: related.variants[0]?.images[0]?.url ?? '',
         brand: { name: related.brand.name, slug: related.brand.slug },
         price_range: {
           original: {
@@ -579,8 +579,8 @@ class ProductService {
             max_price: Math.max(...relatedPrices),
           },
         },
-      };
-    });
+      }
+    })
 
     return {
       name: productRecord.name,
@@ -601,7 +601,7 @@ class ProductService {
           : null,
       reviews: { count: 0, rating: 0 },
       related_products: relatedProducts,
-    };
+    }
   }
 
   async getHomeProducts() {
@@ -614,16 +614,16 @@ class ProductService {
           select: { images: true, price: true, id: true, stock: true },
         },
       },
-    });
+    })
     const colorVariantOption = await this.prisma.productOption.findUnique({
-      where: { name: "Color" },
-    });
+      where: { name: 'Color' },
+    })
     const colorVariantValues = await this.prisma.variantOptionValue.findMany({
       where: {
         productOptionId: colorVariantOption.id,
         variant: {
           productId: {
-            in: products.flatMap((p) => p.variants.map((v) => v.id)),
+            in: products.flatMap(p => p.variants.map(v => v.id)),
           },
         },
       },
@@ -635,25 +635,25 @@ class ProductService {
           },
         },
       },
-    });
-    const bestSellers = products.slice(0, 5).map((product) => {
+    })
+    const bestSellers = products.slice(0, 5).map(product => {
       if (!product.variants || product.variants.length === 0) {
         return {
           name: product.name,
           brand: product.brand,
           slug: product.slug,
           price: 0,
-          image: "/placeholder-image.jpg",
+          image: '/placeholder-image.jpg',
           stock: 0,
           hasVariants: false,
           default_variant_id: null,
           colorVariants: [],
-        };
+        }
       }
 
-      const prices = product.variants.map((v) => v.price);
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
+      const prices = product.variants.map(v => v.price)
+      const minPrice = Math.min(...prices)
+      const maxPrice = Math.max(...prices)
 
       return {
         name: product.name,
@@ -661,7 +661,7 @@ class ProductService {
         slug: product.slug,
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
         stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
         hasVariants: product.variants.length > 1,
         default_variant_id:
@@ -669,30 +669,30 @@ class ProductService {
         colorVariants: [
           ...new Set(
             colorVariantValues
-              .filter((v) => product.variants.some((p) => p.id === v.variantId))
-              .map((v) => v.optionValue.value)
+              .filter(v => product.variants.some(p => p.id === v.variantId))
+              .map(v => v.optionValue.value)
           ),
         ],
-      };
-    });
-    const bestDeals = products.slice(5, 10).map((product) => {
+      }
+    })
+    const bestDeals = products.slice(5, 10).map(product => {
       if (!product.variants || product.variants.length === 0) {
         return {
           name: product.name,
           brand: product.brand,
           slug: product.slug,
           price: 0,
-          image: "/placeholder-image.jpg",
+          image: '/placeholder-image.jpg',
           stock: 0,
           hasVariants: false,
           default_variant_id: null,
           colorVariants: [],
-        };
+        }
       }
 
-      const prices = product.variants.map((v) => v.price);
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
+      const prices = product.variants.map(v => v.price)
+      const minPrice = Math.min(...prices)
+      const maxPrice = Math.max(...prices)
 
       return {
         name: product.name,
@@ -700,7 +700,7 @@ class ProductService {
         slug: product.slug,
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
         stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
         default_variant_id:
           product.variants.length === 1 ? product.variants[0]?.id : null,
@@ -708,30 +708,30 @@ class ProductService {
         colorVariants: [
           ...new Set(
             colorVariantValues
-              .filter((v) => product.variants.some((p) => p.id === v.variantId))
-              .map((v) => v.optionValue.value)
+              .filter(v => product.variants.some(p => p.id === v.variantId))
+              .map(v => v.optionValue.value)
           ),
         ],
-      };
-    });
-    const newArrivals = products.slice(10, 15).map((product) => {
+      }
+    })
+    const newArrivals = products.slice(10, 15).map(product => {
       if (!product.variants || product.variants.length === 0) {
         return {
           name: product.name,
           brand: product.brand,
           slug: product.slug,
           price: 0,
-          image: "/placeholder-image.jpg",
+          image: '/placeholder-image.jpg',
           stock: 0,
           hasVariants: false,
           default_variant_id: null,
           colorVariants: [],
-        };
+        }
       }
 
-      const prices = product.variants.map((v) => v.price);
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
+      const prices = product.variants.map(v => v.price)
+      const minPrice = Math.min(...prices)
+      const maxPrice = Math.max(...prices)
 
       return {
         name: product.name,
@@ -739,7 +739,7 @@ class ProductService {
         slug: product.slug,
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+        image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
         stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
         hasVariants: product.variants.length > 1,
         default_variant_id:
@@ -747,21 +747,21 @@ class ProductService {
         colorVariants: [
           ...new Set(
             colorVariantValues
-              .filter((v) => product.variants.some((p) => p.id === v.variantId))
-              .map((v) => v.optionValue.value)
+              .filter(v => product.variants.some(p => p.id === v.variantId))
+              .map(v => v.optionValue.value)
           ),
         ],
-      };
-    });
+      }
+    })
     return {
       bestSellers,
       bestDeals,
       newArrivals,
-    };
+    }
   }
 
   async submitProductForm(dto: SubmitProductFormDto) {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async tx => {
       const newProduct = await tx.product.create({
         data: {
           name: dto.name,
@@ -775,37 +775,37 @@ class ProductService {
           brand: true,
           category: true,
         },
-      });
+      })
 
       for (const variant of dto.variants) {
         const variantRecord = await tx.productVariant.create({
           data: {
             productId: newProduct.id,
-            sku: slugify(variant.options.map((o) => o.valueId).join("-")),
+            sku: slugify(variant.options.map(o => o.valueId).join('-')),
             price: variant.price,
             stock: variant.stock,
           },
-        });
+        })
 
         await tx.productVariantImage.createMany({
-          data: variant.images.map((image) => ({
+          data: variant.images.map(image => ({
             url: image,
             alt_text: dto.name,
             variantId: variantRecord.id,
           })),
-        });
+        })
 
         await tx.variantOptionValue.createMany({
-          data: variant.options.map((o) => ({
+          data: variant.options.map(o => ({
             variantId: variantRecord.id,
             optionValueId: o.valueId,
             productOptionId: o.optionId,
           })),
-        });
+        })
       }
 
-      return true;
-    });
+      return true
+    })
   }
 
   async getProductsByBrand(brandId: number) {
@@ -815,62 +815,62 @@ class ProductService {
         variants: { include: { images: true } },
         category: true,
       },
-    });
-    return products.map((product) => ({
+    })
+    return products.map(product => ({
       id: product.id,
       name: product.name,
       description: product.description,
-      image: product.variants[0]?.images[0]?.url || "/placeholder-image.jpg",
+      image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
       category: product.category.name,
       status: product.status,
-    }));
+    }))
   }
 
   private async ensureProductExists(id: number) {
     const productRecord = await this.prisma.product.findUnique({
       where: { id },
-    });
-    if (!productRecord) throw new AppError("Product not found", 404);
-    return productRecord;
+    })
+    if (!productRecord) throw new AppError('Product not found', 404)
+    return productRecord
   }
 
   private async ensureVariantExists(id: number) {
     const variantRecord = await this.prisma.productVariant.findUnique({
       where: { id },
-    });
-    if (!variantRecord) throw new AppError("Variant not found", 404);
-    return variantRecord;
+    })
+    if (!variantRecord) throw new AppError('Variant not found', 404)
+    return variantRecord
   }
 
   private async ensureBrandExists(id: number) {
-    const brandRecord = await this.prisma.brand.findUnique({ where: { id } });
+    const brandRecord = await this.prisma.brand.findUnique({ where: { id } })
     if (!brandRecord)
-      throw new AppError("brandId does not reference an existing brand", 400);
+      throw new AppError('brandId does not reference an existing brand', 400)
   }
 
   private async ensureCategoryExists(id: number) {
     const categoryRecord = await this.prisma.category.findUnique({
       where: { id },
-    });
+    })
     if (!categoryRecord)
       throw new AppError(
-        "categoryId does not reference an existing category",
+        'categoryId does not reference an existing category',
         400
-      );
+      )
   }
 
   private async ensureOptionExists(id: number) {
     const optionRecord = await this.prisma.productOption.findUnique({
       where: { id },
-    });
-    if (!optionRecord) throw new AppError("Option not found", 404);
+    })
+    if (!optionRecord) throw new AppError('Option not found', 404)
   }
 
   private async ensureOptionValueExists(id: number) {
     const optionValueRecord = await this.prisma.productOptionValue.findUnique({
       where: { id },
-    });
-    if (!optionValueRecord) throw new AppError("Option value not found", 404);
+    })
+    if (!optionValueRecord) throw new AppError('Option value not found', 404)
   }
 
   async getProductFilters() {
@@ -900,38 +900,38 @@ class ProductService {
         _min: { price: true },
         _max: { price: true },
       }),
-    ]);
+    ])
 
     // Get available colors and sizes from product options
     const colorOption = await this.prisma.productOption.findFirst({
-      where: { name: { equals: "Color", mode: "insensitive" } },
+      where: { name: { equals: 'Color', mode: 'insensitive' } },
       include: { values: true },
-    });
+    })
 
     const sizeOption = await this.prisma.productOption.findFirst({
-      where: { name: { equals: "Size", mode: "insensitive" } },
+      where: { name: { equals: 'Size', mode: 'insensitive' } },
       include: { values: true },
-    });
+    })
 
     return {
-      categories: categories.filter((cat) => cat._count.Product > 0),
-      brands: brands.filter((brand) => brand._count.Product > 0),
+      categories: categories.filter(cat => cat._count.Product > 0),
+      brands: brands.filter(brand => brand._count.Product > 0),
       price_range: {
         min: priceRange._min.price || 0,
         max: priceRange._max.price || 0,
       },
       colors:
-        colorOption?.values.map((v) => ({
+        colorOption?.values.map(v => ({
           id: v.id,
           value: v.value,
         })) || [],
       sizes:
-        sizeOption?.values.map((v) => ({
+        sizeOption?.values.map(v => ({
           id: v.id,
           value: v.value,
         })) || [],
-    };
+    }
   }
 }
 
-export default ProductService;
+export default ProductService

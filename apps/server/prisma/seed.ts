@@ -1,22 +1,22 @@
-import { PrismaClient } from "@prisma/client";
-import { runAllPendingSeeds, runSpecificSeeds, listSeeds } from "./seeds/index";
+import { PrismaClient } from '@prisma/client'
+import { runAllPendingSeeds, runSpecificSeeds, listSeeds } from './seeds/index'
 
 /**
  * Main function to process command line arguments and run seeds
  */
 async function main() {
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient()
 
   try {
     // Parse command line arguments
-    const args = process.argv.slice(2);
+    const args = process.argv.slice(2)
 
-    if (args.includes("--list")) {
-      await listSeeds();
-      return;
+    if (args.includes('--list')) {
+      await listSeeds()
+      return
     }
 
-    if (args.includes("--help")) {
+    if (args.includes('--help')) {
       console.log(`
 Prisma Seed Manager
 
@@ -31,25 +31,25 @@ Examples:
   npx prisma db seed -- --list            # List all seeds and their status
   npx prisma db seed -- --seed product-options,categories  # Run specific seeds
   npx prisma db seed -- --seed categories --force  # Re-run a specific seed
-      `);
-      return;
+      `)
+      return
     }
 
-    const seedIndex = args.findIndex((arg) => arg === "--seed");
+    const seedIndex = args.findIndex(arg => arg === '--seed')
     if (seedIndex >= 0 && seedIndex < args.length - 1) {
-      const seedNames = args[seedIndex + 1].split(",");
-      await runSpecificSeeds(prisma, seedNames, args.includes("--force"));
+      const seedNames = args[seedIndex + 1].split(',')
+      await runSpecificSeeds(prisma, seedNames, args.includes('--force'))
     } else {
-      await runAllPendingSeeds(prisma);
+      await runAllPendingSeeds(prisma)
     }
 
-    console.log("All seeds completed successfully!");
+    console.log('All seeds completed successfully!')
   } catch (error) {
-    console.error("Error during seeding:", error);
-    process.exit(1);
+    console.error('Error during seeding:', error)
+    process.exit(1)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
-main();
+main()

@@ -1,12 +1,12 @@
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs'
 
 class Bcrypt {
   static async hash(password: string) {
-    return await bcrypt.hash(password, 10);
+    return await bcrypt.hash(password, 10)
   }
   static async compare(password: string, hash: string) {
-    return await bcrypt.compare(password, hash);
+    return await bcrypt.compare(password, hash)
   }
 }
 
-export default Bcrypt;
+export default Bcrypt

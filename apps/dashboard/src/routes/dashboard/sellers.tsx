@@ -1,86 +1,86 @@
-import { createFileRoute } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useSellers } from "@/hooks/useData";
+import { createFileRoute } from '@tanstack/react-router'
+import type { ColumnDef } from '@tanstack/react-table'
+import { ArrowUpDown } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { DataTable } from '@/components/data-table'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useSellers } from '@/hooks/useData'
 
 interface Seller {
-  id: string;
-  name: string;
-  email: string;
-  phone_number: string;
-  company?: string;
-  status?: "active" | "inactive" | "pending";
-  totalSales?: number;
-  created_at?: string;
+  id: string
+  name: string
+  email: string
+  phone_number: string
+  company?: string
+  status?: 'active' | 'inactive' | 'pending'
+  totalSales?: number
+  created_at?: string
 }
 
 // Hook to delay showing loading state
 function useDelayedLoading(isLoading: boolean, delay: number = 300) {
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false)
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout
 
     if (isLoading) {
       timeoutId = setTimeout(() => {
-        setShowLoading(true);
-      }, delay);
+        setShowLoading(true)
+      }, delay)
     } else {
-      setShowLoading(false);
+      setShowLoading(false)
     }
 
     return () => {
       if (timeoutId) {
-        clearTimeout(timeoutId);
+        clearTimeout(timeoutId)
       }
-    };
-  }, [isLoading, delay]);
+    }
+  }, [isLoading, delay])
 
-  return showLoading;
+  return showLoading
 }
 
 const columns: ColumnDef<Seller>[] = [
   {
-    accessorKey: "name",
+    accessorKey: 'name',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      );
+      )
     },
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: 'email',
+    header: 'Email',
   },
   {
-    accessorKey: "phone_number",
-    header: "Phone",
+    accessorKey: 'phone_number',
+    header: 'Phone',
   },
   {
-    accessorKey: "created_at",
-    header: "Joined",
+    accessorKey: 'created_at',
+    header: 'Joined',
     cell: ({ row }) => {
-      const dateValue = row.getValue("created_at");
-      if (!dateValue) return "-";
-      const date = new Date(dateValue as string);
-      return date.toLocaleDateString();
+      const dateValue = row.getValue('created_at')
+      if (!dateValue) return '-'
+      const date = new Date(dateValue as string)
+      return date.toLocaleDateString()
     },
   },
-];
+]
 
-export const Route = createFileRoute("/dashboard/sellers")({
+export const Route = createFileRoute('/dashboard/sellers')({
   component: SellersPage,
-});
+})
 
 // Loading skeleton component
 function SellersTableSkeleton() {
@@ -104,15 +104,15 @@ function SellersTableSkeleton() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 function SellersPage() {
-  const { data: sellers = [], isLoading, error } = useSellers();
-  const showSkeleton = useDelayedLoading(isLoading);
+  const { data: sellers = [], isLoading, error } = useSellers()
+  const showSkeleton = useDelayedLoading(isLoading)
 
   if (showSkeleton) {
-    return <SellersTableSkeleton />;
+    return <SellersTableSkeleton />
   }
 
   if (error) {
@@ -120,7 +120,7 @@ function SellersPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-red-500">Error loading sellers</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -138,5 +138,5 @@ function SellersPage() {
         searchPlaceholder="Search sellers..."
       />
     </div>
-  );
+  )
 }

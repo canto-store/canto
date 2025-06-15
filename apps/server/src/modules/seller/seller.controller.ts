@@ -1,14 +1,14 @@
-import sellerService from "./seller.service";
+import sellerService from './seller.service'
 
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express'
 
-import { Seller } from "@prisma/client";
+import { Seller } from '@prisma/client'
 
 class SellerController {
-  private sellerService: sellerService;
+  private sellerService: sellerService
 
   constructor() {
-    this.sellerService = new sellerService();
+    this.sellerService = new sellerService()
   }
 
   public getAllSellers = async (
@@ -17,12 +17,12 @@ class SellerController {
     next: NextFunction
   ) => {
     try {
-      const sellers = await this.sellerService.getAllSellers();
-      res.status(200).json(sellers);
+      const sellers = await this.sellerService.getAllSellers()
+      res.status(200).json(sellers)
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 
   public getSellerById = async (
     req: Request,
@@ -30,13 +30,13 @@ class SellerController {
     next: NextFunction
   ) => {
     try {
-      const { id } = req.params;
-      const seller = await this.sellerService.getSellerById(Number(id));
-      res.status(200).json(seller);
+      const { id } = req.params
+      const seller = await this.sellerService.getSellerById(Number(id))
+      res.status(200).json(seller)
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 
   public createSeller = async (
     req: Request,
@@ -44,30 +44,29 @@ class SellerController {
     next: NextFunction
   ) => {
     try {
-      const sellerData: Seller = req.body;
-      const { seller, tokens } = await this.sellerService.createSeller(
-        sellerData
-      );
+      const sellerData: Seller = req.body
+      const { seller, tokens } =
+        await this.sellerService.createSeller(sellerData)
 
       res
-        .cookie("token", tokens.accessToken, {
+        .cookie('token', tokens.accessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
           maxAge: 1000 * 60 * 60, // 1 hour
         })
-        .cookie("refreshToken", tokens.refreshToken, {
+        .cookie('refreshToken', tokens.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
           maxAge: 7 * 24 * 3600_000, // 7 days
         })
         .status(201)
-        .json(seller);
+        .json(seller)
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 
   public updateSeller = async (
     req: Request,
@@ -75,17 +74,17 @@ class SellerController {
     next: NextFunction
   ) => {
     try {
-      const { id } = req.params;
-      const sellerData: Seller = req.body;
+      const { id } = req.params
+      const sellerData: Seller = req.body
       const updatedSeller = await this.sellerService.updateSeller(
         Number(id),
         sellerData
-      );
-      res.status(200).json(updatedSeller);
+      )
+      res.status(200).json(updatedSeller)
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 
   public loginSeller = async (
     req: Request,
@@ -93,40 +92,40 @@ class SellerController {
     next: NextFunction
   ) => {
     try {
-      const { email, password } = req.body;
+      const { email, password } = req.body
       if (!email || !password) {
         return res
           .status(400)
-          .json({ message: "Email and password are required" });
+          .json({ message: 'Email and password are required' })
       }
 
       const { seller, tokens, brandId } = await this.sellerService.loginSeller(
         email,
         password
-      );
+      )
 
       // Set authentication cookies with correct settings for CORS
       res
-        .cookie("token", tokens.accessToken, {
+        .cookie('token', tokens.accessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax", // Use 'none' for cross-site requests if needed
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax', // Use 'none' for cross-site requests if needed
           maxAge: 1000 * 60 * 60, // 1 hour
         })
-        .cookie("refreshToken", tokens.refreshToken, {
+        .cookie('refreshToken', tokens.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax", // Use 'none' for cross-site requests if needed
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax', // Use 'none' for cross-site requests if needed
           maxAge: 7 * 24 * 3600_000, // 7 days
         })
         // Set headers for CORS
-        .header("Access-Control-Allow-Credentials", "true")
+        .header('Access-Control-Allow-Credentials', 'true')
         .status(200)
-        .json({ ...seller, brandId });
+        .json({ ...seller, brandId })
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 }
 
-export default SellerController;
+export default SellerController

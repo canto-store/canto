@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import * as orderService from "./order.service";
-import AppError from "../../utils/appError";
-import { DeliveryStatus } from "@prisma/client";
-import { AuthRequest } from "../../middlewares/auth.middleware";
+import { Request, Response, NextFunction } from 'express'
+import * as orderService from './order.service'
+import AppError from '../../utils/appError'
+import { DeliveryStatus } from '@prisma/client'
+import { AuthRequest } from '../../middlewares/auth.middleware'
 
 export const createOrderHandler = async (
   req: AuthRequest,
@@ -10,27 +10,27 @@ export const createOrderHandler = async (
   next: NextFunction
 ) => {
   try {
-    const { addressId } = req.body;
-    const { id: userId } = req.user;
+    const { addressId } = req.body
+    const { id: userId } = req.user
 
     if (!userId || !addressId) {
-      return next(new AppError("UserId and AddressId are required", 400));
+      return next(new AppError('UserId and AddressId are required', 400))
     }
 
     const order = await orderService.createOrder({
       userId,
       addressId,
-    });
+    })
     res.status(201).json({
-      status: "success",
+      status: 'success',
       data: {
         order,
       },
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 export const getOrdersHandler = async (
   req: Request,
@@ -38,18 +38,18 @@ export const getOrdersHandler = async (
   next: NextFunction
 ) => {
   try {
-    const orders = await orderService.getOrders();
+    const orders = await orderService.getOrders()
     res.status(200).json({
-      status: "success",
+      status: 'success',
       results: orders.length,
       data: {
         orders,
       },
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 export const getOrdersByUserIdHandler = async (
   req: Request<{ userId: string }>,
@@ -57,22 +57,22 @@ export const getOrdersByUserIdHandler = async (
   next: NextFunction
 ) => {
   try {
-    const userId = parseInt(req.params.userId, 10);
+    const userId = parseInt(req.params.userId, 10)
     if (isNaN(userId)) {
-      return next(new AppError("Invalid user ID", 400));
+      return next(new AppError('Invalid user ID', 400))
     }
-    const orders = await orderService.getOrdersByUserId(userId);
+    const orders = await orderService.getOrdersByUserId(userId)
     res.status(200).json({
-      status: "success",
+      status: 'success',
       results: orders.length,
       data: {
         orders,
       },
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 export const getOrderByIdHandler = async (
   req: Request<{ orderId: string }>,
@@ -80,58 +80,58 @@ export const getOrderByIdHandler = async (
   next: NextFunction
 ) => {
   try {
-    const orderId = parseInt(req.params.orderId, 10);
+    const orderId = parseInt(req.params.orderId, 10)
     if (isNaN(orderId)) {
-      return next(new AppError("Invalid order ID", 400));
+      return next(new AppError('Invalid order ID', 400))
     }
-    const order = await orderService.getOrderById(orderId);
+    const order = await orderService.getOrderById(orderId)
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         order,
       },
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 export const updateOrderItemStatusHandler = async (
   req: Request<
     { orderItemId: string },
     {},
-    { deliveryStatus: "NOT_DELIVERED_YET" | "DELIVERED" }
+    { deliveryStatus: 'NOT_DELIVERED_YET' | 'DELIVERED' }
   >,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const orderItemId = parseInt(req.params.orderItemId, 10);
-    const { deliveryStatus } = req.body;
+    const orderItemId = parseInt(req.params.orderItemId, 10)
+    const { deliveryStatus } = req.body
 
     if (isNaN(orderItemId)) {
-      return next(new AppError("Invalid order item ID", 400));
+      return next(new AppError('Invalid order item ID', 400))
     }
 
     if (
       !deliveryStatus ||
       !Object.values(DeliveryStatus).includes(deliveryStatus as DeliveryStatus)
     ) {
-      return next(new AppError("Invalid delivery status", 400));
+      return next(new AppError('Invalid delivery status', 400))
     }
 
     const updatedOrderItem = await orderService.updateOrderItemDeliveryStatus({
       orderItemId,
       deliveryStatus,
-    });
+    })
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         orderItem: updatedOrderItem,
       },
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}

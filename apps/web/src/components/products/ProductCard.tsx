@@ -156,7 +156,8 @@ export function ProductCard({
               {product.price}
               {product.maxPrice && (
                 <span className="font-bold sm:text-lg md:text-xl">
-                  {" "}- {product.maxPrice}
+                  {" "}
+                  - {product.maxPrice}
                 </span>
               )}
             </span>
