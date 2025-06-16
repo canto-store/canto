@@ -25,29 +25,21 @@ RUN pnpm fetch
 COPY . /usr/src/app
 RUN pnpm install --offline --frozen-lockfile
 
-# Generate Prisma client before building
-RUN cd apps/server && pnpm prisma generate
-
 RUN pnpm run -r build
-
-# Deploy each app with production dependencies only
-RUN pnpm deploy --filter=web --prod /prod/web
-RUN pnpm deploy --filter=server --prod /prod/server  
-RUN pnpm deploy --filter=dashboard --prod /prod/dashboard
 
 # Web app (Next.js) production image
 FROM base AS web
-WORKDIR /prod/web
-
-# Copy the deployed web app
-COPY --from=build /prod/web /prod/web
+WORKDIR /app
 
 # Create nextjs user for security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Set correct permissions for Next.js standalone output
-RUN chown -R nextjs:nodejs /prod/web
+# Copy Next.js standalone output from build stage
+COPY --from=build --chown=nextjs:nodejs /usr/src/app/apps/web/.next/standalone ./
+COPY --from=build --chown=nextjs:nodejs /usr/src/app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build --chown=nextjs:nodejs /usr/src/app/apps/web/public ./apps/web/public
+
 USER nextjs
 
 # Next.js specific environment variables
@@ -57,31 +49,46 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["node", "apps/web/server.js"]
+
+# Deploy stage - create clean production deployments
+FROM base AS deploy
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+
+# Deploy server app to a clean directory
+RUN pnpm --filter=server deploy /tmp/server --prod
+
+# Copy built files to deployment
+COPY --from=build /usr/src/app/apps/server/build /tmp/server/build
+
+# Generate Prisma client in the deployed server directory
+WORKDIR /tmp/server
+RUN npx prisma generate
 
 # Server app (Express) production image  
 FROM base AS server
-WORKDIR /prod/server
+WORKDIR /app
 
-# Copy the deployed server app
-COPY --from=build /prod/server /prod/server
+# Copy the clean deployment (no symlinks)
+COPY --from=deploy /tmp/server ./
 
-# Set production environment
 ENV NODE_ENV=production
 ENV PORT=8000
 
 EXPOSE 8000
 CMD ["node", "build/src/index.js"]
 
+
 # Dashboard app (Vite React) production image
 FROM base AS dashboard
-WORKDIR /prod/dashboard
+WORKDIR /app
 
 # Install serve for static file serving
 RUN npm install -g serve
 
-# Copy the deployed dashboard app
-COPY --from=build /prod/dashboard /prod/dashboard
+# Copy built dashboard app (dist folder)
+COPY --from=build /usr/src/app/apps/dashboard/dist ./dist
 
 # Set production environment
 ENV NODE_ENV=production
