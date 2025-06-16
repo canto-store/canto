@@ -26,7 +26,6 @@ ARG TARGET_APP
 
 # Copy source code only after dependencies are installed
 COPY apps/ ./apps/
-COPY prisma/ ./prisma/
 
 # Build only the target app
 RUN pnpm --filter=${TARGET_APP} build
@@ -38,7 +37,7 @@ WORKDIR /usr/src/app
 # Copy package files for server deployment
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/server/package.json ./apps/server/
-COPY prisma/ ./prisma/
+COPY apps/server/prisma/ ./apps/server/prisma/
 
 # Deploy server app to a clean directory with only prod dependencies
 RUN pnpm --filter=server deploy /tmp/server --prod
@@ -47,7 +46,7 @@ RUN pnpm --filter=server deploy /tmp/server --prod
 COPY --from=build /usr/src/app/apps/server/build /tmp/server/build
 
 # Copy prisma schema for client generation
-COPY --from=build /usr/src/app/prisma /tmp/server/prisma
+COPY --from=build /usr/src/app/apps/server/prisma /tmp/server/prisma
 
 # Generate Prisma client in the deployed server directory
 WORKDIR /tmp/server
