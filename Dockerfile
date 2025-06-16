@@ -3,17 +3,27 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-# Fetch dependencies - this layer will be cached unless pnpm-lock.yaml changes
-FROM base AS fetch
+# Deps stage - install dependencies with optimal caching
+FROM base AS deps
+COPY pnpm-lock.yaml /usr/src/app/
+WORKDIR /usr/src/app
+RUN pnpm fetch --prod
+
+COPY pnpm-workspace.yaml package.json /usr/src/app/
+COPY apps/web/package.json /usr/src/app/apps/web/
+COPY apps/server/package.json /usr/src/app/apps/server/
+COPY apps/dashboard/package.json /usr/src/app/apps/dashboard/
+
+RUN pnpm install --frozen-lockfile
+
+# Build stage - install all dependencies and build all apps
+FROM base AS build
 COPY pnpm-lock.yaml /usr/src/app/
 WORKDIR /usr/src/app
 RUN pnpm fetch
 
-# Build stage - install all dependencies and build all apps
-FROM base AS build
 COPY . /usr/src/app
-WORKDIR /usr/src/app
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --offline --frozen-lockfile
+RUN pnpm install --offline --frozen-lockfile
 RUN pnpm run -r build
 
 # Deploy each app with production dependencies only
