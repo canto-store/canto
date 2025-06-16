@@ -1,12 +1,12 @@
 "use client";
 
-import { HeroSlider } from "@/components/home/HeroSlider";
 import { HomeProducts } from "@/components/home/HomeProducts";
 import { FeaturesBanner } from "@/components/home/FeaturesBanner";
 import { HomeCategories } from "@/components/home/HomeCategories";
 import { useHomeProducts } from "@/lib/product";
 import { useCartStore, useGetCart } from "@/lib/cart";
 import { useEffect } from "react";
+import Image from "next/image";
 
 export default function Home() {
   const { data, isLoading } = useHomeProducts();
@@ -22,7 +22,14 @@ export default function Home() {
 
   return (
     <>
-      <HeroSlider />
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none md:h-[calc(100vh-6.5rem)]">
+        <Image
+          src="https://zdafrb7d2x.ufs.sh/f/aSLZIlWQkFim5FdpnzUeHFnp7gMROB5UyeLuTo4YdGw2ak01"
+          alt="Hero"
+          fill
+          className="object-fit"
+        />
+      </section>
       <FeaturesBanner />
 
       <HomeProducts

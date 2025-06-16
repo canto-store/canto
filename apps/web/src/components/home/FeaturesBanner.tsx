@@ -36,7 +36,7 @@ export function FeaturesBanner() {
   ];
 
   return (
-    <section className="py-10 md:py-12">
+    <section>
       <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-4">
           {features.map((feature, index) => (

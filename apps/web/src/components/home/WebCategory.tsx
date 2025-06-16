@@ -9,7 +9,7 @@ export function WebCategory({ categories }: { categories: Category[] }) {
     (category) => category.aspect === "SQUARE",
   );
   return (
-    <section className="py-10 md:py-12">
+    <section>
       <div className="container mx-auto flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4">
           {rectangleCategories.slice(0, 2).map((category, index) => (

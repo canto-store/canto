@@ -22,7 +22,7 @@ export function HomeProducts({
 
   if (products && products.length > 0) {
     return (
-      <section className="py-10 lg:py-14">
+      <section>
         <h2 className="mb-8 text-center text-3xl font-bold md:mb-10 md:text-4xl lg:text-5xl">
           {title}
         </h2>

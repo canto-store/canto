@@ -15,7 +15,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <>
       <Header />
-      <main className="container mx-auto px-4">{children}</main>
+      <main className="container mx-auto space-y-10 px-4 md:space-y-20">
+        {children}
+      </main>
       <Footer />
       <MobileBottomNavigation />
       <InstallPWA variant="message" displayDelay={8 * 1000} />
