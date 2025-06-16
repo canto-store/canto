@@ -3,40 +3,38 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-# Shared dependencies stage - only install what's needed for the target
-FROM base AS deps
-ARG TARGET_APP
-WORKDIR /usr/src/app
-
-# Copy workspace files
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
-
-# Copy package.json files based on target
-COPY apps/${TARGET_APP}/package.json ./apps/${TARGET_APP}/
-# Copy shared packages if they exist
-COPY packages/*/package.json ./packages/*/
-
-# Fetch and install dependencies
-RUN pnpm fetch --prod
-RUN pnpm install --frozen-lockfile --filter=${TARGET_APP}
+# Install OpenSSL to fix Prisma warnings
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Build stage - build only the target app
 FROM base AS build
 ARG TARGET_APP
 WORKDIR /usr/src/app
 
-# Copy workspace files
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
-
-# Copy all source code (needed for potential internal dependencies)
+# Copy all files (needed for monorepo dependencies)
 COPY . ./
 
-# Install all dependencies for building
+# Install all dependencies
 RUN pnpm fetch
 RUN pnpm install --frozen-lockfile
 
 # Build only the target app
 RUN pnpm --filter=${TARGET_APP} build
+
+# Deploy stage - create clean production deployment for server
+FROM base AS deploy-server
+WORKDIR /usr/src/app
+COPY . ./
+
+# Deploy server app to a clean directory with only prod dependencies
+RUN pnpm --filter=server deploy /tmp/server --prod
+
+# Copy built files to deployment
+COPY --from=build /usr/src/app/apps/server/build /tmp/server/build
+
+# Generate Prisma client in the deployed server directory
+WORKDIR /tmp/server
+RUN npx prisma generate
 
 # Web app (Next.js) production image
 FROM base AS web
@@ -63,16 +61,8 @@ CMD ["node", "apps/web/server.js"]
 FROM base AS server
 WORKDIR /app
 
-# Copy built server app
-COPY --from=build /usr/src/app/apps/server/build ./build
-COPY --from=build /usr/src/app/apps/server/package.json ./package.json
-COPY --from=build /usr/src/app/apps/server/prisma ./prisma
-
-# Install only production dependencies for server
-RUN pnpm install --prod --frozen-lockfile
-
-# Generate Prisma client if needed
-RUN if [ -d "prisma" ]; then npx prisma generate; fi
+# Copy the clean deployment (no symlinks, only prod dependencies)
+COPY --from=deploy-server /tmp/server ./
 
 ENV NODE_ENV=production
 ENV PORT=8000
