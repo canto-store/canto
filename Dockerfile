@@ -24,6 +24,10 @@ RUN pnpm fetch
 
 COPY . /usr/src/app
 RUN pnpm install --offline --frozen-lockfile
+
+# Generate Prisma client before building
+RUN cd apps/server && pnpm prisma generate
+
 RUN pnpm run -r build
 
 # Deploy each app with production dependencies only
