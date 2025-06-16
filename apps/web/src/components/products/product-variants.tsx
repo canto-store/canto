@@ -22,6 +22,7 @@ import Image from "next/image";
 import { UploadButton } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { SelectedVariant } from "@/types/product";
+import { Alert, AlertDescription } from "../ui/alert";
 
 export default function ProductVariants() {
   const form = useFormContext();
@@ -113,7 +114,19 @@ export default function ProductVariants() {
       </div>
 
       {variantSets.map((variant: SelectedVariant, setIndex: number) => (
-        <div key={setIndex} className="space-y-4 rounded-lg border p-4">
+        <div
+          key={setIndex}
+          className="relative space-y-4 rounded-lg border p-4"
+        >
+          {variantSets.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeVariantSet(setIndex)}
+              className="absolute top-2 right-2 z-10 rounded-full bg-red-500 p-1 text-white transition-colors hover:bg-red-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
           {variant.images.length > 0 ? (
             <div className="flex-1">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
@@ -148,19 +161,6 @@ export default function ProductVariants() {
               </div>
             </div>
           )}
-          <div className="flex items-center justify-between">
-            {variantSets.length > 1 && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeVariantSet(setIndex)}
-                className="text-red-500 hover:text-red-600"
-              >
-                Remove
-              </Button>
-            )}
-          </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
@@ -271,39 +271,46 @@ export default function ProductVariants() {
             ))}
           </div>
 
-          <div className="flex min-w-[200px] flex-col gap-2">
-            <UploadButton
-              endpoint="imageUploader"
-              className="ut-button:bg-primary ut-button:ut-readying:bg-primary/50 ut-button:px-4 ut-button:py-2 ut-button:ut-readying:px-4 ut-button:ut-readying:py-2 ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-sm ut-button:hover:bg-primary/90 ut-button:transition-colors"
-              onClientUploadComplete={(res) => {
-                handleImageUpload(setIndex, res);
-                setIsUploading(false);
-              }}
-              onUploadError={(error: Error) => {
-                toast.error(error.message);
-                setIsUploading(false);
-              }}
-              content={{
-                button: (
-                  <div className="flex items-center gap-2">
-                    {isUploading ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Uploading...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="h-4 w-4" />
-                        <span>Upload Images</span>
-                      </>
-                    )}
-                  </div>
-                ),
-              }}
-              onUploadBegin={() => setIsUploading(true)}
-              disabled={isUploading}
-            />
-          </div>
+          <Alert>
+            <AlertDescription>
+              Please upload high quality images that are square shaped (equal
+              width and height) for the best display. Images not following the
+              guidlines may be rejected.
+            </AlertDescription>
+          </Alert>
+
+          <UploadButton
+            endpoint="imageUploader"
+            className="ut-button:bg-primary ut-button:py-2 ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-sm ut-button:hover:bg-primary/90 ut-button:transition-colors"
+            onClientUploadComplete={(res) => {
+              handleImageUpload(setIndex, res);
+              setIsUploading(false);
+            }}
+            onUploadError={(error: Error) => {
+              toast.error(error.message);
+              setIsUploading(false);
+            }}
+            content={{
+              allowedContent: "Max Size: 4MB",
+              button: (
+                <div className="flex items-center gap-2">
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4" />
+                      <span>Upload Image</span>
+                    </>
+                  )}
+                </div>
+              ),
+            }}
+            onUploadBegin={() => setIsUploading(true)}
+            disabled={isUploading}
+          />
         </div>
       ))}
     </div>

@@ -3,7 +3,7 @@ import type React from "react";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Check } from "lucide-react";
+import { Check, Package } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,7 +61,7 @@ export default function ProductsForm() {
       <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
         {/* Left panel - Product list */}
         <div className="min-h-full overflow-auto rounded-lg p-4 shadow-sm">
-          {products.length > 0 ? (
+          {products.length == 0 ? (
             <div className="space-y-4">
               {products.map((product) => (
                 <div
@@ -99,8 +99,9 @@ export default function ProductsForm() {
               ))}
             </div>
           ) : (
-            <div className="flex h-full items-center justify-center">
-              <span>no products uploaded yet</span>
+            <div className="flex h-full flex-col items-center justify-center">
+              <Package className="text-primary mb-4 h-16 w-16" />
+              <span className="text-gray-500">No products uploaded yet.</span>
             </div>
           )}
         </div>
@@ -208,7 +209,7 @@ export default function ProductsForm() {
                 {/* Form actions */}
                 <div className="flex justify-center">
                   <Button type="submit" disabled={isPending}>
-                    {isPending ? "Saving..." : "Save"}
+                    {isPending ? "Uploading..." : "Upload Product"}
                   </Button>
                 </div>
               </form>
