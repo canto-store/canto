@@ -18,6 +18,7 @@ app.use(
     origin: [
       'http://localhost:3000',
       'http://localhost:5173',
+      'http://164.90.234.81:5173',
       'https://staging.canto-store.com',
       'http://staging.canto-store.com',
       'https://www.canto-store.com',
