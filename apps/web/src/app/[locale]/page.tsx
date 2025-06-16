@@ -3,7 +3,6 @@
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { HomeProducts } from "@/components/home/HomeProducts";
 import { FeaturesBanner } from "@/components/home/FeaturesBanner";
-import { HERO_SLIDES } from "@/lib/data/hero-slides";
 import { HomeCategories } from "@/components/home/HomeCategories";
 import { useHomeProducts } from "@/lib/product";
 import { useCartStore, useGetCart } from "@/lib/cart";
@@ -23,7 +22,7 @@ export default function Home() {
 
   return (
     <>
-      <HeroSlider slides={HERO_SLIDES} />
+      <HeroSlider />
       <FeaturesBanner />
 
       <HomeProducts

@@ -6,17 +6,27 @@ RUN corepack enable
 # Install OpenSSL to fix Prisma warnings
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-# Build stage - build only the target app
-FROM base AS build
-ARG TARGET_APP
+# Dependencies stage - optimized for Docker layer caching
+FROM base AS deps
 WORKDIR /usr/src/app
 
-# Copy all files (needed for monorepo dependencies)
-COPY . ./
+# Copy package files first for optimal caching
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/
+COPY apps/server/package.json ./apps/server/
+COPY apps/dashboard/package.json ./apps/dashboard/
 
-# Install all dependencies
+# Install all dependencies in a cached layer
 RUN pnpm fetch
 RUN pnpm install --frozen-lockfile
+
+# Build stage - build only the target app
+FROM deps AS build
+ARG TARGET_APP
+
+# Copy source code only after dependencies are installed
+COPY apps/ ./apps/
+COPY prisma/ ./prisma/
 
 # Build only the target app
 RUN pnpm --filter=${TARGET_APP} build
@@ -24,13 +34,20 @@ RUN pnpm --filter=${TARGET_APP} build
 # Deploy stage - create clean production deployment for server
 FROM base AS deploy-server
 WORKDIR /usr/src/app
-COPY . ./
+
+# Copy package files for server deployment
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/server/package.json ./apps/server/
+COPY prisma/ ./prisma/
 
 # Deploy server app to a clean directory with only prod dependencies
 RUN pnpm --filter=server deploy /tmp/server --prod
 
 # Copy built files to deployment
 COPY --from=build /usr/src/app/apps/server/build /tmp/server/build
+
+# Copy prisma schema for client generation
+COPY --from=build /usr/src/app/prisma /tmp/server/prisma
 
 # Generate Prisma client in the deployed server directory
 WORKDIR /tmp/server

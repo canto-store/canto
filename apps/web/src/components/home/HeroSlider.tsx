@@ -2,22 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { SliderButton } from "@/components/common";
 import { cn } from "@/lib/utils";
-import { type HeroSlide } from "@/lib/data/hero-slides";
-import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
 import { useBanner } from "@/providers";
 import { useLocale } from "next-intl";
 import Image from "next/image";
 import { useMediaQuery } from "react-haiku";
-interface HeroSliderProps {
-  slides: HeroSlide[];
-  className?: string;
-}
-
-export function HeroSlider({ slides, className }: HeroSliderProps) {
+import { HERO_SLIDES as slides } from "@/lib/data/hero-slides";
+export function HeroSlider() {
   const autoplayInterval = 5000;
   const [currentSlide, setCurrentSlide] = useState(1); // Start at index 1 (first real slide)
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -25,8 +17,6 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const { showBanner } = useBanner();
-  const router = useRouter();
-  const t = useTranslations("heroSlider");
   const locale = useLocale();
   const isRTL = locale === "ar";
 
@@ -39,7 +29,7 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
       ...slides,
       slides[0], // Clone of first slide at the end
     ];
-  }, [slides]);
+  }, []);
 
   const minSwipeDistance = 50;
 
@@ -51,7 +41,7 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
     } else if (currentSlide === slides.length + 1) {
       setCurrentSlide(1);
     }
-  }, [currentSlide, slides.length]);
+  }, [currentSlide]);
 
   const handlePrevSlide = useCallback(() => {
     if (isTransitioning) return;
@@ -102,16 +92,6 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
     }
   };
 
-  const getTranslatedContent = (slide: HeroSlide) => {
-    if (!slide.translationKey)
-      return { title: slide.title, subtitle: slide.subtitle };
-
-    return {
-      title: t(slide.translationKey),
-      subtitle: t(`${slide.translationKey}Subtitle`),
-    };
-  };
-
   const displaySlides = augmentedSlides();
 
   const realIndex =
@@ -128,7 +108,6 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
         showBanner
           ? "h-[calc(100vh-6.5rem-5rem)] md:h-[calc(100vh-6.5rem)]"
           : "h-[calc(100vh-4.5rem-5rem)] md:h-[calc(100vh-4.5rem)]",
-        className,
       )}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -148,40 +127,19 @@ export function HeroSlider({ slides, className }: HeroSliderProps) {
           onTransitionEnd={handleTransitionEnd}
         >
           {displaySlides.map((slide, index) => {
-            const { title, subtitle } = getTranslatedContent(slide);
             return (
               <div key={index} className="relative h-full w-full flex-shrink-0">
                 <div className="absolute inset-0 h-full w-full">
                   <Image
                     src={slide.image}
-                    alt={title}
+                    alt="Hero Slider"
                     fill
                     sizes="100vw"
-                    className="object-cover"
+                    className="object-contain"
                     priority={index <= 1} // Prioritize first two slides (clone and first real slide)
                     quality={80}
                     loading={index <= 1 ? "eager" : "lazy"}
                   />
-                  <div className="absolute inset-0 bg-black/30" />
-                </div>
-                <div className="relative flex h-full items-center justify-center px-4 text-center text-white sm:px-6 md:px-8 lg:px-16">
-                  <div className="max-w-4xl">
-                    <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl lg:text-7xl">
-                      {title}
-                    </h2>
-                    <p className="mb-6 text-sm sm:text-base md:text-xl lg:text-2xl">
-                      {subtitle}
-                    </p>
-                    <Button
-                      size="lg"
-                      variant="default"
-                      asChild
-                      className="text-sm sm:text-base"
-                      onClick={() => router.push("/browse")}
-                    >
-                      <span>{t("shopNow")}</span>
-                    </Button>
-                  </div>
                 </div>
               </div>
             );
