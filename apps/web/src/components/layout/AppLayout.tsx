@@ -15,7 +15,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <>
       <Header />
-      <main className="container mx-auto space-y-10 px-4 md:space-y-20">
+      <main className="container mx-auto mb-10 space-y-10 px-4 md:space-y-20">
         {children}
       </main>
       <Footer />

@@ -1,195 +1,115 @@
-"use client";
-
-import { siInstagram, siX, siFacebook, siYoutube } from "simple-icons";
-import { useTranslations } from "next-intl";
-import { Button } from "../ui/button";
 import Image from "next/image";
-import { useRouter } from "@/i18n/navigation";
-type TranslationFunction = (key: string) => string;
 
-const footerNavigation = (t: TranslationFunction) => ({
+const navigation = {
+  about: [
+    { label: "Know about us", href: "#" },
+    { label: "Canto Products", href: "#" },
+    { label: "Our Social Responsibility", href: "#" },
+    { label: "Our Partners", href: "#" },
+  ],
   shop: [
-    { label: t("footer.newArrivals"), href: "#" },
-    { label: t("footer.bestSellers"), href: "#" },
-    { label: t("footer.collections"), href: "#" },
-    { label: t("footer.sale"), href: "#" },
+    { label: "Your Orders", href: "#" },
+    { label: "Your Account", href: "#" },
+    { label: "Your Return items", href: "#" },
+    { label: "Your Refund items", href: "#" },
+    { label: "Track you Latest Order", href: "#" },
   ],
-  company: [{ label: t("footer.aboutUs"), href: "#" }],
-  support: [
-    { label: t("footer.contactUs"), href: "#" },
-    { label: t("footer.shippingReturns"), href: "/shipping-returns" },
+  business: [
+    { label: "Sell your products on Canto", href: "#" },
+    {
+      label:
+        'Let us help you take your business to the next level (Join our "product managment" program)',
+      href: "#",
+    },
+    { label: "Know about our terms and conditions", href: "#" },
   ],
-  legal: [
-    { label: t("footer.termsConditions"), href: "#" },
-    { label: t("footer.privacyPolicy"), href: "#" },
-    { label: t("footer.cookiePolicy"), href: "#" },
-    { label: t("footer.accessibility"), href: "#" },
+  help: [
+    { label: "Contact us", href: "#" },
+    { label: "FAQ", href: "#" },
   ],
-});
-
-const socialLinks = [
-  {
-    icon: siInstagram,
-    href: "#",
-    label: "Instagram",
-    color: "#E4405F",
-  },
-  {
-    icon: siX,
-    href: "#",
-    label: "X (Twitter)",
-    color: "#000000",
-  },
-  {
-    icon: siFacebook,
-    href: "#",
-    label: "Facebook",
-    color: "#1877F2",
-  },
-  {
-    icon: siYoutube,
-    href: "#",
-    label: "YouTube",
-    color: "#FF0000",
-  },
-];
+};
 
 export function Footer() {
-  const t = useTranslations();
-  const navigation = footerNavigation(t);
-  const router = useRouter();
-
   return (
-    <footer className="border-t border-gray-200">
+    <footer className="bg-[var(--color-light-blue)] text-[var(--color-secondary)]">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-2 lg:grid-cols-6">
-          <div className="col-span-2 lg:col-span-2">
-            <div className="flex items-center">
-              <Image
-                src="/logo.svg"
-                alt="Canto"
-                width={80}
-                height={32}
-                className="h-8 w-auto"
-              />
-              <span className="ml-2 text-xl font-bold">Canto</span>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
+          <div className="md:col-span-4">
+            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+              <div>
+                <h3 className="font-bold">About Canto</h3>
+                <ul className="mt-4 space-y-2">
+                  {navigation.about.map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="hover:underline">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-bold">Shop with Canto</h3>
+                <ul className="mt-4 space-y-2">
+                  {navigation.shop.map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="hover:underline">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-bold">
+                  Unlockk new opportunities for your business today
+                </h3>
+                <ul className="mt-4 space-y-2">
+                  {navigation.business.map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="hover:underline">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-bold">Help</h3>
+                <ul className="mt-4 space-y-2">
+                  {navigation.help.map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="hover:underline">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <p className="mt-4 max-w-md text-sm text-gray-600">
-              {t("footer.subscribeText")}
-            </p>
-            <form className="mt-4 flex max-w-md flex-col sm:flex-row">
-              <input
-                type="email"
-                placeholder={t("footer.emailPlaceholder")}
-                className="h-10 rounded-md border border-gray-300 px-4 focus:border-black focus:outline-none sm:max-w-xs"
-                required
-              />
-              <Button type="submit" className="mt-2 sm:mt-0 sm:ml-2">
-                {t("footer.subscribe")}
-              </Button>
-            </form>
           </div>
-
-          <div>
-            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
-              {t("footer.shop")}
-            </h3>
-            <ul className="mt-4 space-y-2">
-              {navigation.shop.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
-                  >
-                    {item.label.toLocaleUpperCase()}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
-              {t("footer.company")}
-            </h3>
-            <ul className="mt-4 space-y-2">
-              {navigation.company.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
-                  >
-                    {item.label.toLocaleUpperCase()}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
-              {t("footer.support")}
-            </h3>
-            <ul className="mt-4 space-y-2">
-              {navigation.support.map((item) => (
-                <li key={item.label}>
-                  <a
-                    onClick={() => {
-                      router.push(item.href);
-                    }}
-                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
-                  >
-                    {item.label.toLocaleUpperCase()}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold tracking-wider text-gray-900 uppercase">
-              {t("footer.legal")}
-            </h3>
-            <ul className="mt-4 space-y-2">
-              {navigation.legal.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-gray-600 transition-colors hover:text-gray-900"
-                  >
-                    {item.label.toLocaleUpperCase()}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="flex items-start justify-center md:col-span-1">
+            <Image
+              src="/logo-yellow-burgandy.png"
+              alt="Canto"
+              width={1000}
+              height={1000}
+              className="h-auto w-auto"
+            />
           </div>
         </div>
-
-        <div className="mt-12 border-t border-gray-200 pt-8">
+        <div className="mt-12 border-t border-[var(--color-secondary)] pt-8">
           <div className="flex flex-col items-center justify-between md:flex-row">
-            <p className="text-sm text-gray-500">{t("footer.copyright")}</p>
-            <div className="mt-4 flex space-x-6 md:mt-0">
-              <h3 className="sr-only">{t("footer.followUs")}</h3>
-              {socialLinks.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="text-gray-400 transition-colors hover:text-gray-600"
-                  aria-label={item.label}
-                >
-                  <svg
-                    role="img"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 fill-current"
-                    style={{ color: item.color }}
-                  >
-                    <title>{item.label}</title>
-                    <path d={item.icon.path} />
-                  </svg>
-                </a>
-              ))}
-            </div>
+            <p className="text-sm">
+              Copyright © 2025 Canto Store. All Rights Reserved.{" "}
+              <a href="#" className="underline">
+                Terms of Use
+              </a>{" "}
+              |{" "}
+              <a href="#" className="underline">
+                Privacy Policy
+              </a>
+            </p>
           </div>
         </div>
       </div>
