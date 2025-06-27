@@ -27,10 +27,9 @@ export default function Home() {
           src="https://zdafrb7d2x.ufs.sh/f/aSLZIlWQkFimhqIo98vnb96RaXBYDdPWv37yFwM4pKkIchN5"
           alt="Hero"
           fill
-          className="object-fit"
+          className="object-cover"
         />
       </section>
-      <FeaturesBanner />
 
       <HomeProducts
         products={bestDeals}
@@ -51,6 +50,8 @@ export default function Home() {
         title="New Arrivals"
         isLoading={isLoading}
       />
+
+      <FeaturesBanner />
     </>
   );
 }

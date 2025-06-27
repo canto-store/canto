@@ -2,10 +2,10 @@ import Image from "next/image";
 
 const navigation = {
   about: [
-    { label: "Know about us", href: "#" },
+    // { label: "Know about us", href: "#" },
     { label: "Canto Products", href: "#" },
-    { label: "Our Social Responsibility", href: "#" },
-    { label: "Our Partners", href: "#" },
+    // { label: "Our Social Responsibility", href: "#" },
+    // { label: "Our Partners", href: "#" },
   ],
   shop: [
     { label: "Your Orders", href: "#" },
@@ -16,12 +16,12 @@ const navigation = {
   ],
   business: [
     { label: "Sell your products on Canto", href: "#" },
-    {
-      label:
-        'Let us help you take your business to the next level (Join our "product managment" program)',
-      href: "#",
-    },
-    { label: "Know about our terms and conditions", href: "#" },
+    // {
+    //   label:
+    //     'Let us help you take your business to the next level (Join our "product managment" program)',
+    //   href: "#",
+    // },
+    // { label: "Know about our terms and conditions", href: "#" },
   ],
   help: [
     { label: "Contact us", href: "#" },
@@ -61,9 +61,6 @@ export function Footer() {
                 </ul>
               </div>
               <div>
-                <h3 className="font-bold">
-                  Unlockk new opportunities for your business today
-                </h3>
                 <ul className="mt-4 space-y-2">
                   {navigation.business.map((item) => (
                     <li key={item.label}>
