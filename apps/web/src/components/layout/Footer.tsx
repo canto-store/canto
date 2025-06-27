@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const navigation = {
   about: [
-    // { label: "Know about us", href: "#" },
+    { label: "About Us", href: "#" },
     { label: "Canto Products", href: "#" },
     // { label: "Our Social Responsibility", href: "#" },
     // { label: "Our Partners", href: "#" },
@@ -33,12 +33,12 @@ export function Footer() {
   return (
     <footer className="bg-[var(--color-light-blue)] text-[var(--color-secondary)]">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-5">
           <div className="md:col-span-4">
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
               <div>
                 <h3 className="font-bold">About Canto</h3>
-                <ul className="mt-4 space-y-2">
+                <ul className="space-y-1">
                   {navigation.about.map((item) => (
                     <li key={item.label}>
                       <a href={item.href} className="hover:underline">
@@ -50,7 +50,7 @@ export function Footer() {
               </div>
               <div>
                 <h3 className="font-bold">Shop with Canto</h3>
-                <ul className="mt-4 space-y-2">
+                <ul className="space-y-1">
                   {navigation.shop.map((item) => (
                     <li key={item.label}>
                       <a href={item.href} className="hover:underline">
@@ -61,7 +61,8 @@ export function Footer() {
                 </ul>
               </div>
               <div>
-                <ul className="mt-4 space-y-2">
+                <h3 className="font-bold">Sell with Canto</h3>
+                <ul className="space-y-1">
                   {navigation.business.map((item) => (
                     <li key={item.label}>
                       <a href={item.href} className="hover:underline">
@@ -73,7 +74,7 @@ export function Footer() {
               </div>
               <div>
                 <h3 className="font-bold">Help</h3>
-                <ul className="mt-4 space-y-2">
+                <ul className="space-y-1">
                   {navigation.help.map((item) => (
                     <li key={item.label}>
                       <a href={item.href} className="hover:underline">
