@@ -31,7 +31,7 @@
     "@tanstack/react-query-devtools": "^5.74.4",
     "@types/js-cookie": "^3.0.6",
     "@uploadthing/react": "^7.3.1",
-    "axios": "^1.8.4",
+    "axios": "^1.11.0",
     "babel-plugin-react-compiler": "19.0.0-beta-714736e-20250131",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
