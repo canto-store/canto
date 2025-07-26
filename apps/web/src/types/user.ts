@@ -20,7 +20,8 @@ export type UserAddress = {
   building_number: string;
   apartment_number: string;
   floor: number;
-  area: string;
+  sector_id: string;
+  sector_name: string;
   city: string;
   type: AddressType;
   company_name: string;
@@ -34,8 +35,8 @@ export const userAddressFormSchema = z
     building_number: z.string().optional(),
     apartment_number: z.string().optional(),
     floor: z.number().optional(),
-    area: z.string().min(2, "checkout.errors.areaRequired"),
-    city: z.string().min(2, "checkout.errors.cityRequired"),
+    sector_id: z.string(),
+    sector_name: z.string(),
     phone_number: z.string().min(10, "checkout.errors.phoneRequired"),
     additional_direction: z.string().optional(),
     address_label: z.string(),

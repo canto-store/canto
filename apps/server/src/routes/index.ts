@@ -7,7 +7,7 @@ import productRoutes from '../modules/product/product.routes'
 import addressRouter from '../modules/user/address/address.routes'
 import cartRouter from '../modules/order/cart/cart.routes'
 import orderRouter from '../modules/order/order.routes'
-
+import deliveryRouter from '../modules/delivery/delivery.routes'
 const router = Router()
 
 router.use('/auth', authRouter)
@@ -18,5 +18,6 @@ router.use('/product', productRoutes)
 router.use('/address', addressRouter)
 router.use('/cart', cartRouter)
 router.use('/orders', orderRouter)
+router.use('/delivery', deliveryRouter)
 
 export default router

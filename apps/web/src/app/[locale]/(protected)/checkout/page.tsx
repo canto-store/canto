@@ -77,7 +77,7 @@ export default function Page() {
             ) : (userAddresses && userAddresses.length === 0) ||
               showShippingAddressForm ? (
               <ShippingAddressForm
-                onClose={(addressId) => {
+                onCloseAction={(addressId) => {
                   setShowShippingAddressForm(false);
                   setSelectedAddressId(addressId);
                 }}

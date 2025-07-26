@@ -62,6 +62,9 @@ jobs:
             elasticsearch_node=${{ secrets.ELASTICSEARCH_NODE }}
             elasticsearch_username=${{ secrets.ELASTICSEARCH_USERNAME }}
             elasticsearch_password=${{ secrets.ELASTICSEARCH_PASSWORD }}
+            deliveric_api=${{ secrets.DELIVERIC_API }}
+            deliveric_user=${{ secrets.DELIVERIC_USER }}
+            deliveric_password=${{ secrets.DELIVERIC_PASSWORD }}
 
   deploy:
     name: Deploy to Production

@@ -22,6 +22,14 @@ import {
 import { userAddressFormSchema } from "@/types/user";
 import { UserAddressForm } from "@/types/user";
 import { ErrorAlert } from "../ui/error-alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useGetAllSectors } from "@/lib/delivery";
 
 interface AddressTypeTabProps {
   label: string;
@@ -57,9 +65,9 @@ function AddressTypeTab({
 }
 
 export function ShippingAddressForm({
-  onClose,
+  onCloseAction,
 }: {
-  onClose: (addressId: number) => void;
+  onCloseAction: (addressId: number) => void;
 }) {
   const t = useTranslations();
   const { mutateAsync: createAddress } = useCreateAddress();
@@ -72,8 +80,8 @@ export function ShippingAddressForm({
       building_number: "",
       apartment_number: "",
       floor: undefined,
-      area: "",
-      city: "",
+      sector_id: "",
+      sector_name: "",
       phone_number: "",
       additional_direction: "",
       company_name: "",
@@ -88,12 +96,14 @@ export function ShippingAddressForm({
     await createAddress(data)
       .then((res) => {
         toast.success("Address created successfully");
-        onClose(res.id);
+        onCloseAction(res.id);
       })
       .catch((err) => {
         toast.error(parseApiError(err));
       });
   };
+
+  const { data: sectors } = useGetAllSectors();
 
   return (
     <div>
@@ -277,13 +287,47 @@ export function ShippingAddressForm({
 
           <FormField
             control={control}
-            name="area"
+            name="sector_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("checkout.area")}</FormLabel>
                 <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      form.setValue("sector_name", value);
+                      const sector_id = sectors?.find(
+                        (s) => s.name === value,
+                      )?.id;
+                      form.setValue("sector_id", sector_id ?? "");
+                    }}
+                  >
+                    <SelectTrigger className={`text-xs sm:text-sm`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sectors?.map((sector, index) => (
+                        <SelectItem key={index} value={sector.name}>
+                          {sector.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="additional_direction"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("checkout.directions")}</FormLabel>
+                <FormControl>
                   <Input
-                    placeholder={t("checkout.areaPlaceholder")}
+                    placeholder={t("checkout.directionsPlaceholder")}
                     {...field}
                     value={field.value || ""}
                   />
@@ -292,44 +336,6 @@ export function ShippingAddressForm({
               </FormItem>
             )}
           />
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField
-              control={control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("checkout.city")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("checkout.cityPlaceholder")}
-                      {...field}
-                      value={field.value || ""}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={control}
-              name="additional_direction"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("checkout.directions")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("checkout.directionsPlaceholder")}
-                      {...field}
-                      value={field.value || ""}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
 
           <FormField
             control={control}
