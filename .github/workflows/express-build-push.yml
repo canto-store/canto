@@ -102,4 +102,7 @@ jobs:
               -e ELASTICSEARCH_NODE=${{ secrets.ELASTICSEARCH_NODE }} \
               -e ELASTICSEARCH_USERNAME=${{ secrets.ELASTICSEARCH_USERNAME }} \
               -e ELASTICSEARCH_PASSWORD=${{ secrets.ELASTICSEARCH_PASSWORD }} \
+              -e DELIVERIC_API=${{ secrets.DELIVERIC_API }} \
+              -e DELIVERIC_USER=${{ secrets.DELIVERIC_USER }} \
+              -e DELIVERIC_PASSWORD=${{ secrets.DELIVERIC_PASSWORD }} \
               $IMAGE_REFERENCE
