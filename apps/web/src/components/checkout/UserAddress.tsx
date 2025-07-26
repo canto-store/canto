@@ -62,7 +62,7 @@ export function UserAddress({
                   )}
 
                   <p>
-                    {address.area}, {address.city}
+                    {address.sector_name}, {address.city}
                   </p>
                 </div>
               </div>
