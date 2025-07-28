@@ -55,13 +55,14 @@ export default function ProductsForm() {
       variants: [],
     },
   });
+  console.log(products.length === 0);
 
   return (
     <div className="container mx-auto max-w-6xl p-4">
       <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
         {/* Left panel - Product list */}
         <div className="min-h-full overflow-auto rounded-lg p-4 shadow-sm">
-          {products.length == 0 ? (
+          {products.length !== 0 ? (
             <div className="space-y-4">
               {products.map((product) => (
                 <div

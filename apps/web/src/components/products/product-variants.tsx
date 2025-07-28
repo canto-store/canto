@@ -321,7 +321,7 @@ export default function ProductVariants() {
             </AlertDescription>
           </Alert>
 
-          <div className="flex items-center gap-4">
+          <div className="flex w-full">
             <input
               type="file"
               accept="image/*"
@@ -335,7 +335,7 @@ export default function ProductVariants() {
             <Button
               type="button"
               variant="default"
-              className="hover:bg-primary/90 rounded-md py-2 text-sm font-medium text-white shadow-sm transition-colors"
+              className="hover:bg-primary/90 mr-auto ml-auto rounded-md py-2 text-sm font-medium text-white shadow-sm transition-colors"
               onClick={() => fileInputRefs.current[setIndex]?.click()}
               disabled={isUploading}
             >
