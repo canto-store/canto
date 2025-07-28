@@ -267,7 +267,7 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@uploadthing/react':
-        specifier: ^7.3.2
+        specifier: ^7.3.1
         version: 7.3.2(next@15.4.4(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(uploadthing@7.7.3(express@5.1.0)(next@15.4.4(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(tailwindcss@4.1.11))
       axios:
         specifier: ^1.11.0
@@ -327,7 +327,7 @@ importers:
         specifier: ^3.3.1
         version: 3.3.1
       uploadthing:
-        specifier: ^7.7.3
+        specifier: ^7.7.2
         version: 7.7.3(express@5.1.0)(next@15.4.4(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(tailwindcss@4.1.11)
       vaul:
         specifier: ^1.1.2
