@@ -1,6 +1,7 @@
 import { PrismaClient, DeliveryStatus } from '@prisma/client'
 import AppError from '../../utils/appError'
 import { CreateOrderInput, UpdateOrderItemStatusInput } from './order.types'
+import DeliveryService from '../delivery/delivery.service'
 
 const prisma = new PrismaClient()
 
@@ -57,16 +58,23 @@ export const createOrder = async (input: CreateOrderInput) => {
         400
       )
     }
+    const product = await prisma.product.findFirst({
+      where: { id: item.variant.productId },
+      select: { name: true, description: true },
+    })
     orderItemsData.push({
       variantId: item.variantId,
       quantity: item.quantity,
       priceAtOrder: item.variant.price, // Use current price
+      productName: product.name,
+      productDescription: product.description,
     })
   }
 
   // 5. Create Order and OrderItems in a transaction
   const orderCode = generateOrderCode()
 
+  const deliveryService = new DeliveryService()
   try {
     const newOrder = await prisma.$transaction(async tx => {
       // Create Order
@@ -76,7 +84,11 @@ export const createOrder = async (input: CreateOrderInput) => {
           addressId,
           orderCode,
           items: {
-            create: orderItemsData,
+            create: orderItemsData.map(item => ({
+              variantId: item.variantId,
+              quantity: item.quantity,
+              priceAtOrder: item.priceAtOrder,
+            })),
           },
         },
         include: {
@@ -103,6 +115,20 @@ export const createOrder = async (input: CreateOrderInput) => {
 
       return order
     })
+
+    const deliveryData = orderItemsData.map(item => ({
+      address: address.address_string,
+      client_name: user.name,
+      phone_1: user.phone_number,
+      price: item.priceAtOrder * item.quantity,
+      sector_id: address.sector_id,
+      order_id: newOrder.id,
+      client_id: user.id,
+      product_name: item.productName,
+      product_desc: item.productDescription,
+      quantity: item.quantity,
+    }))
+    console.log(await deliveryService.createDelivery(deliveryData))
 
     return newOrder
   } catch (error) {

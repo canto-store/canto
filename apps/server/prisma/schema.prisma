@@ -123,20 +123,20 @@ model ProductOptionValue {
 }
 
 model Product {
-  id               Int                @id @default(autoincrement())
-  name             String
-  slug             String             @unique
-  description      String?
-  sizeChart        String?            @default("")
-  brand            Brand              @relation(fields: [brandId], references: [id])
-  brandId          Int
-  category         Category           @relation(fields: [categoryId], references: [id])
-  categoryId       Int
-  status           ProductStatus
-  variants         ProductVariant[]
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
-  rejection        ProductRejection?
+  id          Int               @id @default(autoincrement())
+  name        String
+  slug        String            @unique
+  description String?
+  sizeChart   String?           @default("")
+  brand       Brand             @relation(fields: [brandId], references: [id])
+  brandId     Int
+  category    Category          @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  status      ProductStatus
+  variants    ProductVariant[]
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+  rejection   ProductRejection?
 
   @@map("products")
 }
@@ -146,8 +146,8 @@ model ProductRejection {
   productId  Int      @unique
   product    Product  @relation(fields: [productId], references: [id])
   reason     String
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("product_rejections")
 }
@@ -233,13 +233,14 @@ model Address {
   building_number      String?
   apartment_number     String?
   floor                Int?
-  area                 String
-  city                 String
   phone_number         String
   additional_direction String?
   address_label        String?
   company_name         String?
   office_number        String?
+  address_string       String
+  sector_id            Int
+  sector_name          String
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
 
@@ -272,18 +273,30 @@ model CartItem {
 }
 
 model Order {
-  id             Int            @id @default(autoincrement()) @map("id")
-  orderCode      String         @unique @map("order_code")
-  userId         Int            @map("user_id")
-  user           User           @relation(fields: [userId], references: [id])
-  addressId      Int            @map("address_id")
-  address        Address        @relation(fields: [addressId], references: [id])
-  deliveryStatus DeliveryStatus @default(NOT_DELIVERED_YET) @map("delivery_status")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
-  items          OrderItem[]
+  id              Int               @id @default(autoincrement()) @map("id")
+  orderCode       String            @unique @map("order_code")
+  userId          Int               @map("user_id")
+  user            User              @relation(fields: [userId], references: [id])
+  addressId       Int               @map("address_id")
+  address         Address           @relation(fields: [addressId], references: [id])
+  deliveryStatus  DeliveryStatus    @default(NOT_DELIVERED_YET) @map("delivery_status")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  items           OrderItem[]
+  DelivericOrders DelivericOrders[]
 
   @@map("orders")
+}
+
+model DelivericOrders {
+  id        Int      @id @default(autoincrement()) @map("id")
+  orderId   Int      @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  waybill   String   @unique @map("waybill")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("deliveric_orders")
 }
 
 model OrderItem {

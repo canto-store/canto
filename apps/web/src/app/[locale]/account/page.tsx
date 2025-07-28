@@ -14,6 +14,7 @@ import {
   MapPin,
   ShoppingBag,
   Wallet,
+  StoreIcon,
 } from "lucide-react";
 import { If, useMediaQuery } from "react-haiku";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -121,6 +122,11 @@ export default function Page() {
           <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             <p className="w-full text-left">Download App</p>
+            <ChevronRight className="ml-auto h-4 w-4" />
+          </Button>
+          <Button variant="outline" onClick={() => handleNavigation("/sell")}>
+            <StoreIcon className="mr-2 h-4 w-4" />
+            <p className="w-full text-left">Sell with Canto</p>
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
         </div>

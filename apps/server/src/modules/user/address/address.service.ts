@@ -13,15 +13,34 @@ class AddressService {
         street_name: dto.street_name,
         apartment_number: dto.apartment_number,
         floor: dto.floor,
-        area: dto.area,
-        city: dto.city,
         phone_number: dto.phone_number,
       },
     })
     if (existingAddress) {
       throw new AppError('Address already exists', 400)
     }
-    return await this.prisma.address.create({ data: dto })
+    const address_string = `${dto.apartment_number}, ${dto.street_name}, ${dto.sector_name}`
+
+    const address = await this.prisma.address.create({
+      data: {
+        address_string,
+        user: {
+          connect: {
+            id: dto.user_id,
+          },
+        },
+        type: dto.type,
+        street_name: dto.street_name,
+        building_number: dto.building_number,
+        apartment_number: dto.apartment_number,
+        floor: dto.floor,
+        phone_number: dto.phone_number,
+        sector_id: dto.sector_id,
+        sector_name: dto.sector_name,
+      },
+    })
+
+    return address
   }
 
   async findAll() {
@@ -34,8 +53,7 @@ class AddressService {
         building_number: true,
         apartment_number: true,
         floor: true,
-        area: true,
-        city: true,
+        sector_name: true,
         phone_number: true,
         additional_direction: true,
         address_label: true,

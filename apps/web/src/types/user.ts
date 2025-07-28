@@ -31,13 +31,13 @@ export type UserAddress = {
 export const userAddressFormSchema = z
   .object({
     type: z.enum(["HOUSE", "APARTMENT", "OFFICE"]),
-    street_name: z.string().min(3, "checkout.errors.streetRequired"),
+    street_name: z.string().min(3, "Street name is required"),
     building_number: z.string().optional(),
     apartment_number: z.string().optional(),
     floor: z.number().optional(),
-    sector_id: z.string(),
-    sector_name: z.string(),
-    phone_number: z.string().min(10, "checkout.errors.phoneRequired"),
+    sector_id: z.number(),
+    sector_name: z.string().min(1, "Area is required"),
+    phone_number: z.string().min(10, "Phone number is required"),
     additional_direction: z.string().optional(),
     address_label: z.string(),
     company_name: z.string().optional(),

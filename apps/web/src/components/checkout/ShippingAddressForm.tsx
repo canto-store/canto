@@ -80,7 +80,6 @@ export function ShippingAddressForm({
       building_number: "",
       apartment_number: "",
       floor: undefined,
-      sector_id: "",
       sector_name: "",
       phone_number: "",
       additional_direction: "",
@@ -299,7 +298,7 @@ export function ShippingAddressForm({
                       const sector_id = sectors?.find(
                         (s) => s.name === value,
                       )?.id;
-                      form.setValue("sector_id", sector_id ?? "");
+                      form.setValue("sector_id", sector_id ? +sector_id : -1);
                     }}
                   >
                     <SelectTrigger className={`text-xs sm:text-sm`}>

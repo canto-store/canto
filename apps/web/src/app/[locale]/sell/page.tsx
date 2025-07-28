@@ -1,40 +1,26 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuth } from "@/hooks/auth";
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import { redirect } from "next/navigation";
 import { Seller } from "@/types/user";
 
 export default function Page() {
-  const { user } = useAuth();
-  const router = useRouter();
+  const { user, logout: logoutMutation } = useAuth();
 
-  useEffect(() => {
-    if (user && user?.role === "SELLER") {
-      if ((user as Seller).brandId) {
-        router.push("/sell/products");
-      } else {
-        router.push("/sell/brand");
-      }
-    } else {
-      router.push("/sell/register");
-    }
-  }, [user, router]);
+  if (!user) {
+    redirect("/sell/register");
+  }
 
-  return (
-    <div className="mx-auto flex flex-col items-center justify-center p-10">
-      <div className="mb-8 w-full text-center">
-        <Skeleton className="mx-auto h-10 w-64" />
-        <Skeleton className="mx-auto mt-4 h-6 w-96" />
-      </div>
-      <div className="w-full max-w-2xl">
-        <div className="space-y-4">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-32 w-full" />
-        </div>
-      </div>
-    </div>
-  );
+  if (user.role !== "SELLER") {
+    logoutMutation.mutateAsync(undefined);
+    redirect("/sell/register");
+  }
+
+  if ((user as Seller).brandId) {
+    redirect("/sell/products");
+  }
+
+  redirect("/sell/brand");
+
+  return <></>;
 }
