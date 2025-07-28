@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   FormControl,
   FormField,
@@ -19,7 +18,6 @@ import { useProductOptions } from "@/lib/product";
 import { Button } from "../ui/button";
 import { Plus, X, Upload, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { UploadButton } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { SelectedVariant } from "@/types/product";
 import { Alert, AlertDescription } from "../ui/alert";
@@ -42,6 +40,7 @@ export default function ProductVariants() {
   });
   const { data: options } = useProductOptions();
   const [isUploading, setIsUploading] = useState(false);
+  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const addVariantSet = () => {
     const newVariantSet: SelectedVariant = {
@@ -73,17 +72,6 @@ export default function ProductVariants() {
     form.setValue("variants", newVariantSets);
   };
 
-  const handleImageUpload = (variantIndex: number, res: any) => {
-    if (res && res[0]) {
-      toast("Image Uploaded Successfully!");
-      const variant = variantSets[variantIndex];
-      updateVariantSet(variantIndex, {
-        ...variant,
-        images: [...variant.images, res[0].ufsUrl],
-      });
-    }
-  };
-
   const removeImage = (variantIndex: number, imageIndex: number) => {
     const variant = variantSets[variantIndex];
     const newImages = variant.images.filter(
@@ -93,6 +81,60 @@ export default function ProductVariants() {
       ...variant,
       images: newImages,
     });
+  };
+
+  const uploadToS3 = async (variantIndex: number, file: File) => {
+    try {
+      setIsUploading(true);
+
+      // Create a FormData object to send the file
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Send the file to our API endpoint
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to upload image");
+      }
+
+      // Update the variant with the new image URL
+      const variant = variantSets[variantIndex];
+      updateVariantSet(variantIndex, {
+        ...variant,
+        images: [...variant.images, data.fileUrl],
+      });
+
+      toast.success("Image uploaded successfully!");
+      setIsUploading(false);
+    } catch (error) {
+      console.error("Error uploading to S3:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload image",
+      );
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (
+    variantIndex: number,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("File size exceeds 4MB limit");
+      return;
+    }
+
+    uploadToS3(variantIndex, file);
   };
 
   return (
@@ -279,38 +321,39 @@ export default function ProductVariants() {
             </AlertDescription>
           </Alert>
 
-          <UploadButton
-            endpoint="imageUploader"
-            className="ut-button:bg-primary ut-button:py-2 ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:text-white ut-button:shadow-sm ut-button:hover:bg-primary/90 ut-button:transition-colors"
-            onClientUploadComplete={(res) => {
-              handleImageUpload(setIndex, res);
-              setIsUploading(false);
-            }}
-            onUploadError={(error: Error) => {
-              toast.error(error.message);
-              setIsUploading(false);
-            }}
-            content={{
-              allowedContent: "Max Size: 4MB",
-              button: (
-                <div className="flex items-center gap-2">
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Uploading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4" />
-                      <span>Upload Image</span>
-                    </>
-                  )}
-                </div>
-              ),
-            }}
-            onUploadBegin={() => setIsUploading(true)}
-            disabled={isUploading}
-          />
+          <div className="flex items-center gap-4">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={(el) => {
+                fileInputRefs.current[setIndex] = el;
+                return undefined;
+              }}
+              onChange={(e) => handleFileChange(setIndex, e)}
+            />
+            <Button
+              type="button"
+              variant="default"
+              className="hover:bg-primary/90 rounded-md py-2 text-sm font-medium text-white shadow-sm transition-colors"
+              onClick={() => fileInputRefs.current[setIndex]?.click()}
+              disabled={isUploading}
+            >
+              <div className="flex items-center gap-2">
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4" />
+                    <span>Upload Image</span>
+                  </>
+                )}
+              </div>
+            </Button>
+          </div>
         </div>
       ))}
     </div>
