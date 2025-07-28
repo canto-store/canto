@@ -1,26 +1,25 @@
 "use client";
 import React from "react";
 import { useAuth } from "@/hooks/auth";
-import { redirect } from "next/navigation";
-import { Seller } from "@/types/user";
+import { useMyBrand } from "@/lib/brand";
+import { ProductsPage, RegisterPage, BrandPage } from "@/components/sell";
 
 export default function Page() {
-  const { user, logout: logoutMutation } = useAuth();
+  const { user } = useAuth();
+  const { isSuccess: hasBrand, isLoading } = useMyBrand({
+    enabled: Boolean(user && user?.role === "SELLER"),
+  });
 
+  if (hasBrand) {
+    return <ProductsPage />;
+  }
+
+  if (!hasBrand && user && user?.role === "SELLER") {
+    return <BrandPage />;
+  }
   if (!user) {
-    redirect("/sell/register");
+    return <RegisterPage />;
   }
 
-  if (user.role !== "SELLER") {
-    logoutMutation.mutateAsync(undefined);
-    redirect("/sell/register");
-  }
-
-  if ((user as Seller).brandId) {
-    redirect("/sell/products");
-  }
-
-  redirect("/sell/brand");
-
-  return <></>;
+  return <div>Loading...</div>;
 }
