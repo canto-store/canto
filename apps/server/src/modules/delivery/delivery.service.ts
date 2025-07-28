@@ -24,8 +24,8 @@ class DeliveryService {
 
   public async createDelivery(
     deliveryData: delivericDataInput[]
-  ): Promise<delivericDataOutput> {
-    const response: delivericDataOutput = await axios
+  ): Promise<delivericDataOutput[]> {
+    const response: delivericDataOutput[] = await axios
       .post(this.DELIVERIC_API + '?action=addBulkShipments', {
         user: this.DELIVERIC_USER,
         password: this.DELIVERIC_PASSWORD,
@@ -33,12 +33,20 @@ class DeliveryService {
       })
       .then(res => res.data)
 
-    await this.prisma.delivericOrders.create({
-      data: {
-        waybill: response.waybill,
-        orderId: response.order_id,
-      },
-    })
+    // Save delivery data to database
+    await Promise.all(
+      response.map(item =>
+        this.prisma.delivericOrders.create({
+          data: {
+            id: item.id,
+            waybill: item.waybill,
+            orderId: item.order_id,
+            qr_code: item.qr_code,
+          },
+        })
+      )
+    )
+
     return response
   }
 

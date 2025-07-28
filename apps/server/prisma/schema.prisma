@@ -289,10 +289,11 @@ model Order {
 }
 
 model DelivericOrders {
-  id        Int      @id @default(autoincrement()) @map("id")
+  id        Int      @id @map("id")
   orderId   Int      @map("order_id")
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   waybill   String   @unique @map("waybill")
+  qrCode    String   @unique @map("qr_code")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
