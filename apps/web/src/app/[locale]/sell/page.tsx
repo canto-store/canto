@@ -6,7 +6,7 @@ import { ProductsPage, RegisterPage, BrandPage } from "@/components/sell";
 
 export default function Page() {
   const { user } = useAuth();
-  const { isSuccess: hasBrand, isLoading } = useMyBrand({
+  const { isSuccess: hasBrand } = useMyBrand({
     enabled: Boolean(user && user?.role === "SELLER"),
   });
 

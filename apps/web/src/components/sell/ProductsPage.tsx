@@ -1,6 +1,5 @@
 import { useTranslations } from "next-intl";
 import ProductsForm from "@/components/products/ProductsForm";
-import { useAuth } from "@/hooks/auth";
 
 export default function ProductsPage() {
   const t = useTranslations("sell");

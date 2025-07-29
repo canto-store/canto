@@ -41,7 +41,7 @@ class DeliveryService {
             id: item.id,
             waybill: item.waybill,
             orderId: item.order_id,
-            qr_code: item.qr_code,
+            qrCode: item.qr_code,
           },
         })
       )
