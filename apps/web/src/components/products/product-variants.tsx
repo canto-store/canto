@@ -85,7 +85,7 @@ export default function ProductVariants() {
     });
   };
 
-  const uploadToS3 = async (variantIndex: number, file: File) => {
+  const uploadToS3 = async (file: File): Promise<string> => {
     try {
       // Create a FormData object to send the file
       const formData = new FormData();
@@ -102,14 +102,6 @@ export default function ProductVariants() {
       if (!response.ok) {
         throw new Error(data.error || "Failed to upload image");
       }
-
-      // Update the variant with the new image URL
-      const variant = variantSets[variantIndex];
-      updateVariantSet(variantIndex, {
-        ...variant,
-        images: [...variant.images, data.fileUrl],
-      });
-
       return data.fileUrl;
     } catch (error) {
       console.error("Error uploading to S3:", error);
@@ -145,12 +137,18 @@ export default function ProductVariants() {
     setIsUploading(true);
 
     // Upload each file
-    const uploadPromises = filesArray.map((file) =>
-      uploadToS3(variantIndex, file),
-    );
+    const uploadPromises = filesArray.map((file) => uploadToS3(file));
 
     // Once all uploads are complete, reset the uploading state
     Promise.all(uploadPromises)
+      .then((uploadedUrls) => {
+        const variant = variantSets[variantIndex];
+        const newImages = [...variant.images, ...uploadedUrls];
+        updateVariantSet(variantIndex, {
+          ...variant,
+          images: newImages,
+        });
+      })
       .then(() => {
         toast.success("Images uploaded successfully!");
         // Clear the file input after upload

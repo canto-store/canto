@@ -63,9 +63,7 @@ export function ProductCard({
   };
 
   const handleProductClick = (product: ProductSummary) => {
-    router.push(
-      `/product/${encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, "-"))}`,
-    );
+    router.push(`/product/${encodeURIComponent(product.slug)}`);
   };
 
   const handleBrandClick = (product: ProductSummary) => {

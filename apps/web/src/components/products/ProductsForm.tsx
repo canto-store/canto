@@ -188,9 +188,7 @@ export default function ProductsForm() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base">
-                        Description <span className="text-red-500">*</span>
-                      </FormLabel>
+                      <FormLabel className="text-base">Description</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Enter product description"

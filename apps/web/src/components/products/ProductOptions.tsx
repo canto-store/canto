@@ -5,11 +5,13 @@ import { ProductVariant } from "@/types/product";
 interface ProductOptionsProps {
   variants: ProductVariant[];
   onVariantChange: (variant: ProductVariant | undefined) => void;
+  onColorChange: (color: string | null) => void;
 }
 
 export default function ProductOptions({
   variants,
   onVariantChange,
+  onColorChange,
 }: ProductOptionsProps) {
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string>
@@ -105,7 +107,10 @@ export default function ProductOptions({
                         : ""
                     }`}
                     style={{ backgroundColor: color.toLowerCase() }}
-                    onClick={() => handleOptionSelect("Color", color)}
+                    onClick={() => {
+                      handleOptionSelect("Color", color);
+                      onColorChange(color);
+                    }}
                     aria-label={`Select ${color} color`}
                   />
                 ))}

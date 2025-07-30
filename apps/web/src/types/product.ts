@@ -138,9 +138,7 @@ export const selectedVariantSchema = z.object({
 export const productFormSchema = z.object({
   name: z.string(),
   category: z.number().min(1, { message: "Please select a category" }),
-  description: z
-    .string()
-    .min(10, { message: "Description must be at least 10 characters" }),
+  description: z.string().optional(),
   variants: z.array(selectedVariantSchema),
 });
 

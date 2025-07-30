@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, Heart, ShoppingCart, Star } from "lucide-react";
@@ -11,7 +11,13 @@ import { Link } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { useAddToCart, useCartStore } from "@/lib/cart";
 import { useAuth } from "@/hooks/auth";
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
@@ -23,15 +29,28 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     ProductVariant | undefined
   >(undefined);
 
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
   const { mutateAsync: addToCart } = useAddToCart();
   const { addItem } = useCartStore();
   const { user } = useAuth();
 
   useEffect(() => {
     if (product.default_variant_id) {
-      setSelectedVariant(
-        product.variants.find((v) => v.id === product.default_variant_id),
+      const defaultVariant = product.variants.find(
+        (v) => v.id === product.default_variant_id,
       );
+      setSelectedVariant(defaultVariant);
+
+      // Set the default color from the default variant
+      if (defaultVariant?.options.Color) {
+        setSelectedColor(defaultVariant.options.Color);
+      } else if (
+        product.variants.length > 0 &&
+        product.variants[0].options.Color
+      ) {
+        setSelectedColor(product.variants[0].options.Color);
+      }
     }
   }, [product]);
 
@@ -67,6 +86,19 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
+  // Get the current variant's images based on selected color
+  const currentImages = useMemo(() => {
+    if (selectedColor) {
+      const colorVariants = product.variants.filter(
+        (v) => v.options.Color === selectedColor,
+      );
+      if (colorVariants.length > 0) {
+        return colorVariants.flatMap((v) => v.images);
+      }
+    }
+    return product.variants[0].images;
+  }, [product, selectedColor]);
+
   const handleAddToWishlist = () => {
     setIsFavorite(!isFavorite);
     if (isFavorite) {
@@ -76,19 +108,40 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
+  const images = useMemo(() => {
+    return product.variants.flatMap((variant) =>
+      variant.images.map((image) => ({
+        url: image.url,
+        alt: image.alt_text || product.name,
+      })),
+    );
+  }, [product.variants, product.name]);
+
   return (
     <div className="mt-3 grid flex-1 items-center gap-4 md:grid-cols-2 md:gap-8">
-      {/* Product Image */}
-      <div className="relative aspect-[4/3] rounded-lg bg-gray-100 md:aspect-square lg:aspect-[4/3]">
-        <Image
-          src={product.variants[0].images[0].url}
-          alt={product.variants[0].images[0].alt_text}
-          className="h-full w-full object-contain object-center"
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 50vw, (max-width: 1536px) 40vw, 33vw"
-          priority
-          quality={90}
-        />
+      <div className="relative w-full">
+        <Carousel className="w-full">
+          <CarouselContent>
+            {images.map((image) => (
+              <CarouselItem key={image.url} className="basis-full">
+                <div className="relative aspect-square w-full overflow-hidden rounded-md">
+                  <Image
+                    src={image.url}
+                    alt={image.alt || product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {images.length > 1 && (
+            <>
+              <CarouselPrevious className="absolute top-1/2 left-2 -translate-y-1/2 bg-white/70 hover:bg-white/90" />
+              <CarouselNext className="absolute top-1/2 right-2 -translate-y-1/2 bg-white/70 hover:bg-white/90" />
+            </>
+          )}
+        </Carousel>
       </div>
 
       {/* Product Info */}
@@ -143,6 +196,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <ProductOptions
           variants={product.variants}
           onVariantChange={setSelectedVariant}
+          onColorChange={setSelectedColor}
         />
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
           <ProductQuantitySelector
