@@ -55,7 +55,6 @@ export default function ProductsForm() {
       variants: [],
     },
   });
-  console.log(products.length === 0);
 
   return (
     <div className="container mx-auto max-w-6xl p-4">

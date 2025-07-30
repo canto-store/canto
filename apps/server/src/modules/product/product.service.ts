@@ -778,10 +778,21 @@ class ProductService {
       })
 
       for (const variant of dto.variants) {
+        const variantOptionPromises = variant.options.map(o =>
+          tx.productOptionValue
+            .findFirst({
+              where: { id: o.valueId },
+            })
+            .then(v => v?.value)
+        )
+
+        // Wait for all promises to resolve
+        const variantOptionNames = await Promise.all(variantOptionPromises)
+
         const variantRecord = await tx.productVariant.create({
           data: {
             productId: newProduct.id,
-            sku: slugify(variant.options.map(o => o.valueId).join('-')),
+            sku: `SKU-${String(newProduct.id).padStart(3, '0')}-${newProduct.slug}-${variantOptionNames.join('-')}`,
             price: variant.price,
             stock: variant.stock,
           },

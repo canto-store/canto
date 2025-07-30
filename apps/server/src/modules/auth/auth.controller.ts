@@ -34,7 +34,7 @@ class AuthController {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
-          maxAge: 7 * 24 * 3600_000,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .status(201)
         .json(user)
@@ -68,7 +68,7 @@ class AuthController {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
-          maxAge: 7 * 24 * 3600_000,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .status(200)
         .json(user)
@@ -105,7 +105,7 @@ class AuthController {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
-          maxAge: 7 * 24 * 3600_000,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .status(200)
         .json(user)
@@ -141,13 +141,15 @@ class AuthController {
       res
         .cookie('token', accessToken, {
           httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
-          maxAge: 3600_000,
+          maxAge: 1000 * 60 * 60, // 1 hour
         })
         .cookie('refreshToken', refreshToken, {
           httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
-          maxAge: 7 * 24 * 3600_000,
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
         .status(200)
         .json()
@@ -159,8 +161,14 @@ class AuthController {
   public async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.cookies.refreshToken as string
-      await this.authService.logout(token)
-      res.clearCookie('token').clearCookie('refreshToken').status(200).json()
+      if (token) {
+        await this.authService.logout(token)
+      }
+      res
+        .clearCookie('token')
+        .clearCookie('refreshToken')
+        .status(200)
+        .json({ message: 'Logged out successfully' })
     } catch (err) {
       next(err)
     }

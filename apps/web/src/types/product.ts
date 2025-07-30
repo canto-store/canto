@@ -132,9 +132,7 @@ export const selectedVariantSchema = z.object({
       valueId: z.number(),
     }),
   ),
-  images: z.array(z.string()).min(1, {
-    message: "Please upload at least one image for this variant",
-  }),
+  images: z.array(z.string()),
 });
 
 export const productFormSchema = z.object({

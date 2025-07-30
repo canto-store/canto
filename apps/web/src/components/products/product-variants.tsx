@@ -87,8 +87,6 @@ export default function ProductVariants() {
 
   const uploadToS3 = async (variantIndex: number, file: File) => {
     try {
-      setIsUploading(true);
-
       // Create a FormData object to send the file
       const formData = new FormData();
       formData.append("file", file);
@@ -112,14 +110,15 @@ export default function ProductVariants() {
         images: [...variant.images, data.fileUrl],
       });
 
-      toast.success("Image uploaded successfully!");
-      setIsUploading(false);
+      return data.fileUrl;
     } catch (error) {
       console.error("Error uploading to S3:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to upload image",
+        error instanceof Error
+          ? error.message
+          : `Failed to upload ${file.name}`,
       );
-      setIsUploading(false);
+      throw error;
     }
   };
 
@@ -130,13 +129,41 @@ export default function ProductVariants() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const file = files[0];
-    if (file.size > 4 * 1024 * 1024) {
-      toast.error("File size exceeds 4MB limit");
+    // Convert FileList to array for easier handling
+    const filesArray = Array.from(files);
+
+    // Check if any file exceeds the size limit
+    const oversizedFile = filesArray.find(
+      (file) => file.size > 4 * 1024 * 1024,
+    );
+    if (oversizedFile) {
+      toast.error("One or more files exceed the 4MB limit");
       return;
     }
 
-    uploadToS3(variantIndex, file);
+    // Set uploading state once for all files
+    setIsUploading(true);
+
+    // Upload each file
+    const uploadPromises = filesArray.map((file) =>
+      uploadToS3(variantIndex, file),
+    );
+
+    // Once all uploads are complete, reset the uploading state
+    Promise.all(uploadPromises)
+      .then(() => {
+        toast.success("Images uploaded successfully!");
+        // Clear the file input after upload
+        if (fileInputRefs.current[variantIndex]) {
+          fileInputRefs.current[variantIndex].value = "";
+        }
+      })
+      .catch((error) => {
+        console.error("Error in batch upload:", error);
+      })
+      .finally(() => {
+        setIsUploading(false);
+      });
   };
 
   return (
@@ -324,8 +351,9 @@ export default function ProductVariants() {
           <Alert>
             <AlertDescription>
               Please upload high quality images that are square shaped (equal
-              width and height) for the best display. Images not following the
-              guidlines may be rejected.
+              width and height) for the best display. You can select multiple
+              images at once. Images not following the guidelines may be
+              rejected.
             </AlertDescription>
           </Alert>
 
@@ -333,10 +361,10 @@ export default function ProductVariants() {
             <input
               type="file"
               accept="image/*"
+              multiple
               className="hidden"
               ref={(el) => {
                 fileInputRefs.current[setIndex] = el;
-                return undefined;
               }}
               onChange={(e) => handleFileChange(setIndex, e)}
             />
@@ -356,7 +384,7 @@ export default function ProductVariants() {
                 ) : (
                   <>
                     <Upload className="h-4 w-4" />
-                    <span>Upload Image</span>
+                    <span>Upload Images</span>
                   </>
                 )}
               </div>

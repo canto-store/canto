@@ -24,7 +24,7 @@ class AuthMiddleware {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 3600_000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     })
   }
 
@@ -40,8 +40,18 @@ class AuthMiddleware {
       this.setAuthCookies(res, accessToken, newRefreshToken)
       req.user = verifyJwt(accessToken)
       next()
-    } catch {
-      res.status(401).json({ message: 'Invalid refresh token' })
+    } catch (error) {
+      // Clear cookies on refresh token error
+      res.clearCookie('token')
+      res.clearCookie('refreshToken')
+
+      if (error instanceof Error) {
+        res
+          .status(401)
+          .json({ message: `Authentication failed: ${error.message}` })
+      } else {
+        res.status(401).json({ message: 'Invalid refresh token' })
+      }
     }
   }
 
@@ -55,9 +65,11 @@ class AuthMiddleware {
 
     if (!token) {
       if (refreshToken) {
+        // Try to use refresh token if access token is missing
         await this.rotateTokens(req, res, next, refreshToken)
       } else {
-        res.status(401).json({ message: 'Unauthorized' })
+        // No tokens available
+        res.status(401).json({ message: 'Authentication required' })
       }
       return
     }
@@ -72,9 +84,16 @@ class AuthMiddleware {
         err.message === 'jwt expired' &&
         refreshToken
       ) {
+        // Access token expired but refresh token is available
         await this.rotateTokens(req, res, next, refreshToken)
       } else {
-        res.status(401).json({ message: 'Invalid token' })
+        // Clear invalid cookies
+        res.clearCookie('token')
+        if (!refreshToken) {
+          res.clearCookie('refreshToken')
+        }
+
+        res.status(401).json({ message: 'Invalid or expired token' })
       }
     }
   }
