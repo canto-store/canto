@@ -13,13 +13,13 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { useSubmitBrand } from "@/lib/brand";
+import { useMyBrand, useSubmitBrand } from "@/lib/brand";
 import { BrandFormValues, brandFormSchema } from "@/types/brand";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { parseApiError } from "@/lib/utils";
-import { useRouter } from "@/i18n/navigation";
+import { useState } from "react";
 
 export function BrandForm() {
   const form = useForm<BrandFormValues>({
@@ -33,21 +33,23 @@ export function BrandForm() {
   });
 
   const {
-    mutate,
-    isSuccess: isBrandSubmitted,
+    mutateAsync,
     isPending: isBrandSubmitting,
     isError: isBrandError,
     error: brandError,
   } = useSubmitBrand();
 
-  const router = useRouter();
+  const [enabled, setEnabled] = useState(false);
 
-  const onSubmit = (data: BrandFormValues) => {
-    mutate(data);
-    if (isBrandSubmitted) {
-      toast.success("Brand submitted successfully!");
-      router.push("/sell/products");
-    }
+  useMyBrand({ enabled });
+
+  const onSubmit = async (data: BrandFormValues) => {
+    await mutateAsync(data)
+      .then(() => {
+        setEnabled(true);
+        toast.success("Brand submitted successfully!");
+      })
+      .catch((err) => toast.error(parseApiError(err)));
   };
 
   return (
