@@ -15,6 +15,27 @@ import rateLimit from 'express-rate-limit'
 
 const app: Express = express()
 
+const ALLOWED_IP = '164.90.234.81'
+const isProductionEnv = process.env.NODE_ENV === 'production'
+
+const ipFilter = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  const clientIp = req.ip || req.socket.remoteAddress
+
+  if (clientIp !== ALLOWED_IP) {
+    return res
+      .status(403)
+      .json({ message: 'Access denied: Unauthorized IP address' })
+  }
+
+  next()
+}
+
+if (isProductionEnv) app.use(ipFilter)
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
