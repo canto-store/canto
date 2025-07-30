@@ -31,7 +31,7 @@ export const useGetCart = () => {
       const response = await api.get<CartItem[]>("/cart/user");
       return response.data;
     },
-    enabled: Boolean(user),
+    enabled: Boolean(user) && user?.role === "CUSTOMER",
     staleTime: 0,
   });
 };
