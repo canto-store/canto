@@ -23,7 +23,16 @@ const ipFilter = (
   res: express.Response,
   next: express.NextFunction
 ) => {
-  const clientIp = req.ip || req.socket.remoteAddress
+  // Get the real client IP - X-Forwarded-For is set by most reverse proxies
+  // The format is typically: X-Forwarded-For: client, proxy1, proxy2, ...
+  const forwardedIps = req.headers['x-forwarded-for'] as string
+  // Use the first IP in the X-Forwarded-For header (client's real IP)
+  // Or fall back to req.ip if X-Forwarded-For is not available
+  const clientIp = forwardedIps
+    ? forwardedIps.split(',')[0].trim()
+    : req.ip || req.socket.remoteAddress
+
+  console.log(`Request from IP: ${clientIp}, Allowed IP: ${ALLOWED_IP}`)
 
   if (clientIp !== ALLOWED_IP) {
     return res
@@ -33,8 +42,6 @@ const ipFilter = (
 
   next()
 }
-
-if (isProductionEnv) app.use(ipFilter)
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -69,6 +76,15 @@ app.use(
     exposedHeaders: ['Set-Cookie'],
   })
 )
+
+app.set('trust proxy', true)
+// Always apply IP filter in production, but make it optional in development
+if (isProductionEnv) {
+  console.log(`IP filter enabled in production mode. Allowed IP: ${ALLOWED_IP}`)
+  app.use(ipFilter)
+} else {
+  console.log('Running in development mode - IP filter disabled')
+}
 
 app.use(loggerMiddleware)
 app.use(express.json())

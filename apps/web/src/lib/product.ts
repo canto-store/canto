@@ -36,11 +36,7 @@ export const useHomeProducts = () =>
     queryFn: async () => {
       try {
         const { data } = await api.get<HomeProducts>("/product/home-products");
-        return {
-          bestDeals: data.bestDeals,
-          bestSellers: data.bestSellers,
-          newArrivals: data.newArrivals,
-        };
+        return data;
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           const message = (error.response?.data as APIError)?.message;
