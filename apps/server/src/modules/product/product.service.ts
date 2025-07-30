@@ -527,11 +527,12 @@ class ProductService {
           link.optionValue.value
       })
 
-      const discountedPrice = calculateDiscount(variant.price, variant.sale)
-      const discountPercentage = calculateDiscountPercentage(
-        variant.price,
-        discountedPrice
-      )
+      const discountedPrice = variant.sale
+        ? calculateDiscount(variant.price, variant.sale)
+        : variant.price
+      const discountPercentage = variant.sale
+        ? calculateDiscountPercentage(variant.price, discountedPrice)
+        : 0
 
       return {
         id: variant.id,
