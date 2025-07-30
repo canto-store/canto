@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, Heart, ShoppingCart, Star } from "lucide-react";
