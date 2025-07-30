@@ -3,7 +3,7 @@ packages:
 
 catalogs:
   prisma:
-    prisma: ^6.12.0
+    prisma: ^6.13.0
 
 injectWorkspacePackages: true
 
