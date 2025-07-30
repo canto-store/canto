@@ -14,7 +14,7 @@ import {
 import {
   slugify,
   formatPrice,
-  calculateOriginalPrice,
+  calculateDiscount,
   calculateDiscountPercentage,
 } from '../../utils/helper'
 
@@ -527,21 +527,19 @@ class ProductService {
           link.optionValue.value
       })
 
-      const originalPrice = variant.sale
-        ? calculateOriginalPrice(variant.price, variant.sale)
-        : null
-
-      const discountPercentage = originalPrice
-        ? calculateDiscountPercentage(originalPrice, variant.price)
-        : null
+      const discountedPrice = calculateDiscount(variant.price, variant.sale)
+      const discountPercentage = calculateDiscountPercentage(
+        variant.price,
+        discountedPrice
+      )
 
       return {
         id: variant.id,
         sku: variant.sku,
-        price: variant.price,
-        price_formatted: formatPrice(variant.price),
-        original_price: originalPrice,
-        original_price_formatted: formatPrice(originalPrice),
+        price: discountedPrice,
+        price_formatted: formatPrice(discountedPrice),
+        original_price: variant.price,
+        original_price_formatted: formatPrice(variant.price),
         discount_percentage: discountPercentage,
         stock: variant.stock,
         options: variantOptions,

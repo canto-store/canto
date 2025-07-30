@@ -1,3 +1,5 @@
+import { Sale } from '@prisma/client'
+
 export function slugify(text: string): string {
   return text
     .toString()
@@ -35,20 +37,20 @@ export const formatPrice = (price: number) => {
   }).format(price)
 }
 
-export const calculateOriginalPrice = (
-  salePrice: number,
-  sale: { type: 'PERCENTAGE' | 'FIXED'; value: number }
-) => {
+export const calculateDiscount = (originalPrice: number, sale: Sale) => {
   if (sale.type === 'PERCENTAGE') {
-    return Math.round(salePrice / (1 - sale.value / 100))
-  } else {
-    return salePrice + sale.value
+    return originalPrice - originalPrice * (sale.value / 100)
   }
+  if (sale.type === 'FIXED') {
+    return originalPrice - sale.value
+  }
+  return originalPrice
 }
 
 export const calculateDiscountPercentage = (
   originalPrice: number,
-  salePrice: number
-) => {
-  return Math.round(((originalPrice - salePrice) / originalPrice) * 100)
+  discountedPrice: number
+): number => {
+  if (originalPrice <= 0) return 0
+  return Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)
 }
