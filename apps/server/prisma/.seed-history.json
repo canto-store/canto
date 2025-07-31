@@ -28,5 +28,10 @@
     "name": "products",
     "executedAt": "2025-06-14T16:24:37.546Z",
     "description": "Seed for products"
+  },
+  {
+    "name": "aesthete-product-options",
+    "executedAt": "2025-07-31T11:46:55.601Z",
+    "description": "Seed for product options customized for Aesthete"
   }
 ]
