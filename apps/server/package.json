@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "build": "npx prisma generate && tsc",
+    "build": "npx prisma generate && tsc --skipLibCheck",
+    "start": "node build/src/index.js",
     "type-check": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
