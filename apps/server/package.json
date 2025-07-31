@@ -22,7 +22,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.1.0",
     "nodemon": "^3.1.10",
-    "prisma": "catalog:prisma",
+    "prisma": "^6.13.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
