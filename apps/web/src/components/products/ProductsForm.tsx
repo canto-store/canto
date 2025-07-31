@@ -1,13 +1,15 @@
 import type React from "react";
+import { useState, useEffect } from "react";
 
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Check, Package } from "lucide-react";
+import { Check, Package, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -32,19 +34,12 @@ import {
 } from "@/types/product";
 import { useProductsByBrand, useSubmitProduct } from "@/lib/product";
 import { useMyBrand } from "@/lib/brand";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function ProductsForm() {
   const { data: categories } = useCategories();
   const { data: brand } = useMyBrand();
-  const { mutate: createProduct, isPending, isSuccess } = useSubmitProduct();
-  const queryClient = useQueryClient();
-
-  const { data: products = [] } = useProductsByBrand(brand?.id ?? 0);
-  const onSubmit = (data: ProductFormValues) => {
-    createProduct({ ...data, brandId: brand?.id ?? 0 });
-    queryClient.invalidateQueries({ queryKey: ["products-by-brand"] });
-  };
+  const { mutateAsync: createProduct, isPending } = useSubmitProduct();
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -56,12 +51,34 @@ export default function ProductsForm() {
     },
   });
 
+  const {
+    data: products,
+    refetch,
+    isLoading: isFetchingProducts,
+  } = useProductsByBrand(brand?.id ?? 0);
+  const onSubmit = (data: ProductFormValues) => {
+    createProduct({ ...data, brandId: brand?.id ?? 0 }).then(() => {
+      refetch();
+      setShowSuccess(true);
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+        form.reset({
+          name: "",
+          category: 0,
+          description: "",
+          variants: [],
+        });
+      }, 3000);
+      return () => clearTimeout(timer);
+    });
+  };
+
   return (
     <div className="container mx-auto max-w-6xl p-4">
       <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
         {/* Left panel - Product list */}
         <div className="min-h-full overflow-auto rounded-lg p-4 shadow-sm">
-          {products.length !== 0 ? (
+          {products && products.length > 0 ? (
             <div className="space-y-4">
               {products.map((product) => (
                 <div
@@ -98,6 +115,26 @@ export default function ProductsForm() {
                 </div>
               ))}
             </div>
+          ) : isFetchingProducts ? (
+            <div className="space-y-4">
+              {[...Array(4)].map((_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-4 border-b p-3"
+                >
+                  <Skeleton className="h-16 w-16 rounded-md" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="flex h-full flex-col items-center justify-center">
               <Package className="text-primary mb-4 h-16 w-16" />
@@ -108,7 +145,7 @@ export default function ProductsForm() {
 
         {/* Right panel - Product form */}
         <div className="rounded-lg p-4 shadow-sm">
-          {isSuccess ? (
+          {showSuccess ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
                 <Check className="h-8 w-8 text-green-600" />
@@ -119,6 +156,22 @@ export default function ProductsForm() {
               <p className="mt-2 text-center text-gray-500">
                 Your product has been added to the catalog.
               </p>
+            </div>
+          ) : isPending ? (
+            <div className="space-y-6">
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                <span className="ml-2 text-lg">Uploading product...</span>
+              </div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-32 w-full" />
+              <div className="flex justify-center">
+                <Skeleton className="h-10 w-32" />
+              </div>
             </div>
           ) : (
             <Form {...form}>

@@ -8,7 +8,7 @@ interface AuthState {
   isLoading: boolean;
   setUser: (user: User | Seller | null) => void;
   setLoading: (loading: boolean) => void;
-  logout: () => void;
+  clearUser: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -24,10 +24,8 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
         }),
       setLoading: (loading) => set({ isLoading: loading }),
-      logout: () => {
-        // Clear localStorage first
+      clearUser: () => {
         localStorage.removeItem("auth-storage");
-        // Then update state
         return set({
           user: null,
           isAuthenticated: false,

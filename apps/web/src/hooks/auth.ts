@@ -5,24 +5,22 @@ import { Seller, User } from "@/types/user";
 import { useAuthStore } from "@/stores/auth-store";
 
 export const useUserQuery = () => {
-  const { setUser } = useAuthStore();
+  const { setUser, clearUser } = useAuthStore();
 
   return useQuery<User | Seller | null>({
     queryKey: ["me"],
     queryFn: async () => {
-      try {
-        const response = await api.get<User | Seller>("/auth/me");
-        if (response.status === 200) {
-          const user = response.data;
-          setUser(user);
-          return user;
-        }
-        setUser(null);
-        return null;
-      } catch {
-        setUser(null);
-        return null;
-      }
+      return await api
+        .get<User | Seller>("/auth/me")
+        .then((response) => {
+          setUser(response.data);
+          return response.data;
+        })
+        .catch(() => {
+          console.error("Failed to fetch user data");
+          clearUser();
+          return null;
+        });
     },
     initialData: null,
     staleTime: 60 * 60 * 1000, // 1 hour
@@ -115,7 +113,7 @@ export const useSellerRegister = () => {
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
-  const { logout } = useAuthStore();
+  const { clearUser } = useAuthStore();
 
   return useMutation<void, Error, unknown, unknown>({
     mutationFn: async () => {
@@ -123,7 +121,7 @@ export const useLogout = () => {
       return data;
     },
     onSuccess: () => {
-      logout();
+      clearUser();
       queryClient.removeQueries({ queryKey: ["me"] });
       queryClient.removeQueries({ queryKey: ["address"] });
       queryClient.removeQueries({ queryKey: ["cart"] });
