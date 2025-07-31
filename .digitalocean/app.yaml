@@ -6,11 +6,12 @@ services:
     github:
       repo: canto-store/canto
       branch: main
-    run_command: node apps/web/server.js
+    run_command: node server.js
     environment_slug: node-js
     instance_count: 1
     instance_size_slug: basic-xxs
     http_port: 3000
+    build_command: pnpm --filter=web build
     environments:
       - name: UPLOADTHING_TOKEN
         value: ${UPLOADTHING_TOKEN}
@@ -41,6 +42,7 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     http_port: 8000
+    build_command: pnpm --filter=server build
     environments:
       - name: DATABASE_URL
         value: ${DATABASE_URL}
@@ -71,8 +73,20 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     http_port: 5173
+    build_command: pnpm --filter=dashboard build
     environments:
       - name: NODE_ENV
         value: 'production'
       - name: PORT
         value: '5173'
+
+# Add this section to handle the monorepo dependencies
+jobs:
+  - name: install
+    type: build
+    source_dir: /
+    github:
+      repo: canto-store/canto
+      branch: main
+    build_command: pnpm install --frozen-lockfile
+    run_command: echo "Dependencies installed"
