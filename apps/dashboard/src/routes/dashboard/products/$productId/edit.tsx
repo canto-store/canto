@@ -35,7 +35,7 @@ import {
 
 import { AlertCircleIcon, ArrowLeft, ArrowRight } from 'lucide-react'
 import { productFormSchema, type ProductFormValues } from '@/types/product'
-import { useUpdateProduct } from '@/hooks/useData'
+import { useUpdateProduct } from '@/hooks/use-data'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { parseApiError } from '@/lib/utils'
 

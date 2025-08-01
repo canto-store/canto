@@ -12,7 +12,8 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { useLogout } from '@/hooks/auth'
+import { api } from '@/lib/auth-api'
+import { useState } from 'react'
 
 const menuItems = [
   {
@@ -38,11 +39,12 @@ const menuItems = [
 ]
 
 export function AppSidebar() {
-  const logout = useLogout()
   const router = useRouter()
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleLogout = async () => {
-    await logout.mutateAsync()
+    setLoading(true)
+    await api.logout().finally(() => setLoading(false))
     router.navigate({ to: '/' })
   }
 
@@ -79,8 +81,9 @@ export function AppSidebar() {
             variant="outline"
             size="sm"
             className="w-full"
+            disabled={loading}
           >
-            Logout
+            {loading ? 'Logging out...' : 'Logout'}
           </Button>
         </div>
       </SidebarFooter>

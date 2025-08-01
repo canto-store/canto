@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Package, Building2, Users, TrendingUp } from 'lucide-react'
 import {
   Card,
@@ -7,8 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { api } from '@/lib/auth-api'
 
 export const Route = createFileRoute('/dashboard/')({
+  beforeLoad: async () => {
+    await api.me().catch(() => {
+      throw redirect({ to: '/' })
+    })
+  },
   component: DashboardIndexPage,
 })
 

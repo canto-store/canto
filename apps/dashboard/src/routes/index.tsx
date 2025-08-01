@@ -1,13 +1,15 @@
 import { LoginForm } from '@/components/login-form'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useAuthStore } from '@/stores/auth'
+import { api } from '@/lib/auth-api'
 
 export const Route = createFileRoute('/')({
-  beforeLoad: () => {
-    const { isAuthenticated, isLoading } = useAuthStore.getState()
-    if (!isLoading && isAuthenticated) {
-      throw redirect({ to: '/dashboard' })
-    }
+  beforeLoad: async () => {
+    await api
+      .me()
+      .then(() => {
+        throw redirect({ to: '/dashboard' })
+      })
+      .catch(() => undefined)
   },
   component: RouteComponent,
 })

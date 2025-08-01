@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/data-table'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useProducts } from '@/hooks/useData'
+import { useProducts } from '@/hooks/use-data'
 
 interface Product {
   id: number

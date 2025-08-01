@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useLogin } from '@/hooks/auth'
-
+import { api } from '@/lib/auth-api'
+import { useState } from 'react'
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
@@ -21,8 +21,9 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  const login = useLogin()
   const router = useRouter()
+  const [error, setError] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const {
     register,
@@ -34,10 +35,19 @@ export function LoginForm({
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await login.mutateAsync({
-        username: data.username,
-        password: data.password,
-      })
+      setLoading(true)
+      await api
+        .login({
+          username: data.username,
+          password: data.password,
+        })
+        .catch(err => {
+          setError(true)
+          console.error('Login error:', err)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
       router.navigate({ to: '/dashboard' })
     } catch (error) {
       console.error('Login failed:', error)
@@ -87,7 +97,7 @@ export function LoginForm({
                 </p>
               )}
             </div>
-            {login.error && (
+            {error && (
               <div className="text-red-500 text-sm text-center">
                 Login failed. Please check your credentials.
               </div>
@@ -95,9 +105,9 @@ export function LoginForm({
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting || login.isPending}
+              disabled={isSubmitting || loading}
             >
-              {isSubmitting || login.isPending ? 'Logging in...' : 'Login'}
+              {isSubmitting || loading ? 'Logging in...' : 'Login'}
             </Button>
           </div>
         </div>
