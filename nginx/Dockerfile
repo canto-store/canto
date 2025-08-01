@@ -1,13 +1,14 @@
 FROM nginx:alpine
 
 # Install openssl for certificate generation and certbot for Let's Encrypt
-RUN apk add --no-cache openssl certbot certbot-nginx
+RUN apk add --no-cache openssl certbot certbot-nginx cronie
 
 # Create necessary directories
-RUN mkdir -p /etc/nginx/ssl \
+RUN mkdir -p /etc/nginx/ssl/live \
     /etc/nginx/conf/sites \
     /var/log/nginx \
-    /var/cache/nginx
+    /var/cache/nginx \
+    /var/www/certbot
 
 # Copy configuration files
 COPY conf/nginx.conf /etc/nginx/nginx.conf
@@ -27,6 +28,25 @@ RUN openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 RUN chmod 600 /etc/nginx/ssl/*.key \
     && chmod 644 /etc/nginx/ssl/*.crt \
     && chmod 644 /etc/nginx/ssl/dhparam.pem
+
+# Copy SSL initialization script
+COPY scripts/ssl-init.sh /usr/local/bin/ssl-init.sh
+RUN chmod +x /usr/local/bin/ssl-init.sh
+
+# Create entrypoint script
+RUN echo '#!/bin/sh\n\
+# Initialize SSL certificates\n\
+/usr/local/bin/ssl-init.sh\n\
+\n\
+# Start crond for certificate renewals\n\
+crond\n\
+\n\
+# Start nginx in foreground\n\
+exec nginx -g "daemon off;"\n\
+' > /entrypoint.sh \
+&& chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Create nginx user and set ownership
 RUN chown -R nginx:nginx /var/cache/nginx /var/log/nginx

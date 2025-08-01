@@ -58,8 +58,9 @@ services:
       - '443:443'
     volumes:
       - ssl-certs:/etc/nginx/ssl
+      - certbot-data:/etc/letsencrypt
       - ./logs/nginx:/var/log/nginx
-      - ./certbot:/var/www/certbot:ro
+      - ./certbot:/var/www/certbot
     environment:
       - DOMAIN=${DOMAIN}
       - WEB_HOST=web

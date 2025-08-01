@@ -215,6 +215,9 @@ jobs:
             sudo mkdir -p $DEPLOY_DIR || true
             cd $DEPLOY_DIR
 
+            # Create certbot directory if it doesn't exist
+            mkdir -p $DEPLOY_DIR/certbot || true
+
             # Backup current deployment
             if [ -f docker-compose.yml ]; then
               echo "Creating backup of current deployment..."
@@ -232,13 +235,18 @@ jobs:
             docker pull ghcr.io/${{ github.repository }}-dashboard:latest
             docker pull ghcr.io/${{ github.repository }}-nginx:latest
 
+            # Create volumes if they don't exist
+            docker volume create --name=ssl-certs || true
+            docker volume create --name=certbot-data || true
+            docker volume create --name=nginx-logs || true
+
             # Stop current services gracefully
             if [ -f docker-compose.yml ]; then
               echo "Stopping current services..."
               docker compose down --timeout 30 || true
             fi
 
-            # Clean up old containers and images
+            # Clean up old containers and images, but preserve volumes
             echo "Cleaning up old containers and images..."
             docker container prune -f || true
             docker image prune -f || true
