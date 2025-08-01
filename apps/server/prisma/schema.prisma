@@ -30,6 +30,12 @@ enum ProductStatus {
   REJECTED
 }
 
+enum ActivityType {
+  SELLER_REGISTERED
+  BRAND_CREATED
+  PRODUCT_ADDED
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String
@@ -311,4 +317,14 @@ model OrderItem {
   deliveryStatus DeliveryStatus @default(NOT_DELIVERED_YET) @map("delivery_status")
 
   @@map("order_items")
+}
+
+model Activity {
+  id         Int          @id @default(autoincrement())
+  type       ActivityType
+  entityName String       @map("entity_name")
+  entityId   Int          @map("entity_id")
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  @@map("activities")
 }
