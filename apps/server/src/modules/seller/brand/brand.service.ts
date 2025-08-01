@@ -34,23 +34,39 @@ class BrandService {
     const existingSeller = await this.prisma.seller.findUnique({
       where: { id: sellerId },
     })
+
     if (!existingSeller) {
       throw new AppError('Seller not found', 404)
     }
+
     const existingBrand = await this.prisma.brand.findFirst({
       where: { email: data.email },
     })
+
     if (existingBrand) {
       throw new AppError('Email is already in use', 409)
     }
+
     const slug = slugify(data.name)
-    return await this.prisma.brand.create({
-      data: {
-        ...data,
-        slug,
-        sellerId,
-      },
+
+    const brand = await this.prisma.$transaction(async t => {
+      const brand = await t.brand.create({
+        data: {
+          ...data,
+          slug,
+          sellerId,
+        },
+      })
+      await t.activity.create({
+        data: {
+          entityId: brand.id,
+          entityName: brand.name,
+          type: 'BRAND_CREATED',
+        },
+      })
+      return brand
     })
+    return brand
   }
 
   async updateBrand(id: number, data: Brand): Promise<Brand> {
