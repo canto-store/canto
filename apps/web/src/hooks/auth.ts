@@ -3,6 +3,7 @@ import { LoginRequest, RegisterRequest } from "@/types/auth";
 import api from "@/lib/api";
 import { Seller, User } from "@/types/user";
 import { useAuthStore } from "@/stores/auth-store";
+import { toast } from "sonner";
 
 export const useUserQuery = () => {
   const { setUser, clearUser } = useAuthStore();
@@ -125,6 +126,7 @@ export const useLogout = () => {
       queryClient.removeQueries({ queryKey: ["me"] });
       queryClient.removeQueries({ queryKey: ["address"] });
       queryClient.removeQueries({ queryKey: ["cart"] });
+      toast.success("Logged out successfully");
     },
   });
 };

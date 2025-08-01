@@ -13,27 +13,29 @@ import { checkESConnection } from './config/elasticsearch'
 
 const app: Express = express()
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(
-    cors({
-      origin: [
-        'https://canto-store.com',
-        'https://www.canto-store.com',
-        'https://dashboard.canto-store.com',
-      ],
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With',
-        'Accept',
-        'Origin',
-      ],
-      exposedHeaders: ['Set-Cookie'],
-    })
-  )
-}
+const prodOrigins = [
+  'https://canto-store.com',
+  'https://www.canto-store.com',
+  'https://dashboard.canto-store.com',
+]
+
+const devOrigins = ['http://localhost:3000', 'http://localhost:5173']
+
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === 'production' ? prodOrigins : devOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
+    exposedHeaders: ['Set-Cookie'],
+  })
+)
 
 app.use(loggerMiddleware)
 app.use(express.json())
