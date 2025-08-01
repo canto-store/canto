@@ -774,6 +774,14 @@ class ProductService {
         },
       })
 
+      await tx.activity.create({
+        data: {
+          entityId: newProduct.id,
+          entityName: newProduct.name,
+          type: 'PRODUCT_ADDED',
+        },
+      })
+
       for (const variant of dto.variants) {
         const variantOptionPromises = variant.options.map(o =>
           tx.productOptionValue
