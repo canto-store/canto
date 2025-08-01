@@ -25,29 +25,29 @@ const limiter = rateLimit({
 
 app.use(limiter)
 
-app.use(
-  cors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://164.90.234.81:5173',
-      'https://staging.canto-store.com',
-      'http://staging.canto-store.com',
-      'https://www.canto-store.com',
-      'https://canto-store.com',
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Requested-With',
-      'Accept',
-      'Origin',
-    ],
-    exposedHeaders: ['Set-Cookie'],
-  })
-)
+// In production, CORS is handled by nginx
+// In development, we use the cors middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use(
+    cors({
+      origin: [
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'http://164.90.234.81:5173',
+      ],
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'Accept',
+        'Origin',
+      ],
+      exposedHeaders: ['Set-Cookie'],
+    })
+  )
+}
 
 app.use(loggerMiddleware)
 app.use(express.json())

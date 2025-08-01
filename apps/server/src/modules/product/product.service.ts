@@ -72,8 +72,6 @@ class ProductService {
     if (categorySlug) where.category = { slug: categorySlug }
     if (brandSlug) where.brand = { slug: brandSlug }
     if (status) where.status = status as ProductStatus
-    console.log(where)
-    console.log(categorySlug, brandSlug)
     const variantFilters: Prisma.ProductVariantWhereInput[] = []
 
     if (minPrice) variantFilters.push({ price: { gte: parseFloat(minPrice) } })
