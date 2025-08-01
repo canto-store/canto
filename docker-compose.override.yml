@@ -1,9 +1,6 @@
 # Development overrides
 # This file is automatically loaded by docker-compose
 # Use docker-compose -f docker-compose.yml -f docker-compose.prod.yml for production
-
-version: '3.8'
-
 services:
   web:
     environment:
