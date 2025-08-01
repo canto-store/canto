@@ -23,7 +23,6 @@ export default function Home() {
   return (
     <>
       <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none md:h-[calc(100vh-6.5rem)]">
-        {/* HERO */}
         <Image
           src="https://zdafrb7d2x.ufs.sh/f/aSLZIlWQkFimhqIo98vnb96RaXBYDdPWv37yFwM4pKkIchN5"
           alt="Hero"

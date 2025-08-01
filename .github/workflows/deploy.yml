@@ -215,8 +215,8 @@ jobs:
             set -e
 
             # Create deployment directory
-            DEPLOY_DIR="/opt/canto"
-            sudo mkdir -p $DEPLOY_DIR
+            DEPLOY_DIR="/home/omar/canto"
+            sudo mkdir -p $DEPLOY_DIR || true
             cd $DEPLOY_DIR
 
             # Backup current deployment
@@ -254,7 +254,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: 'docker-compose.yml,docker-compose.prod.yml,.env.prod,docker-compose.prod.override.yml'
-          target: '/tmp/'
+          target: '/home/omar/canto'
           overwrite: true
 
       - name: Move files and start services
@@ -265,14 +265,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             set -e
-
-            # Move files from tmp to deployment directory
-            sudo mv /tmp/docker-compose.yml /opt/canto/
-            sudo mv /tmp/docker-compose.prod.yml /opt/canto/
-            sudo mv /tmp/.env.prod /opt/canto/
-            sudo mv /tmp/docker-compose.prod.override.yml /opt/canto/
-
-            cd /opt/canto
+            cd /home/omar/canto
 
             # Start services
             echo "Starting services with docker-compose..."
@@ -334,7 +327,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /opt/canto
+            cd /home/omar/canto
 
             echo "Deployment failed, attempting rollback..."
 
