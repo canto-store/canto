@@ -29,22 +29,10 @@ RUN chmod 600 /etc/nginx/ssl/*.key \
     && chmod 644 /etc/nginx/ssl/*.crt \
     && chmod 644 /etc/nginx/ssl/dhparam.pem
 
-# Copy SSL initialization script
+# Copy SSL initialization script and entrypoint
 COPY scripts/ssl-init.sh /usr/local/bin/ssl-init.sh
-RUN chmod +x /usr/local/bin/ssl-init.sh
-
-# Create entrypoint script
-RUN echo '#!/bin/sh\n\
-# Initialize SSL certificates\n\
-/usr/local/bin/ssl-init.sh\n\
-\n\
-# Start crond for certificate renewals\n\
-crond\n\
-\n\
-# Start nginx in foreground\n\
-exec nginx -g "daemon off;"\n\
-' > /entrypoint.sh \
-&& chmod +x /entrypoint.sh
+COPY scripts/entrypoint.sh /entrypoint.sh
+RUN chmod +x /usr/local/bin/ssl-init.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
