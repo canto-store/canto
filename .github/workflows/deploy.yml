@@ -187,8 +187,6 @@ jobs:
               image: \${SERVER_IMAGE}
               environment:
                 - DATABASE_URL=\${DATABASE_URL}
-                - JWT_SECRET=\${JWT_SECRET}
-                - REDIS_URL=\${REDIS_URL}
                 - ELASTICSEARCH_NODE=\${ELASTICSEARCH_NODE}
                 - ELASTICSEARCH_USERNAME=\${ELASTICSEARCH_USERNAME}
                 - ELASTICSEARCH_PASSWORD=\${ELASTICSEARCH_PASSWORD}
@@ -198,8 +196,6 @@ jobs:
 
             dashboard:
               image: \${DASHBOARD_IMAGE}
-              environment:
-                - VITE_API_URL=https://\${DOMAIN}/api
 
             nginx:
               image: \${NGINX_IMAGE}

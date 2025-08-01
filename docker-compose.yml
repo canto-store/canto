@@ -67,13 +67,6 @@ services:
       - DASHBOARD_HOST=dashboard
     networks:
       - app-network
-    depends_on:
-      web:
-        condition: service_healthy
-      server:
-        condition: service_healthy
-      dashboard:
-        condition: service_healthy
     healthcheck:
       test: ['CMD', 'nginx', '-t']
       interval: 30s
