@@ -145,7 +145,7 @@ jobs:
           # Domain configuration
           DOMAIN=${{ secrets.DOMAIN }}
 
-          # Database and Redis
+          # Database
           DATABASE_URL=${{ secrets.DATABASE_URL }}
 
           # File upload services
