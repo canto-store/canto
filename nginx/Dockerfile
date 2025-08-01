@@ -1,4 +1,4 @@
-FROM nginx:1.25-alpine
+FROM nginx:alpine
 
 # Install openssl for certificate generation and certbot for Let's Encrypt
 RUN apk add --no-cache openssl certbot certbot-nginx
