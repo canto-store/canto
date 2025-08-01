@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        TARGET_APP: web
+    container_name: nextjs-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    expose:
+      - '3000'
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  server:
+    build:
+      context: .
+      target: server
+      args:
+        TARGET_APP: server
+    container_name: express-server
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=${REDIS_URL}
+    expose:
+      - '8000'
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  dashboard:
+    build:
+      context: .
+      target: dashboard
+      args:
+        TARGET_APP: dashboard
+    container_name: vite-dashboard
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=5173
+      - VITE_API_URL=https://${DOMAIN}/api
+    expose:
+      - '5173'
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5173']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+      - ./certbot:/var/www/certbot:ro
+    environment:
+      - DOMAIN=${DOMAIN}
+      - WEB_HOST=web
+      - SERVER_HOST=server
+      - DASHBOARD_HOST=dashboard
+    networks:
+      - app-network
+    depends_on:
+      web:
+        condition: service_healthy
+      server:
+        condition: service_healthy
+      dashboard:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'nginx', '-t']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  app-network:
+    driver: bridge
+    internal: false
+
+volumes:
+  ssl-certs:
+  nginx-logs:
+  certbot-data:

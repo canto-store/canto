@@ -66,43 +66,4 @@ jobs:
             deliveric_user=${{ secrets.DELIVERIC_USER }}
             deliveric_password=${{ secrets.DELIVERIC_PASSWORD }}
 
-  deploy:
-    name: Deploy to Production
-    needs: build-and-push
-    runs-on: blacksmith-4vcpu-ubuntu-2404
-
-    steps:
-      - name: Deploy Application to Production Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            IMAGE_REFERENCE="ghcr.io/${{ github.repository }}-server:latest"
-            CONTAINER_NAME="${{ github.event.repository.name }}-server"
-            APP_EXTERNAL_PORT="8000"
-            APP_INTERNAL_PORT="8000"
-
-            echo "Pulling latest image: $IMAGE_REFERENCE"
-            docker pull $IMAGE_REFERENCE
-
-            echo "Stopping existing container (if any): $CONTAINER_NAME"
-            docker stop $CONTAINER_NAME || true
-
-            echo "Removing existing container (if any): $CONTAINER_NAME"
-            docker rm $CONTAINER_NAME || true
-
-            echo "Starting new container: $CONTAINER_NAME"
-            docker run -d \
-              --name $CONTAINER_NAME \
-              -p $APP_EXTERNAL_PORT:$APP_INTERNAL_PORT \
-              --restart unless-stopped \
-              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-              -e ELASTICSEARCH_NODE=${{ secrets.ELASTICSEARCH_NODE }} \
-              -e ELASTICSEARCH_USERNAME=${{ secrets.ELASTICSEARCH_USERNAME }} \
-              -e ELASTICSEARCH_PASSWORD=${{ secrets.ELASTICSEARCH_PASSWORD }} \
-              -e DELIVERIC_API=${{ secrets.DELIVERIC_API }} \
-              -e DELIVERIC_USER=${{ secrets.DELIVERIC_USER }} \
-              -e DELIVERIC_PASSWORD=${{ secrets.DELIVERIC_PASSWORD }} \
-              $IMAGE_REFERENCE
+  # Deployment is now handled by the unified deploy.yml workflow
