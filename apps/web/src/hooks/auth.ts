@@ -128,6 +128,10 @@ export const useLogout = () => {
       queryClient.removeQueries({ queryKey: ["cart"] });
       toast.success("Logged out successfully");
     },
+    onError: (error) => {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out");
+    },
   });
 };
 
