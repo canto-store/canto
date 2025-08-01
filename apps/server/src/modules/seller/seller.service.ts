@@ -33,8 +33,18 @@ class SellerService {
     }
     data.password = await Bcrypt.hash(data.password)
 
-    const seller = await this.prisma.seller.create({
-      data,
+    const seller = await this.prisma.$transaction(async t => {
+      const seller = await t.seller.create({
+        data,
+      })
+      await t.activity.create({
+        data: {
+          entityId: seller.id,
+          entityName: seller.name,
+          type: 'SELLER_REGISTERED',
+        },
+      })
+      return seller
     })
 
     // Generate authentication tokens
