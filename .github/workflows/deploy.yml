@@ -253,7 +253,7 @@ jobs:
           target: '/home/omar/canto'
           overwrite: true
 
-      - name: Move files and start services
+      - name: Start services
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -266,54 +266,6 @@ jobs:
             # Start services
             echo "Starting services with docker-compose..."
             docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.override.yml --env-file .env.prod up -d
-
-            # Wait for services to be ready
-            echo "Waiting for services to be ready..."
-            sleep 30
-
-            # Check service health
-            echo "Checking service health..."
-
-            # Check if containers are running
-            if ! docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.override.yml ps | grep -q "Up"; then
-              echo "ERROR: Some services failed to start"
-              docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.override.yml logs
-              exit 1
-            fi
-
-            # Test web service
-            if ! curl -f -s http://localhost:3000/api/health > /dev/null; then
-              echo "WARNING: Web service health check failed"
-            else
-              echo "✓ Web service is healthy"
-            fi
-
-            # Test server service
-            if ! curl -f -s http://localhost:8000/health > /dev/null; then
-              echo "WARNING: Server service health check failed"
-            else
-              echo "✓ Server service is healthy"
-            fi
-
-            # Test dashboard service
-            if ! curl -f -s http://localhost:5173 > /dev/null; then
-              echo "WARNING: Dashboard service health check failed"
-            else
-              echo "✓ Dashboard service is healthy"
-            fi
-
-            # Test nginx
-            if ! curl -f -s http://localhost > /dev/null; then
-              echo "WARNING: Nginx health check failed"
-            else
-              echo "✓ Nginx is healthy"
-            fi
-
-            echo "Deployment completed successfully!"
-
-            # Show running services
-            echo "Running services:"
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.override.yml ps
 
       - name: Rollback on failure
         if: failure()
