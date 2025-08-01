@@ -86,19 +86,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
-  // Get the current variant's images based on selected color
-  const currentImages = useMemo(() => {
-    if (selectedColor) {
-      const colorVariants = product.variants.filter(
-        (v) => v.options.Color === selectedColor,
-      );
-      if (colorVariants.length > 0) {
-        return colorVariants.flatMap((v) => v.images);
-      }
-    }
-    return product.variants[0].images;
-  }, [product, selectedColor]);
-
   const handleAddToWishlist = () => {
     setIsFavorite(!isFavorite);
     if (isFavorite) {

@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CircleUser, User, Settings, LogOut } from "lucide-react";
+import { CircleUser, User, Settings, LogOut, Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { useAuth } from "@/hooks/auth";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
-import { useCartStore } from "@/lib/cart";
+import { useLogout } from "@/hooks/auth";
 
 export function UserDropdown() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -18,8 +18,8 @@ export function UserDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
-  const { clearCart } = useCartStore();
-  const { logout: logoutMutation, user } = useAuth();
+  const { user } = useAuth();
+  const { mutateAsync: logoutMutation, isPending } = useLogout();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -65,9 +65,7 @@ export function UserDropdown() {
   };
 
   const handleLogout = async () => {
-    logoutMutation.mutateAsync(undefined);
-    clearCart();
-    setUserDropdownOpen(false);
+    logoutMutation().then(() => setUserDropdownOpen(false));
   };
 
   const dropDownItems = [
@@ -128,9 +126,21 @@ export function UserDropdown() {
                 variant="ghost"
                 className="text-primary hover:bg-primary/10 flex w-full items-center justify-normal px-4 py-2.5 text-sm transition-colors"
                 onClick={handleLogout}
+                disabled={isPending}
               >
-                <LogOut className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />
-                {t("logout")}
+                {isPending ? (
+                  <>
+                    <Loader2Icon
+                      className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"} animate-spin`}
+                    />
+                    Loading
+                  </>
+                ) : (
+                  <>
+                    <LogOut className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />
+                    {t("logout")}
+                  </>
+                )}
               </Button>
             </div>
           </div>

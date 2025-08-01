@@ -19,20 +19,16 @@ import {
 import { If, useMediaQuery } from "react-haiku";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { useCartStore } from "@/lib/cart";
+import { useLogout } from "@/hooks/auth";
 
 export default function Page() {
-  const { user, logout: logoutMutation } = useAuth();
+  const { user } = useAuth();
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const { clearCart } = useCartStore();
+  const { mutate: logout } = useLogout();
 
-  const logout = () => {
-    logoutMutation.mutateAsync(undefined);
-    clearCart();
-  };
   const handleLanguageChange = () => {
     const value = locale === "en" ? "ar" : "en";
     router.replace(pathname, { locale: value });
@@ -131,7 +127,7 @@ export default function Page() {
           </Button>
         </div>
         <If isTrue={Boolean(user)}>
-          <Button variant="ghost" onClick={logout} className="mt-4">
+          <Button variant="ghost" onClick={() => logout()} className="mt-4">
             <LogOut className="text-orange-red mr-2 h-5 w-5" />
             <p className="text-orange-red text-lg">Logout</p>
           </Button>

@@ -19,7 +19,7 @@ export default function NotFound() {
   }, []);
 
   return (
-    <div className="flex h-[calc(100vh-6.5rem-5rem)] flex-col items-center justify-center text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center text-center">
       <AlertOctagon className="text-orange-red h-20 w-20" />
       <h1 className="mt-4 text-4xl font-bold">404 - Page Not Found</h1>
       <p className="mt-2 text-gray-600">
