@@ -11,29 +11,15 @@ import loggerMiddleware from './middlewares/logger.middleware'
 
 import { checkESConnection } from './config/elasticsearch'
 
-import rateLimit from 'express-rate-limit'
-
 const app: Express = express()
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: 'Too many requests from this IP, please try again after 15 minutes',
-  standardHeaders: true,
-  legacyHeaders: false,
-})
-
-app.use(limiter)
-
-// In production, CORS is handled by nginx
-// In development, we use the cors middleware
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'production') {
   app.use(
     cors({
       origin: [
-        'http://localhost:3000',
-        'http://localhost:5173',
-        'http://164.90.234.81:5173',
+        'https://canto-store.com',
+        'https://www.canto-store.com',
+        'https://dashboard.canto-store.com',
       ],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
