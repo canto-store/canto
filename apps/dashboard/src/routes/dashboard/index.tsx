@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { api } from '@/lib/auth-api'
-import { useLatestActivities, useProductCount } from '@/hooks/use-data'
+import { useLatestActivities, useDashboardCounts } from '@/hooks/use-data'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export const Route = createFileRoute('/dashboard/')({
@@ -22,71 +22,92 @@ export const Route = createFileRoute('/dashboard/')({
   component: DashboardIndexPage,
 })
 
+function LoadingData() {
+  return (
+    <div className="space-y-2">
+      <Skeleton className="h-6 w-10 rounded-md" />
+      <Skeleton className="h-4 w-16" />
+      <Skeleton className="h-4 w-16" />
+    </div>
+  )
+}
+
 function DashboardIndexPage() {
   const { data: latestActivities, isLoading: isFetchingLatestActivities } =
     useLatestActivities()
 
-  const { data: productCount, isLoading: isFetchingProductCount } =
-    useProductCount()
+  const { data, isLoading } = useDashboardCounts()
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+    <main className="space-y-6">
+      <header>
+        <h1 className="text-3xl font-bold">Canto Store</h1>
         <p className="text-muted-foreground">Welcome to your admin dashboard</p>
-      </div>
+      </header>
 
       <div className="grid gap-4 md:grid-cols-3 sm:grid-cols-1">
+        {/* Products Card */}
         <Link to="/dashboard/products">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="h-38">
+            <CardHeader className="flex justify-between">
               <CardTitle className="text-sm font-medium">Products</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
+              <Package className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              {isFetchingProductCount ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-6 w-full" />
-                </div>
+              {isLoading ? (
+                <LoadingData />
               ) : (
                 <>
-                  <p className="text-sm font-bold text-green-300">
-                    {productCount?.activeProductsCount} Active
+                  <p className="text-2xl font-bold">{data?.product.total}</p>
+                  <p className="text-xs font-bold text-green-300">
+                    {data?.product.active} Active
                   </p>
-                  <p className="text-sm font-bold text-orange-300">
-                    {productCount?.pendingProductsCount} Pending
+                  <p className="text-xs font-bold text-orange-300">
+                    {data?.product.pending} Pending
                   </p>
                 </>
               )}
             </CardContent>
           </Card>
         </Link>
+        {/* Brands Card */}
         <Link to="/dashboard/brands">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="h-38">
+            <CardHeader className="flex justify-between">
               <CardTitle className="text-sm font-medium">Brands</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <Building2 className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">156</div>
-              <p className="text-xs text-muted-foreground">
-                +5.2% from last month
-              </p>
+              {isLoading ? (
+                <LoadingData />
+              ) : (
+                <div className="flex flex-col gap-1">
+                  <p className="text-2xl font-bold">{data?.brand.total}</p>
+                  <p className="text-xs text-muted-foreground">
+                    +100% from last month
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </Link>
-
+        {/* Sellers Card */}
         <Link to="/dashboard/sellers">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="h-38">
+            <CardHeader className="flex justify-between">
               <CardTitle className="text-sm font-medium">Sellers</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">89</div>
-              <p className="text-xs text-muted-foreground">
-                +12.3% from last month
-              </p>
+              {isLoading ? (
+                <LoadingData />
+              ) : (
+                <div className="flex flex-col gap-1">
+                  <p className="text-2xl font-bold">{data?.seller.total}</p>
+                  <p className="text-xs text-muted-foreground">
+                    +100% from last month
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </Link>
@@ -119,6 +140,6 @@ function DashboardIndexPage() {
           ))}
         </CardContent>
       </Card>
-    </div>
+    </main>
   )
 }

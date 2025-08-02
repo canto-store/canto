@@ -57,11 +57,20 @@ export const api = {
     const response = await apiClient.get('/dashboard/latest-activities')
     return response.data
   },
-  getProductCount: async (): Promise<{
-    activeProductsCount: number
-    pendingProductsCount: number
+  getDashboardCounts: async (): Promise<{
+    product: {
+      total: number
+      active: number
+      pending: number
+    }
+    brand: {
+      total: number
+    }
+    seller: {
+      total: number
+    }
   }> => {
-    const response = await apiClient.get('/dashboard/product-count')
+    const response = await apiClient.get('/dashboard/dashboard-counts')
     return response.data
   },
 }

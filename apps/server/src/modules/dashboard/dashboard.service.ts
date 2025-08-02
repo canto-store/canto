@@ -11,22 +11,34 @@ class DashboardService {
     return stringifyActivities(activities)
   }
 
-  async getProductCount() {
-    const products = await this.prisma.product.findMany({
-      where: { OR: [{ status: 'ACTIVE' }, { status: 'PENDING' }] },
-    })
+  async getDashboardCounts() {
+    const products = await this.prisma.product.findMany()
 
-    const activeProductsCount = products.filter(
+    const totalProducts = products.length
+
+    const active = products.filter(
       p => p.status === ProductStatus.ACTIVE
     ).length
 
-    const pendingProductsCount = products.filter(
+    const pending = products.filter(
       p => p.status === ProductStatus.PENDING
     ).length
 
+    const totalBrands = await this.prisma.brand.count()
+    const totalSellers = await this.prisma.seller.count()
+
     return {
-      activeProductsCount,
-      pendingProductsCount,
+      product: {
+        total: totalProducts,
+        active,
+        pending,
+      },
+      brand: {
+        total: totalBrands,
+      },
+      seller: {
+        total: totalSellers,
+      },
     }
   }
 }

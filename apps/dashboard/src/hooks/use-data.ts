@@ -55,9 +55,9 @@ export function useLatestActivities() {
   })
 }
 
-export function useProductCount() {
+export function useDashboardCounts() {
   return useQuery({
-    queryKey: ['product-count'],
-    queryFn: api.getProductCount,
+    queryKey: ['dashboard-counts'],
+    queryFn: api.getDashboardCounts,
   })
 }

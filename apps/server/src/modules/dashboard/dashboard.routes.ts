@@ -13,9 +13,9 @@ router.get(
 )
 
 router.get(
-  '/product-count',
+  '/dashboard-counts',
   authMiddleware.checkAuth.bind(authMiddleware),
-  dashboardController.getProductCount.bind(dashboardController)
+  dashboardController.getDashboardCounts.bind(dashboardController)
 )
 
 export default router

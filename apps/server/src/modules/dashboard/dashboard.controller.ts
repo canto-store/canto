@@ -13,12 +13,12 @@ class DashboardController {
     res.status(200).json(latestActivities)
   }
 
-  public async getProductCount(
+  public async getDashboardCounts(
     _req: Request,
     res: Response,
     _next: NextFunction
   ) {
-    const body = await this.dashboardService.getProductCount()
+    const body = await this.dashboardService.getDashboardCounts()
     res.status(200).json(body)
   }
 }
