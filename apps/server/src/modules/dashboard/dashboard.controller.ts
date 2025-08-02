@@ -4,7 +4,7 @@ import DashboardService from './dashboard.service'
 class DashboardController {
   private readonly dashboardService = new DashboardService()
 
-  public async getActivities(
+  public async getLatestActivities(
     _req: Request,
     res: Response,
     _next: NextFunction
