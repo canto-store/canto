@@ -37,6 +37,15 @@ export const formatPrice = (price: number) => {
   }).format(price)
 }
 
+export const formatDate = (date: Date): string => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
 export const calculateDiscount = (originalPrice: number, sale: Sale) => {
   if (sale.type === 'PERCENTAGE') {
     return originalPrice - originalPrice * (sale.value / 100)
