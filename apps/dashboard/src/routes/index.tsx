@@ -4,12 +4,11 @@ import { api } from '@/lib/auth-api'
 
 export const Route = createFileRoute('/')({
   beforeLoad: async () => {
-    await api
+    const isAuthenticated = await api
       .me()
-      .then(() => {
-        throw redirect({ to: '/dashboard' })
-      })
-      .catch(() => undefined)
+      .then(() => true)
+      .catch(() => false)
+    if (isAuthenticated) throw redirect({ to: '/dashboard' })
   },
   component: RouteComponent,
 })
