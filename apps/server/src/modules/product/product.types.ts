@@ -33,7 +33,11 @@ export interface SelectedVariant {
   }[]
 }
 
-export interface UpdateProductDto extends Partial<CreateProductDto> {
+export interface UpdateProductDto {
+  name?: string
+  description?: string
+  categoryId?: number
+  status?: ProductStatus
   rejectionReason?: string
 }
 

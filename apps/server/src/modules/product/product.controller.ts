@@ -93,7 +93,7 @@ class ProductController {
   ) {
     try {
       const productId = Number(request.params.id)
-      const product = await this.productService.findProduct(productId)
+      const product = await this.productService.getProductById(productId)
       response.status(200).json(product)
     } catch (error) {
       nextFunction(error)
