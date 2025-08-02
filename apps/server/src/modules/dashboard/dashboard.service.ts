@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 import { stringifyActivities } from './dashboard.core'
-class Dashboard {
+class DashboardService {
   private readonly prisma = new PrismaClient()
 
-  async getActivity() {
+  async getLatestActivities() {
     const activities = await this.prisma.activity.findMany({
       orderBy: { createdAt: 'desc' },
       take: 5,
@@ -12,4 +12,4 @@ class Dashboard {
   }
 }
 
-export default Dashboard
+export default DashboardService
