@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { api } from '@/lib/auth-api'
+import { useLatestActivities } from '@/hooks/use-data'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export const Route = createFileRoute('/dashboard/')({
   beforeLoad: async () => {
@@ -19,6 +21,8 @@ export const Route = createFileRoute('/dashboard/')({
 })
 
 function DashboardIndexPage() {
+  const { data: latestActivities, isLoading: isFetchingLatestActivities } =
+    useLatestActivities()
   return (
     <div className="space-y-6">
       <div>
@@ -84,34 +88,32 @@ function DashboardIndexPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common administrative tasks</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-sm">• Add new product to inventory</div>
-            <div className="text-sm">• Review pending seller applications</div>
-            <div className="text-sm">• Update brand partnerships</div>
-            <div className="text-sm">• Generate sales reports</div>
-          </CardContent>
-        </Card>
-
+      <div className="">
         <Card>
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest changes in your system</CardDescription>
+            <CardDescription>Latest updates in Canto</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-sm">• New seller "Tech Store" registered</div>
-            <div className="text-sm">
-              • Product "Wireless Headphones" updated
-            </div>
-            <div className="text-sm">
-              • Brand "AudioTech" partnership renewed
-            </div>
-            <div className="text-sm">• 15 new products added today</div>
+          <CardContent className="space-y-4">
+            {isFetchingLatestActivities && (
+              <>
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </>
+            )}
+
+            {latestActivities && latestActivities.length === 0 && (
+              <p className="text-center">No Recent Activities</p>
+            )}
+
+            {latestActivities?.map((activity, index) => (
+              <div key={index} className="text-sm">
+                {activity}
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>

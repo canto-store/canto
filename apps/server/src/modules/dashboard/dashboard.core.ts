@@ -4,11 +4,11 @@ import { formatDate } from '../../utils/helper'
 const ACTIVITY_MESSAGES: Record<ActivityType, (activity: Activity) => string> =
   {
     [ActivityType.BRAND_CREATED]: activity =>
-      `Brand "${activity.entityName}" was created on ${formatDate(activity.createdAt)}`,
+      `• Brand "${activity.entityName}" was created on ${formatDate(activity.createdAt)}`,
     [ActivityType.PRODUCT_ADDED]: activity =>
-      `Product "${activity.entityName}" was added on ${formatDate(activity.createdAt)}`,
+      `• Product "${activity.entityName}" was added on ${formatDate(activity.createdAt)}`,
     [ActivityType.SELLER_REGISTERED]: activity =>
-      `Seller "${activity.entityName}" registered on ${formatDate(activity.createdAt)}`,
+      `• Seller "${activity.entityName}" registered on ${formatDate(activity.createdAt)}`,
   } as const
 
 /**

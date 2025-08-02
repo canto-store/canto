@@ -53,4 +53,8 @@ export const api = {
     const response = await apiClient.get('/seller')
     return response.data
   },
+  getLatestActivities: async (): Promise<string[]> => {
+    const response = await apiClient.get('/dashboard/latest-activities')
+    return response.data
+  },
 }

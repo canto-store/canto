@@ -47,3 +47,10 @@ export function useSellers() {
     queryFn: api.getSellers,
   })
 }
+
+export function useLatestActivities() {
+  return useQuery({
+    queryKey: ['latest-activities'],
+    queryFn: api.getLatestActivities,
+  })
+}
