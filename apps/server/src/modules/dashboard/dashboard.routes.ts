@@ -12,4 +12,10 @@ router.get(
   dashboardController.getLatestActivities.bind(dashboardController)
 )
 
+router.get(
+  '/product-count',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  dashboardController.getProductCount.bind(dashboardController)
+)
+
 export default router
