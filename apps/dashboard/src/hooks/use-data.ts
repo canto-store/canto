@@ -54,3 +54,10 @@ export function useLatestActivities() {
     queryFn: api.getLatestActivities,
   })
 }
+
+export function useProductCount() {
+  return useQuery({
+    queryKey: ['product-count'],
+    queryFn: api.getProductCount,
+  })
+}
