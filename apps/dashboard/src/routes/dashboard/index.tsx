@@ -42,18 +42,21 @@ function DashboardIndexPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isFetchingProductCount && (
+            {isFetchingProductCount ? (
               <div className="space-y-2">
                 <Skeleton className="h-6 w-full" />
                 <Skeleton className="h-6 w-full" />
               </div>
+            ) : (
+              <>
+                <p className="text-sm font-bold text-green-300">
+                  {productCount?.activeProductsCount} Active
+                </p>
+                <p className="text-sm font-bold text-orange-300">
+                  {productCount?.pendingProductsCount} Pending
+                </p>
+              </>
             )}
-            <p className="text-sm font-bold text-green-300">
-              {productCount?.activeProductsCount} Active
-            </p>
-            <p className="text-sm font-bold text-orange-300">
-              {productCount?.pendingProductsCount} Pending
-            </p>
           </CardContent>
         </Card>
 
