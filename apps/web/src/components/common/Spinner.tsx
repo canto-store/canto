@@ -1,7 +1,11 @@
+import "./spinner.css";
+
 const Spinner = () => {
   return (
-    <div className="flex items-center justify-center">
-      <div className="h-10 w-10 animate-spin rounded-full border-t-2 border-b-2 border-purple-500"></div>
+    <div className="dots-spinner">
+      <span className="dot-1"></span>
+      <span className="dot-2"></span>
+      <span className="dot-3"></span>
     </div>
   );
 };
