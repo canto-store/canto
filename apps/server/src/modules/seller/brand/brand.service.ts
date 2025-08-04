@@ -31,7 +31,7 @@ class BrandService {
     data: Omit<Brand, 'sellerId' | 'id' | 'created_at' | 'updated_at'>,
     sellerId: number
   ): Promise<Brand> {
-    const existingSeller = await this.prisma.seller.findUnique({
+    const existingSeller = await this.prisma.user.findUnique({
       where: { id: sellerId },
     })
 

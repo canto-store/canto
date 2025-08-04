@@ -11,6 +11,10 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       message: error.message,
     })
   } else {
+    console.error('Error occurred:', {
+      message: error.message,
+      stack: error.stack,
+    })
     res.status(500).json({
       status: 'error',
       message: 'Internal Server Error',

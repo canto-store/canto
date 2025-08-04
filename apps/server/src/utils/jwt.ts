@@ -1,3 +1,4 @@
+import { UserRole } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret'
@@ -6,7 +7,7 @@ const REFRESH_EXPIRES_IN = '7d'
 
 export interface JwtPayload {
   id: number
-  role: string
+  role: UserRole[]
   name: string
 }
 

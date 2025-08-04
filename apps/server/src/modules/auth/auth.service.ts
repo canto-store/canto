@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client'
-import { AdminLoginDto, CreateUserDto, LoginDto } from './auth.types'
+import { PrismaClient, UserRole } from '@prisma/client'
+import { CreateUserDto, LoginDto } from './auth.types'
 import { signJwt, signRefreshToken, verifyJwt } from '../../utils/jwt'
 import Bcrypt from '../../utils/bcrypt'
 import AppError from '../../utils/appError'
@@ -14,7 +14,9 @@ class AuthService {
     if (exists) throw new AppError('User already exists', 409)
 
     dto.password = await Bcrypt.hash(dto.password)
-    const user = await this.prisma.user.create({ data: dto })
+    const user = await this.prisma.user.create({
+      data: { ...dto, role: [UserRole.USER] },
+    })
     const { password, ...rest } = user
     return rest
   }
@@ -28,20 +30,7 @@ class AuthService {
     const valid = await Bcrypt.compare(dto.password, user.password)
     if (!valid) throw new AppError('Invalid credentials', 401)
 
-    const { password, ...rest } = user
-    return rest
-  }
-
-  async adminLogin(dto: AdminLoginDto) {
-    const user = await this.prisma.admin.findUnique({
-      where: { username: dto.username },
-    })
-    if (!user) throw new AppError('User not found', 404)
-
-    const valid = await Bcrypt.compare(dto.password, user.password)
-    if (!valid) throw new AppError('Invalid credentials', 401)
-
-    await this.prisma.admin.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: { ip_address: dto.ip_address, last_login: new Date() },
     })
@@ -61,7 +50,7 @@ class AuthService {
     return user
   }
 
-  async createRefreshToken(id: number, role: string, name: string) {
+  async createRefreshToken(id: number, role: UserRole[], name: string) {
     const token = signRefreshToken({ id, role, name })
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     await this.prisma.refreshToken.create({ data: { token, expiresAt } })
@@ -71,7 +60,7 @@ class AuthService {
   async rotateRefresh(oldToken: string) {
     const verifiedUser = verifyJwt<{
       id: number
-      role: string
+      role: UserRole[]
       name: string
     }>(oldToken)
     const stored = await this.prisma.refreshToken.findUnique({

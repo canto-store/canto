@@ -1,4 +1,4 @@
-export type UserRole = 'CUSTOMER' | 'ADMIN'
+import { UserRole } from '@prisma/client'
 
 export type User = {
   id: number
@@ -18,16 +18,11 @@ export type CreateUserDto = {
   email: string
   password: string
   phone_number: string
-  role?: UserRole
 }
 
 export type LoginDto = {
   email: string
   password: string
-}
-
-export type AdminLoginDto = {
-  username: string
-  password: string
   ip_address: string
+  role: UserRole
 }

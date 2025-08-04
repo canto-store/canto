@@ -18,7 +18,6 @@ export function MainNavigation() {
   const [isRTL, setIsRTL] = useState(false);
 
   useEffect(() => {
-    // Check if the document direction is RTL
     if (typeof window !== "undefined") {
       setIsRTL(document.dir === "rtl");
     }

@@ -36,6 +36,11 @@ enum ActivityType {
   PRODUCT_ADDED
 }
 
+enum UserRole {
+  USER
+  SELLER
+  ADMIN
+}
 model User {
   id             Int       @id @default(autoincrement())
   name           String
@@ -44,38 +49,16 @@ model User {
   email_verified Boolean   @default(true)
   phone_number   String
   last_login     DateTime?
+  ip_address     String?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
   Address        Address[]
   Cart           Cart?
   Order          Order[]
+  brands         Brand[]
+  role           UserRole[] @default([USER])
 
   @@map("users")
-}
-
-model Admin {
-  id         Int       @id @default(autoincrement())
-  username   String    @unique
-  password   String
-  last_login DateTime?
-  ip_address String?
-  created_at DateTime  @default(now())
-
-  @@map("admins")
-}
-
-model Seller {
-  id             Int      @id @default(autoincrement())
-  name           String
-  email          String   @unique
-  password       String
-  email_verified Boolean  @default(true)
-  phone_number   String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  brands         Brand[]
-
-  @@map("sellers")
 }
 
 model Brand {
@@ -84,7 +67,7 @@ model Brand {
   slug          String?
   email         String    @unique
   logo          String?
-  seller        Seller    @relation(fields: [sellerId], references: [id])
+  seller        User    @relation(fields: [sellerId], references: [id])
   sellerId      Int
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt

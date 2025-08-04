@@ -1,4 +1,4 @@
-import { PrismaClient, ProductStatus } from '@prisma/client'
+import { PrismaClient, ProductStatus, UserRole } from '@prisma/client'
 import { stringifyActivities } from './dashboard.core'
 class DashboardService {
   private readonly prisma = new PrismaClient()
@@ -25,7 +25,9 @@ class DashboardService {
     ).length
 
     const totalBrands = await this.prisma.brand.count()
-    const totalSellers = await this.prisma.seller.count()
+    const totalSellers = await this.prisma.user.findMany({
+      where: { role: { hasSome: [UserRole.SELLER] } },
+    })
 
     return {
       product: {
@@ -37,7 +39,7 @@ class DashboardService {
         total: totalBrands,
       },
       seller: {
-        total: totalSellers,
+        total: totalSellers.length,
       },
     }
   }
