@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useMyBrand } from "@/lib/brand";
-import { ProductsPage, BrandPage } from "@/components/sell";
+import { ProductPage, BrandPage } from "@/components/sell";
 import Spinner from "@/components/common/Spinner";
 
 export default function Page() {
@@ -13,7 +13,7 @@ export default function Page() {
   }
 
   if (hasBrand) {
-    return <ProductsPage />;
+    return <ProductPage />;
   }
 
   if (!hasBrand) {

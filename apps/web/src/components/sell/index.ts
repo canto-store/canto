@@ -1,5 +1,5 @@
-import ProductsPage from "./ProductsPage";
+import ProductPage from "./ProductPage";
 import BrandPage from "./BrandPage";
 import RegisterPage from "./RegisterPage";
 
-export { ProductsPage, BrandPage, RegisterPage };
+export { ProductPage, BrandPage, RegisterPage };

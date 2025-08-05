@@ -12,7 +12,7 @@ import { AuthRequest } from './auth.middleware'
 const logger = morgan((tokens, req: Request, res: Response) => {
   const authReq = req as AuthRequest
   const userId = authReq.user?.id
-  const userInfo = userId ? ` [$userId:${userId}]` : ''
+  const userInfo = userId ? ` [userId:${userId}]` : ''
 
   return [
     tokens.method(req, res),
