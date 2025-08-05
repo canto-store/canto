@@ -1,10 +1,8 @@
 import { useMyBrand } from "@/lib/brand";
 import { useProductsByBrand } from "@/lib/product";
 import Image from "next/image";
-import { Check, Package } from "lucide-react";
-import { ProductStatus } from "@/types";
+import { Package } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
-
 export const ProductDisplay = () => {
   const { data: brand } = useMyBrand();
 
@@ -12,39 +10,22 @@ export const ProductDisplay = () => {
     brand?.id ?? 0,
   );
   return (
-    <div className="min-h-full overflow-auto rounded-lg p-4 shadow-sm">
+    <div className="min-h-full overflow-auto rounded-lg shadow-sm">
       {products && products.length > 0 ? (
-        <div className="space-y-4">
+        <div>
           {products.map((product) => (
             <div
               key={product.id}
-              className="flex items-center gap-4 border-b p-3"
+              className="flex items-center gap-2 border-b-1 p-1"
             >
-              <div className="relative h-16 w-16 overflow-hidden rounded-md bg-gray-100">
-                <Image
-                  src={product.image || "/placeholder.svg"}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">{product.name}</h3>
-                    <p className="text-sm text-gray-500">{product.category}</p>
-                  </div>
-                  {product.status === ProductStatus.ACTIVE && (
-                    <Check className="h-4 w-4 text-green-400" />
-                  )}
-                  {product.status === ProductStatus.PENDING && (
-                    <span className="text-sm text-yellow-500">Pending</span>
-                  )}
-                  {product.status === ProductStatus.INACTIVE && (
-                    <span className="text-sm text-red-500">Inactive</span>
-                  )}
-                </div>
-              </div>
+              <Image
+                src={product.image || "/placeholder.svg"}
+                alt={product.name}
+                width={64}
+                height={32}
+                className="rounded-md object-cover"
+              />
+              <h3 className="font-medium">{product.name}</h3>
             </div>
           ))}
         </div>
