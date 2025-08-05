@@ -8,7 +8,6 @@ async function main() {
   const prisma = new PrismaClient()
 
   try {
-    // Parse command line arguments
     const args = process.argv.slice(2)
 
     if (args.includes('--list')) {
@@ -38,7 +37,7 @@ Examples:
     const seedIndex = args.findIndex(arg => arg === '--seed')
     if (seedIndex >= 0 && seedIndex < args.length - 1) {
       const seedNames = args[seedIndex + 1].split(',')
-      await runSpecificSeeds(prisma, seedNames, args.includes('--force'))
+      await runSpecificSeeds(prisma, seedNames)
     } else {
       await runAllPendingSeeds(prisma)
     }

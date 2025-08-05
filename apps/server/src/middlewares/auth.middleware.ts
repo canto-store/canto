@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { verifyJwt, JwtPayload } from '../utils/jwt'
 import AuthService from '../modules/auth/auth.service'
+import { UserRole } from '@prisma/client'
 
 export interface AuthRequest extends Request {
   user?: JwtPayload
@@ -40,18 +41,12 @@ class AuthMiddleware {
       this.setAuthCookies(res, accessToken, newRefreshToken)
       req.user = verifyJwt(accessToken)
       next()
-    } catch (error) {
-      // Clear cookies on refresh token error
-      res.clearCookie('token')
-      res.clearCookie('refreshToken')
-
-      if (error instanceof Error) {
-        res
-          .status(401)
-          .json({ message: `Authentication failed: ${error.message}` })
-      } else {
-        res.status(401).json({ message: 'Invalid refresh token' })
-      }
+    } catch {
+      res
+        .status(401)
+        .clearCookie('token')
+        .clearCookie('refreshToken')
+        .json({ message: `Authentication failed` })
     }
   }
 
@@ -88,13 +83,22 @@ class AuthMiddleware {
         await this.rotateTokens(req, res, next, refreshToken)
       } else {
         // Clear invalid cookies
-        res.clearCookie('token')
-        if (!refreshToken) {
-          res.clearCookie('refreshToken')
-        }
-
-        res.status(401).json({ message: 'Invalid or expired token' })
+        res
+          .clearCookie('token')
+          .clearCookie('refreshToken')
+          .status(401)
+          .json({ message: 'Invalid or expired token' })
       }
+    }
+  }
+
+  checkRole(role: UserRole) {
+    return async (req: AuthRequest, res: Response, next: NextFunction) => {
+      const user = await this.authService.getById(req.user?.id)
+      if (!user || !user.role || !user.role.includes(role)) {
+        return res.status(403).json({ message: 'Forbidden' })
+      }
+      next()
     }
   }
 }

@@ -1,20 +1,20 @@
 import { apiClient } from '@/lib/api'
 
 interface LoginCredentials {
-  username: string
+  email: string
   password: string
 }
 
 interface User {
   id: string
   email: string
-  name?: string
-  role: string
+  name: string
+  role: string[]
 }
 
 export const api = {
   login: async (credentials: LoginCredentials): Promise<User> => {
-    const response = await apiClient.post('/auth/admin-login', credentials)
+    const response = await apiClient.post('/auth/login', credentials)
     return response.data
   },
 

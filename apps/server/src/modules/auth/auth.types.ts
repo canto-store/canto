@@ -18,6 +18,7 @@ export type CreateUserDto = {
   email: string
   password: string
   phone_number: string
+  ip_address: string
 }
 
 export type LoginDto = {

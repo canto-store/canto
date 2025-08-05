@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { api } from '@/lib/auth-api'
 import { useState } from 'react'
 const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
+  email: z.string().min(1, 'Email is required'),
   password: z.string().min(1, 'Password is required'),
 })
 
@@ -38,8 +38,15 @@ export function LoginForm({
       setLoading(true)
       await api
         .login({
-          username: data.username,
+          email: data.email,
           password: data.password,
+        })
+        .then(res => {
+          if (!res.role.includes('ADMIN')) {
+            setError(true)
+            throw new Error('Unauthorized: Only admins can log in')
+          }
+          router.navigate({ to: '/dashboard' })
         })
         .catch(err => {
           setError(true)
@@ -48,7 +55,6 @@ export function LoginForm({
         .finally(() => {
           setLoading(false)
         })
-      router.navigate({ to: '/dashboard' })
     } catch (error) {
       console.error('Login failed:', error)
     }
@@ -72,17 +78,15 @@ export function LoginForm({
           </div>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
+                id="email"
                 type="text"
-                placeholder="username"
-                {...register('username')}
+                placeholder="Enter your email"
+                {...register('email')}
               />
-              {errors.username && (
-                <p className="text-red-500 text-sm">
-                  {errors.username.message}
-                </p>
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
               )}
               <Label htmlFor="password">Password</Label>
               <Input

@@ -44,6 +44,7 @@ class AuthService {
       where: { id },
       select: {
         id: true,
+        role: true,
       },
     })
     if (!user) throw new AppError('User not found', 404)

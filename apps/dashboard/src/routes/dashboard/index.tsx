@@ -15,7 +15,10 @@ export const Route = createFileRoute('/dashboard/')({
   beforeLoad: async () => {
     const isAuthenticated = await api
       .me()
-      .then(() => true)
+      .then(res => {
+        if (res.data.role.includes('ADMIN')) return true
+        else throw redirect({ to: '/' })
+      })
       .catch(() => false)
     if (!isAuthenticated) throw redirect({ to: '/' })
   },
