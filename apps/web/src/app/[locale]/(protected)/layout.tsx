@@ -1,8 +1,7 @@
 "use client";
 
-import { useAuth } from "@/hooks/auth";
-import { useRouter } from "@/i18n/navigation";
-import { usePathname } from "next/navigation";
+import { useUserQuery } from "@/hooks/auth";
+import { usePathname, redirect } from "@/i18n/navigation";
 import Spinner from "@/components/common/Spinner";
 
 export default function ProtectedLayout({
@@ -10,21 +9,24 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, userQuery } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname().split("/").slice(2).join("/");
+  const { isLoading: isUserLoading, isSuccess: isAuthenticated } =
+    useUserQuery();
+  const pathname = usePathname();
 
-  if (userQuery.isLoading) {
+  if (isUserLoading) {
     return <Spinner />;
   }
-  if (!user) {
-    router.push({
-      pathname: "/login",
-      query: { returnUrl: pathname },
+  if (!isAuthenticated) {
+    redirect({
+      href: {
+        pathname: "/login",
+        query: { returnUrl: pathname },
+      },
+      locale: "en",
     });
   }
 
-  if (user) {
+  if (isAuthenticated) {
     return <>{children}</>;
   }
 }
