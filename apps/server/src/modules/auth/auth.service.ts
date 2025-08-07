@@ -96,6 +96,19 @@ class AuthService {
       data: { isRevoked: true },
     })
   }
+
+  async checkProductAccess(userId: number, productId: number) {
+    const product = await this.prisma.product.findFirst({
+      where: {
+        id: productId,
+        brand: {
+          sellerId: userId,
+        },
+      },
+    })
+    if (!product) return false
+    return true
+  }
 }
 
 export default AuthService

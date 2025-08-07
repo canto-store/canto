@@ -10,6 +10,7 @@ import {
   SubmitProductFormDto,
   ProductStatus,
   ProductQueryParams,
+  UpdateProductFormDto,
 } from './product.types'
 import {
   slugify,
@@ -718,7 +719,74 @@ class ProductService {
     }
   }
 
-  async submitProductForm(dto: SubmitProductFormDto) {
+  async updateProductForm(dto: UpdateProductFormDto, userId: number) {
+    return this.prisma.$transaction(async tx => {
+      const updatedProduct = await tx.product.update({
+        where: { id: dto.id },
+        data: {
+          name: dto.name,
+          description: dto.description,
+          brand: { connect: { id: dto.brandId } },
+          category: { connect: { id: dto.category } },
+        },
+        include: {
+          brand: true,
+          category: true,
+        },
+      })
+
+      await tx.activity.create({
+        data: {
+          entityId: updatedProduct.id,
+          entityName: updatedProduct.name,
+          type: 'PRODUCT_UPDATED',
+          createdByid: userId,
+        },
+      })
+
+      for (const variant of dto.variants) {
+        const variantOptionPromises = variant.options.map(o =>
+          tx.productOptionValue
+            .findFirst({
+              where: { id: o.valueId },
+            })
+            .then(v => v?.value)
+        )
+
+        // Wait for all promises to resolve
+        const variantOptionNames = await Promise.all(variantOptionPromises)
+
+        const variantRecord = await tx.productVariant.create({
+          data: {
+            productId: updatedProduct.id,
+            sku: `SKU-${String(updatedProduct.id).padStart(3, '0')}-${updatedProduct.slug}-${variantOptionNames.join('-')}`,
+            price: variant.price,
+            stock: variant.stock,
+          },
+        })
+
+        await tx.productVariantImage.createMany({
+          data: variant.images.map(image => ({
+            url: image,
+            alt_text: dto.name,
+            variantId: variantRecord.id,
+          })),
+        })
+
+        await tx.variantOptionValue.createMany({
+          data: variant.options.map(o => ({
+            variantId: variantRecord.id,
+            optionValueId: o.valueId,
+            productOptionId: o.optionId,
+          })),
+        })
+      }
+
+      return true
+    })
+  }
+
+  async submitProductForm(dto: SubmitProductFormDto, userId: number) {
     return this.prisma.$transaction(async tx => {
       const newProduct = await tx.product.create({
         data: {
@@ -740,6 +808,7 @@ class ProductService {
           entityId: newProduct.id,
           entityName: newProduct.name,
           type: 'PRODUCT_ADDED',
+          createdByid: userId,
         },
       })
 
@@ -806,11 +875,42 @@ class ProductService {
   async getProductById(id: number) {
     const productRecord = await this.prisma.product.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        category: { select: { id: true } },
+        variants: {
+          include: { images: { select: { url: true } }, optionLinks: true },
+        },
+      },
     })
-    if (!productRecord) throw new AppError('Product not found', 404)
-    return productRecord
-  }
 
+    if (!productRecord) {
+      throw new AppError('Product not found', 404)
+    }
+
+    const transformedProductRecord = {
+      ...productRecord,
+      category: productRecord.category.id,
+      variants: productRecord.variants?.map(variant => {
+        const { optionLinks, ...restOfVariant } = variant
+        return {
+          ...restOfVariant,
+          images: variant.images.map(image => image.url),
+          options: optionLinks.map(option => {
+            const { productOptionId, optionValueId } = option
+            return {
+              optionId: productOptionId,
+              valueId: optionValueId,
+            }
+          }),
+        }
+      }),
+    }
+
+    return transformedProductRecord
+  }
   private async ensureVariantExists(id: number) {
     const variantRecord = await this.prisma.productVariant.findUnique({
       where: { id },

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/auth";
+import { useAuthStore } from "@/stores/auth-store";
 import {
   ArrowLeftRight,
   Bell,
@@ -22,7 +22,7 @@ import { useLocale } from "next-intl";
 import { useLogout } from "@/hooks/auth";
 
 export default function Page() {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
@@ -48,11 +48,7 @@ export default function Page() {
             <Button
               className="w-full"
               variant="outline"
-              onClick={() =>
-                handleNavigation(
-                  `/login?returnUrl=${encodeURIComponent(pathname)}`,
-                )
-              }
+              onClick={() => handleNavigation(`/login`)}
             >
               Login/Register
             </Button>

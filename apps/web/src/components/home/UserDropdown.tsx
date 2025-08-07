@@ -5,10 +5,10 @@ import { CircleUser, User, Settings, LogOut, Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
-import { useAuth } from "@/hooks/auth";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
 import { useLogout } from "@/hooks/auth";
+import { useAuthStore } from "@/stores/auth-store";
 
 export function UserDropdown() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -18,7 +18,7 @@ export function UserDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { mutateAsync: logoutMutation, isPending } = useLogout();
 
   useEffect(() => {

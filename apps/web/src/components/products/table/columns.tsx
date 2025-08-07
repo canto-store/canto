@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
+import { useProductById } from "@/lib/product";
 import { ProductByBrand } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Edit } from "lucide-react";
+import Image from "next/image";
 
 type ProductStatusUpdate = "PENDING" | "ACTIVE" | "INACTIVE" | "REJECTED";
 
@@ -46,7 +49,10 @@ function StatusDisplay({ status }: { status: ProductStatusUpdate }) {
 }
 
 function ActionCell({ productId }: { productId: number }) {
-  const handleEditClick = () => {};
+  const router = useRouter();
+  const handleEditClick = () => {
+    router.push(`/sell/product?productId=${productId}`);
+  };
 
   return (
     <Button variant="outline" size="sm" onClick={handleEditClick}>
@@ -58,22 +64,35 @@ function ActionCell({ productId }: { productId: number }) {
 
 export const columns: ColumnDef<ProductByBrand>[] = [
   {
-    accessorKey: "name",
-    header: ({ column }) => {
+    accessorKey: "image",
+    cell: ({ row }) => {
+      const image = row.getValue("image") as string;
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <Image
+          src={image}
+          width={64}
+          height={64}
+          className="rounded-md"
+          alt={row.getValue("name") as string}
+        />
       );
     },
   },
   {
+    accessorKey: "name",
+    cell: ({ row }) => {
+      return <p className="text-sm font-medium">{row.getValue("name")}</p>;
+    },
+  },
+  {
+    accessorKey: "category",
+    cell: ({ row }) => {
+      const category = row.getValue("category") as string;
+      return <p className="text-sm">{category}</p>;
+    },
+  },
+  {
     accessorKey: "status",
-    header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as ProductStatusUpdate;
       return <StatusDisplay status={status} />;
@@ -81,7 +100,6 @@ export const columns: ColumnDef<ProductByBrand>[] = [
   },
   {
     id: "actions",
-    header: "Actions",
     cell: ({ row }) => {
       return <ActionCell productId={row.original.id} />;
     },

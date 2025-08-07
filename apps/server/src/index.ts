@@ -1,6 +1,3 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
 import express, { Express } from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
@@ -19,7 +16,7 @@ const prodOrigins = [
   'https://dashboard.canto-store.com',
 ]
 
-const devOrigins = ['http://localhost:3000', 'http://localhost:5173']
+const devOrigins = ['http://localhost:5000', 'http://localhost:5173']
 
 app.use(
   cors({

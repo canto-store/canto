@@ -13,13 +13,12 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { useMyBrand, useSubmitBrand } from "@/lib/brand";
+import { useSubmitBrand } from "@/lib/brand";
 import { BrandFormValues, brandFormSchema } from "@/types/brand";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { parseApiError } from "@/lib/utils";
-import { useState } from "react";
 
 export function BrandForm() {
   const form = useForm<BrandFormValues>({
@@ -39,14 +38,9 @@ export function BrandForm() {
     error: brandError,
   } = useSubmitBrand();
 
-  const [enabled, setEnabled] = useState(false);
-
-  useMyBrand({ enabled });
-
   const onSubmit = async (data: BrandFormValues) => {
     await mutateAsync(data)
       .then(() => {
-        setEnabled(true);
         toast.success("Brand submitted successfully!");
       })
       .catch((err) => toast.error(parseApiError(err)));

@@ -3,17 +3,14 @@
 import { RegisterForm } from "./RegisterForm";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useSearchParams } from "next/navigation";
 
 export function RegisterPage() {
   const t = useTranslations("auth");
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl") || "/";
 
   function handleSuccess() {
-    router.push(`/${returnUrl}`);
+    router.push("/");
   }
 
   return (

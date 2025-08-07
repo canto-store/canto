@@ -9,7 +9,7 @@ import { CartItem } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth } from "@/hooks/auth";
+import { useAuthStore } from "@/stores/auth-store";
 
 interface CartItemProps {
   item: CartItem;
@@ -30,7 +30,7 @@ export function CartItemComponent({
   const { updateItem, removeItem } = useCartStore();
   const { mutate: deleteFromCart } = useDeleteFromCart();
   const { mutate: updateCartItem } = useUpdateCartItem();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const router = useRouter();
 
   const handleQuantityChange = async (newQuantity: number) => {

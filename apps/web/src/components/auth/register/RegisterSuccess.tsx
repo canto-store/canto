@@ -17,15 +17,12 @@ export function RegisterSuccess({
 }) {
   const t = useTranslations("auth");
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl") || "/";
-  email = email || searchParams.get("email") || "";
 
   const handleGoToLogin = () => {
     if (switchToLogin) {
       switchToLogin();
     } else {
-      router.push(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+      router.push(`/login}`);
     }
   };
 
@@ -48,7 +45,7 @@ export function RegisterSuccess({
         <div className="mt-2 rounded-md bg-blue-50 p-3 text-blue-800">
           <div className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            <p>{t("verificationEmailSentTo", { email })}</p>
+            <p>Register Success</p>
           </div>
         </div>
       </div>

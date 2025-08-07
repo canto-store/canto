@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useAddToCart, useCartStore } from "@/lib/cart";
 import { ProductSummary } from "@/types";
 import { BsCartPlus, BsEye } from "react-icons/bs";
-import { useAuth } from "@/hooks/auth";
+import { useAuthStore } from "@/stores/auth-store";
 
 interface ProductCardProps {
   product: ProductSummary;
@@ -29,7 +29,7 @@ export function ProductCard({
 
   const { addItem } = useCartStore();
   const { mutateAsync: addToCart } = useAddToCart();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
   const handleAddToCart = (product: ProductSummary) => {
     if (user) {

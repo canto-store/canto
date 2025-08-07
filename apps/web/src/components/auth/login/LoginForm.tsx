@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth } from "@/hooks/auth";
+import { useLogin } from "@/hooks/auth";
 import { Button } from "@/components/ui/button";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { Loader2 } from "lucide-react";
@@ -34,19 +33,22 @@ type FormData = z.infer<typeof loginFormSchema>;
 interface LoginFormProps {
   onClose?: () => void;
   switchToRegister?: () => void;
+  redirectUrl?: string;
 }
 
-export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
+export function LoginForm({
+  onClose,
+  switchToRegister,
+  redirectUrl = "/",
+}: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const t = useTranslations();
-  const { login } = useAuth();
+  const { mutateAsync: login } = useLogin();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { items, addItems } = useCartStore();
   const { mutateAsync: syncCart } = useSyncCart();
-  const returnUrl = searchParams.get("returnUrl") || "/";
 
   const form = useForm<FormData>({
     resolver: zodResolver(loginFormSchema),
@@ -59,8 +61,7 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   const onSubmit = async (data: FormData) => {
     setError(null);
     setIsLoading(true);
-    await login
-      .mutateAsync(data)
+    await login(data)
       .then(() => {
         syncCart(
           items.map((item) => ({
@@ -70,7 +71,7 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
         ).then((data) => {
           addItems(data);
         });
-        router.push(returnUrl);
+        router.push(redirectUrl);
         if (onClose) {
           onClose();
         }
@@ -88,7 +89,7 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
     if (switchToRegister) {
       switchToRegister();
     } else {
-      router.push(`/register?returnUrl=${encodeURIComponent(returnUrl)}`);
+      router.push(`/register`);
     }
   };
 

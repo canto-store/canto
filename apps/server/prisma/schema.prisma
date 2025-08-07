@@ -34,6 +34,7 @@ enum ActivityType {
   SELLER_REGISTERED
   BRAND_CREATED
   PRODUCT_ADDED
+  PRODUCT_UPDATED
 }
 
 enum UserRole {
@@ -59,6 +60,7 @@ model User {
   role           UserRole[] @default([USER])
 
   @@map("users")
+  Activity Activity[]
 }
 
 model Brand {
@@ -306,8 +308,10 @@ model Activity {
   id         Int          @id @default(autoincrement())
   type       ActivityType
   entityName String       @map("entity_name")
-  entityId   Int          @map("entity_id")
-  createdAt  DateTime     @default(now()) @map("created_at")
+  entityId    Int      @map("entity_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdByid Int?     @map("created_by")
+  createdBy   User?    @relation(fields: [createdByid], references: [id])
 
   @@map("activities")
 }

@@ -22,7 +22,12 @@ router.get(
   '/home-products',
   productController.getHomeProducts.bind(productController)
 )
-router.get('/id/:id', productController.getProductById.bind(productController))
+router.get(
+  '/id/:id',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkProductAccess(),
+  productController.getProductById.bind(productController)
+)
 router.put(
   '/id/:id',
   authMiddleware.checkAuth.bind(authMiddleware),

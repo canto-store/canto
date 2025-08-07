@@ -291,7 +291,6 @@
     "serverError": "حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقاً.",
     "signUpSuccess": "تم إنشاء الحساب بنجاح",
     "verificationEmailSent": "يرجى التحقق من بريدك الإلكتروني لتأكيد حسابك.",
-    "verificationEmailSentTo": "لقد أرسلنا رسالة تحقق إلى {email}",
     "goToLogin": "الذهاب إلى تسجيل الدخول",
     "nameRequired": "الاسم مطلوب",
     "emailRequired": "البريد الإلكتروني مطلوب",

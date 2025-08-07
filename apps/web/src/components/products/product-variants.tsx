@@ -322,7 +322,7 @@ export default function ProductVariants() {
                     });
                   }}
                   value={variant.options
-                    .find(
+                    ?.find(
                       (o: { optionId: number; valueId: number }) =>
                         o.optionId === option.id,
                     )

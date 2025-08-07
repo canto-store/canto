@@ -5,7 +5,7 @@ import { CartItem } from "@/types/cart-item";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { calculateTotals, processNewItem } from "./cart-helpers";
-import { useAuth } from "@/hooks/auth";
+import { useAuthStore } from "@/stores/auth-store";
 interface AddToCartInput {
   variantId: number;
   quantity: number;
@@ -24,7 +24,7 @@ export const useAddToCart = () => {
 };
 
 export const useGetCart = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   return useQuery({
     queryKey: ["cart"],
     queryFn: async () => {

@@ -2,7 +2,7 @@ import React from "react";
 import { LoginForm } from "./LoginForm";
 import { useTranslations } from "next-intl";
 
-export function LoginPage() {
+export function LoginPage({ redirectUrl }: { redirectUrl?: string }) {
   const t = useTranslations("auth");
 
   return (
@@ -13,7 +13,7 @@ export function LoginPage() {
           <p>{t("loginDescription")}</p>
         </div>
         <div className="rounded-lg p-6 shadow-lg">
-          <LoginForm />
+          <LoginForm redirectUrl={redirectUrl ?? "/"} />
         </div>
       </div>
     </div>

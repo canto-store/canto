@@ -101,6 +101,16 @@ class AuthMiddleware {
       next()
     }
   }
+
+  checkProductAccess() {
+    return async (req: AuthRequest, res: Response, next: NextFunction) => {
+      const userId = req.user?.id
+      const productId = Number(req.params.id)
+      const user = await this.authService.checkProductAccess(userId, productId)
+      if (!user) return res.status(403).json({ message: 'Forbidden' })
+      next()
+    }
+  }
 }
 
 export default AuthMiddleware

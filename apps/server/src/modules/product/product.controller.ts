@@ -283,7 +283,21 @@ class ProductController {
   ) {
     const productForm = request.body as SubmitProductFormDto
     try {
-      await this.productService.submitProductForm(productForm)
+      await this.productService.submitProductForm(productForm, request.user?.id)
+      response.status(201).json({ message: 'Product created' })
+    } catch (error) {
+      nextFunction(error)
+    }
+  }
+
+  async updateProductForm(
+    request: AuthRequest,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
+    const productForm = request.body as SubmitProductFormDto
+    try {
+      await this.productService.submitProductForm(productForm, request.user?.id)
       response.status(201).json({ message: 'Product created' })
     } catch (error) {
       nextFunction(error)

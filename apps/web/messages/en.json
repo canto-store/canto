@@ -395,7 +395,6 @@
     "serverError": "Something went wrong. Please try again later.",
     "signUpSuccess": "Sign Up Successful",
     "verificationEmailSent": "Please check your email to verify your account.",
-    "verificationEmailSentTo": "We've sent a verification email to {email}",
     "goToLogin": "Go to Login",
     "nameRequired": "Name is required",
     "emailRequired": "Email is required",

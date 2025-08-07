@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useAuth } from "@/hooks/auth";
+import { useRegister } from "@/hooks/auth";
 import { parseApiError } from "@/lib/utils";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,7 +27,7 @@ import { useCartStore, useSyncCart } from "@/lib/cart";
 const registerFormSchema = z
   .object({
     name: z.string().min(1, { message: "Name is required" }),
-    email: z.string().email({ message: "Invalid email address" }),
+    email: z.email({ message: "Invalid email address" }),
     phone_number: z.string().min(11, { message: "Phone number is required" }),
     password: z
       .string()
@@ -50,7 +50,7 @@ export function RegisterForm({
 }) {
   const t = useTranslations("auth");
   const router = useRouter();
-  const { register: registerMutation } = useAuth();
+  const { mutateAsync: register } = useRegister();
   const { items, addItems } = useCartStore();
   const { mutateAsync: syncCart } = useSyncCart();
   const [isPending, setIsPending] = useState(false);
@@ -69,13 +69,12 @@ export function RegisterForm({
 
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
-    registerMutation
-      .mutateAsync({
-        email: data.email,
-        password: data.password,
-        name: data.name,
-        phone_number: data.phone_number,
-      })
+    register({
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      phone_number: data.phone_number,
+    })
       .then(() => {
         setIsPending(false);
         setError(null);

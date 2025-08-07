@@ -8,6 +8,7 @@ import {
   SavedProductForm,
   SubmitProductFormValues,
   ProductByBrand,
+  ProductFormValues,
 } from "@/types";
 import axios from "axios";
 import api from "./api";
@@ -65,6 +66,17 @@ export const useProductOptions = () =>
   });
 
 export const useSubmitProduct = () =>
+  useMutation<SavedProductForm, Error, SubmitProductFormValues>({
+    mutationFn: async (product: SubmitProductFormValues) => {
+      const { data } = await api.post<SavedProductForm>(
+        "/product/submit",
+        product,
+      );
+      return data;
+    },
+  });
+
+export const useUpdateProduct = () =>
   useMutation<SavedProductForm, Error, SubmitProductFormValues>({
     mutationFn: async (product: SubmitProductFormValues) => {
       const { data } = await api.post<SavedProductForm>(
@@ -134,4 +146,18 @@ export const useProductSearch = (params: ProductSearchParams) =>
     enabled: Object.values(params).some(
       (value) => value !== undefined && value !== "",
     ),
+  });
+
+export const useProductById = (id: string | null) =>
+  useQuery<ProductFormValues | null, Error>({
+    queryKey: ["product", id],
+    queryFn: async () => {
+      if (id) {
+        const { data } = await api.get<ProductFormValues>(
+          `/product/id/${Number(id)}`,
+        );
+        return data;
+      }
+      return null;
+    },
   });

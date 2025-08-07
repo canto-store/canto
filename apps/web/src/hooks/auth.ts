@@ -5,31 +5,33 @@ import { Seller, User } from "@/types/user";
 import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
 import { useCartStore } from "@/lib/cart";
+import { AxiosError } from "axios";
 
 export const useUserQuery = () => {
   const { setUser, clearUser, setLoading } = useAuthStore();
 
-  return useQuery<User | Seller | null>({
+  return useQuery<User | null>({
     queryKey: ["me"],
     queryFn: async () => {
       setLoading(true);
       return await api
-        .get<User | Seller>("/auth/me")
+        .get<User>("/auth/me")
         .then((response) => {
           setUser(response.data);
           return response.data;
         })
-        .catch(() => {
-          console.error("Failed to fetch user data");
-          clearUser();
-          return null;
+        .catch((error) => {
+          if (error instanceof AxiosError) {
+            if (error.response?.status !== 200) {
+              clearUser();
+              return null;
+            }
+          }
+          throw error;
         })
-        .finally(() => {
-          setLoading(false);
-        });
+        .finally(() => setLoading(false));
     },
     initialData: null,
-    staleTime: 60 * 60 * 1000, // 1 hour
     retry: false,
     throwOnError: false,
   });
@@ -140,24 +142,4 @@ export const useLogout = () => {
       toast.error("Failed to log out");
     },
   });
-};
-
-export const useAuth = () => {
-  const authStore = useAuthStore();
-  const userQuery = useUserQuery();
-  const login = useLogin();
-  const sellerLogin = useSellerLogin();
-  const register = useRegister();
-  const sellerRegister = useSellerRegister();
-  const logout = useLogout();
-
-  return {
-    ...authStore,
-    userQuery,
-    login,
-    sellerLogin,
-    register,
-    sellerRegister,
-    logout,
-  };
 };

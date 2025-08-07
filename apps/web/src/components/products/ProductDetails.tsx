@@ -10,7 +10,6 @@ import ProductOptions from "./ProductOptions";
 import { Link } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { useAddToCart, useCartStore } from "@/lib/cart";
-import { useAuth } from "@/hooks/auth";
 import {
   Carousel,
   CarouselContent,
@@ -18,6 +17,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useAuthStore } from "@/stores/auth-store";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
@@ -33,7 +33,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const { mutateAsync: addToCart } = useAddToCart();
   const { addItem } = useCartStore();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     if (product.default_variant_id) {

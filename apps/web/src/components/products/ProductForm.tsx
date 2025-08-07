@@ -29,8 +29,13 @@ import { useCategories } from "@/lib/categories";
 import { productFormSchema, ProductFormValues } from "@/types/product";
 import { useProductsByBrand, useSubmitProduct } from "@/lib/product";
 import { useMyBrand } from "@/lib/brand";
+import { useRouter } from "@/i18n/navigation";
 
-export default function ProductForm() {
+export default function ProductForm({
+  products,
+}: {
+  products: ProductFormValues | null;
+}) {
   const { data: categories } = useCategories();
   const { data: brand } = useMyBrand();
   const { mutateAsync: createProduct, isPending } = useSubmitProduct();
@@ -39,12 +44,14 @@ export default function ProductForm() {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
-      name: "",
-      category: 0,
-      description: "",
-      variants: [],
+      name: products?.name ?? "",
+      category: products?.category ?? 0,
+      description: products?.description ?? "",
+      variants: products?.variants ?? [],
     },
   });
+
+  const router = useRouter();
 
   const { refetch } = useProductsByBrand(brand?.id ?? 0);
   const onSubmit = (data: ProductFormValues) => {
@@ -60,7 +67,8 @@ export default function ProductForm() {
           variants: [],
         });
       }, 3000);
-      return () => clearTimeout(timer);
+      clearTimeout(timer);
+      router.push({ pathname: "/sell" });
     });
   };
 
