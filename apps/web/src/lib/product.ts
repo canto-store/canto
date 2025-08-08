@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   HomeProducts,
   ProductDetails,
@@ -7,6 +7,7 @@ import {
   ProductOption,
   SavedProductForm,
   SubmitProductFormValues,
+  UpdateProductFormValues,
   ProductByBrand,
   ProductFormValues,
 } from "@/types";
@@ -65,8 +66,9 @@ export const useProductOptions = () =>
     },
   });
 
-export const useSubmitProduct = () =>
-  useMutation<SavedProductForm, Error, SubmitProductFormValues>({
+export const useSubmitProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<SavedProductForm, Error, SubmitProductFormValues>({
     mutationFn: async (product: SubmitProductFormValues) => {
       const { data } = await api.post<SavedProductForm>(
         "/product/submit",
@@ -74,22 +76,35 @@ export const useSubmitProduct = () =>
       );
       return data;
     },
+    onSuccess: () => {
+      // Ensure product listings reflect the new item
+      queryClient.invalidateQueries({ queryKey: ["products-by-brand"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+    },
   });
+};
 
-export const useUpdateProduct = () =>
-  useMutation<SavedProductForm, Error, SubmitProductFormValues>({
-    mutationFn: async (product: SubmitProductFormValues) => {
-      const { data } = await api.post<SavedProductForm>(
-        "/product/submit",
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<SavedProductForm, Error, UpdateProductFormValues>({
+    mutationFn: async (product: UpdateProductFormValues) => {
+      const { data } = await api.put<SavedProductForm>(
+        "/product/update-form",
         product,
       );
       return data;
     },
+    onSuccess: () => {
+      // Invalidate both the individual product and brand products list caches
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["products-by-brand"] });
+    },
   });
+};
 
 export const useProductsByBrand = (brandId: number) =>
   useQuery<ProductByBrand[], Error>({
-    queryKey: ["products-by-brand", brandId],
+    queryKey: ["products-by-brand"],
     queryFn: async () => {
       const { data } = await api.get<ProductByBrand[]>(
         `/product/brands/${brandId}`,
@@ -160,4 +175,6 @@ export const useProductById = (id: string | null) =>
       }
       return null;
     },
+    // Always refetch on mount/navigation so edit always gets latest data
+    refetchOnMount: "always",
   });

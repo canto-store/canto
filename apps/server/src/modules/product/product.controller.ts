@@ -9,6 +9,7 @@ import {
   UpdateProductVariantDto,
   SubmitProductFormDto,
   ProductQueryParams,
+  UpdateProductFormDto,
 } from './product.types'
 import { AuthRequest } from '../../middlewares/auth.middleware'
 import AppError from '../../utils/appError'
@@ -295,10 +296,10 @@ class ProductController {
     response: Response,
     nextFunction: NextFunction
   ) {
-    const productForm = request.body as SubmitProductFormDto
+    const productForm = request.body as UpdateProductFormDto
     try {
-      await this.productService.submitProductForm(productForm, request.user?.id)
-      response.status(201).json({ message: 'Product created' })
+      await this.productService.updateProductForm(productForm, request.user?.id)
+      response.status(200).json({ message: 'Product updated' })
     } catch (error) {
       nextFunction(error)
     }

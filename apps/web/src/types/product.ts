@@ -124,22 +124,30 @@ export interface ProductOption {
 }
 
 export const selectedVariantSchema = z.object({
-  price: z.number().positive(),
-  stock: z.number().int().positive(),
-  options: z.array(
-    z.object({
-      optionId: z.number(),
-      valueId: z.number(),
-    }),
-  ),
-  images: z.array(z.string()),
+  id: z.number().optional(), // Add optional id for updates
+  price: z.number().positive().optional(), // Make optional for updates
+  stock: z.number().int().positive().optional(), // Make optional for updates
+  options: z
+    .array(
+      z.object({
+        optionId: z.number(),
+        valueId: z.number(),
+      }),
+    )
+    .optional(), // Make optional for updates
+  images: z.array(z.string()).optional(), // Make optional for updates
 });
 
 export const productFormSchema = z.object({
-  name: z.string(),
-  category: z.number().min(1, { message: "Please select a category" }),
+  id: z.number().optional(),
+  name: z.string().optional(),
+  slug: z.string().optional(),
+  category: z
+    .number()
+    .min(1, { message: "Please select a category" })
+    .optional(),
   description: z.string().optional(),
-  variants: z.array(selectedVariantSchema),
+  variants: z.array(selectedVariantSchema).optional(),
 });
 
 export type SavedProductForm = {
@@ -154,4 +162,38 @@ export type ProductFormValues = z.infer<typeof productFormSchema>;
 
 export type SubmitProductFormValues = ProductFormValues & {
   brandId: number;
+};
+
+// Add new types for update operations
+export type UpdateProductFormValues = {
+  id: number;
+  name?: string;
+  slug: string;
+  category?: number;
+  description?: string;
+  variants?: Array<{
+    id?: number; // Optional for new variants
+    price?: number;
+    stock?: number;
+    options?: Array<{
+      optionId: number;
+      valueId: number;
+    }>;
+    images?: string[];
+  }>;
+};
+
+export type CreateProductFormValues = {
+  name: string;
+  category: number;
+  description?: string;
+  variants: Array<{
+    price: number;
+    stock: number;
+    options: Array<{
+      optionId: number;
+      valueId: number;
+    }>;
+    images: string[];
+  }>;
 };

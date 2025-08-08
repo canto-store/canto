@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   FormControl,
   FormField,
@@ -17,12 +17,22 @@ import {
 } from "../ui/select";
 import { useProductOptions } from "@/lib/product";
 import { Button } from "../ui/button";
-import { Plus, X, Upload, Loader2 } from "lucide-react";
+import { Plus, X, Upload, Loader2, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { SelectedVariant } from "@/types/product";
-import { Alert, AlertDescription } from "../ui/alert";
 import { Input } from "../ui/input";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function ProductVariants() {
   const form = useFormContext();
@@ -42,7 +52,28 @@ export default function ProductVariants() {
   });
   const { data: options } = useProductOptions();
   const [isUploading, setIsUploading] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [newVariantIndex, setNewVariantIndex] = useState<number | null>(null);
+
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Smooth scroll to newly added variant
+  useEffect(() => {
+    if (newVariantIndex !== null) {
+      const variantElement = document.getElementById(
+        `variant-${newVariantIndex}`,
+      );
+      if (variantElement) {
+        setTimeout(() => {
+          variantElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }, 100);
+      }
+      setNewVariantIndex(null);
+    }
+  }, [newVariantIndex]);
 
   const addVariantSet = () => {
     const newVariantSet: SelectedVariant = {
@@ -54,6 +85,7 @@ export default function ProductVariants() {
     const updatedVariants = [...variantSets, newVariantSet];
     setVariantSets(updatedVariants);
     form.setValue("variants", updatedVariants);
+    setNewVariantIndex(updatedVariants.length - 1);
   };
 
   const removeVariantSet = (index: number) => {
@@ -65,6 +97,10 @@ export default function ProductVariants() {
     );
     setVariantSets(newVariantSets);
     form.setValue("variants", newVariantSets);
+
+    // Scroll to the previous variant (or the last one if removing the last)
+    const targetIndex = index > 0 ? index - 1 : newVariantSets.length - 1;
+    setNewVariantIndex(targetIndex);
   };
 
   const updateVariantSet = (index: number, variant: SelectedVariant) => {
@@ -76,9 +112,13 @@ export default function ProductVariants() {
 
   const removeImage = (variantIndex: number, imageIndex: number) => {
     const variant = variantSets[variantIndex];
-    const newImages = variant.images.filter(
+    let newImages = (variant.images || []).filter(
       (_: string, i: number) => i !== imageIndex,
     );
+
+    if (newImages.length === 0) {
+      newImages = [];
+    }
     updateVariantSet(variantIndex, {
       ...variant,
       images: newImages,
@@ -87,11 +127,9 @@ export default function ProductVariants() {
 
   const uploadToS3 = async (file: File): Promise<string> => {
     try {
-      // Create a FormData object to send the file
       const formData = new FormData();
       formData.append("file", file);
 
-      // Send the file to our API endpoint
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -143,7 +181,7 @@ export default function ProductVariants() {
     Promise.all(uploadPromises)
       .then((uploadedUrls) => {
         const variant = variantSets[variantIndex];
-        const newImages = [...variant.images, ...uploadedUrls];
+        const newImages = [...(variant.images || []), ...uploadedUrls];
         updateVariantSet(variantIndex, {
           ...variant,
           images: newImages,
@@ -167,9 +205,7 @@ export default function ProductVariants() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <span className="font-medium">Product Variants</span>
-        </div>
+        <span className="font-medium">Variants</span>
         <Button
           type="button"
           variant="outline"
@@ -185,6 +221,7 @@ export default function ProductVariants() {
       {variantSets.map((variant: SelectedVariant, setIndex: number) => (
         <div
           key={setIndex}
+          id={`variant-${setIndex}`}
           className="relative space-y-4 rounded-lg border p-4"
         >
           {variantSets.length > 1 && (
@@ -196,36 +233,62 @@ export default function ProductVariants() {
               <X className="h-5 w-5" />
             </button>
           )}
-          {variant.images.length > 0 ? (
+          {(variant.images || []).length > 0 ? (
             <div className="flex-1">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                {variant.images.map((image: string, imageIndex: number) => (
-                  <div key={imageIndex} className="relative aspect-square">
-                    <Image
-                      src={image}
-                      alt={`Variant image ${imageIndex + 1}`}
-                      fill
-                      className="rounded-lg object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(setIndex, imageIndex)}
-                      className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
+                {(variant.images || []).map(
+                  (image: string, imageIndex: number) => (
+                    <div key={imageIndex} className="relative aspect-square">
+                      <Image
+                        src={image}
+                        alt={`Variant image ${imageIndex + 1}`}
+                        fill
+                        className="rounded-lg object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(setIndex, imageIndex)}
+                        className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           ) : (
             <div className="flex-1">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                <div className="relative flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
-                  <div className="text-center">
-                    <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-                    <p className="text-sm text-gray-500">No images uploaded</p>
+                <div className="flex aspect-square rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+                  <div
+                    className="flex h-full w-full cursor-pointer flex-col items-center justify-center text-center"
+                    data-accept="image/*"
+                    data-multiple="true"
+                    data-max-file-size="4194304"
+                    onClick={() => {
+                      setShowUploadModal(true);
+                    }}
+                  >
+                    {isUploading ? (
+                      <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin text-gray-400" />
+                    ) : (
+                      <>
+                        <PlusIcon className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                        <p className="text-sm text-gray-500">Add images</p>
+                      </>
+                    )}
                   </div>
+                  <input
+                    ref={(el) => {
+                      fileInputRefs.current[setIndex] = el;
+                    }}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleFileChange(setIndex, e)}
+                  />
                 </div>
               </div>
             </div>
@@ -298,7 +361,7 @@ export default function ProductVariants() {
                 </div>
                 <Select
                   onValueChange={(valueId) => {
-                    const newOptions = [...variant.options];
+                    const newOptions = [...(variant.options || [])];
                     const existingIndex = newOptions.findIndex(
                       (o: { optionId: number; valueId: number }) =>
                         o.optionId === option.id,
@@ -345,49 +408,32 @@ export default function ProductVariants() {
               </FormItem>
             ))}
           </div>
-
-          <Alert>
-            <AlertDescription>
-              Please upload high quality images that are square shaped (equal
-              width and height) for the best display. You can select multiple
-              images at once. Images not following the guidelines may be
-              rejected.
-            </AlertDescription>
-          </Alert>
-
-          <div className="flex w-full">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              ref={(el) => {
-                fileInputRefs.current[setIndex] = el;
-              }}
-              onChange={(e) => handleFileChange(setIndex, e)}
-            />
-            <Button
-              type="button"
-              variant="default"
-              className="hover:bg-primary/90 mr-auto ml-auto rounded-md py-2 text-sm font-medium text-white shadow-sm transition-colors"
-              onClick={() => fileInputRefs.current[setIndex]?.click()}
-              disabled={isUploading}
-            >
-              <div className="flex items-center gap-2">
-                {isUploading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Uploading...</span>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4" />
-                    <span>Upload Images</span>
-                  </>
-                )}
+          <AlertDialog open={showUploadModal} onOpenChange={setShowUploadModal}>
+            <AlertDialogContent className="bg-white">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Image Upload Guidelines</AlertDialogTitle>
+                <AlertDialogDescription className="text-left">
+                  Please follow these guidelines for the best display quality:
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-4">
+                <ul className="list-disc pl-5 text-sm text-gray-600">
+                  <li>Square aspect ratio (1:1)</li>
+                  <li>High quality images (minimum 800x800px)</li>
+                  <li>Maximum file size (4MB per image)</li>
+                  <li>Supported formats (JPG, PNG, WebP)</li>
+                </ul>
               </div>
-            </Button>
-          </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => fileInputRefs.current[setIndex]?.click()}
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       ))}
     </div>

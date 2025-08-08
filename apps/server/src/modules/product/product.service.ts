@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient, Product } from '@prisma/client'
 import AppError from '../../utils/appError'
 import {
   CreateProductDto,
@@ -721,19 +721,29 @@ class ProductService {
 
   async updateProductForm(dto: UpdateProductFormDto, userId: number) {
     return this.prisma.$transaction(async tx => {
-      const updatedProduct = await tx.product.update({
-        where: { id: dto.id },
-        data: {
-          name: dto.name,
-          description: dto.description,
-          brand: { connect: { id: dto.brandId } },
-          category: { connect: { id: dto.category } },
-        },
-        include: {
-          brand: true,
-          category: true,
-        },
-      })
+      const productUpdateData: Record<string, any> = {}
+
+      if (dto.name !== undefined) {
+        productUpdateData.name = dto.name
+      }
+      if (dto.description !== undefined) {
+        productUpdateData.description = dto.description
+      }
+      if (dto.category !== undefined) {
+        productUpdateData.categoryId = dto.category
+      }
+
+      let updatedProduct: Product
+      if (Object.keys(productUpdateData).length > 0) {
+        updatedProduct = await tx.product.update({
+          where: { id: dto.id },
+          data: productUpdateData,
+        })
+      } else {
+        updatedProduct = await tx.product.findUnique({
+          where: { id: dto.id },
+        })
+      }
 
       await tx.activity.create({
         data: {
@@ -744,42 +754,123 @@ class ProductService {
         },
       })
 
-      for (const variant of dto.variants) {
-        const variantOptionPromises = variant.options.map(o =>
-          tx.productOptionValue
-            .findFirst({
-              where: { id: o.valueId },
-            })
-            .then(v => v?.value)
+      const currentVariants = await tx.productVariant.findMany({
+        where: { productId: dto.id },
+        select: { id: true },
+      })
+
+      const currentVariantIds = currentVariants.map(v => v.id)
+      const updatedVariantIds = dto.variants.map(v => v.id).filter(Boolean)
+      const newVariantsCount = dto.variants.filter(v => !v.id).length
+
+      const hasVariantChanges =
+        currentVariantIds.length !== updatedVariantIds.length
+
+      const hasNewVariants = newVariantsCount > 0
+
+      if (hasVariantChanges || hasNewVariants) {
+        const variantsToDelete = currentVariantIds.filter(
+          id => !updatedVariantIds.includes(id)
         )
 
-        // Wait for all promises to resolve
-        const variantOptionNames = await Promise.all(variantOptionPromises)
+        if (variantsToDelete.length > 0) {
+          await tx.productVariant.deleteMany({
+            where: { id: { in: variantsToDelete } },
+          })
+        }
+      }
 
-        const variantRecord = await tx.productVariant.create({
-          data: {
-            productId: updatedProduct.id,
-            sku: `SKU-${String(updatedProduct.id).padStart(3, '0')}-${updatedProduct.slug}-${variantOptionNames.join('-')}`,
-            price: variant.price,
-            stock: variant.stock,
-          },
-        })
+      for (const variant of dto.variants) {
+        if (variant.id) {
+          const variantUpdateData: Record<string, any> = {}
 
-        await tx.productVariantImage.createMany({
-          data: variant.images.map(image => ({
-            url: image,
-            alt_text: dto.name,
-            variantId: variantRecord.id,
-          })),
-        })
+          if (variant.price !== undefined) {
+            variantUpdateData.price = variant.price
+          }
+          if (variant.stock !== undefined) {
+            variantUpdateData.stock = variant.stock
+          }
 
-        await tx.variantOptionValue.createMany({
-          data: variant.options.map(o => ({
-            variantId: variantRecord.id,
-            optionValueId: o.valueId,
-            productOptionId: o.optionId,
-          })),
-        })
+          if (Object.keys(variantUpdateData).length > 0) {
+            await tx.productVariant.update({
+              where: { id: variant.id },
+              data: variantUpdateData,
+            })
+          }
+
+          if (variant.images) {
+            await tx.productVariantImage.deleteMany({
+              where: { variantId: variant.id },
+            })
+
+            if (variant.images.length > 0) {
+              await tx.productVariantImage.createMany({
+                data: variant.images.map(image => ({
+                  variantId: variant.id,
+                  url: image,
+                  alt_text: dto.name,
+                })),
+              })
+            }
+          }
+
+          if (variant.options) {
+            await tx.variantOptionValue.deleteMany({
+              where: { variantId: variant.id },
+            })
+
+            if (variant.options.length > 0) {
+              await tx.variantOptionValue.createMany({
+                data: variant.options.map(o => ({
+                  variantId: variant.id,
+                  optionValueId: o.valueId,
+                  productOptionId: o.optionId,
+                })),
+              })
+            }
+          }
+        } else {
+          const variantOptionPromises = variant.options.map(o =>
+            tx.productOptionValue
+              .findFirst({
+                where: { id: o.valueId },
+              })
+              .then(v => v?.value)
+          )
+
+          const variantOptionNames = await Promise.all(variantOptionPromises)
+
+          if (variant.price && variant.stock) {
+            const newVariant = await tx.productVariant.create({
+              data: {
+                productId: dto.id,
+                sku: `SKU-${String(dto.id).padStart(3, '0')}-${dto.slug}-${variantOptionNames.join('-')}`,
+                price: variant.price,
+                stock: variant.stock,
+              },
+            })
+
+            if (variant.images && variant.images.length > 0) {
+              await tx.productVariantImage.createMany({
+                data: variant.images.map(image => ({
+                  variantId: newVariant.id,
+                  url: image,
+                  alt_text: dto.name,
+                })),
+              })
+            }
+
+            if (variant.options && variant.options.length > 0) {
+              await tx.variantOptionValue.createMany({
+                data: variant.options.map(o => ({
+                  variantId: newVariant.id,
+                  optionValueId: o.valueId,
+                  productOptionId: o.optionId,
+                })),
+              })
+            }
+          }
+        }
       }
 
       return true
@@ -879,6 +970,7 @@ class ProductService {
         id: true,
         name: true,
         description: true,
+        slug: true,
         category: { select: { id: true } },
         variants: {
           include: { images: { select: { url: true } }, optionLinks: true },

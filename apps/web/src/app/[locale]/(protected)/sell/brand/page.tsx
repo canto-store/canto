@@ -1,9 +1,11 @@
+"use client";
 import { useTranslations } from "next-intl";
 import { BrandForm } from "@/components/sell/BrandForm";
 import { useAuthStore } from "@/stores/auth-store";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect } from "react";
-import Spinner from "../common/Spinner";
+import Spinner from "@/components/common/Spinner";
+
 export default function BrandPage() {
   const t = useTranslations("sell");
 

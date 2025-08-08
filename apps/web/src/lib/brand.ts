@@ -32,7 +32,6 @@ export const useMyBrand = (options?: UseMyBrandOptions) => {
       }
     },
     throwOnError: false,
-    staleTime: 1000 * 60 * 30,
     retry: false,
     ...options,
   });

@@ -47,6 +47,13 @@ router.post(
   productController.submitProductForm.bind(productController)
 )
 
+router.put(
+  '/update-form',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.SELLER),
+  productController.updateProductForm.bind(productController)
+)
+
 router.get(
   '/brands/:brandId',
   authMiddleware.checkAuth.bind(authMiddleware),

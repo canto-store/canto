@@ -22,17 +22,26 @@ export interface SubmitProductFormDto {
   description: string
   variants: SelectedVariant[]
 }
-export interface UpdateProductFormDto extends SubmitProductFormDto {
+export interface UpdateProductFormDto {
   id: number
+  name: string
+  slug: string
+  category?: number
+  description?: string
+  variants: UpdateSelectedVariant[]
 }
 export interface SelectedVariant {
-  price: number
-  stock: number
-  images: string[]
-  options: {
-    optionId: number
-    valueId: number
+  price?: number
+  stock?: number
+  images?: string[]
+  options?: {
+    optionId?: number
+    valueId?: number
   }[]
+}
+
+export interface UpdateSelectedVariant extends SelectedVariant {
+  id?: number
 }
 
 export interface UpdateProductDto {

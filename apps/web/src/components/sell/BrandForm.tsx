@@ -19,8 +19,10 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { parseApiError } from "@/lib/utils";
+import { useRouter } from "@/i18n/navigation";
 
 export function BrandForm() {
+  const router = useRouter();
   const form = useForm<BrandFormValues>({
     resolver: zodResolver(brandFormSchema),
     defaultValues: {
@@ -42,6 +44,7 @@ export function BrandForm() {
     await mutateAsync(data)
       .then(() => {
         toast.success("Brand submitted successfully!");
+        router.push("/sell/products");
       })
       .catch((err) => toast.error(parseApiError(err)));
   };

@@ -14,7 +14,10 @@ export default function ProductPage() {
 
   if (isSuccess)
     return (
-      <div className="mx-auto flex flex-col items-center justify-center p-10">
+      <div className="mx-auto flex max-w-2xl flex-col items-center justify-center p-10">
+        <h1 className="text-4xl font-bold tracking-tight">
+          {products ? "Edit Product" : "Create Product"}
+        </h1>
         <ProductForm products={products} />
       </div>
     );

@@ -1,4 +1,4 @@
-import { PrismaClient, Brand } from '@prisma/client'
+import { PrismaClient, Brand, UserRole } from '@prisma/client'
 import AppError from '../../../utils/appError'
 import { slugify } from '../../../utils/helper'
 class BrandService {
@@ -31,12 +31,15 @@ class BrandService {
     data: Omit<Brand, 'sellerId' | 'id' | 'created_at' | 'updated_at'>,
     sellerId: number
   ): Promise<Brand> {
-    const existingSeller = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.update({
       where: { id: sellerId },
+      data: {
+        role: { push: UserRole.SELLER },
+      },
     })
 
-    if (!existingSeller) {
-      throw new AppError('Seller not found', 404)
+    if (!user) {
+      throw new AppError('User not found', 404)
     }
 
     const existingBrand = await this.prisma.brand.findFirst({

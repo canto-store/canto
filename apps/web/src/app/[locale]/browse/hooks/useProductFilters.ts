@@ -67,7 +67,10 @@ export function useProductFilters() {
 
     const locale = typeof params.locale === "string" ? params.locale : "en";
     const newUrl = `/${locale}/browse${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
-    router.push(newUrl, { scroll: false });
+
+    // Use replace instead of push to avoid adding to history stack
+    // and prevent navigation during render
+    router.replace(newUrl, { scroll: false });
   }, [
     searchQuery,
     selectedCategory,
@@ -76,7 +79,6 @@ export function useProductFilters() {
     activeTab,
     currentPage,
     itemsPerPage,
-    router,
     params.locale,
   ]);
 

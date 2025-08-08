@@ -132,9 +132,7 @@ export const useLogout = () => {
     onSuccess: () => {
       clearUser();
       clearCart();
-      queryClient.removeQueries({ queryKey: ["me"] });
-      queryClient.removeQueries({ queryKey: ["address"] });
-      queryClient.removeQueries({ queryKey: ["cart"] });
+      queryClient.clear();
       toast.success("Logged out successfully");
     },
     onError: (error) => {

@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
-import { useProductById } from "@/lib/product";
 import { ProductByBrand } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Edit } from "lucide-react";
