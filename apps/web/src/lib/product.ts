@@ -106,6 +106,7 @@ export const useProductsByBrand = (brandId: number) =>
   useQuery<ProductByBrand[], Error>({
     queryKey: ["products-by-brand"],
     queryFn: async () => {
+      if (!brandId) throw new Error("Brand ID is required");
       const { data } = await api.get<ProductByBrand[]>(
         `/product/brands/${brandId}`,
       );
