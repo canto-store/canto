@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { ProductByBrand } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import Image from "next/image";
 
 type ProductStatusUpdate = "PENDING" | "ACTIVE" | "INACTIVE" | "REJECTED";
@@ -64,6 +64,7 @@ function ActionCell({ productId }: { productId: number }) {
 export const columns: ColumnDef<ProductByBrand>[] = [
   {
     accessorKey: "image",
+    header: () => <div className="text-left">Image</div>,
     cell: ({ row }) => {
       const image = row.getValue("image") as string;
       return (
@@ -79,12 +80,14 @@ export const columns: ColumnDef<ProductByBrand>[] = [
   },
   {
     accessorKey: "name",
+    header: () => <div className="text-left">Name</div>,
     cell: ({ row }) => {
       return <p className="text-sm font-medium">{row.getValue("name")}</p>;
     },
   },
   {
     accessorKey: "category",
+    header: () => <div className="text-left">Category</div>,
     cell: ({ row }) => {
       const category = row.getValue("category") as string;
       return <p className="text-sm">{category}</p>;
@@ -92,6 +95,7 @@ export const columns: ColumnDef<ProductByBrand>[] = [
   },
   {
     accessorKey: "status",
+    header: () => <div className="text-left">Status</div>,
     cell: ({ row }) => {
       const status = row.getValue("status") as ProductStatusUpdate;
       return <StatusDisplay status={status} />;
@@ -99,6 +103,7 @@ export const columns: ColumnDef<ProductByBrand>[] = [
   },
   {
     id: "actions",
+    header: () => <div className="text-left">Actions</div>,
     cell: ({ row }) => {
       return <ActionCell productId={row.original.id} />;
     },

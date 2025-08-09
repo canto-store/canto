@@ -14,5 +14,5 @@ export const ProductTable = ({ products }: { products: ProductByBrand[] }) => {
       </div>
     );
   }
-  return <DataTable columns={columns} data={products} showHeader={false} />;
+  return <DataTable columns={columns} data={products} showHeader={true} />;
 };
