@@ -7,12 +7,7 @@ const router = Router()
 const controller = new BrandController()
 const authMiddleware = new AuthMiddleware()
 
-router.get(
-  '/',
-  authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
-  controller.getAllBrands.bind(controller)
-)
+router.get('/', controller.getAllBrands.bind(controller))
 router.get(
   '/my-brand',
   authMiddleware.checkAuth.bind(authMiddleware),

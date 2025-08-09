@@ -3,7 +3,7 @@ import { z } from "zod";
 export type Brand = {
   id: number;
   name: string;
-  slug: string | null;
+  slug: string;
   email: string;
   logo: string | null;
   instagramUrl: string | null;

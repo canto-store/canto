@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/drawer";
 import { PRICE_RANGES, type PriceRange } from "@/lib/data";
 import { useCategories } from "@/lib/categories";
+import { useBrands } from "@/lib/brand";
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -58,6 +59,7 @@ export function FilterDrawer({
   translations,
 }: FilterDrawerProps) {
   const { data: categories } = useCategories();
+  const { data: brands } = useBrands();
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>
@@ -110,7 +112,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
                   onClick={() => setSelectedCategory("All")}
                 >
                   {selectedCategory}
@@ -122,7 +124,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
                   onClick={() => setSelectedBrand("All")}
                 >
                   {selectedBrand}
@@ -134,7 +136,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
                   onClick={() => setSelectedPriceRange(PRICE_RANGES[0])}
                 >
                   {selectedPriceRange.label}
@@ -167,16 +169,16 @@ export function FilterDrawer({
                   <Button
                     key={category.name}
                     variant={
-                      selectedCategory === category.name ? "default" : "outline"
+                      selectedCategory === category.slug ? "default" : "outline"
                     }
                     size="sm"
                     className={`text-xs font-medium sm:text-sm ${
-                      selectedCategory === category.name
+                      selectedCategory === category.slug
                         ? "bg-primary text-primary-foreground"
                         : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => {
-                      setSelectedCategory(category.name);
+                      setSelectedCategory(category.slug);
                     }}
                   >
                     {category.name}
@@ -191,15 +193,15 @@ export function FilterDrawer({
                 {translations.brands}
               </h4>
               <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-gray-100 p-2 shadow-sm sm:max-h-40 sm:gap-2">
-                {/* {BRANDS.map((brand) => (
+                {brands?.map((brand) => (
                   <Button
-                    key={brand.name}
+                    key={brand.slug}
                     variant={
-                      selectedBrand === brand.name ? "default" : "outline"
+                      selectedBrand === brand.slug ? "default" : "outline"
                     }
                     size="sm"
                     className={`text-xs font-medium sm:text-sm ${
-                      selectedBrand === brand.name
+                      selectedBrand === brand.slug
                         ? "bg-primary text-primary-foreground"
                         : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
@@ -209,12 +211,12 @@ export function FilterDrawer({
                   >
                     {brand.name}
                   </Button>
-                ))} */}
+                ))}
               </div>
             </div>
 
             {/* Price Ranges */}
-            <div>
+            {/* <div>
               <h4 className="mb-2 text-sm font-semibold text-gray-800">
                 {translations.priceRange}
               </h4>
@@ -239,7 +241,7 @@ export function FilterDrawer({
                   </Button>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <DrawerFooter className="border-t bg-gray-50 pt-4">
