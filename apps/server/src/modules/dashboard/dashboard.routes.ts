@@ -21,4 +21,11 @@ router.get(
   dashboardController.getDashboardCounts.bind(dashboardController)
 )
 
+router.get(
+  '/users',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN),
+  dashboardController.getUsers.bind(dashboardController)
+)
+
 export default router

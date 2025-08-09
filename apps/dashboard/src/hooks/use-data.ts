@@ -48,6 +48,14 @@ export function useSellers() {
   })
 }
 
+// Users hook
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: api.getUsers,
+  })
+}
+
 export function useLatestActivities() {
   return useQuery({
     queryKey: ['latest-activities'],

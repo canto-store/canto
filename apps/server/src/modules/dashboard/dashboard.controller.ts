@@ -21,6 +21,11 @@ class DashboardController {
     const body = await this.dashboardService.getDashboardCounts()
     res.status(200).json(body)
   }
+
+  public async getUsers(_req: Request, res: Response, _next: NextFunction) {
+    const users = await this.dashboardService.getUsers()
+    res.status(200).json(users)
+  }
 }
 
 export default DashboardController

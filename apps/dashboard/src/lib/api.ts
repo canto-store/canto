@@ -53,6 +53,10 @@ export const api = {
     const response = await apiClient.get('/seller')
     return response.data
   },
+  getUsers: async () => {
+    const response = await apiClient.get('/dashboard/users')
+    return response.data
+  },
   getLatestActivities: async (): Promise<string[]> => {
     const response = await apiClient.get('/dashboard/latest-activities')
     return response.data
@@ -67,6 +71,9 @@ export const api = {
       total: number
     }
     seller: {
+      total: number
+    }
+    user: {
       total: number
     }
   }> => {

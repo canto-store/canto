@@ -25,9 +25,11 @@ class DashboardService {
     ).length
 
     const totalBrands = await this.prisma.brand.count()
-    const totalSellers = await this.prisma.user.findMany({
-      where: { role: { hasSome: [UserRole.SELLER] } },
-    })
+    const totalUsers = await this.prisma.user.findMany()
+
+    const totalSellers = totalUsers.filter(u =>
+      u.role.includes(UserRole.SELLER)
+    )
 
     return {
       product: {
@@ -41,7 +43,18 @@ class DashboardService {
       seller: {
         total: totalSellers.length,
       },
+      user: {
+        total: totalUsers.length,
+      },
     }
+  }
+
+  async getUsers() {
+    const users = await this.prisma.user.findMany()
+    return users.map(user => ({
+      ...user,
+      password: null,
+    }))
   }
 }
 

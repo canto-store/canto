@@ -47,7 +47,7 @@ function DashboardIndexPage() {
         <p className="text-muted-foreground">Welcome to your admin dashboard</p>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-3 sm:grid-cols-1">
+      <div className="grid gap-4 md:grid-cols-4 sm:grid-cols-1">
         {/* Products Card */}
         <Link to="/dashboard/products">
           <Card className="h-38">
@@ -106,6 +106,27 @@ function DashboardIndexPage() {
               ) : (
                 <div className="flex flex-col gap-1">
                   <p className="text-2xl font-bold">{data?.seller.total}</p>
+                  <p className="text-xs text-muted-foreground">
+                    +100% from last month
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+        {/* Users Card */}
+        <Link to="/dashboard/users">
+          <Card className="h-38">
+            <CardHeader className="flex justify-between">
+              <CardTitle className="text-sm font-medium">Users</CardTitle>
+              <Users className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <LoadingData />
+              ) : (
+                <div className="flex flex-col gap-1">
+                  <p className="text-2xl font-bold">{data?.user.total}</p>
                   <p className="text-xs text-muted-foreground">
                     +100% from last month
                   </p>
