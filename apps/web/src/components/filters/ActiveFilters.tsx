@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { X, SlidersHorizontal } from "lucide-react";
 import { type PriceRange } from "@/lib/data";
+import { useBrands } from "@/lib/brand";
+import { useCategories } from "@/lib/categories";
 
 interface ActiveFiltersProps {
   hasActiveFilters: boolean;
@@ -31,6 +33,9 @@ export function ActiveFilters({
   setSearchQuery,
   translations,
 }: ActiveFiltersProps) {
+  const { data: categories } = useCategories();
+  const { data: brands } = useBrands();
+
   if (!hasActiveFilters) return null;
 
   return (
@@ -47,7 +52,10 @@ export function ActiveFilters({
           className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
           onClick={() => setSelectedCategory("All")}
         >
-          {selectedCategory}
+          {
+            categories?.find((category) => category.slug === selectedCategory)
+              ?.name
+          }
           <X className="h-3 w-3" />
         </Button>
       )}
@@ -59,7 +67,7 @@ export function ActiveFilters({
           className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
           onClick={() => setSelectedBrand("All")}
         >
-          {selectedBrand}
+          {brands?.find((brand) => brand.slug === selectedBrand)?.name}
           <X className="h-3 w-3" />
         </Button>
       )}
