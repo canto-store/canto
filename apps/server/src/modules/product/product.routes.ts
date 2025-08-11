@@ -28,11 +28,6 @@ router.get(
   authMiddleware.checkProductAccess(),
   productController.getProductById.bind(productController)
 )
-router.put(
-  '/id/:id',
-  authMiddleware.checkAuth.bind(authMiddleware),
-  productController.updateProduct.bind(productController)
-)
 
 router.get(
   '/slug/:slug',

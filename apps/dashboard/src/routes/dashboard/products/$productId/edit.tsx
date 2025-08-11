@@ -35,9 +35,10 @@ import {
 
 import { AlertCircleIcon, ArrowLeft, ArrowRight } from 'lucide-react'
 import { productFormSchema, type ProductFormValues } from '@/types/product'
-import { useUpdateProduct } from '@/hooks/use-data'
+import { useProductOptions, useUpdateProduct } from '@/hooks/use-data'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { parseApiError } from '@/lib/utils'
+import ProductVariants from '@/components/products/product-variants'
 
 export const Route = createFileRoute('/dashboard/products/$productId/edit')({
   loader: async ({ params }) => {
@@ -67,14 +68,18 @@ export default function EditProduct() {
     error,
   } = useUpdateProduct()
 
+  const { data: options } = useProductOptions()
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
+      id: product.id,
       name: product.name,
       description: product.description || '',
-      categoryId: product.categoryId,
+      category: product.category,
       status: product.status,
-      rejectionReason: product.rejection?.reason || '',
+      // rejectionReason: product.rejection?.reason || '',
+      variants: product.variants,
     },
   })
 
@@ -82,7 +87,6 @@ export default function EditProduct() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (form.formState.isDirty) {
         e.preventDefault()
-        e.returnValue = ''
       }
     }
 
@@ -110,12 +114,12 @@ export default function EditProduct() {
         new: data.description,
       }
     }
-    if (data.categoryId !== product.categoryId) {
+    if (data.category !== product.category) {
       const oldCategory = categories.find(
-        (c: any) => c.id === product.categoryId
+        (c: any) => c.id === product.category
       )?.name
       const newCategory = categories.find(
-        (c: any) => c.id === data.categoryId
+        (c: any) => c.id === data.category
       )?.name
       changes.category = { old: oldCategory, new: newCategory }
     }
@@ -126,6 +130,86 @@ export default function EditProduct() {
       changes.rejectionReason = {
         old: product.rejectionReason || '',
         new: data.rejectionReason,
+      }
+    }
+    for (const variant of data.variants) {
+      const oldVariant = product.variants.find((v: any) => v.id === variant.id)
+
+      if (variant.price !== oldVariant?.price) {
+        changes[`variant_${variant.id}_price`] = {
+          old: oldVariant?.price,
+          new: variant.price,
+        }
+      }
+      if (variant.stock !== oldVariant?.stock) {
+        changes[`variant_${variant.id}_stock`] = {
+          old: oldVariant?.stock,
+          new: variant.stock,
+        }
+      }
+      if (variant.options !== oldVariant?.options) {
+        // Compare each option value and get the variant value from options
+        const oldOptions = oldVariant?.options || []
+        const newOptions = variant.options || []
+
+        // Check if any option values have changed
+        const optionChanges = newOptions
+          .map((newOption, index) => {
+            const oldOption = oldOptions[index]
+
+            // Handle case where old option was undefined (new option added)
+            if (!oldOption) {
+              const optionData = options?.find(
+                opt => opt.id === newOption.optionId
+              )
+              const variantValue =
+                optionData?.values?.find(val => val.id === newOption.valueId)
+                  ?.value || `Value ${newOption.valueId}`
+
+              return {
+                optionName: optionData?.name || `Option ${index + 1}`,
+                old: 'Not set',
+                new: variantValue,
+              }
+            }
+
+            // Handle case where option value changed
+            if (newOption.valueId !== oldOption.valueId) {
+              const optionData = options?.find(
+                opt => opt.id === newOption.optionId
+              )
+
+              // Get the actual values for both old and new options
+              const oldVariantValue =
+                optionData?.values?.find(val => val.id === oldOption.valueId)
+                  ?.value || `Value ${oldOption.valueId}`
+              const newVariantValue =
+                optionData?.values?.find(val => val.id === newOption.valueId)
+                  ?.value || `Value ${newOption.valueId}`
+
+              return {
+                optionName: optionData?.name || `Option ${index + 1}`,
+                old: oldVariantValue,
+                new: newVariantValue,
+              }
+            }
+
+            return null
+          })
+          .filter(
+            (change): change is NonNullable<typeof change> => change !== null
+          )
+
+        if (optionChanges.length > 0) {
+          changes[`variant_${variant.id}_options`] = {
+            old: optionChanges
+              .map(change => `${change.optionName}: ${change.old}`)
+              .join(', '),
+            new: optionChanges
+              .map(change => `${change.optionName}: ${change.new}`)
+              .join(', '),
+          }
+        }
       }
     }
 
@@ -148,7 +232,7 @@ export default function EditProduct() {
     const changedData = Object.entries(changedFields).reduce(
       (acc, [field]) => {
         // Map the field name back to the actual data field name
-        const dataField = field === 'category' ? 'categoryId' : field
+        const dataField = field === 'category' ? 'category' : field
         if (dataField in currentValues) {
           const key = dataField as keyof ProductFormValues
           acc[key] = currentValues[key]
@@ -157,9 +241,8 @@ export default function EditProduct() {
       },
       {} as Record<keyof ProductFormValues, any>
     )
-
+    changedData.id = Number(productId)
     updateProduct({
-      productId: Number(productId),
       product: changedData as ProductFormValues,
     }).then(() => {
       router.navigate({ to: '/dashboard/products' })
@@ -220,7 +303,7 @@ export default function EditProduct() {
 
           <FormField
             control={form.control}
-            name="categoryId"
+            name="category"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
@@ -250,6 +333,8 @@ export default function EditProduct() {
               </FormItem>
             )}
           />
+
+          <ProductVariants />
 
           <FormField
             control={form.control}
@@ -322,13 +407,9 @@ export default function EditProduct() {
                       <span className="font-bold capitalize text-sm">
                         {field}:
                       </span>
-                      <span className="text-red-500/90">
-                        {values.old || '(empty)'}
-                      </span>
+                      <span className="text-red-500/90">{values.old}</span>
                       <ArrowRight className="w-4 h-4" />
-                      <span className="text-green-500">
-                        {values.new || '(empty)'}
-                      </span>
+                      <span className="text-green-500">{values.new}</span>
                     </div>
                   ))}
                 </div>

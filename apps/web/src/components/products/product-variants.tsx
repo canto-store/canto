@@ -17,7 +17,7 @@ import {
 } from "../ui/select";
 import { useProductOptions } from "@/lib/product";
 import { Button } from "../ui/button";
-import { Plus, X, Upload, Loader2, PlusIcon } from "lucide-react";
+import { Plus, X, Loader2, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { SelectedVariant } from "@/types/product";

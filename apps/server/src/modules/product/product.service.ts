@@ -975,6 +975,7 @@ class ProductService {
         variants: {
           include: { images: { select: { url: true } }, optionLinks: true },
         },
+        status: true,
       },
     })
 

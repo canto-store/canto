@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import type { ProductFormValues } from '@/types/product'
+import type { ProductFormValues, ProductOption } from '@/types/product'
 
 // Products hook
 export function useProducts() {
@@ -15,14 +15,8 @@ export function useUpdateProduct() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      productId,
-      product,
-    }: {
-      productId: number
-      product: ProductFormValues
-    }) => {
-      const response = await api.updateProduct(productId, product)
+    mutationFn: async ({ product }: { product: ProductFormValues }) => {
+      const response = await api.updateProductForm(product)
       return response
     },
     onSuccess: () => {
@@ -67,5 +61,12 @@ export function useDashboardCounts() {
   return useQuery({
     queryKey: ['dashboard-counts'],
     queryFn: api.getDashboardCounts,
+  })
+}
+
+export function useProductOptions() {
+  return useQuery<ProductOption[], Error>({
+    queryKey: ['product-options'],
+    queryFn: api.getProductOptions,
   })
 }

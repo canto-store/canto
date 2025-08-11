@@ -18,12 +18,14 @@ export const api = {
   },
 
   getProductById: async (productId: number) => {
-    const response = await apiClient.get(`/product/id/${productId}`)
+    const response = await apiClient.get<ProductFormValues>(
+      `/product/id/${productId}`
+    )
     return response.data
   },
 
-  updateProduct: async (productId: number, data: ProductFormValues) => {
-    const response = await apiClient.put(`/product/id/${productId}`, data)
+  updateProductForm: async (data: ProductFormValues) => {
+    const response = await apiClient.put(`/product/update-form`, data)
     return response.data
   },
 
@@ -78,6 +80,10 @@ export const api = {
     }
   }> => {
     const response = await apiClient.get('/dashboard/dashboard-counts')
+    return response.data
+  },
+  getProductOptions: async () => {
+    const response = await apiClient.get('/product/options')
     return response.data
   },
 }
