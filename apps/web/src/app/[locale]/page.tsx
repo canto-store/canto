@@ -31,11 +31,12 @@ export default function Home() {
           alt="Hero"
           fill
           className="object-cover"
+          priority
         />
       </section>
       <HomeProducts
         products={bestDeals}
-        title="Best Deals"
+        title="Canto's Deals"
         isLoading={isLoading}
       />
       <HomeCategories />

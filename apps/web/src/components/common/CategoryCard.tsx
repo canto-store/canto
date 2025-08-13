@@ -23,22 +23,20 @@ export function CategoryCard({
       key={category.name}
       onClick={() => handleCategoryClick(category)}
       className={cn(
-        "group overflow-hidden rounded-lg hover:cursor-pointer",
+        "shadow-lg transition-transform duration-300 hover:scale-102 hover:cursor-pointer hover:shadow-xl",
         variant === "rectangle" ? "aspect-video" : "aspect-square",
       )}
     >
-      <div className="relative h-full w-full overflow-hidden">
-        <Image
-          src={category.image}
-          alt={category.name}
-          className="object-fit h-full w-full transition-transform duration-300 group-hover:scale-105"
-          width={variant === "rectangle" ? 400 : 300}
-          height={variant === "rectangle" ? 225 : 300}
-          priority={index < 3}
-          loading={index < 3 ? "eager" : "lazy"}
-          quality={80}
-        />
-      </div>
+      <Image
+        src={category.image}
+        alt={category.name}
+        className="object-fit h-full w-full rounded-lg"
+        width={variant === "rectangle" ? 400 : 300}
+        height={variant === "rectangle" ? 225 : 300}
+        priority={index < 3}
+        loading={index < 3 ? "eager" : "lazy"}
+        quality={80}
+      />
     </button>
   );
 }

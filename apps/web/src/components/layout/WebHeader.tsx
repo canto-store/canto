@@ -1,13 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, usePathname } from "@/i18n/navigation";
-import { useLocale } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { CartDropdown } from "@/components/cart/CartDropdown";
 import { UserDropdown } from "@/components/home/UserDropdown";
 import { MainNavigation } from "@/components/layout/MainNavigation";
-import { Button } from "../ui/button";
+import LanguageSelector from "@/components/common/LanguageSelector";
 
 interface WebHeaderProps {
   className?: string;
@@ -15,21 +14,15 @@ interface WebHeaderProps {
 
 export function WebHeader({ className }: WebHeaderProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
 
   const handleNavigation = (href: string) => {
     router.push(href);
-  };
-  const handleLanguageChange = () => {
-    const value = locale === "en" ? "ar" : "en";
-    router.replace(pathname, { locale: value });
   };
 
   return (
     <div
       className={cn(
-        "container mx-auto flex h-18 items-center justify-between px-4",
+        "container mx-auto flex h-14 items-center justify-between px-4",
         className,
       )}
     >
@@ -37,8 +30,8 @@ export function WebHeader({ className }: WebHeaderProps) {
         <Image
           src="/logo.svg"
           alt="Canto Store Logo"
-          width={100}
-          height={40}
+          width={80}
+          height={20}
           priority
           onClick={() => handleNavigation("/")}
           className="hover:cursor-pointer"
@@ -48,20 +41,7 @@ export function WebHeader({ className }: WebHeaderProps) {
       <MainNavigation />
 
       <div className="flex items-center gap-4 md:w-1/5 md:justify-end">
-        <Button
-          variant="ghost"
-          onClick={handleLanguageChange}
-          aria-label="Select language"
-        >
-          <span
-            className={cn(
-              "text-sm font-medium",
-              locale === "en" && "font-arabic",
-            )}
-          >
-            {locale === "ar" ? "English" : "العربية"}
-          </span>
-        </Button>
+        <LanguageSelector />
         <CartDropdown />
         <UserDropdown />
       </div>

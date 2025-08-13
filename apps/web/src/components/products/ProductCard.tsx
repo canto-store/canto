@@ -76,7 +76,7 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-lg shadow-lg hover:shadow-xl",
+        "flex h-full flex-col rounded-lg shadow-lg transition-transform duration-300 hover:scale-102 hover:shadow-xl",
         className,
       )}
     >
@@ -87,7 +87,7 @@ export function ProductCard({
         <Image
           src={product.image || "/placeholder-image.jpg"}
           alt={product.name}
-          className="aspect-square w-full transform rounded-t-lg object-contain transition-transform duration-300 group-hover:scale-110"
+          className="aspect-square w-full transform rounded-t-lg object-cover"
           width={600}
           height={600}
           priority={shouldPrioritize}

@@ -5,6 +5,8 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { InstallPWA } from "@/components/pwa";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
+import Image from "next/image";
+import { useMediaQuery } from "react-haiku";
 // import { PromoModal } from "../home/PromoModal";
 
 interface AppLayoutProps {
@@ -19,7 +21,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {children}
       </main>
       <Footer />
-      <MobileBottomNavigation />
+      {/* <MobileBottomNavigation /> */}
       <InstallPWA variant="message" displayDelay={8 * 1000} />
       {/* <PromoModal displayDelay={2 * 1000} /> */}
     </>

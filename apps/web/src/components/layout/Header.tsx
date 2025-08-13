@@ -2,19 +2,16 @@
 
 import { WebHeader } from "./WebHeader";
 import { MobileHeader } from "./MobileHeader";
-import { PromoBanner } from "./PromoBanner";
+// import { PromoBanner } from "./PromoBanner";
+import { useMediaQuery } from "react-haiku";
 
 export function Header() {
+  const isMobile = useMediaQuery("(max-width: 768px)", { ssr: true });
   return (
     <>
       <header className="border-primary bg-global sticky top-0 z-50 w-full border-b">
         {/* <PromoBanner /> */}
-        <div className="block md:hidden">
-          <MobileHeader />
-        </div>
-        <div className="hidden md:block">
-          <WebHeader />
-        </div>
+        {isMobile ? <MobileHeader /> : <WebHeader />}
       </header>
     </>
   );

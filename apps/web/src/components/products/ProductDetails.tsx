@@ -190,9 +190,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             quantity={quantity}
             onQuantityChange={setQuantity}
           />
-          <ProductAvailability
+          {/* <ProductAvailability
             isInStock={product.variants.some((v) => v.stock > 0)}
-          />
+          /> */}
         </div>
 
         {/* Add to Cart - Desktop only */}
