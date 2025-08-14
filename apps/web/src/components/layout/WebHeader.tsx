@@ -28,10 +28,10 @@ export function WebHeader({ className }: WebHeaderProps) {
     >
       <div className="flex items-center gap-3 md:w-1/5 md:flex-initial">
         <Image
-          src="/logo.svg"
+          src="/logo.png"
           alt="Canto Store Logo"
           width={80}
-          height={20}
+          height={60}
           priority
           onClick={() => handleNavigation("/")}
           className="hover:cursor-pointer"

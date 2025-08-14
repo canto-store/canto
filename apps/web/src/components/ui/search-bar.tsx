@@ -99,6 +99,7 @@ export function SearchBar({
     >
       <div className="relative flex-1">
         <Input
+          name="search"
           type="search"
           className={cn("w-full pl-10 placeholder:text-xs", className)}
           value={searchTerm}
