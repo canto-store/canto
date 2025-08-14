@@ -321,6 +321,20 @@ class ProductController {
       nextFunction(error)
     }
   }
+
+  async autocompleteProducts(
+    request: Request,
+    response: Response,
+    nextFunction: NextFunction
+  ) {
+    try {
+      const query = request.query.query as string
+      const products = await this.productService.autocompleteProducts(query)
+      response.status(200).json(products)
+    } catch (error) {
+      nextFunction(error)
+    }
+  }
 }
 
 export default ProductController

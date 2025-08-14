@@ -18,6 +18,8 @@ import {
   calculateDiscount,
   calculateDiscountPercentage,
 } from '../../utils/helper'
+import { PRODUCT_INDEX } from '../../services/elasticsearch/productIndex'
+import { esClient } from '../../services/elasticsearch'
 
 class ProductService {
   private readonly prisma = new PrismaClient()
@@ -64,12 +66,93 @@ class ProductService {
 
     const where: Prisma.ProductWhereInput = {}
 
+    // Store Elasticsearch scores and product order for sorting
+    let elasticsearchScores: Map<number, number> = new Map()
+    let elasticsearchOrder: number[] = []
+
     if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ]
+      const results = await esClient.search({
+        index: PRODUCT_INDEX,
+        body: {
+          query: {
+            bool: {
+              should: [
+                // 1. Exact phrase match (highest priority)
+                {
+                  match_phrase: {
+                    name: {
+                      query: search.trim(),
+                      boost: 5,
+                    },
+                  },
+                },
+                // 2. Exact keyword match
+                {
+                  term: {
+                    'name.exact': {
+                      value: search.trim(),
+                      boost: 4,
+                    },
+                  },
+                },
+                // 3. Partial word matching (n-grams)
+                {
+                  match: {
+                    'name.ngram': {
+                      query: search.trim(),
+                      boost: 3,
+                    },
+                  },
+                },
+                // 4. Fuzzy matching on name
+                {
+                  match: {
+                    name: {
+                      query: search.trim(),
+                      fuzziness: 'AUTO',
+                      boost: 2,
+                    },
+                  },
+                },
+                // 5. Description search (lower priority)
+                {
+                  match: {
+                    description: {
+                      query: search.trim(),
+                      fuzziness: 'AUTO',
+                      boost: 1,
+                    },
+                  },
+                },
+                // 6. Prefix matching for partial words
+                {
+                  prefix: {
+                    name: {
+                      value: search.trim().toLowerCase(),
+                      boost: 1.5,
+                    },
+                  },
+                },
+              ],
+              minimum_should_match: 1,
+            },
+          },
+          size: +limit,
+        },
+      })
+
+      // Extract product IDs, scores, and preserve order from Elasticsearch
+      const productIds: number[] = []
+      results.hits.hits.forEach((hit: any, index: number) => {
+        const productId = +hit._id
+        productIds.push(productId)
+        elasticsearchScores.set(productId, hit._score)
+        elasticsearchOrder.push(productId)
+      })
+
+      where.id = { in: productIds }
     }
+
     if (categorySlug) where.category = { slug: categorySlug }
     if (brandSlug) where.brand = { slug: brandSlug }
     if (status) where.status = status as ProductStatus
@@ -134,17 +217,33 @@ class ProductService {
             },
           },
         },
-        // If sorting by price, we'll sort in JS afterwards
+        // If sorting by price or if we have search results, we'll sort in JS afterwards
         orderBy:
-          sortBy === 'price' ? { created_at: 'desc' } : { [sortBy]: sortOrder },
+          sortBy === 'price' || search
+            ? { created_at: 'desc' }
+            : { [sortBy]: sortOrder },
         skip,
         take: limitNum,
       }),
       this.prisma.product.count({ where }),
     ])
 
-    // 6) Sort products by their min-variant price
-    if (sortBy === 'price') {
+    // 6) Sort products - prioritize Elasticsearch scores for search, then other criteria
+    if (search && elasticsearchOrder.length > 0) {
+      // Sort by Elasticsearch score (relevance) when searching
+      products.sort((a, b) => {
+        const aIndex = elasticsearchOrder.indexOf(a.id)
+        const bIndex = elasticsearchOrder.indexOf(b.id)
+        // Products found by Elasticsearch should come first, in their scored order
+        if (aIndex !== -1 && bIndex !== -1) {
+          return aIndex - bIndex // Preserve Elasticsearch ordering
+        }
+        if (aIndex !== -1) return -1 // a is in search results, prioritize it
+        if (bIndex !== -1) return 1 // b is in search results, prioritize it
+        return 0 // Both not in search results, maintain current order
+      })
+    } else if (sortBy === 'price') {
+      // Sort by price when not searching
       products.sort((a, b) => {
         const aMin = Math.min(...a.variants.map(v => v.price))
         const bMin = Math.min(...b.variants.map(v => v.price))
@@ -961,6 +1060,67 @@ class ProductService {
       category: product.category.name,
       status: product.status,
     }))
+  }
+
+  async autocompleteProducts(query: string) {
+    const results = await esClient.search({
+      index: PRODUCT_INDEX,
+      body: {
+        query: {
+          bool: {
+            should: [
+              // Exact prefix match (highest priority)
+              {
+                prefix: {
+                  name: {
+                    value: query.trim().toLowerCase(),
+                    boost: 3,
+                  },
+                },
+              },
+              // Phrase prefix match
+              {
+                match_phrase_prefix: {
+                  name: {
+                    query: query.trim(),
+                    boost: 2,
+                  },
+                },
+              },
+              // Fuzzy matching for typos
+              {
+                match: {
+                  name: {
+                    query: query.trim(),
+                    fuzziness: 'AUTO',
+                    boost: 1,
+                  },
+                },
+              },
+            ],
+          },
+        },
+        size: 10,
+      },
+    })
+
+    // Extract product IDs in the order returned by Elasticsearch (by score)
+    const productIds = results.hits.hits.map((hit: any) => +hit._id)
+
+    // Fetch products from database
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+      include: { brand: true, category: true },
+    })
+
+    // Sort products to maintain Elasticsearch score order
+    const sortedProducts = productIds
+      .map(id => products.find(p => p.id === id))
+      .filter((product): product is NonNullable<typeof product> =>
+        Boolean(product)
+      ) // Remove any undefined products
+
+    return sortedProducts.map(product => product.name)
   }
 
   async getProductById(id: number) {

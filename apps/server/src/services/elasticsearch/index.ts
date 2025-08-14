@@ -1,4 +1,3 @@
-// src/config/elasticsearch.ts
 import { Client, ClientOptions } from '@elastic/elasticsearch'
 
 // --- Configuration from Environment Variables ---
@@ -10,7 +9,7 @@ const ELASTICSEARCH_PASSWORD = process.env.ELASTICSEARCH_PASSWORD
 const clientConfig: ClientOptions = {
   node: ELASTICSEARCH_NODE,
   tls: {
-    rejectUnauthorized: false, // Set to true in production with proper certificates
+    rejectUnauthorized: process.env.NODE_ENV === 'production',
   },
 }
 

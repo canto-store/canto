@@ -22,12 +22,13 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.1.0",
+    "dotenv": "^17.2.1",
     "nodemon": "^3.1.10",
     "prisma": "^6.13.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^9.1.0",
+    "@elastic/elasticsearch": "^8.15.0",
     "@prisma/client": "6.13.0",
     "@types/morgan": "^1.9.10",
     "axios": "^1.11.0",

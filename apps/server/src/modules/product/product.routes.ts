@@ -15,6 +15,10 @@ router.get(
 )
 router.get('/search', productController.searchProducts.bind(productController))
 router.get(
+  '/autocomplete',
+  productController.autocompleteProducts.bind(productController)
+)
+router.get(
   '/filters',
   productController.getProductFilters.bind(productController)
 )
