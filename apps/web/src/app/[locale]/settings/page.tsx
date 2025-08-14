@@ -116,11 +116,6 @@ export default function Page() {
             <p className="w-full text-left">Download App</p>
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
-          <Button variant="outline" onClick={() => handleNavigation("/sell")}>
-            <StoreIcon className="mr-2 h-4 w-4" />
-            <p className="w-full text-left">Sell with Canto</p>
-            <ChevronRight className="ml-auto h-4 w-4" />
-          </Button>
         </div>
         <If isTrue={Boolean(user)}>
           <Button variant="ghost" onClick={() => logout()} className="mt-4">
