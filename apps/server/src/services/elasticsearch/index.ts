@@ -9,7 +9,7 @@ const ELASTICSEARCH_PASSWORD = process.env.ELASTICSEARCH_PASSWORD
 const clientConfig: ClientOptions = {
   node: ELASTICSEARCH_NODE,
   tls: {
-    rejectUnauthorized: process.env.NODE_ENV === 'production',
+    rejectUnauthorized: false,
   },
 }
 
