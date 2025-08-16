@@ -116,6 +116,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     src={image.url}
                     alt={image.alt || product.name}
                     fill
+                    priority
                     className="object-cover"
                   />
                 </div>
@@ -316,26 +317,26 @@ function ProductQuantitySelector({
   );
 }
 
-function ProductAvailability({ isInStock }: { isInStock: boolean }) {
-  return isInStock ? (
-    <div className="rounded-lg border p-3 md:p-4">
-      <div className="mb-1 flex items-center gap-2 md:mb-2">
-        <div className="h-2 w-2 rounded-full bg-green-500" />
-        <span className="text-xs font-medium md:text-sm">In Stock</span>
-      </div>
-      <p className="text-xs text-gray-600 md:text-sm">
-        Free shipping on orders over $50
-      </p>
-    </div>
-  ) : (
-    <div className="rounded-lg border p-3 md:p-4">
-      <div className="mb-1 flex items-center gap-2 md:mb-2">
-        <div className="h-2 w-2 rounded-full bg-red-500" />
-        <span className="text-xs font-medium md:text-sm">Out of stock</span>
-      </div>
-      <p className="text-xs text-gray-600 md:text-sm">
-        Sorry this product is currently out of stock. Please check back later.
-      </p>
-    </div>
-  );
-}
+// function ProductAvailability({ isInStock }: { isInStock: boolean }) {
+//   return isInStock ? (
+//     <div className="rounded-lg border p-3 md:p-4">
+//       <div className="mb-1 flex items-center gap-2 md:mb-2">
+//         <div className="h-2 w-2 rounded-full bg-green-500" />
+//         <span className="text-xs font-medium md:text-sm">In Stock</span>
+//       </div>
+//       <p className="text-xs text-gray-600 md:text-sm">
+//         Free shipping on orders over $50
+//       </p>
+//     </div>
+//   ) : (
+//     <div className="rounded-lg border p-3 md:p-4">
+//       <div className="mb-1 flex items-center gap-2 md:mb-2">
+//         <div className="h-2 w-2 rounded-full bg-red-500" />
+//         <span className="text-xs font-medium md:text-sm">Out of stock</span>
+//       </div>
+//       <p className="text-xs text-gray-600 md:text-sm">
+//         Sorry this product is currently out of stock. Please check back later.
+//       </p>
+//     </div>
+//   );
+// }

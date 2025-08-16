@@ -28,7 +28,8 @@ export interface UpdateProductFormDto {
   slug: string
   category?: number
   description?: string
-  variants: UpdateSelectedVariant[]
+  variants?: UpdateSelectedVariant[]
+  status?: ProductStatus
 }
 export interface SelectedVariant {
   price?: number
@@ -65,7 +66,7 @@ export interface CreateVariantImageDto {
   alt_text?: string
 }
 export interface CreateProductVariantDto {
-  productOptionId: any
+  productOptionId: number
   productId: number
   sku: string
   price: number
@@ -76,7 +77,7 @@ export interface CreateProductVariantDto {
 }
 export interface UpdateProductVariantDto
   extends Partial<CreateProductVariantDto> {
-  productOptionId: any
+  productOptionId: number
 }
 
 export interface ProductQueryParams {

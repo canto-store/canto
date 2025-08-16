@@ -1,5 +1,11 @@
 /* eslint-disable */
-import { useState, useRef, useEffect } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import {
   FormControl,
   FormField,
@@ -23,6 +29,19 @@ import { toast } from "sonner";
 import { SelectedVariant } from "@/types/product";
 import { Input } from "../ui/input";
 
+// Types for local file storage
+interface LocalImageFile {
+  file: File;
+  preview: string;
+  id: string;
+}
+
+// Interface for imperative handle
+interface ProductVariantsRef {
+  uploadImages: () => Promise<void>;
+  isUploading: boolean;
+}
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +53,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function ProductVariants() {
+const ProductVariants = forwardRef<ProductVariantsRef>((props, ref) => {
   const form = useFormContext();
   const [variantSets, setVariantSets] = useState<SelectedVariant[]>(() => {
     const initialVariants = form.getValues("variants");
@@ -53,9 +72,31 @@ export default function ProductVariants() {
   const { data: options } = useProductOptions();
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [currentUploadVariantIndex, setCurrentUploadVariantIndex] = useState<
+    number | null
+  >(null);
   const [newVariantIndex, setNewVariantIndex] = useState<number | null>(null);
 
+  // Store local files before upload
+  const [localFiles, setLocalFiles] = useState<LocalImageFile[][]>([]);
+
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    setLocalFiles((prev) => {
+      const newLocalFiles = [...prev];
+      while (newLocalFiles.length < variantSets.length) {
+        newLocalFiles.push([]);
+      }
+      while (newLocalFiles.length > variantSets.length) {
+        const removed = newLocalFiles.pop();
+        removed?.forEach((localFile) => {
+          URL.revokeObjectURL(localFile.preview);
+        });
+      }
+      return newLocalFiles;
+    });
+  }, [variantSets.length]);
 
   // Smooth scroll to newly added variant
   useEffect(() => {
@@ -85,6 +126,10 @@ export default function ProductVariants() {
     const updatedVariants = [...variantSets, newVariantSet];
     setVariantSets(updatedVariants);
     form.setValue("variants", updatedVariants);
+
+    // Add empty local files array for new variant
+    setLocalFiles((prev) => [...prev, []]);
+
     setNewVariantIndex(updatedVariants.length - 1);
   };
 
@@ -97,6 +142,19 @@ export default function ProductVariants() {
     );
     setVariantSets(newVariantSets);
     form.setValue("variants", newVariantSets);
+
+    // Remove corresponding local files and clean up object URLs
+    setLocalFiles((prev) => {
+      const newLocalFiles = [...prev];
+      if (newLocalFiles[index]) {
+        // Clean up object URLs to prevent memory leaks
+        newLocalFiles[index].forEach((localFile) => {
+          URL.revokeObjectURL(localFile.preview);
+        });
+      }
+      newLocalFiles.splice(index, 1);
+      return newLocalFiles;
+    });
 
     // Scroll to the previous variant (or the last one if removing the last)
     const targetIndex = index > 0 ? index - 1 : newVariantSets.length - 1;
@@ -112,17 +170,41 @@ export default function ProductVariants() {
 
   const removeImage = (variantIndex: number, imageIndex: number) => {
     const variant = variantSets[variantIndex];
-    let newImages = (variant.images || []).filter(
-      (_: string, i: number) => i !== imageIndex,
-    );
+    const variantLocalFiles = localFiles[variantIndex] || [];
 
-    if (newImages.length === 0) {
-      newImages = [];
+    // Check if this is a local file or uploaded image
+    if (imageIndex < variantLocalFiles.length) {
+      // Remove local file
+      setLocalFiles((prev) => {
+        const newLocalFiles = [...prev];
+        if (!newLocalFiles[variantIndex]) {
+          newLocalFiles[variantIndex] = [];
+        }
+        const fileToRemove = newLocalFiles[variantIndex][imageIndex];
+        if (fileToRemove) {
+          // Clean up object URL
+          URL.revokeObjectURL(fileToRemove.preview);
+        }
+        newLocalFiles[variantIndex] = newLocalFiles[variantIndex].filter(
+          (_, i) => i !== imageIndex,
+        );
+        return newLocalFiles;
+      });
+    } else {
+      // Remove uploaded image
+      const uploadedImageIndex = imageIndex - variantLocalFiles.length;
+      let newImages = (variant.images || []).filter(
+        (_: string, i: number) => i !== uploadedImageIndex,
+      );
+
+      if (newImages.length === 0) {
+        newImages = [];
+      }
+      updateVariantSet(variantIndex, {
+        ...variant,
+        images: newImages,
+      });
     }
-    updateVariantSet(variantIndex, {
-      ...variant,
-      images: newImages,
-    });
   };
 
   const uploadToS3 = async (file: File): Promise<string> => {
@@ -159,10 +241,8 @@ export default function ProductVariants() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    // Convert FileList to array for easier handling
     const filesArray = Array.from(files);
 
-    // Check if any file exceeds the size limit
     const oversizedFile = filesArray.find(
       (file) => file.size > 4 * 1024 * 1024,
     );
@@ -171,36 +251,116 @@ export default function ProductVariants() {
       return;
     }
 
-    // Set uploading state once for all files
-    setIsUploading(true);
+    const newLocalFiles: LocalImageFile[] = filesArray.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+      id: `${Date.now()}-${Math.random()}`,
+    }));
 
-    // Upload each file
-    const uploadPromises = filesArray.map((file) => uploadToS3(file));
+    setLocalFiles((prev) => {
+      const newLocalFilesArray = [...prev];
+      if (!newLocalFilesArray[variantIndex]) {
+        newLocalFilesArray[variantIndex] = [];
+      }
+      newLocalFilesArray[variantIndex] = [
+        ...newLocalFilesArray[variantIndex],
+        ...newLocalFiles,
+      ];
+      return newLocalFilesArray;
+    });
 
-    // Once all uploads are complete, reset the uploading state
-    Promise.all(uploadPromises)
-      .then((uploadedUrls) => {
-        const variant = variantSets[variantIndex];
-        const newImages = [...(variant.images || []), ...uploadedUrls];
-        updateVariantSet(variantIndex, {
-          ...variant,
-          images: newImages,
-        });
-      })
-      .then(() => {
-        toast.success("Images uploaded successfully!");
-        // Clear the file input after upload
-        if (fileInputRefs.current[variantIndex]) {
-          fileInputRefs.current[variantIndex].value = "";
-        }
-      })
-      .catch((error) => {
-        console.error("Error in batch upload:", error);
-      })
-      .finally(() => {
-        setIsUploading(false);
-      });
+    // Clear the file input
+    if (fileInputRefs.current[variantIndex]) {
+      fileInputRefs.current[variantIndex]!.value = "";
+    }
   };
+
+  // Expose upload function to parent via imperative handle
+  const uploadAllImages = async (): Promise<void> => {
+    if (localFiles.every((variantFiles) => variantFiles.length === 0)) {
+      return; // No files to upload
+    }
+
+    setIsUploading(true);
+    try {
+      // Collect all upload promises for all variants
+      const variantUploadData: Array<{
+        variantIndex: number;
+        uploadedUrls: string[];
+        filesToCleanup: LocalImageFile[];
+      }> = [];
+
+      // Upload all files for all variants
+      for (
+        let variantIndex = 0;
+        variantIndex < localFiles.length;
+        variantIndex++
+      ) {
+        const variantFiles = localFiles[variantIndex] || [];
+        if (variantFiles.length === 0) continue;
+
+        const uploadPromises = variantFiles.map((localFile) =>
+          uploadToS3(localFile.file),
+        );
+        const uploadedUrls = await Promise.all(uploadPromises);
+
+        variantUploadData.push({
+          variantIndex,
+          uploadedUrls,
+          filesToCleanup: variantFiles,
+        });
+      }
+
+      // Update all variants at once to avoid state conflicts
+      if (variantUploadData.length > 0) {
+        const updatedVariants = [...variantSets];
+
+        variantUploadData.forEach(({ variantIndex, uploadedUrls }) => {
+          const variant = updatedVariants[variantIndex];
+          const newImages = [...(variant.images || []), ...uploadedUrls];
+          updatedVariants[variantIndex] = {
+            ...variant,
+            images: newImages,
+          };
+        });
+
+        // Update all variants at once
+        setVariantSets(updatedVariants);
+        form.setValue("variants", updatedVariants);
+
+        // Clean up all local files
+        variantUploadData.forEach(({ filesToCleanup }) => {
+          filesToCleanup.forEach((localFile) => {
+            URL.revokeObjectURL(localFile.preview);
+          });
+        });
+      }
+
+      // Clear all local files
+      setLocalFiles([]);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    uploadImages: uploadAllImages,
+    isUploading,
+  }));
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      localFiles.forEach((variantFiles) => {
+        variantFiles.forEach((localFile) => {
+          URL.revokeObjectURL(localFile.preview);
+        });
+      });
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -233,21 +393,55 @@ export default function ProductVariants() {
               <X className="h-5 w-5" />
             </button>
           )}
-          {(variant.images || []).length > 0 ? (
+          {(localFiles[setIndex] || []).length > 0 ||
+          (variant.images || []).length > 0 ? (
             <div className="flex-1">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                {(variant.images || []).map(
-                  (image: string, imageIndex: number) => (
-                    <div key={imageIndex} className="relative aspect-square">
+                {/* Display local files first */}
+                {(localFiles[setIndex] || []).map(
+                  (localFile: LocalImageFile, imageIndex: number) => (
+                    <div
+                      key={`local-${localFile.id}`}
+                      className="relative aspect-square"
+                    >
                       <Image
-                        src={image}
-                        alt={`Variant image ${imageIndex + 1}`}
+                        src={localFile.preview}
+                        alt={`Local variant image ${imageIndex + 1}`}
                         fill
                         className="rounded-lg object-cover"
                       />
                       <button
                         type="button"
                         onClick={() => removeImage(setIndex, imageIndex)}
+                        className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ),
+                )}
+                {/* Then display uploaded images */}
+                {(variant.images || []).map(
+                  (image: string, imageIndex: number) => (
+                    <div
+                      key={`uploaded-${imageIndex}`}
+                      className="relative aspect-square"
+                    >
+                      <Image
+                        src={image}
+                        alt={`Variant image ${imageIndex + 1}`}
+                        fill
+                        priority
+                        className="rounded-lg object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeImage(
+                            setIndex,
+                            (localFiles[setIndex] || []).length + imageIndex,
+                          )
+                        }
                         className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
                       >
                         <X className="h-3 w-3" />
@@ -267,6 +461,7 @@ export default function ProductVariants() {
                     data-multiple="true"
                     data-max-file-size="4194304"
                     onClick={() => {
+                      setCurrentUploadVariantIndex(setIndex);
                       setShowUploadModal(true);
                     }}
                   >
@@ -408,7 +603,15 @@ export default function ProductVariants() {
               </FormItem>
             ))}
           </div>
-          <AlertDialog open={showUploadModal} onOpenChange={setShowUploadModal}>
+          <AlertDialog
+            open={showUploadModal}
+            onOpenChange={(open) => {
+              setShowUploadModal(open);
+              if (!open) {
+                setCurrentUploadVariantIndex(null);
+              }
+            }}
+          >
             <AlertDialogContent className="bg-white">
               <AlertDialogHeader>
                 <AlertDialogTitle>Image Upload Guidelines</AlertDialogTitle>
@@ -427,7 +630,11 @@ export default function ProductVariants() {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => fileInputRefs.current[setIndex]?.click()}
+                  onClick={() => {
+                    if (currentUploadVariantIndex !== null) {
+                      fileInputRefs.current[currentUploadVariantIndex]?.click();
+                    }
+                  }}
                 >
                   Continue
                 </AlertDialogAction>
@@ -438,4 +645,9 @@ export default function ProductVariants() {
       ))}
     </div>
   );
-}
+});
+
+ProductVariants.displayName = "ProductVariants";
+
+export default ProductVariants;
+export type { ProductVariantsRef };

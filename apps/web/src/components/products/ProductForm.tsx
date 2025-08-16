@@ -24,7 +24,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import ProductVariants from "@/components/products/product-variants";
+import ProductVariants, {
+  ProductVariantsRef,
+} from "@/components/products/product-variants";
 import { useCategories } from "@/lib/categories";
 import {
   productFormSchema,
@@ -39,6 +41,7 @@ import {
 } from "@/lib/product";
 import { useMyBrand } from "@/lib/brand";
 import { useRouter } from "@/i18n/navigation";
+import { toast } from "sonner";
 
 export default function ProductForm({
   products,
@@ -52,12 +55,14 @@ export default function ProductForm({
   const { mutateAsync: updateProduct, isPending: isUpdating } =
     useUpdateProduct();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [originalValues, setOriginalValues] =
     useState<ProductFormValues | null>(null);
   const successRef = useRef<HTMLDivElement | null>(null);
+  const productVariantsRef = useRef<ProductVariantsRef>(null);
 
   const isUpdateMode = !!products?.id;
-  const isPending = isCreating || isUpdating;
+  const isPending = isCreating || isUpdating || isUploadingImages;
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -207,10 +212,20 @@ export default function ProductForm({
     return hasChanges ? changes : null;
   };
 
-  const onSubmit = async (data: ProductFormValues) => {
+  const onSubmit = async () => {
     try {
+      // Upload any pending images first
+      if (productVariantsRef.current) {
+        setIsUploadingImages(true);
+        await productVariantsRef.current.uploadImages();
+        setIsUploadingImages(false);
+      }
+
+      // Get fresh form data after image uploads
+      const freshData = form.getValues();
+
       if (isUpdateMode && products?.id) {
-        const changedFields = getChangedFields(data);
+        const changedFields = getChangedFields(freshData);
 
         if (!changedFields) {
           setShowSuccess(true);
@@ -225,10 +240,10 @@ export default function ProductForm({
       } else {
         // Create mode - send all required fields
         const createData: CreateProductFormValues = {
-          name: data.name!,
-          category: data.category!,
-          description: data.description,
-          variants: data.variants!.map((variant) => ({
+          name: freshData.name!,
+          category: freshData.category!,
+          description: freshData.description,
+          variants: freshData.variants!.map((variant) => ({
             price: variant.price!,
             stock: variant.stock!,
             options: variant.options!,
@@ -248,6 +263,18 @@ export default function ProductForm({
       }, 2000);
     } catch (error) {
       console.error("Error submitting product:", error);
+      setIsUploadingImages(false);
+
+      // Show error message to user
+      if (error instanceof Error) {
+        toast.error(
+          `Failed to ${isUpdateMode ? "update" : "create"} product: ${error.message}`,
+        );
+      } else {
+        toast.error(
+          `Failed to ${isUpdateMode ? "update" : "create"} product. Please try again.`,
+        );
+      }
     }
   };
 
@@ -351,18 +378,20 @@ export default function ProductForm({
             />
 
             {/* Product Variants */}
-            <ProductVariants />
+            <ProductVariants ref={productVariantsRef} />
 
             {/* Form actions */}
             <div className="flex justify-center">
               <Button type="submit" disabled={isPending}>
-                {isPending
-                  ? isUpdateMode
-                    ? "Updating..."
-                    : "Submitting..."
-                  : isUpdateMode
-                    ? "Update Product"
-                    : "Submit Product"}
+                {isUploadingImages
+                  ? "Uploading Images..."
+                  : isPending
+                    ? isUpdateMode
+                      ? "Updating..."
+                      : "Submitting..."
+                    : isUpdateMode
+                      ? "Update Product"
+                      : "Submit Product"}
               </Button>
             </div>
           </form>

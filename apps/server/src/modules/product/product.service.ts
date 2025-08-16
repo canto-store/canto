@@ -67,8 +67,8 @@ class ProductService {
     const where: Prisma.ProductWhereInput = {}
 
     // Store Elasticsearch scores and product order for sorting
-    let elasticsearchScores: Map<number, number> = new Map()
-    let elasticsearchOrder: number[] = []
+    const elasticsearchScores: Map<number, number> = new Map()
+    const elasticsearchOrder: number[] = []
 
     if (search) {
       const results = await esClient.search({
@@ -143,7 +143,7 @@ class ProductService {
 
       // Extract product IDs, scores, and preserve order from Elasticsearch
       const productIds: number[] = []
-      results.hits.hits.forEach((hit: any, index: number) => {
+      results.hits.hits.forEach((hit: any) => {
         const productId = +hit._id
         productIds.push(productId)
         elasticsearchScores.set(productId, hit._score)
@@ -831,6 +831,9 @@ class ProductService {
       if (dto.category !== undefined) {
         productUpdateData.categoryId = dto.category
       }
+      if (dto.status !== undefined) {
+        productUpdateData.status = dto.status
+      }
 
       let updatedProduct: Product
       if (Object.keys(productUpdateData).length > 0) {
@@ -852,121 +855,122 @@ class ProductService {
           createdByid: userId,
         },
       })
+      if (dto.variants) {
+        const currentVariants = await tx.productVariant.findMany({
+          where: { productId: dto.id },
+          select: { id: true },
+        })
 
-      const currentVariants = await tx.productVariant.findMany({
-        where: { productId: dto.id },
-        select: { id: true },
-      })
+        const currentVariantIds = currentVariants.map(v => v.id)
+        const updatedVariantIds = dto.variants.map(v => v.id).filter(Boolean)
+        const newVariantsCount = dto.variants.filter(v => !v.id).length
 
-      const currentVariantIds = currentVariants.map(v => v.id)
-      const updatedVariantIds = dto.variants.map(v => v.id).filter(Boolean)
-      const newVariantsCount = dto.variants.filter(v => !v.id).length
+        const hasVariantChanges =
+          currentVariantIds.length !== updatedVariantIds.length
 
-      const hasVariantChanges =
-        currentVariantIds.length !== updatedVariantIds.length
+        const hasNewVariants = newVariantsCount > 0
 
-      const hasNewVariants = newVariantsCount > 0
-
-      if (hasVariantChanges || hasNewVariants) {
-        const variantsToDelete = currentVariantIds.filter(
-          id => !updatedVariantIds.includes(id)
-        )
-
-        if (variantsToDelete.length > 0) {
-          await tx.productVariant.deleteMany({
-            where: { id: { in: variantsToDelete } },
-          })
-        }
-      }
-
-      for (const variant of dto.variants) {
-        if (variant.id) {
-          const variantUpdateData: Record<string, any> = {}
-
-          if (variant.price !== undefined) {
-            variantUpdateData.price = variant.price
-          }
-          if (variant.stock !== undefined) {
-            variantUpdateData.stock = variant.stock
-          }
-
-          if (Object.keys(variantUpdateData).length > 0) {
-            await tx.productVariant.update({
-              where: { id: variant.id },
-              data: variantUpdateData,
-            })
-          }
-
-          if (variant.images) {
-            await tx.productVariantImage.deleteMany({
-              where: { variantId: variant.id },
-            })
-
-            if (variant.images.length > 0) {
-              await tx.productVariantImage.createMany({
-                data: variant.images.map(image => ({
-                  variantId: variant.id,
-                  url: image,
-                  alt_text: dto.name,
-                })),
-              })
-            }
-          }
-
-          if (variant.options) {
-            await tx.variantOptionValue.deleteMany({
-              where: { variantId: variant.id },
-            })
-
-            if (variant.options.length > 0) {
-              await tx.variantOptionValue.createMany({
-                data: variant.options.map(o => ({
-                  variantId: variant.id,
-                  optionValueId: o.valueId,
-                  productOptionId: o.optionId,
-                })),
-              })
-            }
-          }
-        } else {
-          const variantOptionPromises = variant.options.map(o =>
-            tx.productOptionValue
-              .findFirst({
-                where: { id: o.valueId },
-              })
-              .then(v => v?.value)
+        if (hasVariantChanges || hasNewVariants) {
+          const variantsToDelete = currentVariantIds.filter(
+            id => !updatedVariantIds.includes(id)
           )
 
-          const variantOptionNames = await Promise.all(variantOptionPromises)
-
-          if (variant.price && variant.stock) {
-            const newVariant = await tx.productVariant.create({
-              data: {
-                productId: dto.id,
-                sku: `SKU-${String(dto.id).padStart(3, '0')}-${dto.slug}-${variantOptionNames.join('-')}`,
-                price: variant.price,
-                stock: variant.stock,
-              },
+          if (variantsToDelete.length > 0) {
+            await tx.productVariant.deleteMany({
+              where: { id: { in: variantsToDelete } },
             })
+          }
+        }
 
-            if (variant.images && variant.images.length > 0) {
-              await tx.productVariantImage.createMany({
-                data: variant.images.map(image => ({
-                  variantId: newVariant.id,
-                  url: image,
-                  alt_text: dto.name,
-                })),
+        for (const variant of dto.variants) {
+          if (variant.id) {
+            const variantUpdateData: Record<string, any> = {}
+
+            if (variant.price !== undefined) {
+              variantUpdateData.price = variant.price
+            }
+            if (variant.stock !== undefined) {
+              variantUpdateData.stock = variant.stock
+            }
+
+            if (Object.keys(variantUpdateData).length > 0) {
+              await tx.productVariant.update({
+                where: { id: variant.id },
+                data: variantUpdateData,
               })
             }
 
-            if (variant.options && variant.options.length > 0) {
-              await tx.variantOptionValue.createMany({
-                data: variant.options.map(o => ({
-                  variantId: newVariant.id,
-                  optionValueId: o.valueId,
-                  productOptionId: o.optionId,
-                })),
+            if (variant.images) {
+              await tx.productVariantImage.deleteMany({
+                where: { variantId: variant.id },
               })
+
+              if (variant.images.length > 0) {
+                await tx.productVariantImage.createMany({
+                  data: variant.images.map(image => ({
+                    variantId: variant.id,
+                    url: image,
+                    alt_text: dto.name,
+                  })),
+                })
+              }
+            }
+
+            if (variant.options) {
+              await tx.variantOptionValue.deleteMany({
+                where: { variantId: variant.id },
+              })
+
+              if (variant.options.length > 0) {
+                await tx.variantOptionValue.createMany({
+                  data: variant.options.map(o => ({
+                    variantId: variant.id,
+                    optionValueId: o.valueId,
+                    productOptionId: o.optionId,
+                  })),
+                })
+              }
+            }
+          } else {
+            const variantOptionPromises = variant.options.map(o =>
+              tx.productOptionValue
+                .findFirst({
+                  where: { id: o.valueId },
+                })
+                .then(v => v?.value)
+            )
+
+            const variantOptionNames = await Promise.all(variantOptionPromises)
+
+            if (variant.price && variant.stock) {
+              const newVariant = await tx.productVariant.create({
+                data: {
+                  productId: dto.id,
+                  sku: `SKU-${String(dto.id).padStart(3, '0')}-${dto.slug}-${variantOptionNames.join('-')}`,
+                  price: variant.price,
+                  stock: variant.stock,
+                },
+              })
+
+              if (variant.images && variant.images.length > 0) {
+                await tx.productVariantImage.createMany({
+                  data: variant.images.map(image => ({
+                    variantId: newVariant.id,
+                    url: image,
+                    alt_text: dto.name,
+                  })),
+                })
+              }
+
+              if (variant.options && variant.options.length > 0) {
+                await tx.variantOptionValue.createMany({
+                  data: variant.options.map(o => ({
+                    variantId: newVariant.id,
+                    optionValueId: o.valueId,
+                    productOptionId: o.optionId,
+                  })),
+                })
+              }
             }
           }
         }
