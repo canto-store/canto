@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "../ui/search-bar";
-import { AnimatePresence, motion } from "framer-motion";
 import { WishlistIcon, CartIcon } from "@/components";
 import MobileDrawer from "./MobileDrawer";
 
@@ -34,6 +33,20 @@ export function MobileHeader() {
         >
           <WishlistIcon />
         </Button>
+      </div>
+    );
+  } else if (pathname.includes("/sell")) {
+    return (
+      <div className="relative flex h-14 items-center px-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-4"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="mx-auto text-2xl font-semibold">Sell</h1>
       </div>
     );
   } else if (pathname.includes("/product")) {
@@ -70,71 +83,62 @@ export function MobileHeader() {
     );
   } else {
     return (
-      <AnimatePresence mode="wait">
-        {searchOpen ? (
-          <motion.div
-            key="search-mode"
-            className="relative container mx-auto flex h-14 items-center justify-between px-4"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+      <div className="relative h-14">
+        <div
+          className={`absolute inset-0 container mx-auto flex h-14 w-full items-center justify-between px-4 transition-all duration-200 ease-in-out ${
+            searchOpen
+              ? "pointer-events-none translate-x-5 opacity-0"
+              : "translate-x-0 opacity-100"
+          }`}
+        >
+          <MobileDrawer />
+          <Image
+            src="/logo.png"
+            alt="Canto Store Logo"
+            width={80}
+            height={60}
+            priority
+            onClick={() => handleNavigation("/")}
+            className="cursor-pointer"
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSearchOpen(true)}
+            className="transition-all duration-200"
           >
-            <Image
-              src="/logo.png"
-              alt="Canto Store Logo"
-              width={80}
-              height={60}
-              priority
-              onClick={() => handleNavigation("/")}
-              className="cursor-pointer"
-            />
-            <motion.div
-              className="flex items-center gap-2"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, duration: 0.2 }}
-            >
-              <SearchBar showButton={false} autoFocus className="w-48" />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSearchOpen(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </motion.div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="normal-mode"
-            className="relative container mx-auto flex h-14 items-center justify-between px-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          >
-            <MobileDrawer />
-            <Image
-              src="/logo.png"
-              alt="Canto Store Logo"
-              width={80}
-              height={60}
-              priority
-              onClick={() => handleNavigation("/")}
-              className="cursor-pointer"
-            />
+            <Search className="h-5 w-5" />
+          </Button>
+        </div>
+
+        <div
+          className={`absolute inset-0 container mx-auto flex h-14 w-full items-center justify-between px-4 transition-all duration-200 ease-in-out ${
+            searchOpen
+              ? "translate-x-0 opacity-100"
+              : "pointer-events-none -translate-x-5 opacity-0"
+          }`}
+        >
+          <Image
+            src="/logo.png"
+            alt="Canto Store Logo"
+            width={80}
+            height={60}
+            priority
+            onClick={() => handleNavigation("/")}
+            className="cursor-pointer"
+          />
+          <div className="flex items-center gap-2 transition-all duration-200 ease-in-out">
+            <SearchBar showButton={false} autoFocus className="w-48" />
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setSearchOpen(true)}
-              className="transition-all duration-200"
+              onClick={() => setSearchOpen(false)}
             >
-              <Search className="h-5 w-5" />
+              <X className="h-5 w-5" />
             </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      </div>
     );
   }
 }

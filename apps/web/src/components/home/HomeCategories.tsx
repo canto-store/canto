@@ -1,4 +1,3 @@
-import { useMediaQuery } from "react-haiku";
 import { WebCategory } from "./WebCategory";
 import MobileCategory from "./MobileCategory";
 import { useCategories } from "@/lib/categories";
@@ -6,8 +5,6 @@ import { HomeCategoriesSkeleton } from "./HomeCategoriesSkeleton";
 import { useBrands } from "@/lib/brand";
 
 export function HomeCategories() {
-  const isMobile = useMediaQuery("(max-width: 768px)", false);
-
   const { data: categories, isLoading } = useCategories();
   useBrands();
 
@@ -15,9 +12,14 @@ export function HomeCategories() {
     return <HomeCategoriesSkeleton />;
   }
 
-  if (isMobile) {
-    return <MobileCategory categories={categories} />;
-  } else {
-    return <WebCategory categories={categories} />;
-  }
+  return (
+    <>
+      <div className="md:hidden">
+        <MobileCategory categories={categories} />
+      </div>
+      <div className="hidden md:block">
+        <WebCategory categories={categories} />
+      </div>
+    </>
+  );
 }
