@@ -20,7 +20,7 @@ function DashboardLayout() {
         <div className="flex-1 space-y-4 p-8 max-h-screen">
           <div className="flex items-center justify-between">
             {pathname !== '/dashboard' &&
-              !pathname.startsWith('/dashboard/products') && (
+              !pathname.startsWith('/dashboard/products/') && (
                 <Button
                   variant="outline"
                   className="cursor-pointer"
