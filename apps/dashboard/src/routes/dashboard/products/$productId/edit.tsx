@@ -98,7 +98,7 @@ export default function EditProduct() {
     if (form.formState.isDirty) {
       setShowUnsavedDialog(true)
     } else {
-      router.navigate({ to: '/dashboard/products' })
+      router.history.back()
     }
   }
 
@@ -245,7 +245,7 @@ export default function EditProduct() {
     updateProduct({
       product: changedData as ProductFormValues,
     }).then(() => {
-      router.navigate({ to: '/dashboard/products' })
+      router.history.back()
     })
   }
 
@@ -440,7 +440,7 @@ export default function EditProduct() {
             <AlertDialogAction
               onClick={() => {
                 form.reset() // Reset form state
-                router.navigate({ to: '/dashboard/products' })
+                router.history.back()
               }}
             >
               Leave Page

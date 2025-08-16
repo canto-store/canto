@@ -19,16 +19,17 @@ function DashboardLayout() {
       <SidebarInset>
         <div className="flex-1 space-y-4 p-8 max-h-screen">
           <div className="flex items-center justify-between">
-            {pathname !== '/dashboard' && (
-              <Button
-                variant="outline"
-                className="cursor-pointer"
-                onClick={() => router.history.back()}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-            )}
+            {pathname !== '/dashboard' &&
+              !pathname.startsWith('/dashboard/products') && (
+                <Button
+                  variant="outline"
+                  className="cursor-pointer"
+                  onClick={() => router.history.back()}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+              )}
           </div>
           <Outlet />
         </div>
