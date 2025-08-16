@@ -107,7 +107,15 @@ function MobileProductView({ products }: { products: ProductByBrand[] }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col space-y-4">
+      <Button
+        onClick={() => router.push("/sell/product")}
+        className="self-end"
+        size="sm"
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Add Product
+      </Button>
       {products.map((product) => (
         <div
           key={product.id}

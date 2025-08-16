@@ -22,11 +22,7 @@ export function MobileHeader() {
   if (pathname === "/browse") {
     return (
       <div className="relative container mx-auto flex h-14 items-center justify-between px-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => window.history.back()}
-        >
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
 
@@ -43,11 +39,7 @@ export function MobileHeader() {
   } else if (pathname.includes("/product")) {
     return (
       <div className="relative container mx-auto flex h-14 items-center justify-between px-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => window.history.back()}
-        >
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-2xl font-semibold">Product</h1>
@@ -67,7 +59,7 @@ export function MobileHeader() {
           variant="ghost"
           size="icon"
           className="absolute left-4"
-          onClick={() => window.history.back()}
+          onClick={() => router.back()}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
