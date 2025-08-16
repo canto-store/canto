@@ -18,6 +18,11 @@ export default function Home() {
   const t = useTranslations();
 
   useEffect(() => {
+    // Ensure we start at the top when landing on the home page (including back navigation)
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
+  useEffect(() => {
     if (cart && !isStale) {
       setItems(cart);
     }

@@ -13,14 +13,12 @@ import { useAuthStore } from "@/stores/auth-store";
 interface ProductCardProps {
   product: ProductSummary;
   priority?: boolean;
-  index?: number;
   className?: string;
 }
 
 export function ProductCard({
   product,
   priority = false,
-  index = 0,
   className,
 }: ProductCardProps) {
   const router = useRouter();
@@ -70,9 +68,6 @@ export function ProductCard({
     router.push(`/browse?brand=${encodeURIComponent(product.brand.slug)}`);
   };
 
-  // Determine if this product should be prioritized
-  const shouldPrioritize = priority || index < 2;
-
   return (
     <div
       className={cn(
@@ -90,8 +85,8 @@ export function ProductCard({
           className="aspect-square w-full transform rounded-t-lg object-cover"
           width={600}
           height={600}
-          priority={shouldPrioritize}
-          loading={shouldPrioritize ? "eager" : "lazy"}
+          priority={priority}
+          loading={priority ? "eager" : "lazy"}
           quality={80}
         />
       </button>

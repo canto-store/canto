@@ -23,7 +23,6 @@ export function ProductGrid({ products, title, className }: ProductGridProps) {
             key={product.name}
             product={product}
             priority={index < 4}
-            index={index}
           />
         ))}
       </div>

@@ -1,17 +1,7 @@
-:root {
+.dots-spinner {
   --col1: oklch(0.15 0.0654 253.37);
   --col2: oklch(0.2098 0.0654 253.37);
   --col3: oklch(0.45 0.04 253.37);
-}
-
-body {
-  min-height: 100vh;
-  margin: 0;
-  display: grid;
-  place-content: center;
-}
-
-.dots-spinner {
   width: 3.6rem;
   height: 3.4rem;
   position: relative;
