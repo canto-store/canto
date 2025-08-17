@@ -1,5 +1,9 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
@@ -19,6 +23,7 @@ function DashboardLayout() {
       <SidebarInset>
         <div className="flex-1 space-y-4 p-8 max-h-screen">
           <div className="flex items-center justify-between">
+            <SidebarTrigger className="md:hidden" />
             {pathname !== '/dashboard' &&
               !pathname.startsWith('/dashboard/products/') && (
                 <Button

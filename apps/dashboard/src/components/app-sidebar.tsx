@@ -17,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { api } from '@/lib/auth-api'
@@ -58,11 +59,16 @@ const menuItems = [
 export function AppSidebar() {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
+  const { isMobile, setOpenMobile } = useSidebar()
 
   const handleLogout = async () => {
     setLoading(true)
     await api.logout().finally(() => setLoading(false))
     router.navigate({ to: '/' })
+  }
+
+  const handleNavigate = () => {
+    if (isMobile) setOpenMobile(false)
   }
 
   return (
@@ -79,8 +85,8 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map(item => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url}>
+                  <SidebarMenuButton asChild onClick={handleNavigate}>
+                    <Link to={item.url} onClick={handleNavigate}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>

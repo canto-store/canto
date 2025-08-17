@@ -58,13 +58,13 @@ function ProductOptionsPage() {
   ]
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
         <h1 className="text-3xl font-bold">Product Options</h1>
         <p className="text-muted-foreground">Manage product options</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <h2 className="text-xl font-semibold">Options</h2>
         <DataTable
           columns={optionColumns}

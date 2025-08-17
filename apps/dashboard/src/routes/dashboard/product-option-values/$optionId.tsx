@@ -58,19 +58,20 @@ function ProductOptionValuesPage() {
           <AlertDescription>{success}</AlertDescription>
         </Alert>
       )}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">{option?.name ?? 'Option'}</h1>
           <p className="text-muted-foreground">Manage values for this option</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
           <Input
             placeholder="New value"
             value={newValue}
             onChange={e => setNewValue(e.target.value)}
-            className="w-56"
+            className="w-full sm:w-56"
           />
           <Button
+            className="w-full sm:w-auto"
             disabled={!newValue.trim() || createValue.isPending}
             onClick={async () => {
               if (!newValue.trim()) return
