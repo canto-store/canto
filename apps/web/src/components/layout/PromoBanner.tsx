@@ -1,6 +1,6 @@
 "use client";
 
-import { useClipboard } from "react-haiku";
+import { useClipboard } from "@/hooks/useClipboard";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 

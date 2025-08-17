@@ -14,9 +14,8 @@ import {
   MapPin,
   ShoppingBag,
   Wallet,
-  StoreIcon,
 } from "lucide-react";
-import { If, useMediaQuery } from "react-haiku";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { useLogout } from "@/hooks/auth";
@@ -54,51 +53,53 @@ export default function Page() {
             </Button>
           </div>
         )}
-        <If isTrue={Boolean(user)}>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              onClick={() => handleNavigation("/orders")}
-            >
-              <ShoppingBag className="mr-2 h-4 w-4" />
-              Orders
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => handleNavigation("/wishlist")}
-            >
-              <Heart className="mr-2 h-4 w-4" />
-              Wishlist
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => handleNavigation("/returns")}
-            >
-              <ArrowLeftRight className="mr-2 h-4 w-4" />
-              Returns
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => handleNavigation("/wallet")}
-            >
-              <Wallet className="mr-2 h-4 w-4" />
-              Wallet
-            </Button>
-          </div>
-          <div className="flex flex-col gap-2">
-            <h2 className="text-md">Account</h2>
-            <Button variant="outline">
-              <MapPin className="mr-2 h-4 w-4" />
-              <p className="w-full text-left">Addresses</p>
-              <ChevronRight className="ml-auto h-4 w-4" />
-            </Button>
-            <Button variant="outline">
-              <CreditCard className="mr-2 h-4 w-4" />
-              <p className="w-full text-left">Cards</p>
-              <ChevronRight className="ml-auto h-4 w-4" />
-            </Button>
-          </div>
-        </If>
+        {Boolean(user) && (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                onClick={() => handleNavigation("/orders")}
+              >
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                Orders
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handleNavigation("/wishlist")}
+              >
+                <Heart className="mr-2 h-4 w-4" />
+                Wishlist
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handleNavigation("/returns")}
+              >
+                <ArrowLeftRight className="mr-2 h-4 w-4" />
+                Returns
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handleNavigation("/wallet")}
+              >
+                <Wallet className="mr-2 h-4 w-4" />
+                Wallet
+              </Button>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-md">Account</h2>
+              <Button variant="outline">
+                <MapPin className="mr-2 h-4 w-4" />
+                <p className="w-full text-left">Addresses</p>
+                <ChevronRight className="ml-auto h-4 w-4" />
+              </Button>
+              <Button variant="outline">
+                <CreditCard className="mr-2 h-4 w-4" />
+                <p className="w-full text-left">Cards</p>
+                <ChevronRight className="ml-auto h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        )}
         <div className="flex flex-col gap-2">
           <h2 className="text-md">Settings</h2>
           <Button variant="outline" onClick={handleLanguageChange}>
@@ -117,12 +118,12 @@ export default function Page() {
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
         </div>
-        <If isTrue={Boolean(user)}>
+        {Boolean(user) && (
           <Button variant="ghost" onClick={() => logout()} className="mt-4">
             <LogOut className="text-orange-red mr-2 h-5 w-5" />
             <p className="text-orange-red text-lg">Logout</p>
           </Button>
-        </If>
+        )}
       </div>
     );
   } else {

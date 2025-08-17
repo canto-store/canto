@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useBanner } from "@/providers";
 import { useLocale } from "next-intl";
 import Image from "next/image";
-import { useMediaQuery } from "react-haiku";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { HERO_SLIDES as slides } from "@/lib/data/hero-slides";
 export function HeroSlider() {
   const autoplayInterval = 5000;

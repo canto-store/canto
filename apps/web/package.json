@@ -48,7 +48,6 @@
     "react": "^19.1.1",
     "react-cookie": "^8.0.1",
     "react-dom": "^19.1.1",
-    "react-haiku": "^2.3.0",
     "react-hook-form": "^7.62.0",
     "simple-icons": "^15.11.0",
     "sonner": "^2.0.6",

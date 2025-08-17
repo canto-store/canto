@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMediaQuery } from "react-haiku";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function HomeCategoriesSkeleton() {
   const isMobile = useMediaQuery("(max-width: 768px)", false);

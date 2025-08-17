@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, X, Share, Globe } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useDeviceOS } from "react-haiku";
-import { useMediaQuery } from "react-haiku";
+import { useDeviceOS } from "@/hooks/useDeviceOS";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useIsPWAInstalled } from "@/hooks/useIsPWAInstalled";
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
@@ -48,25 +49,14 @@ export function InstallPWA({
   const isRTL = locale === "ar";
 
   const [isOpen, setIsOpen] = useState(false);
+  const isInstalled = useIsPWAInstalled();
 
   useEffect(() => {
-    let isAppInstalled = false;
-    if (typeof window !== "undefined") {
-      if ("matchMedia" in window) {
-        const mediaQuery = window.matchMedia("(display-mode: standalone)");
-        isAppInstalled = mediaQuery.matches;
-      }
-
-      if (navigator.standalone) {
-        isAppInstalled = true;
-      }
-    }
-
-    if (isAppInstalled) {
+    if (isInstalled) {
       setIsDismissed(true);
       localStorage.setItem(storageDismissalKey, "true");
     }
-  }, [storageDismissalKey]);
+  }, [isInstalled, storageDismissalKey]);
 
   useEffect(() => {
     setIsDismissed(localStorage.getItem(storageDismissalKey) === "true");

@@ -1,33 +1,22 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { InstallPWA } from "@/components/pwa";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
+import { useIsPWAInstalled } from "@/hooks/useIsPWAInstalled";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const [isStandalone, setIsStandalone] = useState(false);
-
-  useEffect(() => {
-    let isPWA = false;
-    if (typeof window !== "undefined") {
-      if ("matchMedia" in window) {
-        const mediaQuery = window.matchMedia("(display-mode: standalone)");
-        isPWA = mediaQuery.matches;
-      }
-
-      if (navigator.standalone) {
-        isPWA = true;
-      }
-    }
-
-    setIsStandalone(isPWA);
-  }, []);
+  const InstallPWA = dynamic(
+    () => import("@/components/pwa").then((m) => m.InstallPWA),
+    { ssr: false },
+  );
+  const isInstalled = useIsPWAInstalled();
 
   return (
     <>
@@ -36,7 +25,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {children}
       </main>
       <Footer />
-      {isStandalone && <MobileBottomNavigation />}
+      {isInstalled && <MobileBottomNavigation />}
       <InstallPWA variant="message" displayDelay={8 * 1000} />
       {/* <PromoModal displayDelay={2 * 1000} /> */}
     </>

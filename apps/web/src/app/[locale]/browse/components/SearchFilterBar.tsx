@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMediaQuery } from "react-haiku";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 interface SearchFilterBarProps {
   searchQuery: string;

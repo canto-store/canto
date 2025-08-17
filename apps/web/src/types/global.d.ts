@@ -6,4 +6,7 @@ interface Navigator {
    * Supported primarily by Safari on iOS.
    */
   standalone?: boolean;
+  userAgentData?: {
+    platform?: string;
+  };
 }
