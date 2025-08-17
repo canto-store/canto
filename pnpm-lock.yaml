@@ -318,8 +318,8 @@ importers:
         specifier: ^7.62.0
         version: 7.62.0(react@19.1.1)
       simple-icons:
-        specifier: ^15.8.0
-        version: 15.8.0
+        specifier: ^15.11.0
+        version: 15.11.0
       sonner:
         specifier: ^2.0.6
         version: 2.0.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -2061,8 +2061,8 @@ packages:
   '@sinclair/typebox@0.34.38':
     resolution: {integrity: sha512-HpkxMmc2XmZKhvaKIZZThlHmx1L0I/V1hWK1NubtlFnr6ZqdiOpV72TKudZUNQjZNsyDBay72qFEhEvb+bcwcA==}
 
-  '@sinclair/typebox@0.34.39':
-    resolution: {integrity: sha512-keEoFsevmLwAedzacnTVmra66GViRH3fhWO1M+nZ8rUgpPJyN4mcvqlGr3QMrQXx4L8KNwW0q9/BeHSEoO4teg==}
+  '@sinclair/typebox@0.34.40':
+    resolution: {integrity: sha512-gwBNIP8ZAYev/ORDWW0QvxdwPXwxBtLsdsJgSc7eDIRt8ubP+rxUBzPsrwnu16fgEF8Bx4lh/+mvQvJzcTM6Kw==}
 
   '@sinonjs/commons@3.0.1':
     resolution: {integrity: sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ==}
@@ -5215,8 +5215,8 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  simple-icons@15.8.0:
-    resolution: {integrity: sha512-wErxeGj9E8bcS3sP/G1iqCcKAFW6s5rMIHT2ZeNrqAhF3p0zCkbP+LRJNPFnczGpKdTfS4fPQHCvag1QwsAQvg==}
+  simple-icons@15.11.0:
+    resolution: {integrity: sha512-hHgDvNcbIdE5e6thY19Ao1VEI4CectXDNB0+nXOLCBf3ApuzeMm4tAhWzeR9qZdt/GoeQs1nm9JTVzCVBuX1nA==}
     engines: {node: '>=0.12.18'}
 
   simple-swizzle@0.2.2:
@@ -7122,7 +7122,7 @@ snapshots:
 
   '@jest/schemas@30.0.0':
     dependencies:
-      '@sinclair/typebox': 0.34.39
+      '@sinclair/typebox': 0.34.40
 
   '@jest/schemas@30.0.5':
     dependencies:
@@ -7815,7 +7815,7 @@ snapshots:
 
   '@sinclair/typebox@0.34.38': {}
 
-  '@sinclair/typebox@0.34.39': {}
+  '@sinclair/typebox@0.34.40': {}
 
   '@sinonjs/commons@3.0.1':
     dependencies:
@@ -11598,7 +11598,7 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-icons@15.8.0: {}
+  simple-icons@15.11.0: {}
 
   simple-swizzle@0.2.2:
     dependencies:
