@@ -14,8 +14,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
 import { Route as DashboardSellersRouteImport } from './routes/dashboard/sellers'
+import { Route as DashboardProductOptionsRouteImport } from './routes/dashboard/product-options'
 import { Route as DashboardBrandsRouteImport } from './routes/dashboard/brands'
 import { Route as DashboardProductsIndexRouteImport } from './routes/dashboard/products/index'
+import { Route as DashboardProductOptionValuesOptionIdRouteImport } from './routes/dashboard/product-option-values/$optionId'
 import { Route as DashboardProductsProductIdEditRouteImport } from './routes/dashboard/products/$productId/edit'
 
 const DashboardRoute = DashboardRouteImport.update({
@@ -43,6 +45,11 @@ const DashboardSellersRoute = DashboardSellersRouteImport.update({
   path: '/sellers',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardProductOptionsRoute = DashboardProductOptionsRouteImport.update({
+  id: '/product-options',
+  path: '/product-options',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardBrandsRoute = DashboardBrandsRouteImport.update({
   id: '/brands',
   path: '/brands',
@@ -53,6 +60,12 @@ const DashboardProductsIndexRoute = DashboardProductsIndexRouteImport.update({
   path: '/products/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardProductOptionValuesOptionIdRoute =
+  DashboardProductOptionValuesOptionIdRouteImport.update({
+    id: '/product-option-values/$optionId',
+    path: '/product-option-values/$optionId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardProductsProductIdEditRoute =
   DashboardProductsProductIdEditRouteImport.update({
     id: '/products/$productId/edit',
@@ -64,18 +77,22 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/product-options': typeof DashboardProductOptionsRoute
   '/dashboard/sellers': typeof DashboardSellersRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/product-option-values/$optionId': typeof DashboardProductOptionValuesOptionIdRoute
   '/dashboard/products': typeof DashboardProductsIndexRoute
   '/dashboard/products/$productId/edit': typeof DashboardProductsProductIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/product-options': typeof DashboardProductOptionsRoute
   '/dashboard/sellers': typeof DashboardSellersRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/product-option-values/$optionId': typeof DashboardProductOptionValuesOptionIdRoute
   '/dashboard/products': typeof DashboardProductsIndexRoute
   '/dashboard/products/$productId/edit': typeof DashboardProductsProductIdEditRoute
 }
@@ -84,9 +101,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/product-options': typeof DashboardProductOptionsRoute
   '/dashboard/sellers': typeof DashboardSellersRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/product-option-values/$optionId': typeof DashboardProductOptionValuesOptionIdRoute
   '/dashboard/products/': typeof DashboardProductsIndexRoute
   '/dashboard/products/$productId/edit': typeof DashboardProductsProductIdEditRoute
 }
@@ -96,18 +115,22 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/brands'
+    | '/dashboard/product-options'
     | '/dashboard/sellers'
     | '/dashboard/users'
     | '/dashboard/'
+    | '/dashboard/product-option-values/$optionId'
     | '/dashboard/products'
     | '/dashboard/products/$productId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard/brands'
+    | '/dashboard/product-options'
     | '/dashboard/sellers'
     | '/dashboard/users'
     | '/dashboard'
+    | '/dashboard/product-option-values/$optionId'
     | '/dashboard/products'
     | '/dashboard/products/$productId/edit'
   id:
@@ -115,9 +138,11 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/brands'
+    | '/dashboard/product-options'
     | '/dashboard/sellers'
     | '/dashboard/users'
     | '/dashboard/'
+    | '/dashboard/product-option-values/$optionId'
     | '/dashboard/products/'
     | '/dashboard/products/$productId/edit'
   fileRoutesById: FileRoutesById
@@ -164,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSellersRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/product-options': {
+      id: '/dashboard/product-options'
+      path: '/product-options'
+      fullPath: '/dashboard/product-options'
+      preLoaderRoute: typeof DashboardProductOptionsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/brands': {
       id: '/dashboard/brands'
       path: '/brands'
@@ -178,6 +210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProductsIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/product-option-values/$optionId': {
+      id: '/dashboard/product-option-values/$optionId'
+      path: '/product-option-values/$optionId'
+      fullPath: '/dashboard/product-option-values/$optionId'
+      preLoaderRoute: typeof DashboardProductOptionValuesOptionIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/products/$productId/edit': {
       id: '/dashboard/products/$productId/edit'
       path: '/products/$productId/edit'
@@ -190,18 +229,23 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardBrandsRoute: typeof DashboardBrandsRoute
+  DashboardProductOptionsRoute: typeof DashboardProductOptionsRoute
   DashboardSellersRoute: typeof DashboardSellersRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardProductOptionValuesOptionIdRoute: typeof DashboardProductOptionValuesOptionIdRoute
   DashboardProductsIndexRoute: typeof DashboardProductsIndexRoute
   DashboardProductsProductIdEditRoute: typeof DashboardProductsProductIdEditRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardBrandsRoute: DashboardBrandsRoute,
+  DashboardProductOptionsRoute: DashboardProductOptionsRoute,
   DashboardSellersRoute: DashboardSellersRoute,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardProductOptionValuesOptionIdRoute:
+    DashboardProductOptionValuesOptionIdRoute,
   DashboardProductsIndexRoute: DashboardProductsIndexRoute,
   DashboardProductsProductIdEditRoute: DashboardProductsProductIdEditRoute,
 }

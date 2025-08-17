@@ -40,6 +40,18 @@ router.get(
 
 router.get('/options', productController.getOptions.bind(productController))
 router.post(
+  '/options/values',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN),
+  productController.createOptionValue.bind(productController)
+)
+router.delete(
+  '/options/values/:id',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN),
+  productController.deleteOptionValue.bind(productController)
+)
+router.post(
   '/submit',
   authMiddleware.checkAuth.bind(authMiddleware),
   authMiddleware.checkRole(UserRole.SELLER),

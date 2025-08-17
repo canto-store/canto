@@ -86,4 +86,11 @@ export const api = {
     const response = await apiClient.get('/product/options')
     return response.data
   },
+  createProductOptionValue: async (data: {
+    productOptionId: number
+    value: string
+  }) => {
+    const response = await apiClient.post('/product/options/values', data)
+    return response.data
+  },
 }

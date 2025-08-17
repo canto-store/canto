@@ -373,7 +373,6 @@ class ProductService {
 
   async createOptionValue(dto: CreateProductOptionValueDto) {
     if (!dto.value?.trim()) throw new AppError('value is required', 400)
-    await this.ensureOptionExists(dto.productOptionId)
 
     const existingOptionValue = await this.prisma.productOptionValue.findFirst({
       where: { productOptionId: dto.productOptionId, value: dto.value },
@@ -381,7 +380,16 @@ class ProductService {
     if (existingOptionValue)
       throw new AppError('Value already exists under this option', 409)
 
-    return this.prisma.productOptionValue.create({ data: dto })
+    return this.prisma.productOption.update({
+      where: { id: dto.productOptionId },
+      data: {
+        values: {
+          create: {
+            value: dto.value,
+          },
+        },
+      },
+    })
   }
 
   async deleteOptionValue(id: number) {

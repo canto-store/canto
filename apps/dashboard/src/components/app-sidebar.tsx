@@ -1,4 +1,11 @@
-import { Package, Building2, Home, UserCheck, UserStar } from 'lucide-react'
+import {
+  Package,
+  Building2,
+  Home,
+  UserCheck,
+  UserStar,
+  Settings,
+} from 'lucide-react'
 import { Link, useRouter } from '@tanstack/react-router'
 import {
   Sidebar,
@@ -25,6 +32,11 @@ const menuItems = [
     title: 'Products',
     url: '/dashboard/products',
     icon: Package,
+  },
+  {
+    title: 'Product Options',
+    url: '/dashboard/product-options',
+    icon: Settings,
   },
   {
     title: 'Brands',
