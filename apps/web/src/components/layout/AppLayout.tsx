@@ -1,19 +1,34 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { InstallPWA } from "@/components/pwa";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
-import Image from "next/image";
-import { useMediaQuery } from "react-haiku";
-// import { PromoModal } from "../home/PromoModal";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    let isPWA = false;
+    if (typeof window !== "undefined") {
+      if ("matchMedia" in window) {
+        const mediaQuery = window.matchMedia("(display-mode: standalone)");
+        isPWA = mediaQuery.matches;
+      }
+
+      if (navigator.standalone) {
+        isPWA = true;
+      }
+    }
+
+    setIsStandalone(isPWA);
+  }, []);
+
   return (
     <>
       <Header />
@@ -21,7 +36,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {children}
       </main>
       <Footer />
-      {/* <MobileBottomNavigation /> */}
+      {isStandalone && <MobileBottomNavigation />}
       <InstallPWA variant="message" displayDelay={8 * 1000} />
       {/* <PromoModal displayDelay={2 * 1000} /> */}
     </>
