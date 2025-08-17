@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -51,9 +50,17 @@ export function InstallPWA({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const isAppInstalled =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
+    let isAppInstalled = false;
+    if (typeof window !== "undefined") {
+      if ("matchMedia" in window) {
+        const mediaQuery = window.matchMedia("(display-mode: standalone)");
+        isAppInstalled = mediaQuery.matches;
+      }
+
+      if (navigator.standalone) {
+        isAppInstalled = true;
+      }
+    }
 
     if (isAppInstalled) {
       setIsDismissed(true);
