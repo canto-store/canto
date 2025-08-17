@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Home, Search, User } from "lucide-react";
+import { Home, Search, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import React from "react";
@@ -31,9 +31,9 @@ export function MobileBottomNavigation() {
       icon: <Search className="h-5 w-5" />,
     },
     {
-      label: t("account"),
-      href: "/account",
-      icon: <User className="h-5 w-5" />,
+      label: t("settings"),
+      href: "/settings",
+      icon: <Settings className="h-5 w-5" />,
     },
   ];
 
