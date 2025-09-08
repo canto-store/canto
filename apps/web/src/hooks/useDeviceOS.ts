@@ -1,4 +1,11 @@
+"use client";
+
 export const useDeviceOS = () => {
+  // Check if code is running in browser environment
+  if (typeof navigator === "undefined") {
+    return "Unknown"; // Default value when running on server
+  }
+
   const { platform } = navigator?.userAgentData || {};
 
   if (platform) {

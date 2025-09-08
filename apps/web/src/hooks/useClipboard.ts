@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 export function useClipboard({ timeout = 500 } = {}) {
@@ -16,7 +18,7 @@ export function useClipboard({ timeout = 500 } = {}) {
   };
 
   const copy = (value: string) => {
-    if ("clipboard" in navigator) {
+    if (typeof navigator !== "undefined" && "clipboard" in navigator) {
       navigator.clipboard
         .writeText(value)
         .then(() => handleCopyResult(true))
