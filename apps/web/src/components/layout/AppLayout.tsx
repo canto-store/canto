@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
-import { useIsPWAInstalled } from "@/hooks/useIsPWAInstalled";
+import { usePWASetup } from "@/hooks/usePWA";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -16,7 +16,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     () => import("@/components/pwa").then((m) => m.InstallPWA),
     { ssr: false },
   );
-  const isInstalled = useIsPWAInstalled();
+  const { isInstalled } = usePWASetup();
 
   return (
     <>

@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Wallet,
 } from "lucide-react";
+import { InstallPWA } from "@/components/pwa/InstallPWA";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
@@ -112,11 +113,7 @@ export default function Page() {
             <p className="w-full text-left">Notifications</p>
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            <p className="w-full text-left">Download App</p>
-            <ChevronRight className="ml-auto h-4 w-4" />
-          </Button>
+          <InstallPWA variant="menu" className="p-0" />
         </div>
         {Boolean(user) && (
           <Button variant="ghost" onClick={() => logout()} className="mt-4">
