@@ -119,17 +119,7 @@ class ProductService {
                   match: {
                     description: {
                       query: search.trim(),
-                      fuzziness: 'AUTO',
                       boost: 1,
-                    },
-                  },
-                },
-                // 6. Prefix matching for partial words
-                {
-                  prefix: {
-                    name: {
-                      value: search.trim().toLowerCase(),
-                      boost: 1.5,
                     },
                   },
                 },
@@ -149,7 +139,6 @@ class ProductService {
         elasticsearchScores.set(productId, hit._score)
         elasticsearchOrder.push(productId)
       })
-
       where.id = { in: productIds }
     }
 
