@@ -3,10 +3,9 @@ import { OrderCard } from "./OrderCard";
 
 type OrderListProps = {
   orders: Order[];
-  onReorder: (orderId: string) => void;
 };
 
-export function OrderList({ orders, onReorder }: OrderListProps) {
+export function OrderList({ orders }: OrderListProps) {
   if (orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -21,7 +20,7 @@ export function OrderList({ orders, onReorder }: OrderListProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
       {orders.map((order) => (
-        <OrderCard key={order.id} order={order} onReorder={onReorder} />
+        <OrderCard key={order.id} order={order} />
       ))}
     </div>
   );

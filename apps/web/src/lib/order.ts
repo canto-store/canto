@@ -1,5 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./api";
+import { Order } from "@canto/types/order";
 
 export const useCreateOrder = () => {
   const queryClient = useQueryClient();
@@ -10,6 +11,16 @@ export const useCreateOrder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+export const useGetMyOrders = () => {
+  return useQuery({
+    queryKey: ["my-orders"],
+    queryFn: async () => {
+      const response = await api.get("/orders/my-orders");
+      return response.data.data.orders;
     },
   });
 };

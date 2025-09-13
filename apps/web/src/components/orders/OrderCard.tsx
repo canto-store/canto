@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { Order, OrderStatus } from "@/types";
-import { Button } from "@/components/ui/button";
+import { Order, OrderStatus } from "@canto/types/order";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatDate, formatPrice } from "@/lib/utils";
@@ -15,15 +14,11 @@ const statusColorMap: Record<OrderStatus, string> = {
 
 type OrderCardProps = {
   order: Order;
-  onReorder: (orderId: string) => void;
 };
 
-export function OrderCard({ order, onReorder }: OrderCardProps) {
+export function OrderCard({ order }: OrderCardProps) {
+  console.log("##### — order =>", order);
   const router = useRouter();
-
-  const handleReorder = () => {
-    onReorder(order.id);
-  };
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
@@ -36,7 +31,7 @@ export function OrderCard({ order, onReorder }: OrderCardProps) {
               {order.status}
             </Badge>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {formatDate(order.orderDate)}
+              {formatDate(order.createdAt)}
             </p>
           </div>
         </div>
@@ -78,9 +73,6 @@ export function OrderCard({ order, onReorder }: OrderCardProps) {
             </p>
           </a>
         </div>
-        <Button className="ml-auto" size="sm" onClick={handleReorder}>
-          Reorder
-        </Button>
       </div>
     </div>
   );

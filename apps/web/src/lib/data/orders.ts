@@ -280,14 +280,3 @@ export function filterOrders(
 
   return filtered;
 }
-
-/**
- * Reorder items from a previous order
- * @param orderId Order ID to reorder
- * @returns Boolean indicating success
- */
-export function reorderItems(orderId: string): boolean {
-  // In a real app, this would add the items to the cart and redirect
-  console.log(`Reordering items from order ${orderId}`);
-  return true;
-}

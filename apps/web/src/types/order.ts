@@ -27,7 +27,7 @@ export type Order = {
   items: OrderItem[];
   totalPrice: number;
   status: OrderStatus;
-  orderDate: string;
+  createdAt: string;
   shippingAddress: {
     name: string;
     street: string;

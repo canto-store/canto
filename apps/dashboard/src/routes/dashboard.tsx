@@ -16,7 +16,6 @@ function DashboardLayout() {
   const router = useRouter()
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
-  console.log(pathname)
   return (
     <SidebarProvider>
       <AppSidebar />

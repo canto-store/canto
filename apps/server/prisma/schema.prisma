@@ -61,6 +61,7 @@ model User {
 
   @@map("users")
   Activity Activity[]
+  ErrorLog ErrorLog[]
 }
 
 model Brand {
@@ -314,4 +315,15 @@ model Activity {
   createdBy   User?    @relation(fields: [createdByid], references: [id])
 
   @@map("activities")
+}
+
+model ErrorLog {
+  id        Int      @id @default(autoincrement())
+  message   String
+  stack     String
+  userId   Int?    @map("user_id")
+  user     User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("error_logs")
 }

@@ -2,7 +2,7 @@ import { PrismaClient, DeliveryStatus } from '@prisma/client'
 import AppError from '../../utils/appError'
 import { CreateOrderInput, UpdateOrderItemStatusInput } from './order.types'
 import DeliveryService from '../delivery/delivery.service'
-
+import { Order } from '@canto/types/order'
 const prisma = new PrismaClient()
 
 function generateOrderCode(): string {
@@ -128,7 +128,7 @@ export const createOrder = async (input: CreateOrderInput) => {
       product_desc: item.productDescription,
       quantity: item.quantity,
     }))
-    console.log(await deliveryService.createDelivery(deliveryData))
+    await deliveryService.createDelivery(deliveryData)
 
     return newOrder
   } catch (error) {
@@ -147,18 +147,51 @@ export const getOrders = async () => {
   })
 }
 
-export const getOrdersByUserId = async (userId: number) => {
+export const getOrdersByUserId = async (userId: number): Promise<Order[]> => {
   const user = await prisma.user.findUnique({ where: { id: userId } })
   if (!user) {
     throw new AppError('User not found', 404)
   }
-  return prisma.order.findMany({
+  const foo = await prisma.order.findMany({
     where: { userId },
     include: {
-      items: true,
+      items: {
+        include: {
+          variant: {
+            include: { product: true, images: true },
+          },
+        },
+      },
       address: true,
     },
   })
+  console.log('##### — foo =>', foo)
+  const order: Order[] = foo.map(o => ({
+    id: o.id.toString(),
+    userId: o.userId.toString(),
+    items: o.items.map(oi => ({
+      id: oi.id.toString(),
+      productId: oi.variantId.toString(),
+      productName: oi.variant.product.name,
+      quantity: oi.quantity,
+      price: oi.priceAtOrder,
+      thumbnailUrl: oi.variant?.images?.[0]?.url ?? '/placeholder-image.jpg',
+    })),
+    totalPrice: o.items.reduce(
+      (total, item) => total + item.priceAtOrder * item.quantity,
+      0
+    ),
+    status:
+      o.deliveryStatus === DeliveryStatus.DELIVERED
+        ? 'Delivered'
+        : 'Processing',
+    createdAt: o.createdAt.toISOString(),
+    shippingAddress: {
+      name: o.address.address_label,
+      street: o.address.street_name,
+    },
+  }))
+  return order
 }
 
 export const getOrderById = async (orderId: number) => {

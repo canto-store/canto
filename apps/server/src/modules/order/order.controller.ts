@@ -4,6 +4,27 @@ import AppError from '../../utils/appError'
 import { DeliveryStatus } from '@prisma/client'
 import { AuthRequest } from '../../middlewares/auth.middleware'
 
+export class OrderController {
+  async getMyorders(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id
+      if (!userId) {
+        return next(new AppError('User not authenticated', 401))
+      }
+      const orders = await orderService.getOrdersByUserId(userId)
+      res.status(200).json({
+        status: 'success',
+        results: orders.length,
+        data: {
+          orders,
+        },
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+}
+
 export const createOrderHandler = async (
   req: AuthRequest,
   res: Response,
@@ -27,8 +48,9 @@ export const createOrderHandler = async (
         order,
       },
     })
-  } catch (error) {
-    next(error)
+  } catch {
+    const appError = new AppError('Failed to create order', 500, false)
+    next(appError)
   }
 }
 
