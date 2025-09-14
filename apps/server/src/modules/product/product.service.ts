@@ -73,62 +73,60 @@ class ProductService {
     if (search) {
       const results = await esClient.search({
         index: PRODUCT_INDEX,
-        body: {
-          query: {
-            bool: {
-              should: [
-                // 1. Exact phrase match (highest priority)
-                {
-                  match_phrase: {
-                    name: {
-                      query: search.trim(),
-                      boost: 5,
-                    },
+        query: {
+          bool: {
+            should: [
+              // 1. Exact phrase match (highest priority)
+              {
+                match_phrase: {
+                  name: {
+                    query: search.trim(),
+                    boost: 5,
                   },
                 },
-                // 2. Exact keyword match
-                {
-                  term: {
-                    'name.exact': {
-                      value: search.trim(),
-                      boost: 4,
-                    },
+              },
+              // 2. Exact keyword match
+              {
+                term: {
+                  'name.exact': {
+                    value: search.trim(),
+                    boost: 4,
                   },
                 },
-                // 3. Partial word matching (n-grams)
-                {
-                  match: {
-                    'name.ngram': {
-                      query: search.trim(),
-                      boost: 3,
-                    },
+              },
+              // 3. Partial word matching (n-grams)
+              {
+                match: {
+                  'name.ngram': {
+                    query: search.trim(),
+                    boost: 3,
                   },
                 },
-                // 4. Fuzzy matching on name
-                {
-                  match: {
-                    name: {
-                      query: search.trim(),
-                      fuzziness: 'AUTO',
-                      boost: 2,
-                    },
+              },
+              // 4. Fuzzy matching on name
+              {
+                match: {
+                  name: {
+                    query: search.trim(),
+                    fuzziness: 'AUTO',
+                    boost: 2,
                   },
                 },
-                // 5. Description search (lower priority)
-                {
-                  match: {
-                    description: {
-                      query: search.trim(),
-                      boost: 1,
-                    },
+              },
+              // 5. Description search (lower priority)
+              {
+                match: {
+                  description: {
+                    query: search.trim(),
+                    boost: 1,
                   },
                 },
-              ],
-              minimum_should_match: 1,
-            },
+              },
+            ],
+            minimum_should_match: 1,
           },
-          size: +limit,
         },
+        size: +limit,
       })
 
       // Extract product IDs, scores, and preserve order from Elasticsearch
@@ -1066,43 +1064,41 @@ class ProductService {
   async autocompleteProducts(query: string) {
     const results = await esClient.search({
       index: PRODUCT_INDEX,
-      body: {
-        query: {
-          bool: {
-            should: [
-              // Exact prefix match (highest priority)
-              {
-                prefix: {
-                  name: {
-                    value: query.trim().toLowerCase(),
-                    boost: 3,
-                  },
+      query: {
+        bool: {
+          should: [
+            // Exact prefix match (highest priority)
+            {
+              prefix: {
+                name: {
+                  value: query.trim().toLowerCase(),
+                  boost: 3,
                 },
               },
-              // Phrase prefix match
-              {
-                match_phrase_prefix: {
-                  name: {
-                    query: query.trim(),
-                    boost: 2,
-                  },
+            },
+            // Phrase prefix match
+            {
+              match_phrase_prefix: {
+                name: {
+                  query: query.trim(),
+                  boost: 2,
                 },
               },
-              // Fuzzy matching for typos
-              {
-                match: {
-                  name: {
-                    query: query.trim(),
-                    fuzziness: 'AUTO',
-                    boost: 1,
-                  },
+            },
+            // Fuzzy matching for typos
+            {
+              match: {
+                name: {
+                  query: query.trim(),
+                  fuzziness: 'AUTO',
+                  boost: 1,
                 },
               },
-            ],
-          },
+            },
+          ],
         },
-        size: 10,
       },
+      size: 10,
     })
 
     // Extract product IDs in the order returned by Elasticsearch (by score)
