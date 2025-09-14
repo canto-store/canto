@@ -7,9 +7,7 @@ import { useRouter } from "@/i18n/navigation";
 
 const statusColorMap: Record<OrderStatus, string> = {
   Processing: "bg-amber-100 text-amber-800 hover:bg-amber-200",
-  Shipped: "bg-blue-100 text-blue-800 hover:bg-blue-200",
   Delivered: "bg-green-100 text-green-800 hover:bg-green-200",
-  Cancelled: "bg-red-100 text-red-800 hover:bg-red-200",
 };
 
 type OrderCardProps = {
@@ -17,7 +15,6 @@ type OrderCardProps = {
 };
 
 export function OrderCard({ order }: OrderCardProps) {
-  console.log("##### — order =>", order);
   const router = useRouter();
 
   return (

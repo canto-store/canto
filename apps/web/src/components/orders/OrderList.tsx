@@ -1,4 +1,4 @@
-import { Order } from "@/types";
+import { Order } from "@canto/types/order";
 import { OrderCard } from "./OrderCard";
 
 type OrderListProps = {

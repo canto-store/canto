@@ -152,7 +152,7 @@ export const getOrdersByUserId = async (userId: number): Promise<Order[]> => {
   if (!user) {
     throw new AppError('User not found', 404)
   }
-  const foo = await prisma.order.findMany({
+  const orders = await prisma.order.findMany({
     where: { userId },
     include: {
       items: {
@@ -165,8 +165,7 @@ export const getOrdersByUserId = async (userId: number): Promise<Order[]> => {
       address: true,
     },
   })
-  console.log('##### — foo =>', foo)
-  const order: Order[] = foo.map(o => ({
+  const ordersResponse: Order[] = orders.map(o => ({
     id: o.id.toString(),
     userId: o.userId.toString(),
     items: o.items.map(oi => ({
@@ -191,7 +190,7 @@ export const getOrdersByUserId = async (userId: number): Promise<Order[]> => {
       street: o.address.street_name,
     },
   }))
-  return order
+  return ordersResponse
 }
 
 export const getOrderById = async (orderId: number) => {

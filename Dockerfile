@@ -26,8 +26,10 @@ ARG TARGET_APP
 
 # Copy source code only after dependencies are installed
 COPY apps/ ./apps/
+COPY modules/ ./modules/
 
 # Build only the target app
+RUN pnpm --filter=modules/** build
 RUN pnpm --filter=${TARGET_APP} build
 
 # Deploy stage - create clean production deployment for server
