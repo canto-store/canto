@@ -15,6 +15,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/server/package.json ./apps/server/
 COPY apps/dashboard/package.json ./apps/dashboard/
+COPY modules/ ./modules/
 
 # Install all dependencies in a cached layer
 RUN pnpm fetch
@@ -37,6 +38,7 @@ FROM base AS deploy-server
 WORKDIR /usr/src/app
 
 # Copy package files for server deployment
+COPY modules/ ./modules/
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/server/package.json ./apps/server/
 COPY apps/server/prisma/ ./apps/server/prisma/
