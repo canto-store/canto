@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Canto",
     short_name: "Canto",
     description: "Canto Progressive Web App",
-    start_url: "/?source=pwa",
+    start_url: "/",
     id: "/",
     icons: [
       {
