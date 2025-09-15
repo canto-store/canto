@@ -55,6 +55,7 @@ model User {
   Cart           Cart?
   Order          Order[]
   brands         Brand[]
+  sales          OrderItem[]
   role           UserRole[] @default([USER])
   Activity       Activity[]
   ErrorLog       ErrorLog[]
@@ -304,6 +305,7 @@ model OrderItem {
   deliveryStatus DeliveryStatus @default(NOT_DELIVERED_YET) @map("delivery_status")
 
   @@map("order_items")
+  User User[]
 }
 
 model Activity {
