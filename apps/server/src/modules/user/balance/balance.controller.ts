@@ -9,9 +9,9 @@ export class BalanceController {
     this.balanceService = new BalanceService()
   }
 
-  getBalance(req: AuthRequest, res: Response, next: NextFunction) {
+  async getBalance(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const balance = this.balanceService.getBalance(req.user.id)
+      const balance = await this.balanceService.getBalance(req.user.id)
       res.status(200).json({
         balance,
       })
