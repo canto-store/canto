@@ -9,6 +9,8 @@ import cartRouter from '../modules/order/cart/cart.routes'
 import orderRouter from '../modules/order/order.routes'
 import deliveryRouter from '../modules/delivery/delivery.routes'
 import dashboardRouter from '../modules/dashboard/dashboard.routes'
+import balanceRouter from '../modules/user/balance/balance.routes'
+
 const router = Router()
 
 router.use('/auth', authRouter)
@@ -21,5 +23,6 @@ router.use('/cart', cartRouter)
 router.use('/orders', orderRouter)
 router.use('/delivery', deliveryRouter)
 router.use('/dashboard', dashboardRouter)
+router.use('/balance', balanceRouter)
 
 export default router
