@@ -17,7 +17,7 @@ class AuthService {
     const user = await this.prisma.user.create({
       data: { ...dto, role: [UserRole.USER] },
     })
-    const { password, ...rest } = user
+    const { password: _, ...rest } = user
     return rest
   }
 
