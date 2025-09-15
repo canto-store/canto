@@ -25,7 +25,6 @@ import { getUserRole } from "@/lib/utils";
 export default function Page() {
   const { user } = useAuthStore();
   const role = getUserRole(user?.role);
-  console.log("##### — role =>", role);
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
