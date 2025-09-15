@@ -10,7 +10,6 @@ class AuthController {
   public async register(req: Request, res: Response, next: NextFunction) {
     try {
       const dto: CreateUserDto = req.body
-      dto.ip_address = req.ip
       const user = await this.authService.register(dto)
       const token = signJwt({
         id: user.id,
@@ -45,7 +44,6 @@ class AuthController {
   public async login(req: Request, res: Response, next: NextFunction) {
     try {
       const dto: LoginDto = req.body
-      dto.ip_address = req.ip
       const user = await this.authService.login(dto)
       const token = signJwt({
         id: user.id,

@@ -32,10 +32,10 @@ class AuthService {
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { ip_address: dto.ip_address, last_login: new Date() },
+      data: { last_login: new Date() },
     })
 
-    const { password, ...rest } = user
+    const { password: _, ...rest } = user
     return rest
   }
 

@@ -51,9 +51,6 @@ model User {
   email_verified Boolean    @default(true)
   phone_number   String
   last_login     DateTime?
-  ip_address     String?
-  created_at     DateTime   @default(now())
-  updated_at     DateTime   @updatedAt
   Address        Address[]
   Cart           Cart?
   Order          Order[]
@@ -61,6 +58,8 @@ model User {
   role           UserRole[] @default([USER])
   Activity       Activity[]
   ErrorLog       ErrorLog[]
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
 
   @@map("users")
 }

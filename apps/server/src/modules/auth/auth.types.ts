@@ -18,12 +18,10 @@ export type CreateUserDto = {
   email: string
   password: string
   phone_number: string
-  ip_address: string
 }
 
 export type LoginDto = {
   email: string
   password: string
-  ip_address: string
   role: UserRole
 }
