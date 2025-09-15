@@ -6,6 +6,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { calculateTotals, processNewItem } from "./cart-helpers";
 import { useAuthStore } from "@/stores/auth-store";
+import { getUserRole } from "./utils";
 interface AddToCartInput {
   variantId: number;
   quantity: number;
@@ -31,7 +32,7 @@ export const useGetCart = () => {
       const response = await api.get<CartItem[]>("/cart/user");
       return response.data;
     },
-    enabled: Boolean(user) && user?.role === "CUSTOMER",
+    enabled: Boolean(user) && getUserRole(user?.role) !== "GUEST",
     staleTime: 0,
   });
 };
