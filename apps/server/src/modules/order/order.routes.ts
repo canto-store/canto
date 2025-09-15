@@ -1,11 +1,5 @@
 import express from 'express'
-import {
-  createOrderHandler,
-  getOrdersByUserIdHandler,
-  getOrderByIdHandler,
-  updateOrderItemStatusHandler,
-  OrderController,
-} from './order.controller'
+import { OrderController } from './order.controller'
 import AuthMiddleware from '../../middlewares/auth.middleware'
 
 const router = express.Router()
@@ -15,15 +9,12 @@ const orderController = new OrderController()
 router.post(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  createOrderHandler
+  orderController.createOrder.bind(orderController)
 )
 router.get(
   '/my-orders',
   authMiddleware.checkAuth.bind(authMiddleware),
   orderController.getMyorders.bind(orderController)
 )
-router.get('/user/:userId', getOrdersByUserIdHandler)
-router.get('/:orderId', getOrderByIdHandler)
-router.patch('/item/:orderItemId/status', updateOrderItemStatusHandler)
 
 export default router

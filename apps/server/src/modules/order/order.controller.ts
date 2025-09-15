@@ -23,34 +23,30 @@ export class OrderController {
       next(error)
     }
   }
-}
 
-export const createOrderHandler = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { addressId } = req.body
-    const { id: userId } = req.user
+  async createOrder(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { addressId } = req.body
+      const { id: userId } = req.user
 
-    if (!userId || !addressId) {
-      return next(new AppError('UserId and AddressId are required', 400))
+      if (!userId || !addressId) {
+        return next(new AppError('UserId and AddressId are required', 400))
+      }
+
+      const order = await orderService.createOrder({
+        userId,
+        addressId,
+      })
+      res.status(201).json({
+        status: 'success',
+        data: {
+          order,
+        },
+      })
+    } catch {
+      const appError = new AppError('Failed to create order', 500, false)
+      next(appError)
     }
-
-    const order = await orderService.createOrder({
-      userId,
-      addressId,
-    })
-    res.status(201).json({
-      status: 'success',
-      data: {
-        order,
-      },
-    })
-  } catch {
-    const appError = new AppError('Failed to create order', 500, false)
-    next(appError)
   }
 }
 
