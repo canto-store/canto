@@ -50,7 +50,7 @@ model User {
   password       String
   email_verified Boolean    @default(true)
   phone_number   String
-  last_login     DateTime?
+  balance        Float      @default(0)
   Address        Address[]
   Cart           Cart?
   Order          Order[]
@@ -58,6 +58,7 @@ model User {
   role           UserRole[] @default([USER])
   Activity       Activity[]
   ErrorLog       ErrorLog[]
+  last_login     DateTime?
   created_at     DateTime   @default(now())
   updated_at     DateTime   @updatedAt
 
