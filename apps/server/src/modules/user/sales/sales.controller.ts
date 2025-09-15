@@ -10,9 +10,9 @@ export class SalesController {
 
   async getSales(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const balance = await this.salesService.getSales(req.user.id)
+      const sales = await this.salesService.getSales(req.user.id)
       res.status(200).json({
-        balance,
+        sales,
       })
     } catch (error) {
       next(error)
