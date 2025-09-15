@@ -42,26 +42,27 @@ enum UserRole {
   SELLER
   ADMIN
 }
+
 model User {
-  id             Int       @id @default(autoincrement())
+  id             Int        @id @default(autoincrement())
   name           String
-  email          String    @unique
+  email          String     @unique
   password       String
-  email_verified Boolean   @default(true)
+  email_verified Boolean    @default(true)
   phone_number   String
   last_login     DateTime?
   ip_address     String?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
   Address        Address[]
   Cart           Cart?
   Order          Order[]
   brands         Brand[]
   role           UserRole[] @default([USER])
+  Activity       Activity[]
+  ErrorLog       ErrorLog[]
 
   @@map("users")
-  Activity Activity[]
-  ErrorLog ErrorLog[]
 }
 
 model Brand {
@@ -70,7 +71,7 @@ model Brand {
   slug          String?
   email         String    @unique
   logo          String?
-  seller        User    @relation(fields: [sellerId], references: [id])
+  seller        User      @relation(fields: [sellerId], references: [id])
   sellerId      Int
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
@@ -306,13 +307,13 @@ model OrderItem {
 }
 
 model Activity {
-  id         Int          @id @default(autoincrement())
-  type       ActivityType
-  entityName String       @map("entity_name")
-  entityId    Int      @map("entity_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  createdByid Int?     @map("created_by")
-  createdBy   User?    @relation(fields: [createdByid], references: [id])
+  id          Int          @id @default(autoincrement())
+  type        ActivityType
+  entityName  String       @map("entity_name")
+  entityId    Int          @map("entity_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  createdByid Int?         @map("created_by")
+  createdBy   User?        @relation(fields: [createdByid], references: [id])
 
   @@map("activities")
 }
@@ -321,8 +322,8 @@ model ErrorLog {
   id        Int      @id @default(autoincrement())
   message   String
   stack     String
-  userId   Int?    @map("user_id")
-  user     User?    @relation(fields: [userId], references: [id])
+  userId    Int?     @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("error_logs")
