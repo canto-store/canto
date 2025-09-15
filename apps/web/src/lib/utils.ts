@@ -79,6 +79,14 @@ export function filterProducts(
   return filtered;
 }
 
+export function getUserRole(
+  role: string[] | undefined,
+): "USER" | "SELLER" | "GUEST" {
+  if (!role || role.length === 0) return "GUEST";
+  if (role.includes("SELLER")) return "SELLER";
+  return "USER";
+}
+
 export function parseApiError(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const message = (error.response?.data as APIError)?.message;
