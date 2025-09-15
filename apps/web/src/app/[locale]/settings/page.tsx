@@ -7,11 +7,11 @@ import {
   Bell,
   ChevronRight,
   CreditCard,
-  Download,
   Globe,
   Heart,
   LogOut,
   MapPin,
+  Receipt,
   ShoppingBag,
   Wallet,
 } from "lucide-react";
@@ -20,9 +20,12 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { useLogout } from "@/hooks/auth";
+import { getUserRole } from "@/lib/utils";
 
 export default function Page() {
   const { user } = useAuthStore();
+  const role = getUserRole(user?.role);
+  console.log("##### — role =>", role);
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
@@ -99,6 +102,19 @@ export default function Page() {
                 <ChevronRight className="ml-auto h-4 w-4" />
               </Button>
             </div>
+            {role === "SELLER" && (
+              <div className="flex flex-col gap-2">
+                <h2 className="text-md">Seller</h2>
+                <Button
+                  variant="outline"
+                  onClick={() => handleNavigation("/sales")}
+                >
+                  <Receipt className="mr-2 h-4 w-4" />
+                  <p className="w-full text-left">Sales</p>
+                  <ChevronRight className="ml-auto h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </>
         )}
         <div className="flex flex-col gap-2">

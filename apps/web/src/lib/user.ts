@@ -12,3 +12,13 @@ export const useGetBalance = () => {
     },
   });
 };
+
+export const useGetSales = () => {
+  return useQuery<number, Error>({
+    queryKey: ["sales"],
+    queryFn: async () => {
+      const response = await api.get("/sales");
+      return response.data.sales;
+    },
+  });
+};
