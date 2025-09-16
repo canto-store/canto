@@ -55,7 +55,7 @@ COPY --from=build /usr/src/app/apps/server/prisma /tmp/server/prisma
 # Generate Prisma client in the deployed server directory
 WORKDIR /tmp/server
 
-RUN npx prisma migrate deploy
+RUN --mount=type=secret,id=database_url,env=DATABASE_URL npx prisma migrate deploy
 RUN npx prisma generate
 
 # Web app (Next.js) production image
