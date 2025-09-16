@@ -101,6 +101,8 @@ jobs:
           target: server
           build-args: |
             TARGET_APP=server
+          secrets: |
+            "database_url=${{ secrets.DATABASE_URL }}"
           push: true
           tags: ${{ steps.meta-server.outputs.tags }}
           labels: ${{ steps.meta-server.outputs.labels }}
