@@ -18,11 +18,6 @@ enum SaleType {
   FIXED
 }
 
-enum DeliveryStatus {
-  NOT_DELIVERED_YET
-  DELIVERED
-}
-
 enum ProductStatus {
   PENDING
   ACTIVE
@@ -44,24 +39,24 @@ enum UserRole {
 }
 
 model User {
-  id             Int        @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   name           String
-  email          String     @unique
+  email          String      @unique
   password       String
-  email_verified Boolean    @default(true)
+  email_verified Boolean     @default(true)
   phone_number   String
-  balance        Float      @default(0)
+  balance        Float       @default(0)
   Address        Address[]
   Cart           Cart?
   Order          Order[]
   brands         Brand[]
   sales          OrderItem[]
-  role           UserRole[] @default([USER])
+  role           UserRole[]  @default([USER])
   Activity       Activity[]
   ErrorLog       ErrorLog[]
   last_login     DateTime?
-  created_at     DateTime   @default(now())
-  updated_at     DateTime   @updatedAt
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @updatedAt
 
   @@map("users")
 }
@@ -273,7 +268,6 @@ model Order {
   user            User              @relation(fields: [userId], references: [id])
   addressId       Int               @map("address_id")
   address         Address           @relation(fields: [addressId], references: [id])
-  deliveryStatus  DeliveryStatus    @default(NOT_DELIVERED_YET) @map("delivery_status")
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
   items           OrderItem[]
@@ -283,29 +277,29 @@ model Order {
 }
 
 model DelivericOrders {
-  id        Int      @id @map("id")
-  orderId   Int      @map("order_id")
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  waybill   String   @unique @map("waybill")
-  qrCode    String   @unique @map("qr_code")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id             Int      @id @map("id")
+  orderId        Int      @map("order_id")
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  waybill        String   @unique @map("waybill")
+  qrCode         String   @unique @map("qr_code")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  deliveryStatus String   @default("created") @map("delivery_status")
 
   @@map("deliveric_orders")
 }
 
 model OrderItem {
-  id             Int            @id @default(autoincrement()) @map("id")
-  orderId        Int            @map("order_id")
-  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  variantId      Int            @map("variant_id")
-  variant        ProductVariant @relation(fields: [variantId], references: [id])
-  quantity       Int            @map("quantity")
-  priceAtOrder   Float          @map("price_at_order")
-  deliveryStatus DeliveryStatus @default(NOT_DELIVERED_YET) @map("delivery_status")
+  id           Int            @id @default(autoincrement()) @map("id")
+  orderId      Int            @map("order_id")
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId    Int            @map("variant_id")
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  quantity     Int            @map("quantity")
+  priceAtOrder Float          @map("price_at_order")
+  User         User[]
 
   @@map("order_items")
-  User User[]
 }
 
 model Activity {

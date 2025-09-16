@@ -11,9 +11,10 @@ export type delivericDataInput = {
   quantity?: number
 }
 
-export type delivericDataOutput = {
+export type DelivericDataOutput = {
   waybill: string
   id: number
   qr_code: string
   order_id: number
+  status: string
 }

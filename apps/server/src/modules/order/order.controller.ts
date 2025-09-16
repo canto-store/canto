@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import * as orderService from './order.service'
 import AppError from '../../utils/appError'
-import { DeliveryStatus } from '@prisma/client'
 import { AuthRequest } from '../../middlewares/auth.middleware'
 
 export class OrderController {
@@ -107,46 +106,6 @@ export const getOrderByIdHandler = async (
       status: 'success',
       data: {
         order,
-      },
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-export const updateOrderItemStatusHandler = async (
-  req: Request<
-    { orderItemId: string },
-    {},
-    { deliveryStatus: 'NOT_DELIVERED_YET' | 'DELIVERED' }
-  >,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const orderItemId = parseInt(req.params.orderItemId, 10)
-    const { deliveryStatus } = req.body
-
-    if (isNaN(orderItemId)) {
-      return next(new AppError('Invalid order item ID', 400))
-    }
-
-    if (
-      !deliveryStatus ||
-      !Object.values(DeliveryStatus).includes(deliveryStatus as DeliveryStatus)
-    ) {
-      return next(new AppError('Invalid delivery status', 400))
-    }
-
-    const updatedOrderItem = await orderService.updateOrderItemDeliveryStatus({
-      orderItemId,
-      deliveryStatus,
-    })
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        orderItem: updatedOrderItem,
       },
     })
   } catch (error) {

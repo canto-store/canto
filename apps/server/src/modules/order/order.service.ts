@@ -1,6 +1,6 @@
-import { PrismaClient, DeliveryStatus } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import AppError from '../../utils/appError'
-import { CreateOrderInput, UpdateOrderItemStatusInput } from './order.types'
+import { CreateOrderInput } from './order.types'
 import DeliveryService from '../delivery/delivery.service'
 import { Order } from '@canto/types/order'
 const prisma = new PrismaClient()
@@ -165,6 +165,10 @@ export const getOrdersByUserId = async (userId: number): Promise<Order[]> => {
       address: true,
     },
   })
+  const delivericOrder = await prisma.delivericOrders.findMany({
+    where: { orderId: { in: orders.map(o => o.id) } },
+    select: { orderId: true, deliveryStatus: true },
+  })
   const ordersResponse: Order[] = orders.map(o => ({
     id: o.id.toString(),
     userId: o.userId.toString(),
@@ -180,10 +184,7 @@ export const getOrdersByUserId = async (userId: number): Promise<Order[]> => {
       (total, item) => total + item.priceAtOrder * item.quantity,
       0
     ),
-    status:
-      o.deliveryStatus === DeliveryStatus.DELIVERED
-        ? 'Delivered'
-        : 'Processing',
+    status: delivericOrder.find(d => d.orderId === o.id)?.deliveryStatus,
     createdAt: o.createdAt.toISOString(),
     shippingAddress: {
       name: o.address.address_label,
@@ -206,45 +207,4 @@ export const getOrderById = async (orderId: number) => {
     throw new AppError('Order not found', 404)
   }
   return order
-}
-
-export const updateOrderItemDeliveryStatus = async (
-  input: UpdateOrderItemStatusInput
-) => {
-  const { orderItemId, deliveryStatus } = input
-
-  const orderItem = await prisma.orderItem.findUnique({
-    where: { id: orderItemId },
-    include: { order: { include: { items: true } } },
-  })
-
-  if (!orderItem) {
-    throw new AppError('Order item not found', 404)
-  }
-
-  const updatedOrderItem = await prisma.orderItem.update({
-    where: { id: orderItemId },
-    data: { deliveryStatus: deliveryStatus as DeliveryStatus },
-  })
-
-  // Check if all items in the order are delivered
-  const order = await prisma.order.findUnique({
-    where: { id: orderItem.orderId },
-    include: { items: true },
-  })
-
-  if (order) {
-    const allItemsDelivered = order.items.every(
-      item => item.deliveryStatus === DeliveryStatus.DELIVERED
-    )
-
-    if (allItemsDelivered) {
-      await prisma.order.update({
-        where: { id: orderItem.orderId },
-        data: { deliveryStatus: DeliveryStatus.DELIVERED },
-      })
-    }
-  }
-
-  return updatedOrderItem
 }

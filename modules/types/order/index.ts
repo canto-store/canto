@@ -1,3 +1,3 @@
-import type { Order, OrderStatus, OrderItem } from './order'
+import type { Order, OrderItem } from './order'
 
-export type { Order, OrderStatus, OrderItem }
+export type { Order, OrderItem }

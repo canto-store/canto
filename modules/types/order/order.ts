@@ -1,5 +1,3 @@
-export type OrderStatus = 'Processing' | 'Delivered'
-
 export type TrackingInfo = {
   carrier: string
   trackingNumber: string
@@ -26,7 +24,7 @@ export type Order = {
   userId: string
   items: OrderItem[]
   totalPrice: number
-  status: OrderStatus
+  status: string
   createdAt: string
   shippingAddress: {
     name: string

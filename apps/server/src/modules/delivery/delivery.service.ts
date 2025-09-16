@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { delivericDataInput, delivericDataOutput } from './delivery.types'
-import { PrismaClient } from '@prisma/client'
+import { delivericDataInput, DelivericDataOutput } from './delivery.types'
+import { DelivericOrders, PrismaClient } from '@prisma/client'
 
 class DeliveryService {
   private readonly DELIVERIC_API: string
@@ -24,8 +24,8 @@ class DeliveryService {
 
   public async createDelivery(
     deliveryData: delivericDataInput[]
-  ): Promise<delivericDataOutput[]> {
-    const response: delivericDataOutput[] = await axios
+  ): Promise<DelivericDataOutput[]> {
+    const response: DelivericDataOutput[] = await axios
       .post(this.DELIVERIC_API + '?action=addBulkShipments', {
         user: this.DELIVERIC_USER,
         password: this.DELIVERIC_PASSWORD,
@@ -33,8 +33,7 @@ class DeliveryService {
       })
       .then(res => res.data)
 
-    // Save delivery data to database
-    await Promise.all(
+    const createdDeliveryOrders = await Promise.all(
       response.map(item =>
         this.prisma.delivericOrders.create({
           data: {
@@ -46,18 +45,73 @@ class DeliveryService {
         })
       )
     )
+    const updatedDeliveryOrders = createdDeliveryOrders.map(async order => {
+      const status = await this.getDeliveryStatus(order.waybill)
+      return await this.prisma.delivericOrders.update({
+        where: { id: order.id },
+        data: { deliveryStatus: status },
+      })
+    })
+    const allUpdatedOrders = await Promise.all(updatedDeliveryOrders)
 
-    return response
+    return allUpdatedOrders.map(order => ({
+      waybill: order.waybill,
+      id: order.id,
+      qr_code: order.qrCode,
+      order_id: order.orderId,
+      status: order.deliveryStatus,
+    }))
   }
 
-  public async getDeliveryStatus(waybill: string) {
+  public async getAllDeliveries(userId: number) {
+    const orders = await this.prisma.order.findMany({
+      where: { userId },
+      select: { id: true },
+    })
+    const orderIds = orders.map(order => order.id)
+
+    const delivericOrders = await this.prisma.delivericOrders.findMany({
+      where: { orderId: { in: orderIds } },
+      select: { waybill: true },
+    })
+
+    return delivericOrders.map(
+      async order => await this.getDeliveryStatus(order.waybill)
+    )
+  }
+  public async getDelivericOrder(orderId: string) {
+    return this.prisma.delivericOrders.findFirst({
+      where: { orderId: +orderId },
+    })
+  }
+
+  public async getDeliveryStatusByOrderId(orderId: string) {
+    const delivericOrder = await this.prisma.delivericOrders.findFirst({
+      where: { orderId: +orderId },
+      select: { waybill: true },
+    })
+    const { waybill } = delivericOrder
+    const status = await this.getDeliveryStatus(waybill)
+    return status
+  }
+  async updateDeliveryStatus(orderId: string): Promise<DelivericOrders> {
+    const delivericOrder = await this.getDelivericOrder(orderId)
+    const { waybill } = delivericOrder
+    const status = await this.getDeliveryStatus(waybill)
+    return await this.prisma.delivericOrders.update({
+      where: { id: delivericOrder.orderId },
+      data: { deliveryStatus: status },
+    })
+  }
+
+  async getDeliveryStatus(waybill: string): Promise<string> {
     return axios
       .post(this.DELIVERIC_API + '?action=statusHistory', {
         user: this.DELIVERIC_USER,
         password: this.DELIVERIC_PASSWORD,
         waybill,
       })
-      .then(res => res.data)
+      .then(res => res.data.status_en)
   }
 }
 
