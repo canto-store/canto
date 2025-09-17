@@ -1,14 +1,9 @@
 import Image from "next/image";
-import { Order, OrderStatus } from "@canto/types/order";
+import { Order } from "@canto/types/order";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { useRouter } from "@/i18n/navigation";
-
-const statusColorMap: Record<OrderStatus, string> = {
-  Processing: "bg-amber-100 text-amber-800 hover:bg-amber-200",
-  Delivered: "bg-green-100 text-green-800 hover:bg-green-200",
-};
 
 type OrderCardProps = {
   order: Order;
@@ -22,9 +17,7 @@ export function OrderCard({ order }: OrderCardProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <Badge
-              className={`${statusColorMap[order.status]} w-fit text-xs font-medium`}
-            >
+            <Badge className="w-fit bg-amber-100 text-xs font-medium text-amber-800 hover:bg-amber-200">
               {order.status}
             </Badge>
             <p className="text-xs text-gray-500 dark:text-gray-400">
