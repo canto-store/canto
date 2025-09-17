@@ -157,6 +157,9 @@ jobs:
           SPACES_REGION=${{ secrets.SPACES_REGION }}
           SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
 
+          # Security
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+
           # External services
           ELASTICSEARCH_NODE=${{ secrets.ELASTICSEARCH_NODE }}
           ELASTICSEARCH_USERNAME=${{ secrets.ELASTICSEARCH_USERNAME }}
