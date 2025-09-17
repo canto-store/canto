@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { CreateCategoryDto } from './category.types'
-import AppError from '../../utils/appError'
+import AppError from '../../../utils/appError'
 
 class CategoryService {
   private readonly prisma = new PrismaClient()
