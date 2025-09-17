@@ -1,21 +1,22 @@
+import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 
 const navigation = {
   about: [
-    { label: "About Us", href: "#" },
-    { label: "Canto Products", href: "#" },
+    { label: "About Us", href: "/about-us" },
+    { label: "Canto Products", href: "/browse" },
     // { label: "Our Social Responsibility", href: "#" },
     // { label: "Our Partners", href: "#" },
   ],
   shop: [
-    { label: "Your Orders", href: "#" },
-    { label: "Your Account", href: "#" },
-    { label: "Your Return items", href: "#" },
-    { label: "Your Refund items", href: "#" },
-    { label: "Track you Latest Order", href: "#" },
+    { label: "Your Orders", href: "/orders" },
+    { label: "Your Account", href: "/settings" },
+    { label: "Your Return items", href: "/returns" },
+    { label: "Your Refund items", href: "/returns" },
+    { label: "Track you Latest Order", href: "/orders" },
   ],
   business: [
-    { label: "Sell your products on Canto", href: "#" },
+    { label: "Sell your products on Canto", href: "/sell" },
     // {
     //   label:
     //     'Let us help you take your business to the next level (Join our "product managment" program)',
@@ -30,6 +31,12 @@ const navigation = {
 };
 
 export function Footer() {
+  const router = useRouter();
+
+  const handleNavigate = (href: string) => {
+    router.push(href);
+  };
+
   return (
     <footer className="bg-[var(--color-light-blue)] text-[var(--color-secondary)]">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -41,9 +48,12 @@ export function Footer() {
                 <ul className="space-y-1">
                   {navigation.about.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="hover:underline">
+                      <button
+                        onClick={() => handleNavigate(item.href)}
+                        className="hover:underline"
+                      >
                         {item.label}
-                      </a>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -53,9 +63,12 @@ export function Footer() {
                 <ul className="space-y-1">
                   {navigation.shop.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="hover:underline">
+                      <button
+                        onClick={() => handleNavigate(item.href)}
+                        className="hover:underline"
+                      >
                         {item.label}
-                      </a>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -65,9 +78,12 @@ export function Footer() {
                 <ul className="space-y-1">
                   {navigation.business.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="hover:underline">
+                      <button
+                        onClick={() => handleNavigate(item.href)}
+                        className="hover:underline"
+                      >
                         {item.label}
-                      </a>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -77,9 +93,12 @@ export function Footer() {
                 <ul className="space-y-1">
                   {navigation.help.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="hover:underline">
+                      <button
+                        onClick={() => handleNavigate(item.href)}
+                        className="hover:underline"
+                      >
                         {item.label}
-                      </a>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -100,13 +119,19 @@ export function Footer() {
           <div className="flex flex-col items-center justify-between md:flex-row">
             <p className="text-sm">
               Copyright © 2025 Canto Store. All Rights Reserved.{" "}
-              <a href="#" className="underline">
+              <button
+                onClick={() => handleNavigate("/terms")}
+                className="hover:underline"
+              >
                 Terms of Use
-              </a>{" "}
+              </button>{" "}
               |{" "}
-              <a href="#" className="underline">
+              <button
+                onClick={() => handleNavigate("/privacy")}
+                className="hover:underline"
+              >
                 Privacy Policy
-              </a>
+              </button>
             </p>
           </div>
         </div>
