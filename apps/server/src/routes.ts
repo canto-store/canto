@@ -10,7 +10,7 @@ import orderRouter from './modules/order/order.routes'
 import deliveryRouter from './modules/delivery/delivery.routes'
 import dashboardRouter from './modules/dashboard/dashboard.routes'
 import balanceRouter from './modules/user/balance/balance.routes'
-import salesRouter from './modules/user/sales/sales.routes'
+import salesRouter from './modules/seller/sales/sales.routes'
 
 const router = Router()
 
