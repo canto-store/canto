@@ -11,6 +11,7 @@ import deliveryRouter from './modules/delivery/delivery.routes'
 import dashboardRouter from './modules/dashboard/dashboard.routes'
 import balanceRouter from './modules/user/balance/balance.routes'
 import salesRouter from './modules/seller/sales/sales.routes'
+import wishlistRouter from './modules/user/wishlist/wishlist.routes'
 
 const router = Router()
 
@@ -26,5 +27,6 @@ router.use('/delivery', deliveryRouter)
 router.use('/dashboard', dashboardRouter)
 router.use('/balance', balanceRouter)
 router.use('/sales', salesRouter)
+router.use('/wishlist', wishlistRouter)
 
 export default router
