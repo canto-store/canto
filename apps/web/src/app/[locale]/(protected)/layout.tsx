@@ -9,18 +9,17 @@ interface ProtectedLayoutProps {
 
 async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
+  const token = cookieStore.get("token")?.value;
 
   if (!token) return false;
 
   try {
     if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined");
+      console.error("JWT_SECRET is not defined in environment variables.");
     }
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
     if (payload) return true;
-    console.log("##### — payload =>", payload);
     return false;
   } catch (error) {
     console.error("Token verification failed:", error);

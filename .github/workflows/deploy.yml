@@ -184,6 +184,7 @@ jobs:
                 - SPACES_SECRET=\${SPACES_SECRET}
                 - SPACES_REGION=\${SPACES_REGION}
                 - SPACES_BUCKET=\${SPACES_BUCKET}
+                - JWT_SECRET=\${JWT_SECRET}
 
             server:
               image: \${SERVER_IMAGE}
@@ -195,6 +196,7 @@ jobs:
                 - DELIVERIC_API=\${DELIVERIC_API}
                 - DELIVERIC_USER=\${DELIVERIC_USER}
                 - DELIVERIC_PASSWORD=\${DELIVERIC_PASSWORD}
+                - JWT_SECRET=\${JWT_SECRET}
 
             dashboard:
               image: \${DASHBOARD_IMAGE}
