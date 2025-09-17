@@ -6,7 +6,7 @@ import routes from './routes'
 import errorHandler from './middlewares/errorHandler'
 import loggerMiddleware from './middlewares/logger.middleware'
 
-import { checkESConnection } from './services/elasticsearch'
+import { checkESConnection } from './modules/search'
 
 const app: Express = express()
 

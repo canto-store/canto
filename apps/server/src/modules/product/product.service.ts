@@ -18,8 +18,8 @@ import {
   calculateDiscount,
   calculateDiscountPercentage,
 } from '../../utils/helper'
-import { PRODUCT_INDEX } from '../../services/elasticsearch/productIndex'
-import { esClient } from '../../services/elasticsearch'
+import { PRODUCT_INDEX } from '../search/productIndex'
+import { esClient } from '../search'
 
 class ProductService {
   private readonly prisma = new PrismaClient()

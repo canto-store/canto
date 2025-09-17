@@ -2,9 +2,9 @@ import dotenv from 'dotenv'
 
 dotenv.config({ override: true })
 
-import { createProductIndex } from '../src/services/elasticsearch/productIndex'
-import { syncProductsToES } from '../src/services/elasticsearch/productSync'
-import { checkESConnection } from '../src/services/elasticsearch'
+import { createProductIndex } from '../src/modules/search/productIndex'
+import { syncProductsToES } from '../src/modules/search/productSync'
+import { checkESConnection } from '../src/modules/search'
 
 async function setup() {
   console.log('Starting setup...')
