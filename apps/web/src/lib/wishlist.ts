@@ -14,7 +14,7 @@ export function useGetWishlist() {
       const { data } = await api.get("/wishlist");
       return data.data;
     },
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
