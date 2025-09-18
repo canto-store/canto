@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { useAuthStore } from "@/stores/auth-store";
-import { useLogout } from "@/hooks/auth";
+import { useLogout } from "@/lib/auth";
 
 function MobileDrawer() {
   const router = useRouter();

@@ -636,6 +636,7 @@ class ProductService {
     })
 
     return {
+      id: productRecord.id,
       name: productRecord.name,
       slug: productRecord.slug,
       description: productRecord.description,

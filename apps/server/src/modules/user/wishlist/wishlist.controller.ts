@@ -8,12 +8,57 @@ export default class WishlistController {
   constructor() {
     this.wishlistService = new WishlistService()
   }
-  getWishlistItems(req: AuthRequest, res: Response, next: NextFunction) {
+
+  async getWishlistItems(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        next(new AppError('User not authenticated', 401, true))
+        return next(new AppError('User not authenticated', 401, true))
       }
-      return this.wishlistService.getWishlistItems(req.user.id)
+      const response = await this.wishlistService.getWishlistItems(req.user.id)
+      res.status(200).json(response)
+    } catch (error) {
+      next(new AppError(error, 500, true))
+    }
+  }
+
+  async toggleWishlistItem(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      if (!req.user) {
+        return next(new AppError('User not authenticated', 401, true))
+      }
+      const { productId } = req.body
+      if (!productId) {
+        return next(new AppError('Product ID is required', 400, true))
+      }
+      const response = await this.wishlistService.toggleWishlistItem(
+        req.user.id,
+        Number(productId)
+      )
+      res.status(200).json(response)
+    } catch (error) {
+      next(new AppError(error, 500, true))
+    }
+  }
+
+  async removeWishlistItem(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      if (!req.user) {
+        return next(new AppError('User not authenticated', 401, true))
+      }
+      const productId = Number(req.params.productId)
+      if (!productId) {
+        return next(new AppError('Product ID is required', 400, true))
+      }
+      await this.wishlistService.removeWishlistItem(req.user.id, productId)
+      res.status(200).json({ success: true })
     } catch (error) {
       next(new AppError(error, 500, true))
     }

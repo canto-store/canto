@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { BannerProvider } from "./banner/banner-provider";
 import { QueryProvider } from "./query-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useUserQuery } from "@/hooks/auth";
+import { useUserQuery } from "@/lib/auth";
 
 interface ProvidersProps {
   children: ReactNode;

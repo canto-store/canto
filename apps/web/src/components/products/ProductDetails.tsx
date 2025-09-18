@@ -3,12 +3,11 @@
 import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, Heart, ShoppingCart, Star } from "lucide-react";
+import { Bell, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import { ProductDetails as ProductDetailsType, ProductVariant } from "@/types";
 import ProductOptions from "./ProductOptions";
 import { Link } from "@/i18n/navigation";
-import { toast } from "sonner";
 import { useAddToCart, useCartStore } from "@/lib/cart";
 import {
   Carousel,
@@ -18,18 +17,18 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useAuthStore } from "@/stores/auth-store";
+import { HeartButton } from "../wishlist/HeartButton";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<
     ProductVariant | undefined
   >(undefined);
 
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [_, setSelectedColor] = useState<string | null>(null);
 
   const { mutateAsync: addToCart } = useAddToCart();
   const { addItem } = useCartStore();
@@ -83,15 +82,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         variantId: selectedVariant.id,
         quantity,
       });
-    }
-  };
-
-  const handleAddToWishlist = () => {
-    setIsFavorite(!isFavorite);
-    if (isFavorite) {
-      toast.success("Removed from wishlist");
-    } else {
-      toast.success("Added to wishlist");
     }
   };
 
@@ -214,28 +204,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <span>Notify Me</span>
             </Button>
           )}
-          <Button variant="outline" size="lg" onClick={handleAddToWishlist}>
-            <Heart
-              className="h-5 w-5"
-              fill={isFavorite ? "currentColor" : "none"}
-            />
-          </Button>
+          <HeartButton productId={product.id} />
         </div>
       </div>
 
       {/* Floating Add to Cart - Mobile only */}
       <div className="bg-global fixed right-0 bottom-0 left-0 z-50 flex gap-2 border-t border-gray-200 p-4 shadow-lg md:hidden">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-12 w-12 flex-shrink-0"
-          onClick={() => setIsFavorite(!isFavorite)}
-        >
-          <Heart
-            className="h-5 w-5"
-            fill={isFavorite ? "currentColor" : "none"}
-          />
-        </Button>
+        <HeartButton productId={product.id} />
         <Button
           disabled={!selectedVariant || selectedVariant.stock === 0}
           size="lg"

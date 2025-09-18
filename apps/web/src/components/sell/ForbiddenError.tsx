@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { XOctagon, LogOut } from "lucide-react";
 import { redirect } from "@/i18n/navigation";
-import { useLogout } from "@/hooks/auth";
+import { useLogout } from "@/lib/auth";
 
 export const ForbiddenError = () => {
   const { mutateAsync: logout } = useLogout();

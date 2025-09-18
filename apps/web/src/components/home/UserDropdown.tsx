@@ -7,7 +7,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
-import { useLogout } from "@/hooks/auth";
+import { useLogout } from "@/lib/auth";
 import { useAuthStore } from "@/stores/auth-store";
 
 export function UserDropdown() {

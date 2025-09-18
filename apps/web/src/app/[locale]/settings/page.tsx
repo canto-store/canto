@@ -19,7 +19,7 @@ import { InstallPWA } from "@/components/pwa/InstallPWA";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { useLogout } from "@/hooks/auth";
+import { useLogout } from "@/lib/auth";
 import { getUserRole } from "@/lib/utils";
 
 export default function Page() {

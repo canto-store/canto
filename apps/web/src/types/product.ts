@@ -44,6 +44,7 @@ export type ProductSummary = {
 };
 
 export type ProductDetails = {
+  id: number;
   name: string;
   slug: string;
   description: string;

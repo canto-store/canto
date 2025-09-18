@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useRegister } from "@/hooks/auth";
+import { useRegister } from "@/lib/auth";
 import { parseApiError } from "@/lib/utils";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
