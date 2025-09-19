@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
-import { CartItem } from "@/types";
+import { CartItem } from "@canto/types/cart";
 import { ProductSummary } from "@canto/types/product";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";

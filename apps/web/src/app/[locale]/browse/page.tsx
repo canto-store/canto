@@ -136,6 +136,7 @@ export default function BrowsePage() {
     currentPage,
     itemsPerPage,
     params.locale,
+    router,
   ]);
 
   const {

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ProductByBrand } from "@/types";
+import Image from "next/image";
 
 export default function ProductPage() {
   const t = useTranslations("sell");
@@ -124,7 +125,7 @@ function MobileProductView({ products }: { products: ProductByBrand[] }) {
           <div className="flex items-start space-x-4">
             {/* Product Image */}
             <div className="flex-shrink-0">
-              <img
+              <Image
                 src={product.image}
                 alt={product.name}
                 className="h-16 w-16 rounded-md object-cover"

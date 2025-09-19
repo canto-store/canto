@@ -4,14 +4,11 @@ import { CheckCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useSearchParams } from "next/navigation";
 
 export function RegisterSuccess({
-  email,
   switchToLogin,
   onClose,
 }: {
-  email?: string;
   switchToLogin?: () => void;
   onClose?: () => void;
 }) {

@@ -218,7 +218,7 @@ function AboutUsPage() {
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="mb-6 text-3xl font-bold">Join Our Community</h2>
           <p className="mb-8 text-lg text-gray-600">
-            Whether you're an artisan looking to showcase your work or a
+            Whether you&apos;re an artisan looking to showcase your work or a
             customer searching for unique handcrafted products, we invite you to
             be part of our growing community.
           </p>

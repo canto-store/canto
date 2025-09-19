@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useAddToCart, useDeleteFromCart } from "@/lib/cart";
-import { CartItem } from "@/types";
+import { CartItem } from "@canto/types/cart";
 import { cn, formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";

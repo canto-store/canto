@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { APIError } from "@/types/api";
-import { ProductSummary } from "@/types/product";
+import { ProductSummary } from "@canto/types/product";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

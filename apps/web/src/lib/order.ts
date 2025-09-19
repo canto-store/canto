@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./api";
-import { Order } from "@canto/types/order";
 
 export const useCreateOrder = () => {
   const queryClient = useQueryClient();

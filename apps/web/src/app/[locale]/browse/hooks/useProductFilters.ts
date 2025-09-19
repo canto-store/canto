@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useParams, useRouter } from "next/navigation";
-import { ProductSummary } from "@/types";
+import { ProductSummary } from "@canto/types/product";
 import { PRICE_RANGES } from "@/lib/data";
 import { filterProducts } from "@/lib/utils";
 export function useProductFilters() {
@@ -80,6 +80,7 @@ export function useProductFilters() {
     currentPage,
     itemsPerPage,
     params.locale,
+    router,
   ]);
 
   // Filter and sort products

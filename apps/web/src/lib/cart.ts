@@ -8,7 +8,7 @@ interface AddToCartInput {
 }
 
 export const useGetCart = () => {
-  return useQuery({
+  return useQuery<Cart>({
     queryKey: ["cart"],
     queryFn: async () => {
       return await api

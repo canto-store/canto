@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   HomeProducts,
   ProductDetails,
-  ProductSummary,
   APIError,
   ProductOption,
   SavedProductForm,
@@ -11,6 +10,7 @@ import {
   ProductByBrand,
   ProductFormValues,
 } from "@/types";
+import { ProductSummary } from "@canto/types/product";
 import axios from "axios";
 import api from "./api";
 

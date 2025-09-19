@@ -31,7 +31,7 @@ export default function CartPage() {
         </div>
         <h3 className="mt-6 text-xl font-medium">Loading Cart</h3>
         <p className="text-muted-foreground mt-2 max-w-xs text-center">
-          We're collecting all your items
+          We&apos;re collecting all your items
         </p>
         <div className="mt-4 flex gap-1">
           <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:0.1s]"></span>

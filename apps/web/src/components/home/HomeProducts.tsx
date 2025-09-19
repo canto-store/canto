@@ -1,5 +1,5 @@
 import { ProductCarousel, ProductGrid } from "@/components/products";
-import { ProductSummary } from "@/types";
+import { ProductSummary } from "@canto/types/product";
 import { HomeProductsSkeleton } from "./HomeProductsSkeleton";
 
 interface HomeProductsProps {

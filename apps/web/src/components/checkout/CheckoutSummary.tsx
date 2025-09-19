@@ -30,8 +30,7 @@ export function CheckoutSummary({
 
   const [shippingCost, setShippingCost] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
-  if (!data) return null;
-  const [total, setTotal] = useState(data.price);
+  const [total, setTotal] = useState(data?.price ?? 0);
 
   // Calculate shipping cost based on shipping address
   useEffect(() => {
@@ -46,25 +45,25 @@ export function CheckoutSummary({
   useEffect(() => {
     if (coupon) {
       if (coupon.discountType === "percentage") {
-        setDiscountAmount((data.price * coupon.discountAmount) / 100);
+        setDiscountAmount(((data?.price ?? 0) * coupon.discountAmount) / 100);
       } else {
         setDiscountAmount(coupon.discountAmount);
       }
     } else {
       setDiscountAmount(0);
     }
-  }, [coupon, data.price]);
+  }, [coupon, data?.price]);
 
   // Calculate total
   useEffect(() => {
     const calculatedTotal = Math.max(
       0,
-      data.price + shippingCost - discountAmount,
+      (data?.price ?? 0) + shippingCost - discountAmount,
     );
     setTotal(calculatedTotal);
-  }, [data.price, shippingCost, discountAmount]);
+  }, [data?.price, shippingCost, discountAmount]);
 
-  if (data.count === 0) {
+  if (data?.count === 0) {
     return (
       <div
         className={cn(
@@ -102,7 +101,7 @@ export function CheckoutSummary({
       <div className="space-y-2 sm:space-y-3">
         <div className="flex justify-between text-xs sm:text-sm">
           <p>{t("checkout.subtotal")}</p>
-          <p className="font-medium">{formatPrice(data.price)}</p>
+          <p className="font-medium">{formatPrice(data?.price ?? 0)}</p>
         </div>
 
         <div className="flex justify-between text-xs sm:text-sm">
@@ -140,7 +139,7 @@ export function CheckoutSummary({
           <Button
             className="w-full text-xs sm:text-sm"
             onClick={onPlaceOrder}
-            disabled={!shippingAddress || data.count === 0 || isLoading}
+            disabled={!shippingAddress || data?.count === 0 || isLoading}
             size="default"
           >
             {isLoading ? t("common.processing") : t("checkout.placeOrder")}

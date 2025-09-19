@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/products";
-import { ProductSummary } from "@/types";
+import { ProductSummary } from "@canto/types/product";
 import { cn } from "@/lib/utils";
 
 interface ProductGridProps {

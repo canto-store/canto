@@ -6,7 +6,7 @@ import {
   ProductList,
   ProductGridSkeleton,
 } from "@/components/products";
-import { ProductSummary } from "@/types";
+import { ProductSummary } from "@canto/types/product";
 import { useTranslations } from "next-intl";
 
 interface ProductsDisplayProps {
