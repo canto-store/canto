@@ -9,7 +9,9 @@ interface ProtectedLayoutProps {
 
 async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
+  console.log("##### — cookieStore =>", cookieStore);
   const token = cookieStore.get("token")?.value;
+  console.log("##### — token =>", token);
 
   if (!token) return false;
 
@@ -18,6 +20,7 @@ async function isAuthenticated(): Promise<boolean> {
       console.error("JWT_SECRET is not defined in environment variables.");
     }
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    console.log("##### — secret =>", secret);
     const { payload } = await jwtVerify(token, secret);
     if (payload) return true;
     return false;
