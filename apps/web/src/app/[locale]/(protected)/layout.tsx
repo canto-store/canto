@@ -8,26 +8,23 @@ interface ProtectedLayoutProps {
 }
 
 async function isAuthenticated(): Promise<boolean> {
-  const cookieStore = await cookies();
-  console.log("##### — cookieStore =>", cookieStore);
-  const token = cookieStore.get("token")?.value;
-  console.log("##### — token =>", token);
-
-  if (!token) return false;
-
-  try {
-    if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET is not defined in environment variables.");
-    }
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    console.log("##### — secret =>", secret);
-    const { payload } = await jwtVerify(token, secret);
-    if (payload) return true;
-    return false;
-  } catch (error) {
-    console.error("Token verification failed:", error);
-    return false;
+  if (!process.env.JWT_SECRET) {
+    console.error("JWT_SECRET is not defined in environment variables.");
   }
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  if (!token || !refreshToken) return false;
+
+  return jwtVerify(token, secret)
+    .then(() => true)
+    .catch(() =>
+      jwtVerify(refreshToken, secret)
+        .then(() => true)
+        .catch(() => false),
+    );
 }
 
 export default async function ProtectedLayout({
