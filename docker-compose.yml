@@ -26,7 +26,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8000
-      - DATABASE_URL=${DATABASE_URL}
     expose:
       - '8000'
     networks:
@@ -62,7 +61,6 @@ services:
       - ./logs/nginx:/var/log/nginx
       - ./certbot:/var/www/certbot
     environment:
-      - DOMAIN=${DOMAIN}
       - WEB_HOST=web
       - SERVER_HOST=server
       - DASHBOARD_HOST=dashboard

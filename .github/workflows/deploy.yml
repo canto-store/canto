@@ -200,6 +200,7 @@ jobs:
                 - DELIVERIC_USER=\${DELIVERIC_USER}
                 - DELIVERIC_PASSWORD=\${DELIVERIC_PASSWORD}
                 - JWT_SECRET=\${JWT_SECRET}
+                - DOMAIN=\${DOMAIN}
 
             dashboard:
               image: \${DASHBOARD_IMAGE}
@@ -220,7 +221,7 @@ jobs:
 
             # Create deployment directory
             DEPLOY_DIR="/home/omar/canto"
-            sudo mkdir -p $DEPLOY_DIR || true
+            mkdir -p $DEPLOY_DIR || true
             cd $DEPLOY_DIR
 
             # Create certbot directory if it doesn't exist
@@ -229,8 +230,8 @@ jobs:
             # Backup current deployment
             if [ -f docker-compose.yml ]; then
               echo "Creating backup of current deployment..."
-              sudo cp docker-compose.yml docker-compose.yml.backup || true
-              sudo cp .env.prod .env.prod.backup || true
+              cp docker-compose.yml docker-compose.yml.backup || true
+              cp .env.prod .env.prod.backup || true
             fi
 
             # Login to GitHub Container Registry

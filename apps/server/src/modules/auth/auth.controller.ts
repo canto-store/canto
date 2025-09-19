@@ -23,12 +23,14 @@ class AuthController {
       )
       res
         .cookie('token', token, {
+          domain: process.env.DOMAIN,
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           maxAge: 1000 * 60 * 60,
         })
         .cookie('refreshToken', refreshToken, {
+          domain: process.env.DOMAIN,
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
@@ -57,12 +59,14 @@ class AuthController {
       )
       res
         .cookie('token', token, {
+          domain: process.env.DOMAIN,
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           maxAge: 1000 * 60 * 60,
         })
         .cookie('refreshToken', refreshToken, {
+          domain: process.env.DOMAIN,
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
@@ -94,12 +98,14 @@ class AuthController {
         await this.authService.rotateRefresh(old)
       res
         .cookie('token', accessToken, {
+          domain: process.env.DOMAIN,
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           maxAge: 1000 * 60 * 60, // 1 hour
         })
         .cookie('refreshToken', refreshToken, {
+          domain: process.env.DOMAIN,
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
