@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { useAddToCart } from "@/lib/cart";
 import { ProductSummary } from "@canto/types/product";
@@ -113,10 +113,9 @@ export function ProductCard({
           )}
         >
           <div className="flex items-center gap-0.5">
-            <span className="text-xs font-bold md:text-base">EGP</span>
             {product.salePrice && (
               <span className="font-bold sm:text-lg md:text-xl">
-                {product.salePrice}
+                {formatPrice(product.salePrice)}
               </span>
             )}
             <span
@@ -126,11 +125,11 @@ export function ProductCard({
                   : "font-bold sm:text-lg md:text-xl",
               )}
             >
-              {product.price}
+              {formatPrice(product.price)}
               {product.maxPrice && (
                 <span className="font-bold sm:text-lg md:text-xl">
                   {" "}
-                  - {product.maxPrice}
+                  - {formatPrice(product.maxPrice)}
                 </span>
               )}
             </span>

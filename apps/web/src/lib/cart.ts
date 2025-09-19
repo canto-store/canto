@@ -18,7 +18,6 @@ export const useGetCart = () => {
           return { items: [], count: 0, price: 0 } as Cart;
         });
     },
-    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -26,13 +25,19 @@ export const useAddToCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ variantId, quantity }: AddToCartInput) => {
-      const response = await api.put("/cart/items", {
-        variantId,
-        quantity,
-      });
-      toast("Added to cart");
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      return response.data;
+      return await api
+        .put("/cart/items", {
+          variantId,
+          quantity,
+        })
+        .then((res) => {
+          toast.success("Added to cart");
+          queryClient.invalidateQueries({ queryKey: ["cart"] });
+          res.data;
+        })
+        .catch(() => {
+          toast.error("Failed to add to cart");
+        });
     },
   });
 };
@@ -41,12 +46,18 @@ export const useDeleteFromCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ variantId }: { variantId: number }) => {
-      const response = await api.delete("/cart/items", {
-        data: { variantId },
-      });
-      toast("Removed from cart");
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      return response.data;
+      return await api
+        .delete("/cart/items", {
+          data: { variantId },
+        })
+        .then((res) => {
+          toast.success("Removed from cart");
+          queryClient.invalidateQueries({ queryKey: ["cart"] });
+          return res.data;
+        })
+        .catch(() => {
+          toast.error("Failed to remove from cart");
+        });
     },
   });
 };

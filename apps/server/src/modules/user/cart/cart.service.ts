@@ -53,7 +53,7 @@ class CartService {
           price: item.variant.price,
           image:
             item.variant.images.find(img => img.url).url ??
-            'placeholder-image.jpg',
+            '/placeholder-image.jpg',
           stock: item.variant.stock,
           variantId: item.variant.id,
           quantity: item.quantity,
