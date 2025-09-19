@@ -4,7 +4,6 @@ import { HomeProducts } from "@/components/home/HomeProducts";
 // import { FeaturesBanner } from "@/components/home/FeaturesBanner";
 import { HomeCategories } from "@/components/home/HomeCategories";
 import { useHomeProducts } from "@/lib/product";
-import { useCartStore, useGetCart } from "@/lib/cart";
 import { useEffect } from "react";
 import Image from "next/image";
 import { RotateCcw } from "lucide-react";
@@ -13,20 +12,12 @@ import { useTranslations } from "next-intl";
 export default function Home() {
   const { data, isLoading } = useHomeProducts();
   const { bestDeals, bestSellers, newArrivals } = data || {};
-  const { data: cart, isStale } = useGetCart();
-  const { setItems } = useCartStore();
   const t = useTranslations();
 
   useEffect(() => {
     // Ensure we start at the top when landing on the home page (including back navigation)
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
-
-  useEffect(() => {
-    if (cart && !isStale) {
-      setItems(cart);
-    }
-  }, [cart, isStale, setItems]);
 
   return (
     <>

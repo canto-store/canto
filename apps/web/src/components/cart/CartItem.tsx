@@ -4,12 +4,13 @@ import { Minus, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useCartStore, useDeleteFromCart, useUpdateCartItem } from "@/lib/cart";
+import { useAddToCart, useDeleteFromCart } from "@/lib/cart";
 import { CartItem } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/auth-store";
+import { toast } from "sonner";
 
 interface CartItemProps {
   item: CartItem;
@@ -27,28 +28,27 @@ export function CartItemComponent({
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { updateItem, removeItem } = useCartStore();
   const { mutate: deleteFromCart } = useDeleteFromCart();
-  const { mutate: updateCartItem } = useUpdateCartItem();
+  const { mutateAsync: addToCart } = useAddToCart();
   const { user } = useAuthStore();
   const router = useRouter();
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return;
     if (user) {
-      updateCartItem({
+      addToCart({
         variantId: item.variantId,
         quantity: newQuantity,
       });
+    } else {
+      toast("Please login to modify your cart");
     }
-    updateItem(item.variantId, newQuantity);
   };
 
   const handleRemove = async () => {
     if (user) {
       deleteFromCart({ variantId: item.variantId });
     }
-    removeItem(item.variantId);
   };
 
   const handleProductClick = () => {

@@ -3,19 +3,21 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/lib/cart";
-import { cn } from "@/lib/utils";
+import { useGetCart } from "@/lib/cart";
+import { cn, formatPrice } from "@/lib/utils";
 
 interface CartSummaryProps {
   className?: string;
 }
 
 export function CartSummary({ className }: CartSummaryProps) {
-  const { price, count } = useCartStore();
+  const { data } = useGetCart();
   const t = useTranslations();
   const router = useRouter();
 
-  if (count === 0) {
+  if (!data) return null;
+
+  if (data.count === 0) {
     return (
       <div
         className={cn(
@@ -53,13 +55,13 @@ export function CartSummary({ className }: CartSummaryProps) {
       <div className="space-y-2 sm:space-y-3">
         <div className="flex justify-between text-xs sm:text-sm">
           <p>{t("cart.subtotal")}</p>
-          <p className="font-medium">{price}</p>
+          <p className="font-medium">{formatPrice(data.price)}</p>
         </div>
 
         <div className="border-t border-gray-200 pt-2 sm:pt-3">
           <div className="flex justify-between text-xs font-medium sm:text-sm">
             <p className="text-gray-900">{t("cart.orderTotal")}</p>
-            <p className="text-primary">{price}</p>
+            <p className="text-primary">{formatPrice(data.price)}</p>
           </div>
           <p className="mt-1 text-xs text-gray-500">{t("cart.shippingNote")}</p>
         </div>

@@ -1,5 +1,5 @@
 import { z } from "zod";
-
+import { ProductSummary } from "@canto/types/product";
 export enum ProductStatus {
   PENDING = "PENDING",
   ACTIVE = "ACTIVE",
@@ -24,23 +24,6 @@ export type ProductByBrand = {
   image: string;
   category: string;
   status: ProductStatus;
-};
-
-export type ProductSummary = {
-  name: string;
-  brand: {
-    name: string;
-    slug: string;
-  };
-  slug: string;
-  price: number;
-  maxPrice?: number;
-  salePrice?: number;
-  image: string;
-  stock: number;
-  hasVariants: boolean;
-  default_variant_id: number | null;
-  colorVariants: string[] | null;
 };
 
 export type ProductDetails = {

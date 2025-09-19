@@ -11,8 +11,10 @@ export function useGetWishlist() {
   return useSuspenseQuery<WishlistItem[], Error>({
     queryKey: ["wishlist"],
     queryFn: async () => {
-      const { data } = await api.get("/wishlist");
-      return data.data;
+      return await api
+        .get("/wishlist")
+        .then((res) => res.data.data)
+        .catch(() => []);
     },
     staleTime: 5 * 60 * 1000,
   });

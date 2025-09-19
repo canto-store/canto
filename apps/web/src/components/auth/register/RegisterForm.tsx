@@ -21,7 +21,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useCartStore, useSyncCart } from "@/lib/cart";
 
 // Define the form validation schema with Zod
 const registerFormSchema = z
@@ -51,8 +50,6 @@ export function RegisterForm({
   const t = useTranslations("auth");
   const router = useRouter();
   const { mutateAsync: register } = useRegister();
-  const { items, addItems } = useCartStore();
-  const { mutateAsync: syncCart } = useSyncCart();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,14 +76,6 @@ export function RegisterForm({
         setIsPending(false);
         setError(null);
         toast.success(t("registerSuccess"));
-        syncCart(
-          items.map((item) => ({
-            variantId: item.variantId,
-            quantity: item.quantity,
-          })),
-        ).then((data) => {
-          addItems(data);
-        });
         if (onClose) {
           onClose();
         } else {

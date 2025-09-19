@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/lib/cart";
+import { useGetCart } from "@/lib/cart";
 import { CartItemComponent } from "./CartItem";
 import { cn, formatPrice } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { items, count, price } = useCartStore();
+  const { data } = useGetCart();
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
@@ -84,6 +84,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
   // Get the appropriate chevron icon based on language direction
   const ChevronIcon = isRTL ? ChevronLeft : ChevronRight;
 
+  if (!data) return null;
   return (
     <div
       className={cn("relative isolate", className)}
@@ -96,14 +97,14 @@ export function CartDropdown({ className }: CartDropdownProps) {
         aria-label={t("header.cart")}
       >
         <ShoppingCart className="h-5 w-5" />
-        {count > 0 && (
+        {data.count > 0 && (
           <span
             className={cn(
               "bg-primary absolute flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white",
               isRTL ? "-top-1 -left-1" : "-top-1 -right-1",
             )}
           >
-            {count}
+            {data.count}
           </span>
         )}
       </button>
@@ -121,15 +122,17 @@ export function CartDropdown({ className }: CartDropdownProps) {
         >
           <div className="border-b border-gray-100 px-4 py-3">
             <h3 className="text-primary font-medium">
-              {count > 0 ? t("header.yourCart", { count }) : t("header.cart")}
+              {data.count > 0
+                ? t("header.yourCart", { count: data.count })
+                : t("header.cart")}
             </h3>
           </div>
 
-          {count > 0 ? (
+          {data.count > 0 ? (
             <>
               {/* Cart Items */}
               <div className="max-h-[40vh] overflow-y-auto py-3 sm:max-h-60">
-                {items.map((item) => (
+                {data.items.map((item) => (
                   <CartItemComponent
                     key={`${item.name}-${item.quantity}`}
                     item={item}
@@ -144,7 +147,9 @@ export function CartDropdown({ className }: CartDropdownProps) {
               <div className="border-t border-gray-100 px-4 py-3">
                 <div className="flex justify-between font-medium">
                   <span>{t("header.total")}:</span>
-                  <span className="text-primary">{formatPrice(price)}</span>
+                  <span className="text-primary">
+                    {formatPrice(data.price)}
+                  </span>
                 </div>
               </div>
 

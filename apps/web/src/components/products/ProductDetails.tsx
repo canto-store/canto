@@ -8,7 +8,7 @@ import Image from "next/image";
 import { ProductDetails as ProductDetailsType, ProductVariant } from "@/types";
 import ProductOptions from "./ProductOptions";
 import { Link } from "@/i18n/navigation";
-import { useAddToCart, useCartStore } from "@/lib/cart";
+import { useAddToCart } from "@/lib/cart";
 import {
   Carousel,
   CarouselContent,
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/carousel";
 import { useAuthStore } from "@/stores/auth-store";
 import { HeartButton } from "../wishlist/HeartButton";
+import { toast } from "sonner";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
@@ -31,7 +32,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [_, setSelectedColor] = useState<string | null>(null);
 
   const { mutateAsync: addToCart } = useAddToCart();
-  const { addItem } = useCartStore();
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -59,29 +59,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       await addToCart({
         variantId: selectedVariant.id,
         quantity,
-      }).then(() => {
-        addItem({
-          brand: product.brand,
-          name: product.name,
-          slug: product.slug,
-          price: selectedVariant.price,
-          image: selectedVariant.images[0].url,
-          stock: selectedVariant.stock,
-          variantId: selectedVariant.id,
-          quantity,
-        });
       });
     } else {
-      addItem({
-        brand: product.brand,
-        name: product.name,
-        slug: product.slug,
-        price: selectedVariant.price,
-        image: selectedVariant.images[0].url,
-        stock: selectedVariant.stock,
-        variantId: selectedVariant.id,
-        quantity,
-      });
+      toast("Please login to add items to your cart");
     }
   };
 

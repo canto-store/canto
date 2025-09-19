@@ -4,7 +4,6 @@ import api from "@/lib/api";
 import { Seller, User } from "@/types/user";
 import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
-import { useCartStore } from "@/lib/cart";
 import { AxiosError } from "axios";
 
 export const useUserQuery = () => {
@@ -122,7 +121,6 @@ export const useSellerRegister = () => {
 export const useLogout = () => {
   const queryClient = useQueryClient();
   const { clearUser } = useAuthStore();
-  const { clearCart } = useCartStore();
 
   return useMutation({
     mutationFn: async () => {
@@ -131,7 +129,6 @@ export const useLogout = () => {
     },
     onSuccess: () => {
       clearUser();
-      clearCart();
       queryClient.clear();
       toast.success("Logged out successfully");
     },

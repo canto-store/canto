@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import AppError from '../../../utils/appError'
-import { CreateCartItemDto } from './cart.types'
-
+import { Cart } from '@canto/types/cart'
 class CartService {
   private readonly prisma = new PrismaClient()
 
@@ -21,7 +20,7 @@ class CartService {
     return cart
   }
 
-  async getCartByUser(userId: number) {
+  async getCartByUser(userId: number): Promise<Cart> {
     let cart = await this.prisma.cart.findUnique({
       where: { userId },
       include: {
@@ -59,7 +58,11 @@ class CartService {
         }
       })
     )
-    return items
+    return {
+      items,
+      count: items.length,
+      price: items.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    }
   }
 
   async clearCart(userId: number) {
@@ -70,55 +73,16 @@ class CartService {
       where: { cartId: cart.id },
     })
   }
-
-  async addItem(dto: CreateCartItemDto) {
-    const { userId, variantId, quantity } = dto
-    if (!userId) throw new AppError('userId is required', 400)
-    if (!variantId) throw new AppError('variantId is required', 400)
-    if (!quantity || quantity <= 0)
-      throw new AppError('quantity must be > 0', 400)
-
-    // 1) ensure variant exists & check stock
-    const variant = await this.prisma.productVariant.findUnique({
-      where: { id: variantId },
-    })
-    if (!variant) throw new AppError('Variant not found', 404)
-    if (variant.stock < quantity) throw new AppError('Insufficient stock', 400)
-
-    // 2) get or create the cart
+  async addItem(userId: number, variantId: number, quantity: number) {
     const cart = await this.getOrCreateCart(userId)
-
-    // 3) see if item already in cart
-    const existing = await this.prisma.cartItem.findFirst({
-      where: { cartId: cart.id, variantId },
-    })
-
-    if (existing) {
-      const newQty = existing.quantity + quantity
-      if (newQty > variant.stock)
-        throw new AppError('Insufficient stock for total quantity', 400)
-      return this.prisma.cartItem.update({
-        where: { id: existing.id },
-        data: { quantity: newQty },
-      })
-    }
-
-    // 4) otherwise create new cartItem
-    await this.prisma.cartItem.create({
-      data: { cartId: cart.id, variantId, quantity },
-    })
-  }
-
-  /** Update quantity (0 will remove) */
-  async updateItem(userId: number, variantId: number, quantity: number) {
-    const cart = await this.prisma.cart.findUnique({
-      where: { userId },
-    })
     if (!cart) throw new AppError('Cart not found', 404)
     const item = await this.prisma.cartItem.findFirst({
       where: { cartId: cart.id, variantId },
     })
-    if (!item) throw new AppError('Cart item not found', 404)
+    if (!item)
+      return await this.prisma.cartItem.create({
+        data: { cartId: cart.id, variantId, quantity },
+      })
 
     if (quantity == null || quantity < 0)
       throw new AppError('quantity must be ≥ 0', 400)

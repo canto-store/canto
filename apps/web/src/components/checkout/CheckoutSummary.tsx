@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/lib/cart";
+import { useGetCart } from "@/lib/cart";
 import { cn, formatPrice } from "@/lib/utils";
 import { CouponData } from "./CouponForm";
 import { UserAddress } from "@/types/user";
@@ -24,13 +24,14 @@ export function CheckoutSummary({
   onPlaceOrder,
   isLoading = false,
 }: CheckoutSummaryProps) {
-  const { price: subtotal, count } = useCartStore();
+  const { data } = useGetCart();
   const t = useTranslations();
   const router = useRouter();
 
   const [shippingCost, setShippingCost] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
-  const [total, setTotal] = useState(subtotal);
+  if (!data) return null;
+  const [total, setTotal] = useState(data.price);
 
   // Calculate shipping cost based on shipping address
   useEffect(() => {
@@ -45,25 +46,25 @@ export function CheckoutSummary({
   useEffect(() => {
     if (coupon) {
       if (coupon.discountType === "percentage") {
-        setDiscountAmount((subtotal * coupon.discountAmount) / 100);
+        setDiscountAmount((data.price * coupon.discountAmount) / 100);
       } else {
         setDiscountAmount(coupon.discountAmount);
       }
     } else {
       setDiscountAmount(0);
     }
-  }, [coupon, subtotal]);
+  }, [coupon, data.price]);
 
   // Calculate total
   useEffect(() => {
     const calculatedTotal = Math.max(
       0,
-      subtotal + shippingCost - discountAmount,
+      data.price + shippingCost - discountAmount,
     );
     setTotal(calculatedTotal);
-  }, [subtotal, shippingCost, discountAmount]);
+  }, [data.price, shippingCost, discountAmount]);
 
-  if (count === 0) {
+  if (data.count === 0) {
     return (
       <div
         className={cn(
@@ -101,7 +102,7 @@ export function CheckoutSummary({
       <div className="space-y-2 sm:space-y-3">
         <div className="flex justify-between text-xs sm:text-sm">
           <p>{t("checkout.subtotal")}</p>
-          <p className="font-medium">{formatPrice(subtotal)}</p>
+          <p className="font-medium">{formatPrice(data.price)}</p>
         </div>
 
         <div className="flex justify-between text-xs sm:text-sm">
@@ -139,7 +140,7 @@ export function CheckoutSummary({
           <Button
             className="w-full text-xs sm:text-sm"
             onClick={onPlaceOrder}
-            disabled={!shippingAddress || count === 0 || isLoading}
+            disabled={!shippingAddress || data.count === 0 || isLoading}
             size="default"
           >
             {isLoading ? t("common.processing") : t("checkout.placeOrder")}

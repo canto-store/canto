@@ -2,14 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye } from "lucide-react";
-import { CartItem, ProductSummary } from "@/types";
+import { CartItem } from "@/types";
+import { ProductSummary } from "@canto/types/product";
 import { SectionContainer } from "@/components/common";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useAddToCart, useCartStore } from "@/lib/cart";
+import { useAddToCart } from "@/lib/cart";
+import { useAuthStore } from "@/stores/auth-store";
+import { toast } from "sonner";
 
 interface ProductListProps {
   products: ProductSummary[];
@@ -22,12 +25,12 @@ export function ProductList({ products, title, className }: ProductListProps) {
   const params = useParams();
   const isRTL = params?.locale === "ar";
 
-  const { addItem } = useCartStore();
   const { mutateAsync: addToCart } = useAddToCart();
+  const { user } = useAuthStore();
 
   const handleAddToCart = (product: CartItem) => {
-    addItem(product);
-    addToCart({ variantId: product.variantId, quantity: 1 });
+    if (user) addToCart({ variantId: product.variantId, quantity: 1 });
+    else toast("Please login to add items to your cart");
   };
   return (
     <SectionContainer title={title}>

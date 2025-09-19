@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { parseApiError } from "@/lib/utils";
-import { useCartStore, useSyncCart } from "@/lib/cart";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -47,8 +46,6 @@ export function LoginForm({
   const t = useTranslations();
   const { mutateAsync: login } = useLogin();
   const router = useRouter();
-  const { items, addItems } = useCartStore();
-  const { mutateAsync: syncCart } = useSyncCart();
 
   const form = useForm<FormData>({
     resolver: zodResolver(loginFormSchema),
@@ -63,14 +60,6 @@ export function LoginForm({
     setIsLoading(true);
     await login(data)
       .then(() => {
-        syncCart(
-          items.map((item) => ({
-            variantId: item.variantId,
-            quantity: item.quantity,
-          })),
-        ).then((data) => {
-          addItems(data);
-        });
         router.push(redirectUrl);
         if (onClose) {
           onClose();

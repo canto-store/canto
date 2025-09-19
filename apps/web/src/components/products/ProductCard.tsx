@@ -5,10 +5,11 @@ import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useAddToCart, useCartStore } from "@/lib/cart";
-import { ProductSummary } from "@/types";
+import { useAddToCart } from "@/lib/cart";
+import { ProductSummary } from "@canto/types/product";
 import { BsCartPlus, BsEye } from "react-icons/bs";
 import { useAuthStore } from "@/stores/auth-store";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: ProductSummary;
@@ -25,7 +26,6 @@ export function ProductCard({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const { addItem } = useCartStore();
   const { mutateAsync: addToCart } = useAddToCart();
   const { user } = useAuthStore();
 
@@ -34,29 +34,9 @@ export function ProductCard({
       addToCart({
         variantId: product.default_variant_id!,
         quantity: 1,
-      }).then(() => {
-        addItem({
-          brand: product.brand,
-          name: product.name,
-          slug: product.slug,
-          price: product.price,
-          image: product.image,
-          stock: product.stock,
-          variantId: product.default_variant_id!,
-          quantity: 1,
-        });
       });
     } else {
-      addItem({
-        brand: product.brand,
-        name: product.name,
-        slug: product.slug,
-        price: product.price,
-        image: product.image,
-        stock: product.stock,
-        quantity: 1,
-        variantId: product.default_variant_id!,
-      });
+      toast("Please login to add items to your cart");
     }
   };
 

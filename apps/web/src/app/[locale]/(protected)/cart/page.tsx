@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ShoppingCartIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { CartItemComponent, CartSummary } from "@/components/cart";
 import { cn } from "@/lib/utils";
-import { useCartStore } from "@/lib/cart";
+import { useGetCart } from "@/lib/cart";
 export default function CartPage() {
-  const { items, count } = useCartStore();
+  const { data: items, isLoading } = useGetCart();
+  const count = items?.count ?? 0;
   const t = useTranslations();
   const router = useRouter();
   const [isUpdating] = useState(false);
@@ -19,6 +20,27 @@ export default function CartPage() {
     router.push("/browse");
   };
 
+  if (isLoading) {
+    return (
+      <div className="from-background to-muted/20 flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center bg-gradient-to-b">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-background/80 h-16 w-16 rounded-full backdrop-blur-sm"></div>
+          </div>
+          <ShoppingCartIcon className="text-primary relative z-10 mx-auto h-8 w-8 animate-pulse" />
+        </div>
+        <h3 className="mt-6 text-xl font-medium">Loading Cart</h3>
+        <p className="text-muted-foreground mt-2 max-w-xs text-center">
+          We're collecting all your items
+        </p>
+        <div className="mt-4 flex gap-1">
+          <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:0.1s]"></span>
+          <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:0.2s]"></span>
+          <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:0.3s]"></span>
+        </div>
+      </div>
+    );
+  }
   // If cart is empty, show empty state
   if (count === 0) {
     return (
@@ -59,7 +81,7 @@ export default function CartPage() {
                 isUpdating && "opacity-50",
               )}
             >
-              {items.map((item) => (
+              {items?.items.map((item) => (
                 <div key={item.name} className="p-3 sm:p-4">
                   {/* Custom wrapper with improved mobile spacing */}
                   <CartItemComponent item={item} showControls={true} />

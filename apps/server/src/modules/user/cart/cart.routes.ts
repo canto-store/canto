@@ -18,18 +18,16 @@ router.put(
   controller.syncCart.bind(controller)
 )
 
-router.delete('/user/:userId', controller.clearCart.bind(controller))
-
-router.post(
-  '/items',
+router.delete(
+  '/user',
   authMiddleware.checkAuth.bind(authMiddleware),
-  controller.addItem.bind(controller)
+  controller.clearCart.bind(controller)
 )
 
 router.put(
   '/items',
   authMiddleware.checkAuth.bind(authMiddleware),
-  controller.updateItem.bind(controller)
+  controller.addItem.bind(controller)
 )
 
 router.delete(
