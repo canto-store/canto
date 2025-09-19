@@ -269,7 +269,9 @@ class ProductService {
         },
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: p.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
+        image:
+          p.variants.find(v => v.images.length > 0).images.find(img => img.url)
+            .url || '/placeholder-image.jpg',
         stock: p.variants.reduce((sum, v) => sum + v.stock, 0),
         hasVariants: p.variants.length > 1,
         default_variant_id: p.variants.length === 1 ? p.variants[0]?.id : null,
@@ -708,6 +710,10 @@ class ProductService {
       const prices = product.variants.map(v => v.price)
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
+      const image =
+        product.variants
+          .find(v => v.images.length > 0)
+          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg'
 
       return {
         name: product.name,
@@ -715,7 +721,7 @@ class ProductService {
         slug: product.slug,
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
+        image,
         stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
         hasVariants: product.variants.length > 1,
         default_variant_id:
@@ -747,6 +753,10 @@ class ProductService {
       const prices = product.variants.map(v => v.price)
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
+      const image =
+        product.variants
+          .find(v => v.images.length > 0)
+          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg'
 
       return {
         name: product.name,
@@ -754,7 +764,7 @@ class ProductService {
         slug: product.slug,
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
+        image,
         stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
         default_variant_id:
           product.variants.length === 1 ? product.variants[0]?.id : null,
@@ -786,6 +796,10 @@ class ProductService {
       const prices = product.variants.map(v => v.price)
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
+      const image =
+        product.variants
+          .find(v => v.images.length > 0)
+          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg'
 
       return {
         name: product.name,
@@ -793,7 +807,7 @@ class ProductService {
         slug: product.slug,
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
+        image,
         stock: product.variants.reduce((sum, v) => sum + v.stock, 0),
         hasVariants: product.variants.length > 1,
         default_variant_id:
@@ -1056,7 +1070,10 @@ class ProductService {
       id: product.id,
       name: product.name,
       description: product.description,
-      image: product.variants[0]?.images[0]?.url || '/placeholder-image.jpg',
+      image:
+        product.variants
+          .find(v => v.images.length > 0)
+          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg',
       category: product.category.name,
       status: product.status,
     }))
