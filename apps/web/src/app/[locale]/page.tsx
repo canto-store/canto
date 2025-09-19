@@ -8,11 +8,13 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useGetCart } from "@/lib/cart";
 
 export default function Home() {
   const { data, isLoading } = useHomeProducts();
   const { bestDeals, bestSellers, newArrivals } = data || {};
   const t = useTranslations();
+  useGetCart();
 
   useEffect(() => {
     // Ensure we start at the top when landing on the home page (including back navigation)
