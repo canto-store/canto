@@ -8,8 +8,8 @@ interface ActiveFiltersProps {
   hasActiveFilters: boolean;
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-  selectedBrand: string;
-  setSelectedBrand: (brand: string) => void;
+  selectedBrand: string[] | undefined;
+  setSelectedBrand: (brand: string[] | undefined) => void;
   selectedPriceRange: PriceRange;
   defaultPriceRange: PriceRange;
   setSelectedPriceRange: (range: PriceRange) => void;
@@ -60,14 +60,14 @@ export function ActiveFilters({
         </Button>
       )}
 
-      {selectedBrand !== "All" && (
+      {selectedBrand && selectedBrand.length > 0 && (
         <Button
           variant="secondary"
           size="sm"
           className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
-          onClick={() => setSelectedBrand("All")}
+          onClick={() => setSelectedBrand([])}
         >
-          {brands?.find((brand) => brand.slug === selectedBrand)?.name}
+          {brands?.find((brand) => selectedBrand.includes(brand.slug))?.name}
           <X className="h-3 w-3" />
         </Button>
       )}

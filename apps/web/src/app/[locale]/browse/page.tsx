@@ -23,7 +23,9 @@ export default function BrowsePage() {
   const initialCategory = searchParams.get("category") || "All";
   const initialQuery = searchParams.get("q") || "";
   const initialTab = searchParams.get("tab") || "grid";
-  const initialBrand = searchParams.get("brand") || "All";
+  const initialBrand = searchParams.get("brand")
+    ? searchParams.get("brand")?.split("+")
+    : [];
   const initialPage = Number(searchParams.get("page") || "1");
   const initialItemsPerPage = Number(searchParams.get("perPage") || "10");
   const initialSort = searchParams.get("sort") || "featured";
@@ -53,7 +55,7 @@ export default function BrowsePage() {
 
     if (searchQuery) params.search = searchQuery;
     if (selectedCategory !== "All") params.category = selectedCategory;
-    if (selectedBrand !== "All") params.brand = selectedBrand;
+    if (selectedBrand) params.brand = selectedBrand?.join("+");
     if (selectedPriceRange.min > 0)
       params.minPrice = selectedPriceRange.min.toString();
     if (selectedPriceRange.max < Infinity)
@@ -101,7 +103,8 @@ export default function BrowsePage() {
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (selectedCategory !== "All") count++;
-    if (selectedBrand !== "All") count++;
+    if (selectedBrand && selectedBrand.length > 0)
+      count += selectedBrand.length;
     if (selectedPriceRange !== PRICE_RANGES[0]) count++;
     if (searchQuery) count++;
     return count;
@@ -115,7 +118,9 @@ export default function BrowsePage() {
 
     if (searchQuery) urlParams.set("q", searchQuery);
     if (selectedCategory !== "All") urlParams.set("category", selectedCategory);
-    if (selectedBrand !== "All") urlParams.set("brand", selectedBrand);
+    console.log("##### — selectedBrand =>", selectedBrand);
+    if (selectedBrand && selectedBrand?.length > 0)
+      urlParams.set("brand", selectedBrand?.join("+"));
     if (sortOption !== "featured") urlParams.set("sort", sortOption);
     if (activeTab !== "grid") urlParams.set("tab", activeTab);
     if (currentPage !== 1) urlParams.set("page", currentPage.toString());
@@ -154,7 +159,7 @@ export default function BrowsePage() {
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
-    setSelectedBrand("All");
+    setSelectedBrand([]);
     setSelectedPriceRange(PRICE_RANGES[0]);
     setSortOption("featured");
     setCurrentPage(1);

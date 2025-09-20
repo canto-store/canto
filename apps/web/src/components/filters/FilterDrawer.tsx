@@ -19,8 +19,8 @@ interface FilterDrawerProps {
   onOpenChange: (open: boolean) => void;
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-  selectedBrand: string;
-  setSelectedBrand: (brand: string) => void;
+  selectedBrand: string[] | undefined;
+  setSelectedBrand: (brand: string[]) => void;
   selectedPriceRange: PriceRange;
   setSelectedPriceRange: (range: PriceRange) => void;
   searchQuery: string;
@@ -120,17 +120,22 @@ export function FilterDrawer({
                 </Button>
               )}
 
-              {selectedBrand !== "All" && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
-                  onClick={() => setSelectedBrand("All")}
-                >
-                  {selectedBrand}
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
+              {selectedBrand &&
+                selectedBrand.length > 0 &&
+                selectedBrand.map((brand) => (
+                  <Button
+                    key={brand}
+                    variant="secondary"
+                    size="sm"
+                    className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
+                    onClick={() =>
+                      setSelectedBrand(selectedBrand.filter((b) => b !== brand))
+                    }
+                  >
+                    {brands?.find((b) => b.slug === brand)?.name || brand}
+                    <X className="h-3 w-3" />
+                  </Button>
+                ))}
 
               {selectedPriceRange !== PRICE_RANGES[0] && (
                 <Button
@@ -197,16 +202,22 @@ export function FilterDrawer({
                   <Button
                     key={brand.slug}
                     variant={
-                      selectedBrand === brand.slug ? "default" : "outline"
+                      selectedBrand?.includes(brand.slug)
+                        ? "default"
+                        : "outline"
                     }
                     size="sm"
                     className={`text-xs font-medium sm:text-sm ${
-                      selectedBrand === brand.slug
+                      selectedBrand?.includes(brand.slug)
                         ? "bg-primary text-primary-foreground"
                         : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => {
-                      setSelectedBrand(brand.slug);
+                      setSelectedBrand(
+                        selectedBrand?.includes(brand.slug)
+                          ? selectedBrand.filter((b) => b !== brand.slug)
+                          : [...(selectedBrand ?? []), brand.slug],
+                      );
                     }}
                   >
                     {brand.name}

@@ -5,8 +5,8 @@ import { useBrands } from "@/lib/brand";
 interface FilterPanelProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-  selectedBrand: string;
-  setSelectedBrand: (brand: string) => void;
+  selectedBrand: string[] | undefined;
+  setSelectedBrand: (brand: string[] | undefined) => void;
   translations: {
     categories: string;
     brands: string;
@@ -83,11 +83,15 @@ export function FilterPanel({
                   <Button
                     key={brand.slug}
                     variant={
-                      selectedBrand === brand.slug ? "default" : "outline"
+                      selectedBrand?.includes(brand.slug)
+                        ? "default"
+                        : "outline"
                     }
                     size="sm"
                     className="text-sm"
-                    onClick={() => setSelectedBrand(brand.slug || "")}
+                    onClick={() =>
+                      setSelectedBrand([...(selectedBrand ?? []), brand.slug])
+                    }
                   >
                     {brand.name}
                   </Button>

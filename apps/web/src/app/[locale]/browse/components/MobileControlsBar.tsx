@@ -50,8 +50,8 @@ interface MobileControlsBarProps {
   setIsSortDrawerOpen: (open: boolean) => void;
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-  selectedBrand: string;
-  setSelectedBrand: (brand: string) => void;
+  selectedBrand: string[] | undefined;
+  setSelectedBrand: (brand: string[]) => void;
   selectedPriceRange: PriceRange;
   setSelectedPriceRange: (range: PriceRange) => void;
   searchQuery: string;

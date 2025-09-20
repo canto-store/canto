@@ -141,7 +141,7 @@ class ProductService {
     }
 
     if (categorySlug) where.category = { slug: categorySlug }
-    if (brandSlug) where.brand = { slug: brandSlug }
+    if (brandSlug) where.brand = { slug: { in: brandSlug.split('+') } }
     if (status) where.status = status as ProductStatus
     const variantFilters: Prisma.ProductVariantWhereInput[] = []
 
