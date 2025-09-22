@@ -112,13 +112,19 @@ export default function BrowsePage() {
 
   const hasActiveFilters = activeFiltersCount > 0;
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [currentPage]);
+
   // Update URL when filters or pagination change
   useEffect(() => {
     const urlParams = new URLSearchParams();
 
     if (searchQuery) urlParams.set("q", searchQuery);
     if (selectedCategory !== "All") urlParams.set("category", selectedCategory);
-    console.log("##### — selectedBrand =>", selectedBrand);
     if (selectedBrand && selectedBrand?.length > 0)
       urlParams.set("brand", selectedBrand?.join("+"));
     if (sortOption !== "featured") urlParams.set("sort", sortOption);
@@ -167,10 +173,6 @@ export default function BrowsePage() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
   };
 
   const handleItemsPerPageChange = (value: number) => {
