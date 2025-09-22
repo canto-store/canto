@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Search, X } from "lucide-react";
+import { ArrowLeft, Menu, Search, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,16 @@ import MobileDrawer from "./MobileDrawer";
 
 export function MobileHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   const handleNavigation = (href: string) => {
     router.push(href);
+  };
+
+  const onMenuOpen = () => {
+    setMenuOpen((prev) => !prev);
   };
 
   if (pathname === "/browse") {
@@ -91,7 +96,10 @@ export function MobileHeader() {
               : "translate-x-0 opacity-100"
           }`}
         >
-          <MobileDrawer />
+          <Button variant="ghost" size="icon" onClick={onMenuOpen}>
+            <Menu className="h-6 w-6" />
+          </Button>
+          <MobileDrawer open={menuOpen} onOpenChange={onMenuOpen} />
           <Image
             src="/logo.png"
             alt="Canto Store Logo"

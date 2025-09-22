@@ -6,11 +6,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
-  DrawerTrigger,
   DrawerFooter,
 } from "@/components/ui/drawer";
 import {
-  Menu,
   XIcon,
   SearchIcon,
   Heart,
@@ -26,7 +24,13 @@ import Image from "next/image";
 import { useAuthStore } from "@/stores/auth-store";
 import { useLogout } from "@/lib/auth";
 
-function MobileDrawer() {
+function MobileDrawer({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: () => void;
+}) {
   const router = useRouter();
   const { user } = useAuthStore();
   const { mutate: logout } = useLogout();
@@ -35,10 +39,7 @@ function MobileDrawer() {
   };
 
   return (
-    <Drawer direction="left">
-      <DrawerTrigger>
-        <Menu className="h-6 w-6" />
-      </DrawerTrigger>
+    <Drawer direction="left" open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader className="flex flex-row items-center justify-between border-b border-gray-500">
           <DrawerClose>
