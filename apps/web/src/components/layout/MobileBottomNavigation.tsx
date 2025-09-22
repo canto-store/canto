@@ -4,20 +4,12 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Home, Search, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import React from "react";
 
 export function MobileBottomNavigation() {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("header");
-  const [isRTL, setIsRTL] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsRTL(document.dir === "rtl");
-    }
-  }, []);
 
   const navigationItems = [
     {
@@ -62,9 +54,7 @@ export function MobileBottomNavigation() {
                 )}
               >
                 {item.icon}
-                <span className={cn("text-sm", isRTL ? "rtl" : "ltr")}>
-                  {item.label}
-                </span>
+                <span className="text-sm">{item.label}</span>
               </button>
             </li>
           ))}

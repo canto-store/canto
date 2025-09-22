@@ -55,7 +55,7 @@ export function usePWASetup() {
   const [isInstallable, setIsInstallable] = useState(false);
   const deviceOS = useDeviceOS();
   const isIOSDevice = deviceOS === "iOS";
-  const [isInstalled, setIsInstalled] = useState<boolean>(getIsInstalled());
+  const [isInstalled, setIsInstalled] = useState<boolean>(false);
 
   // Effect for checking if the app is already installed as a PWA
   useEffect(() => {
