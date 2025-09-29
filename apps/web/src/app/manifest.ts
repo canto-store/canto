@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     start_url: "/",
     scope: "/",
-    name: "Canto Store",
+    name: "Canto",
     short_name: "Canto",
     description: "Egyptian Marketplace",
     display: "standalone",

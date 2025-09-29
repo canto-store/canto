@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 export const metadata: Metadata = {
   title: {
     template: "%s - Canto",
-    default: "Canto - Egyptian Marketplace",
+    default: "Canto",
   },
   description:
     "Shop the latest trends in fashion, electronics, home goods, and more on Canto. Discover new arrivals, featured products, and best sellers with fast shipping and secure checkout.",
