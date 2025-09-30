@@ -128,7 +128,9 @@ function MobileProductView({ products }: { products: ProductByBrand[] }) {
               <Image
                 src={product.image}
                 alt={product.name}
-                className="h-16 w-16 rounded-md object-cover"
+                width={64}
+                height={64}
+                className="rounded-md object-cover"
               />
             </div>
 
