@@ -90,6 +90,10 @@ model Category {
   updated_at  DateTime  @updatedAt
   Product     Product[]
 
+  parentId    Int?       @map("parent_id")
+  parent      Category?  @relation("CategoryToSubcategories", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryToSubcategories")
+
   @@map("categories")
 }
 
