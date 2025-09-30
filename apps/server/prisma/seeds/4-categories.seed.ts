@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 
 export const name = 'categories'
-export const description = 'Seed for categories'
+export const description = 'Seed for 10 top-level categories + subcategories'
 
 export async function run(prisma: PrismaClient): Promise<void> {
-  const categories = await prisma.category.createMany({
+  const result = await prisma.category.createMany({
     data: [
       {
         name: "Men's Fashion",
@@ -79,5 +79,49 @@ export async function run(prisma: PrismaClient): Promise<void> {
     ],
   })
 
-  console.log(`Created ${categories.count} categories`)
+  console.log(`✅ Created ${result.count} top-level categories`)
+
+  const mensFashion = await prisma.category.findUnique({
+    where: { slug: 'mens-fashion' },
+  })
+  const womensFashion = await prisma.category.findUnique({
+    where: { slug: 'womens-fashion' },
+  })
+
+  if (mensFashion && womensFashion) {
+    await prisma.category.createMany({
+      data: [
+        {
+          name: 'Shirts',
+          slug: 'mens-shirts',
+          image: 'https://example.com/mens-shirts.png',
+          aspect: 'SQUARE',
+          parentId: mensFashion.id,
+        },
+        {
+          name: 'Trousers',
+          slug: 'mens-trousers',
+          image: 'https://example.com/mens-trousers.png',
+          aspect: 'SQUARE',
+          parentId: mensFashion.id,
+        },
+        {
+          name: 'Dresses',
+          slug: 'womens-dresses',
+          image: 'https://example.com/womens-dresses.png',
+          aspect: 'SQUARE',
+          parentId: womensFashion.id,
+        },
+        {
+          name: 'Shoes',
+          slug: 'womens-shoes',
+          image: 'https://example.com/womens-shoes.png',
+          aspect: 'SQUARE',
+          parentId: womensFashion.id,
+        },
+      ],
+    })
+
+    console.log(`✅ Created subcategories for Men's and Women's Fashion`)
+  }
 }
