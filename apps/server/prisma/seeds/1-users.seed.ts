@@ -1,15 +1,17 @@
-
 import { PrismaClient, UserRole } from '@prisma/client'
+import Bcrypt from '../../src/utils/bcrypt'
 
 export const name = 'users'
 export const description = 'Seed for users'
 
 export async function run(prisma: PrismaClient): Promise<void> {
+  const hashed = await Bcrypt.hash('password123')
+
   const admin = await prisma.user.create({
     data: {
       name: 'Admin User',
       email: 'admin@example.com',
-      password: 'hashedpassword123',
+      password: hashed,
       phone_number: '+201000000001',
       role: [UserRole.ADMIN],
     },
@@ -19,7 +21,7 @@ export async function run(prisma: PrismaClient): Promise<void> {
     data: {
       name: 'Seller User',
       email: 'seller@example.com',
-      password: 'hashedpassword123',
+      password: hashed,
       phone_number: '+201000000002',
       role: [UserRole.SELLER],
     },
@@ -29,7 +31,7 @@ export async function run(prisma: PrismaClient): Promise<void> {
     data: {
       name: 'Customer User',
       email: 'customer@example.com',
-      password: 'hashedpassword123',
+      password: hashed,
       phone_number: '+201000000003',
       role: [UserRole.USER],
     },
