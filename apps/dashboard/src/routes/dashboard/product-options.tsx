@@ -3,7 +3,10 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { ArrowUpDown, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/data-table'
-import { useProductOptions } from '@/hooks/use-data'
+import { useCreateProductOption, useProductOptions } from '@/hooks/use-data'
+import { Input } from '@/components/ui/input'
+import { useState } from 'react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 type OptionValue = {
   id: number
@@ -22,6 +25,15 @@ export const Route = createFileRoute('/dashboard/product-options')({
 
 function ProductOptionsPage() {
   const { data: options = [] } = useProductOptions()
+
+  const [newValue, setNewValue] = useState('')
+  const [success, setSuccess] = useState<string | null>(null)
+  const createValue = useCreateProductOption()
+
+  const flash = (message: string) => {
+    setSuccess(message)
+    setTimeout(() => setSuccess(null), 2000)
+  }
 
   const optionColumns: ColumnDef<ProductOption>[] = [
     {
@@ -59,9 +71,37 @@ function ProductOptionsPage() {
 
   return (
     <div className="space-y-6">
+      {success && (
+        <Alert>
+          <AlertTitle>Success</AlertTitle>
+          <AlertDescription>{success}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
         <h1 className="text-3xl font-bold">Product Options</h1>
         <p className="text-muted-foreground">Manage product options</p>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          <Input
+            placeholder="New value"
+            value={newValue}
+            onChange={e => setNewValue(e.target.value)}
+            className="w-full sm:w-56"
+          />
+          <Button
+            className="w-full sm:w-auto"
+            disabled={!newValue.trim() || createValue.isPending}
+            onClick={async () => {
+              if (!newValue.trim()) return
+              await createValue.mutateAsync({
+                name: newValue.trim(),
+              })
+              setNewValue('')
+              flash('Value added')
+            }}
+          >
+            Add value
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-3">

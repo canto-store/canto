@@ -28,7 +28,7 @@ export default function Home() {
           src="https://zdafrb7d2x.ufs.sh/f/aSLZIlWQkFimhqIo98vnb96RaXBYDdPWv37yFwM4pKkIchN5"
           alt="Hero"
           fill
-          className="object-cover"
+          className="min-md:object-contain"
           priority
         />
       </section>

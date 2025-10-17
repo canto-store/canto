@@ -80,3 +80,13 @@ export function useCreateProductOptionValue() {
     },
   })
 }
+
+export function useCreateProductOption() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: api.createProductOption,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-options'] })
+    },
+  })
+}

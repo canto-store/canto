@@ -40,6 +40,12 @@ router.get(
 
 router.get('/options', productController.getOptions.bind(productController))
 router.post(
+  '/options',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN),
+  productController.createOption.bind(productController)
+)
+router.post(
   '/options/values',
   authMiddleware.checkAuth.bind(authMiddleware),
   authMiddleware.checkRole(UserRole.ADMIN),

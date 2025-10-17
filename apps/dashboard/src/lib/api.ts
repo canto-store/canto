@@ -93,4 +93,8 @@ export const api = {
     const response = await apiClient.post('/product/options/values', data)
     return response.data
   },
+  createProductOption: async (data: { name: string }) => {
+    const response = await apiClient.post('/product/options', data)
+    return response.data
+  },
 }
