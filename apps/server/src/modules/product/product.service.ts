@@ -612,7 +612,7 @@ class ProductService {
         categoryId: productRecord.categoryId,
         id: { not: productRecord.id },
       },
-      take: 4,
+      take: 5,
       include: { brand: true, variants: { include: { images: true } } },
     })
 
@@ -624,16 +624,7 @@ class ProductService {
         slug: related.slug,
         image: related.variants[0]?.images[0]?.url ?? '',
         brand: { name: related.brand.name, slug: related.brand.slug },
-        price_range: {
-          original: {
-            min_price: Math.min(...relatedPrices),
-            max_price: Math.max(...relatedPrices),
-          },
-          discounted: {
-            min_price: Math.min(...relatedPrices),
-            max_price: Math.max(...relatedPrices),
-          },
-        },
+        price: Math.min(...relatedPrices),
       }
     })
 
