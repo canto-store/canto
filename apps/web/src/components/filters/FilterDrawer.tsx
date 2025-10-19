@@ -115,7 +115,8 @@ export function FilterDrawer({
                   className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
                   onClick={() => setSelectedCategory("All")}
                 >
-                  {selectedCategory}
+                  {categories?.find((c) => c.slug === selectedCategory)?.name ||
+                    selectedCategory}
                   <X className="h-3 w-3" />
                 </Button>
               )}
@@ -153,7 +154,7 @@ export function FilterDrawer({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium text-gray-800"
+                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
                   onClick={() => setSearchQuery("")}
                 >
                   &quot;{searchQuery}&quot;

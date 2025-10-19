@@ -21,7 +21,6 @@ export default function BrowsePage() {
 
   // Initialize state from URL params
   const initialCategory = searchParams.get("category") || "All";
-  const initialQuery = searchParams.get("q") || "";
   const initialTab = searchParams.get("tab") || "grid";
   const initialBrand = searchParams.get("brand")
     ? searchParams.get("brand")?.split("+")
@@ -31,7 +30,7 @@ export default function BrowsePage() {
   const initialSort = searchParams.get("sort") || "featured";
 
   // State
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedBrand, setSelectedBrand] = useState(initialBrand);
   const [selectedPriceRange, setSelectedPriceRange] = useState(PRICE_RANGES[0]);
