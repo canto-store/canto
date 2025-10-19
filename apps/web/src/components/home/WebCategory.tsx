@@ -12,30 +12,24 @@ export function WebCategory({ categories }: { categories: Category[] }) {
     <section>
       <div className="container mx-auto flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4">
-          {rectangleCategories.slice(0, 2).map((category, index) => (
+          {rectangleCategories.slice(0, 2).map((category) => (
             <CategoryCard
               key={category.name}
               category={category}
-              index={index}
               variant="rectangle"
             />
           ))}
         </div>
         <div className="grid grid-cols-6 gap-4">
-          {squareCategories.map((category, index) => (
-            <CategoryCard
-              key={category.name}
-              category={category}
-              index={index}
-            />
+          {squareCategories.map((category) => (
+            <CategoryCard key={category.name} category={category} />
           ))}
         </div>
         <div className="grid grid-cols-2 gap-4">
-          {rectangleCategories.slice(2).map((category, index) => (
+          {rectangleCategories.slice(2).map((category) => (
             <CategoryCard
               key={category.name}
               category={category}
-              index={index}
               variant="rectangle"
             />
           ))}

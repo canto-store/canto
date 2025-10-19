@@ -5,13 +5,11 @@ import Image from "next/image";
 
 interface CategoryCardProps {
   category: Category;
-  index?: number;
   variant?: "square" | "rectangle";
 }
 
 export function CategoryCard({
   category,
-  index = 0,
   variant = "square",
 }: CategoryCardProps) {
   const router = useRouter();
@@ -33,8 +31,8 @@ export function CategoryCard({
         className="object-fit h-full w-full rounded-lg"
         width={variant === "rectangle" ? 400 : 300}
         height={variant === "rectangle" ? 225 : 300}
-        priority={index < 3}
-        loading={index < 3 ? "eager" : "lazy"}
+        priority={true}
+        loading="eager"
         quality={80}
       />
     </button>
