@@ -46,6 +46,16 @@ export function SearchBar({
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.onfocus = () => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+      };
+    }
+  }, []);
+
   const router = useRouter();
   // Update internal state when value prop changes
   useEffect(() => {
