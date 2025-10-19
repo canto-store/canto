@@ -89,11 +89,12 @@ export function SearchBar({
   }, []);
 
   const debouncedSearch = useCallback(
-    (value: string) => {
+    (input: string) => {
+      if (value === input) return;
       const handler = setTimeout(() => {
-        fetchSuggestions(value);
+        fetchSuggestions(input);
         if (onSearch) {
-          onSearch(value);
+          onSearch(input);
         }
       }, debounceMs);
 
