@@ -42,9 +42,8 @@ export class OrderController {
           order,
         },
       })
-    } catch {
-      const appError = new AppError('Failed to create order', 500, false)
-      next(appError)
+    } catch (error) {
+      next(error)
     }
   }
 }

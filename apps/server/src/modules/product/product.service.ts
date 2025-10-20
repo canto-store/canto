@@ -1268,6 +1268,14 @@ class ProductService {
         })) || [],
     }
   }
+
+  async isProductVariantInStock(productVariantId: number) {
+    const variant = await this.prisma.productVariant.findUnique({
+      where: { id: productVariantId },
+      select: { stock: true },
+    })
+    return variant?.stock > 0
+  }
 }
 
 export default ProductService

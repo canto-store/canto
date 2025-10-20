@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./api";
 import { Cart } from "@canto/types/cart";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 interface AddToCartInput {
   variantId: number;
   quantity: number;
@@ -33,10 +34,16 @@ export const useAddToCart = () => {
         .then((res) => {
           toast.success("Added to cart");
           queryClient.invalidateQueries({ queryKey: ["cart"] });
-          res.data;
+          return res.data;
         })
-        .catch(() => {
-          toast.error("Failed to add to cart");
+        .catch((err) => {
+          const message =
+            err instanceof AxiosError &&
+            err?.response?.status != null &&
+            err.response.status < 500
+              ? err.message
+              : "Failed to add to cart";
+          toast.error(message);
         });
     },
   });

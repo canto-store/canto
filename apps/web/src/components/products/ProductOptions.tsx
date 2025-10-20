@@ -5,13 +5,11 @@ import { ProductVariant } from "@/types/product";
 interface ProductOptionsProps {
   variants: ProductVariant[];
   onVariantChange: (variant: ProductVariant | undefined) => void;
-  onColorChange: (color: string | null) => void;
 }
 
 export default function ProductOptions({
   variants,
   onVariantChange,
-  onColorChange,
 }: ProductOptionsProps) {
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string>
@@ -24,6 +22,18 @@ export default function ProductOptions({
       Object.keys(variant.options).forEach((key) => types.add(key));
     });
     return Array.from(types);
+  }, [variants]);
+
+  // Create a map of option combinations to variants for quick lookup
+  const variantsByOptions = useMemo(() => {
+    const map = new Map<string, ProductVariant>();
+    variants.forEach((variant) => {
+      // Create a key from all option values (sorted for consistency)
+      const optionKeys = Object.keys(variant.options).sort();
+      const key = optionKeys.map((k) => variant.options[k]).join("|");
+      map.set(key, variant);
+    });
+    return map;
   }, [variants]);
 
   // Get available values for each option type based on current selection
@@ -41,6 +51,38 @@ export default function ProductOptions({
     });
 
     return Array.from(availableValues);
+  };
+
+  // Check if an option value would result in an out-of-stock variant
+  const isOptionDisabled = (optionType: string, optionValue: string) => {
+    // Create a potential selection with this option
+    const potentialSelection = {
+      ...selectedOptions,
+      [optionType]: optionValue,
+    };
+
+    // Find variants that match this potential selection
+    const matchingVariants = variants.filter((variant) =>
+      Object.entries(potentialSelection).every(
+        ([key, value]) => variant.options[key] === value,
+      ),
+    );
+
+    // If we have all required options selected, check if the exact variant is out of stock
+    const allOptionsSelected = requiredOptionTypes.every(
+      (type) => potentialSelection[type],
+    );
+    if (allOptionsSelected) {
+      return (
+        matchingVariants.length > 0 &&
+        matchingVariants.every((v) => v.stock === 0)
+      );
+    }
+
+    // If not all options are selected, only disable if ALL possible variants with this option are out of stock
+    // and there are actually variants that match the current partial selection
+    if (matchingVariants.length === 0) return false;
+    return matchingVariants.every((v) => v.stock === 0);
   };
 
   const handleOptionSelect = (optionName: string, value: string) => {
@@ -61,11 +103,10 @@ export default function ProductOptions({
     );
 
     if (allOptionsSelected) {
-      const matchingVariant = variants.find((variant) =>
-        Object.entries(newOptions).every(
-          ([key, value]) => variant.options[key] === value,
-        ),
-      );
+      // Use the map for faster variant lookup
+      const optionKeys = requiredOptionTypes.sort();
+      const key = optionKeys.map((k) => newOptions[k]).join("|");
+      const matchingVariant = variantsByOptions.get(key);
       onVariantChange(matchingVariant || undefined);
     } else {
       onVariantChange(undefined);
@@ -80,60 +121,28 @@ export default function ProductOptions({
         return (
           <div key={optionName} className="mb-4">
             <h3 className="mb-2 font-medium">{optionName}</h3>
-            {optionName === "Size" ? (
-              <div className="flex flex-wrap gap-2">
-                {availableValues.map((size) => (
-                  <Button
-                    key={size}
-                    variant={
-                      selectedOptions.Size === size ? "default" : "outline"
-                    }
-                    size="sm"
-                    className="h-auto px-3 py-1.5 text-sm"
-                    onClick={() => handleOptionSelect("Size", size)}
-                  >
-                    {size}
-                  </Button>
-                ))}
-              </div>
-            ) : optionName === "Color" ? (
-              <div className="flex flex-wrap gap-2 md:gap-3">
-                {availableValues.map((color) => (
-                  <button
-                    key={color}
-                    className={`h-6 w-6 rounded-full border md:h-8 md:w-8 ${
-                      selectedOptions.Color === color
-                        ? "ring-2 ring-black ring-offset-1 md:ring-offset-2"
-                        : ""
-                    }`}
-                    style={{ backgroundColor: color.toLowerCase() }}
-                    onClick={() => {
-                      handleOptionSelect("Color", color);
-                      onColorChange(color);
-                    }}
-                    aria-label={`Select ${color} color`}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {availableValues.map((value) => (
-                  <Button
-                    key={value}
-                    variant={
-                      selectedOptions[optionName] === value
-                        ? "default"
-                        : "outline"
-                    }
-                    size="sm"
-                    className="h-auto px-3 py-1.5 text-sm"
-                    onClick={() => handleOptionSelect(optionName, value)}
-                  >
-                    {value}
-                  </Button>
-                ))}
-              </div>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {availableValues.map((value) => (
+                <Button
+                  key={value}
+                  variant={
+                    selectedOptions[optionName] === value
+                      ? "default"
+                      : "outline"
+                  }
+                  size="sm"
+                  className={`h-auto px-3 py-1.5 text-sm ${
+                    isOptionDisabled(optionName, value)
+                      ? "cursor-not-allowed opacity-50"
+                      : ""
+                  }`}
+                  onClick={() => handleOptionSelect(optionName, value)}
+                  disabled={isOptionDisabled(optionName, value)}
+                >
+                  {value}
+                </Button>
+              ))}
+            </div>
           </div>
         );
       })}

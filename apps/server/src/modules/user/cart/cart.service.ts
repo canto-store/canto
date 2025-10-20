@@ -1,8 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 import AppError from '../../../utils/appError'
 import { Cart } from '@canto/types/cart'
+import ProductService from '../../product/product.service'
 class CartService {
   private readonly prisma = new PrismaClient()
+  private readonly productService: ProductService
+
+  constructor() {
+    this.productService = new ProductService()
+  }
 
   private async getOrCreateCart(userId: number) {
     const user = await this.prisma.user.findUnique({
@@ -52,7 +58,7 @@ class CartService {
           slug: item.variant.product.slug,
           price: item.variant.price,
           image:
-            item.variant.images.find(img => img.url).url ??
+            item.variant.images.find(img => img.url)?.url ??
             '/placeholder-image.jpg',
           stock: item.variant.stock,
           variantId: item.variant.id,
@@ -75,23 +81,32 @@ class CartService {
       where: { cartId: cart.id },
     })
   }
-  async addItem(userId: number, variantId: number, quantity: number) {
-    const cart = await this.getOrCreateCart(userId)
-    if (!cart) throw new AppError('Cart not found', 404)
+  async getOrCreateCartItem(cartId: number, variantId: number) {
     const item = await this.prisma.cartItem.findFirst({
-      where: { cartId: cart.id, variantId },
+      where: { cartId, variantId },
     })
     if (!item)
       return await this.prisma.cartItem.create({
-        data: { cartId: cart.id, variantId, quantity },
+        data: { cartId, variantId, quantity: 0 },
       })
+    return item
+  }
 
+  async addItem(userId: number, variantId: number, quantity: number) {
     if (quantity == null || quantity < 0)
       throw new AppError('quantity must be ≥ 0', 400)
+    const inStock = await this.productService.isProductVariantInStock(variantId)
+
+    if (!inStock)
+      throw new AppError('Cannot add out-of-stock item to cart', 400)
+
+    const cart = await this.getOrCreateCart(userId)
+    const item = await this.getOrCreateCartItem(cart.id, variantId)
     if (quantity === 0) {
       await this.prisma.cartItem.delete({ where: { id: item.id } })
       return
     }
+
     return this.prisma.cartItem.update({
       where: { id: item.id },
       data: { quantity },

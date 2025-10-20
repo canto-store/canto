@@ -29,8 +29,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     ProductVariant | undefined
   >(undefined);
 
-  const [_, setSelectedColor] = useState<string | null>(null);
-
   const { mutateAsync: addToCart } = useAddToCart();
   const { user } = useAuthStore();
 
@@ -40,16 +38,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         (v) => v.id === product.default_variant_id,
       );
       setSelectedVariant(defaultVariant);
-
-      // Set the default color from the default variant
-      if (defaultVariant?.options.Color) {
-        setSelectedColor(defaultVariant.options.Color);
-      } else if (
-        product.variants.length > 0 &&
-        product.variants[0].options.Color
-      ) {
-        setSelectedColor(product.variants[0].options.Color);
-      }
     }
   }, [product]);
 
@@ -154,7 +142,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <ProductOptions
           variants={product.variants}
           onVariantChange={setSelectedVariant}
-          onColorChange={setSelectedColor}
         />
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
           <ProductQuantitySelector
