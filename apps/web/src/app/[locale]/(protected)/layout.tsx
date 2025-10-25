@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtVerify } from "jose";
+import { isUser } from "@/lib/utils";
+import { User } from "@/types/user";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
@@ -19,12 +21,8 @@ async function isAuthenticated(): Promise<boolean> {
   if (!token || !refreshToken) return false;
 
   return jwtVerify(token, secret)
-    .then(() => true)
-    .catch(() =>
-      jwtVerify(refreshToken, secret)
-        .then(() => true)
-        .catch(() => false),
-    );
+    .then((res) => isUser((res.payload as User).role))
+    .catch(() => false);
 }
 
 export default async function ProtectedLayout({
