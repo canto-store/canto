@@ -9,8 +9,6 @@ import { CartItem } from "@canto/types/cart";
 import { cn, formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
-import { useAuthStore } from "@/stores/auth-store";
-import { toast } from "sonner";
 
 interface CartItemProps {
   item: CartItem;
@@ -30,25 +28,18 @@ export function CartItemComponent({
   const isRTL = locale === "ar";
   const { mutate: deleteFromCart } = useDeleteFromCart();
   const { mutateAsync: addToCart } = useAddToCart();
-  const { user } = useAuthStore();
   const router = useRouter();
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return;
-    if (user) {
-      addToCart({
-        variantId: item.variantId,
-        quantity: newQuantity,
-      });
-    } else {
-      toast("Please login to modify your cart");
-    }
+    addToCart({
+      variantId: item.variantId,
+      quantity: newQuantity,
+    });
   };
 
   const handleRemove = async () => {
-    if (user) {
-      deleteFromCart({ variantId: item.variantId });
-    }
+    deleteFromCart({ variantId: item.variantId });
   };
 
   const handleProductClick = () => {

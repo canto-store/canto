@@ -84,9 +84,15 @@ export function filterProducts(
 export function getUserRole(
   role: string[] | undefined,
 ): "USER" | "SELLER" | "GUEST" {
-  if (!role || role.length === 0) return "GUEST";
-  if (role.includes("SELLER")) return "SELLER";
-  return "USER";
+  // order of precedence: SELLER > USER > GUEST
+  if (role?.includes("SELLER")) return "SELLER";
+  if (role?.includes("USER")) return "USER";
+  return "GUEST";
+}
+
+export function isUser(role: string[] | undefined): boolean {
+  const userRole = getUserRole(role);
+  return userRole === "USER" || userRole === "SELLER";
 }
 
 export function parseApiError(error: unknown): string {

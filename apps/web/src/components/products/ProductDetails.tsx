@@ -16,9 +16,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useAuthStore } from "@/stores/auth-store";
 import { HeartButton } from "../wishlist/HeartButton";
-import { toast } from "sonner";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
@@ -30,7 +28,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   >(undefined);
 
   const { mutateAsync: addToCart } = useAddToCart();
-  const { user } = useAuthStore();
 
   useEffect(() => {
     if (product.default_variant_id) {
@@ -43,14 +40,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleAddToCart = async () => {
     if (!selectedVariant) return;
-    if (user) {
-      await addToCart({
-        variantId: selectedVariant.id,
-        quantity,
-      });
-    } else {
-      toast("Please login to add items to your cart");
-    }
+    await addToCart({
+      variantId: selectedVariant.id,
+      quantity,
+    });
   };
 
   const images = useMemo(() => {

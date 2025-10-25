@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/stores/auth-store";
 import {
   ArrowLeftRight,
   Bell,
@@ -19,11 +18,11 @@ import { InstallPWA } from "@/components/pwa/InstallPWA";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { useLogout } from "@/lib/auth";
+import { useLogout, useUserQuery } from "@/lib/auth";
 import { getUserRole } from "@/lib/utils";
 
 export default function Page() {
-  const { user } = useAuthStore();
+  const { data: user } = useUserQuery();
   const role = getUserRole(user?.role);
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
@@ -42,7 +41,7 @@ export default function Page() {
   if (isMobile) {
     return (
       <div className="mt-2 flex min-h-screen flex-col gap-2">
-        {user ? (
+        {user && role !== "GUEST" ? (
           <h1 className="text-2xl font-bold">Hello, {user?.name}</h1>
         ) : (
           <div className="bg-primary-foreground flex flex-col gap-2 rounded-lg p-5">
@@ -56,7 +55,7 @@ export default function Page() {
             </Button>
           </div>
         )}
-        {Boolean(user) && (
+        {Boolean(user) && role !== "GUEST" && (
           <>
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -130,7 +129,7 @@ export default function Page() {
           </Button>
           <InstallPWA variant="menu" className="p-0" />
         </div>
-        {Boolean(user) && (
+        {Boolean(user) && role !== "GUEST" && (
           <Button variant="ghost" onClick={() => logout()} className="mt-4">
             <LogOut className="text-orange-red mr-2 h-5 w-5" />
             <p className="text-orange-red text-lg">Logout</p>

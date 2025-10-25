@@ -1,20 +1,24 @@
 import { useTranslations } from "next-intl";
 import { BrandForm } from "@/components/sell/BrandForm";
-import { useAuthStore } from "@/stores/auth-store";
+
 import { useRouter } from "@/i18n/navigation";
 import { useEffect } from "react";
 import Spinner from "../common/Spinner";
+import { useUserQuery } from "@/lib/auth";
+import { isUser } from "@/lib/utils";
+
 export default function BrandPage() {
   const t = useTranslations("sell");
 
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { data: user, isLoading } = useUserQuery();
+  const isAuthenticated = isUser(user?.role);
   const router = useRouter();
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
       router.replace("/login");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [user, isLoading, router]);
 
   if (!isLoading && isAuthenticated)
     return (

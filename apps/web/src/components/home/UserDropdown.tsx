@@ -7,8 +7,8 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
-import { useLogout } from "@/lib/auth";
-import { useAuthStore } from "@/stores/auth-store";
+import { useLogout, useUserQuery } from "@/lib/auth";
+import { getUserRole } from "@/lib/utils";
 
 export function UserDropdown() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -18,8 +18,9 @@ export function UserDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { data: user } = useUserQuery();
   const { mutateAsync: logoutMutation, isPending } = useLogout();
+  const role = getUserRole(user?.role);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -47,7 +48,7 @@ export function UserDropdown() {
   };
 
   const handleButtonClick = () => {
-    if (!user) {
+    if (role === "GUEST" || !user) {
       setLoginModalOpen(true);
       return;
     }
@@ -92,13 +93,13 @@ export function UserDropdown() {
         <button
           className="text-primary hover:bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:cursor-pointer"
           onClick={handleButtonClick}
-          title={user ? (user?.name as string) : t("login")}
+          title={user && role !== "GUEST" ? (user?.name as string) : t("login")}
         >
           <CircleUser className="h-6 w-6" />
         </button>
 
         {/* User Dropdown - Only shown when user is logged in and dropdown is open */}
-        {user && userDropdownOpen && (
+        {user && role !== "GUEST" && userDropdownOpen && (
           <div
             onMouseLeave={handleMouseLeave}
             className={`bg-global ring-opacity-5 ring-primary absolute mt-2 w-56 rounded-md py-2 shadow-lg ring-1 ${isRTL ? "left-5" : "right-5"}`}

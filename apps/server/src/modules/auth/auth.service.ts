@@ -9,6 +9,20 @@ import { AuthRequest } from '../../middlewares/auth.middleware'
 class AuthService {
   private readonly prisma = new PrismaClient()
 
+  async registerGuest(res: Response, next: NextFunction) {
+    const guest = await this.prisma.user.create({
+      data: {
+        role: [UserRole.GUEST],
+      },
+    })
+    this.setAuthCookies(
+      res,
+      signJwt({ id: guest.id, role: guest.role }),
+      await this.createRefreshToken(guest.id, guest.role)
+    )
+    next()
+  }
+
   async register(dto: CreateUserDto) {
     const exists = await this.prisma.user.findUnique({
       where: { email: dto.email },
@@ -16,7 +30,8 @@ class AuthService {
     if (exists) throw new AppError('User already exists', 409)
 
     dto.password = await Bcrypt.hash(dto.password)
-    const user = await this.prisma.user.create({
+    const user = await this.prisma.user.update({
+      where: { id: dto.guestId },
       data: { ...dto, role: [UserRole.USER] },
     })
     const { password: _, ...rest } = user
@@ -32,6 +47,32 @@ class AuthService {
     const valid = await Bcrypt.compare(dto.password, user.password)
     if (!valid) throw new AppError('Invalid credentials', 401)
 
+    const guestCart = await this.prisma.cart.findUnique({
+      where: { userId: dto.guestId },
+    })
+    const userCart = await this.prisma.cart.findUnique({
+      where: { userId: user.id },
+    })
+    if (guestCart && userCart) {
+      await this.prisma.cartItem.updateMany({
+        where: { cartId: guestCart.id },
+        data: { cartId: userCart.id },
+      })
+      await this.prisma.cart.delete({
+        where: { id: guestCart.id },
+      })
+    } else if (guestCart && !userCart) {
+      await this.prisma.cart.update({
+        where: { id: guestCart.id },
+        data: { userId: user.id },
+      })
+      await this.prisma.cart.delete({
+        where: { id: guestCart.id },
+      })
+    }
+    await this.prisma.user.delete({
+      where: { id: dto.guestId, role: { has: UserRole.GUEST } },
+    })
     await this.prisma.user.update({
       where: { id: user.id },
       data: { last_login: new Date() },
@@ -53,7 +94,7 @@ class AuthService {
     return user
   }
 
-  async createRefreshToken(id: number, role: UserRole[], name: string) {
+  async createRefreshToken(id: number, role: UserRole[], name?: string) {
     const token = signRefreshToken({ id, role, name })
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     await this.prisma.refreshToken.create({ data: { token, expiresAt } })
@@ -106,6 +147,7 @@ class AuthService {
       })
       .status(200)
   }
+
   async rotateTokens(
     req: AuthRequest,
     res: Response,

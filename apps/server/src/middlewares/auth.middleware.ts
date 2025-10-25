@@ -15,7 +15,7 @@ class AuthMiddleware {
     const refreshToken = req.cookies.refreshToken
 
     if (!token && !refreshToken) {
-      return res.status(401).json({ message: 'Authentication required' })
+      await this.authService.registerGuest(res, next)
     }
 
     try {

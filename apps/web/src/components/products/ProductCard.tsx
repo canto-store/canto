@@ -8,8 +8,6 @@ import Image from "next/image";
 import { useAddToCart } from "@/lib/cart";
 import { ProductSummary } from "@canto/types/product";
 import { BsCartPlus, BsEye } from "react-icons/bs";
-import { useAuthStore } from "@/stores/auth-store";
-import { toast } from "sonner";
 
 interface ProductCardProps {
   product: ProductSummary;
@@ -27,17 +25,12 @@ export function ProductCard({
   const isRTL = locale === "ar";
 
   const { mutateAsync: addToCart } = useAddToCart();
-  const { user } = useAuthStore();
 
   const handleAddToCart = (product: ProductSummary) => {
-    if (user) {
-      addToCart({
-        variantId: product.default_variant_id!,
-        quantity: 1,
-      });
-    } else {
-      toast("Please login to add items to your cart");
-    }
+    addToCart({
+      variantId: product.default_variant_id!,
+      quantity: 1,
+    });
   };
 
   const handleProductClick = (product: ProductSummary) => {

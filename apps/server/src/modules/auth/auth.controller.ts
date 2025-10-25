@@ -7,9 +7,10 @@ import { AuthRequest } from '../../middlewares/auth.middleware'
 class AuthController {
   private readonly authService = new AuthService()
 
-  public async register(req: Request, res: Response, next: NextFunction) {
+  public async register(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const dto: CreateUserDto = req.body
+      dto.guestId = req.user.id
       const user = await this.authService.register(dto)
       const token = signJwt({
         id: user.id,
@@ -28,9 +29,10 @@ class AuthController {
     }
   }
 
-  public async login(req: Request, res: Response, next: NextFunction) {
+  public async login(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const dto: LoginDto = req.body
+      dto.guestId = req.user.id
       const user = await this.authService.login(dto)
       const token = signJwt({
         id: user.id,

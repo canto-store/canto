@@ -3,12 +3,12 @@
 import { Suspense, useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, isUser } from "@/lib/utils";
 import { useGetWishlist, useToggleWishlistItem } from "@/lib/wishlist";
 import { toast } from "sonner";
-import { useAuthStore } from "@/stores/auth-store";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
+import { useUserQuery } from "@/lib/auth";
 
 interface HeartButtonProps {
   productId: number;
@@ -20,7 +20,8 @@ export function HeartButton({ productId, className }: HeartButtonProps) {
   const [isActive, setIsActive] = useState(false);
   const { mutate: toggleWishlist, isPending } = useToggleWishlistItem();
   const { data } = useGetWishlist();
-  const { isAuthenticated } = useAuthStore();
+  const { data: user } = useUserQuery();
+  const isAuthenticated = isUser(user?.role);
   const router = useRouter();
 
   const handleToggleWishlist = () => {

@@ -14,6 +14,7 @@ export type User = {
 }
 
 export type CreateUserDto = {
+  guestId: number
   name: string
   email: string
   password: string
@@ -21,6 +22,7 @@ export type CreateUserDto = {
 }
 
 export type LoginDto = {
+  guestId: number
   email: string
   password: string
   role: UserRole
