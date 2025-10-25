@@ -33,6 +33,7 @@ enum ActivityType {
 }
 
 enum UserRole {
+  GUEST
   USER
   SELLER
   ADMIN
@@ -40,26 +41,26 @@ enum UserRole {
 
 model User {
   id             Int         @id @default(autoincrement())
-  name           String
-  email          String      @unique
-  password       String
-  email_verified Boolean     @default(true)
-  phone_number   String
+  name           String?
+  email          String?     @unique
+  password       String?
+  email_verified Boolean     @default(false)
+  phone_number   String?     @unique
   balance        Float       @default(0)
   Address        Address[]
   Cart           Cart?
   Order          Order[]
   brands         Brand[]
   sales          OrderItem[]
-  role           UserRole[]  @default([USER])
+  role           UserRole[]  @default([GUEST])
   Activity       Activity[]
   ErrorLog       ErrorLog[]
+  Wishlist       Wishlist[]
   last_login     DateTime?
   created_at     DateTime    @default(now())
   updated_at     DateTime    @updatedAt
 
   @@map("users")
-  Wishlist Wishlist[]
 }
 
 model Brand {
