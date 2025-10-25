@@ -21,27 +21,8 @@ class AuthController {
         user.role,
         user.name
       )
-      res
-        .cookie('token', token, {
-          ...(process.env.NODE_ENV === 'production' && {
-            domain: process.env.DOMAIN,
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 1000 * 60 * 60,
-        })
-        .cookie('refreshToken', refreshToken, {
-          ...(process.env.NODE_ENV === 'production' && {
-            domain: process.env.DOMAIN,
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        })
-        .status(201)
-        .json(user)
+      this.authService.setAuthCookies(res, token, refreshToken)
+      res.status(201).json(user)
     } catch (err) {
       next(err)
     }
@@ -61,27 +42,8 @@ class AuthController {
         user.role,
         user.name
       )
-      res
-        .cookie('token', token, {
-          ...(process.env.NODE_ENV === 'production' && {
-            domain: process.env.DOMAIN,
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 1000 * 60 * 60,
-        })
-        .cookie('refreshToken', refreshToken, {
-          ...(process.env.NODE_ENV === 'production' && {
-            domain: process.env.DOMAIN,
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        })
-        .status(200)
-        .json(user)
+      this.authService.setAuthCookies(res, token, refreshToken)
+      res.status(200).json(user)
     } catch (err) {
       next(err)
     }
@@ -94,37 +56,6 @@ class AuthController {
         role: req.user.role,
         name: req.user.name,
       })
-    } catch (err) {
-      next(err)
-    }
-  }
-
-  public async refresh(req: Request, res: Response, next: NextFunction) {
-    try {
-      const old = req.cookies.refreshToken as string
-      const { accessToken, refreshToken } =
-        await this.authService.rotateRefresh(old)
-      res
-        .cookie('token', accessToken, {
-          ...(process.env.NODE_ENV === 'production' && {
-            domain: process.env.DOMAIN,
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 1000 * 60 * 60, // 1 hour
-        })
-        .cookie('refreshToken', refreshToken, {
-          ...(process.env.NODE_ENV === 'production' && {
-            domain: process.env.DOMAIN,
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        })
-        .status(200)
-        .json()
     } catch (err) {
       next(err)
     }

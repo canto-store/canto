@@ -3,6 +3,8 @@ import { CreateUserDto, LoginDto } from './auth.types'
 import { signJwt, signRefreshToken, verifyJwt } from '../../utils/jwt'
 import Bcrypt from '../../utils/bcrypt'
 import AppError from '../../utils/appError'
+import { NextFunction, Response } from 'express'
+import { AuthRequest } from '../../middlewares/auth.middleware'
 
 class AuthService {
   private readonly prisma = new PrismaClient()
@@ -58,34 +60,6 @@ class AuthService {
     return token
   }
 
-  async rotateRefresh(oldToken: string) {
-    const verifiedUser = verifyJwt<{
-      id: number
-      role: UserRole[]
-      name: string
-    }>(oldToken)
-    const stored = await this.prisma.refreshToken.findUnique({
-      where: { token: oldToken },
-    })
-    if (!stored || stored.isRevoked || stored.expiresAt < new Date())
-      throw new AppError('Invalid refresh', 401)
-    await this.prisma.refreshToken.update({
-      where: { id: stored.id },
-      data: { isRevoked: true },
-    })
-    const accessToken = signJwt({
-      id: verifiedUser.id,
-      role: verifiedUser.role,
-      name: verifiedUser.name,
-    })
-    const refreshToken = await this.createRefreshToken(
-      verifiedUser.id,
-      verifiedUser.role,
-      verifiedUser.name
-    )
-    return { accessToken, refreshToken }
-  }
-
   async logout(token: string) {
     const stored = await this.prisma.refreshToken.findUnique({
       where: { token },
@@ -108,6 +82,71 @@ class AuthService {
     })
     if (!product) return false
     return true
+  }
+
+  setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
+    res
+      .cookie('token', accessToken, {
+        ...(process.env.NODE_ENV === 'production' && {
+          domain: process.env.DOMAIN,
+        }),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie('refreshToken', refreshToken, {
+        ...(process.env.NODE_ENV === 'production' && {
+          domain: process.env.DOMAIN,
+        }),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 14 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+  }
+  async rotateTokens(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction,
+    oldToken: string
+  ) {
+    try {
+      const verifiedUser = verifyJwt<{
+        id: number
+        role: UserRole[]
+        name: string
+      }>(oldToken)
+      const stored = await this.prisma.refreshToken.findUnique({
+        where: { token: oldToken },
+      })
+      if (!stored || stored.isRevoked || stored.expiresAt < new Date())
+        throw new AppError('Invalid refresh', 401)
+      await this.prisma.refreshToken.update({
+        where: { id: stored.id },
+        data: { isRevoked: true },
+      })
+      const accessToken = signJwt({
+        id: verifiedUser.id,
+        role: verifiedUser.role,
+        name: verifiedUser.name,
+      })
+      const refreshToken = await this.createRefreshToken(
+        verifiedUser.id,
+        verifiedUser.role,
+        verifiedUser.name
+      )
+      this.setAuthCookies(res, accessToken, refreshToken)
+      req.user = {
+        id: verifiedUser.id,
+        role: verifiedUser.role,
+        name: verifiedUser.name,
+      }
+      next()
+    } catch {
+      throw new AppError('Error rotating tokens', 401)
+    }
   }
 }
 
