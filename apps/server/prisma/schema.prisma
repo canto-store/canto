@@ -265,6 +265,7 @@ model CartItem {
   variantId Int
   quantity  Int
 
+  @@unique([cartId, variantId])
   @@map("cart_items")
 }
 

@@ -54,10 +54,36 @@ class AuthService {
       where: { userId: user.id },
     })
     if (guestCart && userCart) {
-      await this.prisma.cartItem.updateMany({
+      // Get all guest cart items
+      const guestCartItems = await this.prisma.cartItem.findMany({
         where: { cartId: guestCart.id },
-        data: { cartId: userCart.id },
       })
+
+      // Process each guest cart item
+      for (const guestItem of guestCartItems) {
+        // Check if user cart already has this variant
+        const existingUserItem = await this.prisma.cartItem.findFirst({
+          where: {
+            cartId: userCart.id,
+            variantId: guestItem.variantId,
+          },
+        })
+
+        if (existingUserItem) {
+          // Update existing item quantity
+          await this.prisma.cartItem.update({
+            where: { id: existingUserItem.id },
+            data: { quantity: existingUserItem.quantity + guestItem.quantity },
+          })
+        } else {
+          // Move guest item to user cart
+          await this.prisma.cartItem.update({
+            where: { id: guestItem.id },
+            data: { cartId: userCart.id },
+          })
+        }
+      }
+
       await this.prisma.cart.delete({
         where: { id: guestCart.id },
       })
