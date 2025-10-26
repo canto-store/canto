@@ -1,6 +1,11 @@
 import { PrismaClient, UserRole } from '@prisma/client'
 import { CreateUserDto, LoginDto } from './auth.types'
-import { signJwt, signRefreshToken, verifyJwt } from '../../utils/jwt'
+import {
+  JwtPayload,
+  signJwt,
+  signRefreshToken,
+  verifyJwt,
+} from '../../utils/jwt'
 import Bcrypt from '../../utils/bcrypt'
 import AppError from '../../utils/appError'
 import { NextFunction, Response } from 'express'
@@ -9,7 +14,7 @@ import { AuthRequest } from '../../middlewares/auth.middleware'
 class AuthService {
   private readonly prisma = new PrismaClient()
 
-  async registerGuest(res: Response, next: NextFunction) {
+  async registerGuest(res: Response) {
     const guest = await this.prisma.user.create({
       data: {
         role: [UserRole.GUEST],
@@ -20,7 +25,6 @@ class AuthService {
       signJwt({ id: guest.id, role: guest.role }),
       await this.createRefreshToken(guest.id, guest.role)
     )
-    next()
   }
 
   async register(dto: CreateUserDto) {
@@ -181,11 +185,7 @@ class AuthService {
     oldToken: string
   ) {
     try {
-      const verifiedUser = verifyJwt<{
-        id: number
-        role: UserRole[]
-        name: string
-      }>(oldToken)
+      const verifiedUser = verifyJwt<JwtPayload>(oldToken)
       const stored = await this.prisma.refreshToken.findUnique({
         where: { token: oldToken },
       })

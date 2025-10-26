@@ -15,7 +15,7 @@ class AuthMiddleware {
     const refreshToken = req.cookies.refreshToken
 
     if (!token && !refreshToken) {
-      await this.authService.registerGuest(res, next)
+      await this.authService.registerGuest(res)
     }
 
     try {

@@ -69,11 +69,8 @@ class AuthController {
       if (token) {
         await this.authService.logout(token)
       }
-      res
-        .clearCookie('token')
-        .clearCookie('refreshToken')
-        .status(200)
-        .json({ message: 'Logged out successfully' })
+      await this.authService.registerGuest(res)
+      res.status(200).json({ message: 'Logged out successfully' })
     } catch (err) {
       next(err)
     }
