@@ -25,7 +25,7 @@ export const useLogin = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["me"] });
+      queryClient.refetchQueries({ queryKey: ["me", "cart"] });
     },
   });
 };
@@ -66,7 +66,7 @@ export const useRegister = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["me"] });
+      queryClient.refetchQueries({ queryKey: ["me", "cart"] });
     },
   });
 };
@@ -99,7 +99,7 @@ export const useLogout = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.clear();
+      queryClient.refetchQueries({ queryKey: ["me", "cart"] });
       toast.success("Logged out successfully");
     },
     onError: (error) => {
