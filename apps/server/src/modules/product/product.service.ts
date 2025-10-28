@@ -364,7 +364,7 @@ class ProductService {
     if (!dto.value?.trim()) throw new AppError('value is required', 400)
 
     const existingOptionValue = await this.prisma.productOptionValue.findFirst({
-      where: { productOptionId: dto.productOptionId, value: dto.value },
+      where: { productOptionId: dto.productOptionId, value: dto.value.trim() },
     })
     if (existingOptionValue)
       throw new AppError('Value already exists under this option', 409)
