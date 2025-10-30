@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express'
+import { Response, NextFunction } from 'express'
 import AuthService from './auth.service'
 import { CreateUserDto, LoginDto } from './auth.types'
 import { signJwt } from '../../utils/jwt'
@@ -63,13 +63,13 @@ class AuthController {
     }
   }
 
-  public async logout(req: Request, res: Response, next: NextFunction) {
+  public async logout(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const token = req.cookies.refreshToken as string
       if (token) {
         await this.authService.logout(token)
       }
-      await this.authService.registerGuest(res)
+      await this.authService.registerGuest(req, res)
       res.status(200).json({ message: 'Logged out successfully' })
     } catch (err) {
       next(err)

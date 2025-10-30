@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { verifyJwt, JwtPayload } from '../utils/jwt'
 import AuthService from '../modules/auth/auth.service'
 import { UserRole } from '@prisma/client'
+import AppError from '../utils/appError'
 
 export interface AuthRequest extends Request {
   user?: JwtPayload
@@ -14,16 +15,23 @@ class AuthMiddleware {
     const token = req.cookies.token
     const refreshToken = req.cookies.refreshToken
 
-    if (!token && !refreshToken) {
-      await this.authService.registerGuest(res)
+    if (!token || !refreshToken) {
+      await this.authService.registerGuest(req, res)
+      return next()
     }
 
     try {
       const payload = verifyJwt(token)
       req.user = payload
       next()
-    } catch {
-      await this.authService.rotateTokens(req, res, next, refreshToken)
+    } catch (err) {
+      if (err instanceof Error && err.name === 'TokenExpiredError') {
+        await this.authService.rotateTokens(req, res, next, refreshToken)
+      } else {
+        const error = new AppError('Unauthorized', 401)
+        res.clearCookie('token').clearCookie('refreshToken')
+        next(error)
+      }
     }
   }
 

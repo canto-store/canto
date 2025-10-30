@@ -14,12 +14,13 @@ import { AuthRequest } from '../../middlewares/auth.middleware'
 class AuthService {
   private readonly prisma = new PrismaClient()
 
-  async registerGuest(res: Response) {
+  async registerGuest(req: AuthRequest, res: Response) {
     const guest = await this.prisma.user.create({
       data: {
         role: [UserRole.GUEST],
       },
     })
+    req.user = { id: guest.id, role: guest.role }
     this.setAuthCookies(
       res,
       signJwt({ id: guest.id, role: guest.role }),
@@ -213,7 +214,8 @@ class AuthService {
       }
       next()
     } catch {
-      throw new AppError('Error rotating tokens', 401)
+      const error = new AppError('Error rotating tokens', 401)
+      next(error)
     }
   }
 }
