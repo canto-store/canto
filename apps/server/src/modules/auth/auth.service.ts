@@ -29,10 +29,12 @@ class AuthService {
   }
 
   async register(dto: CreateUserDto) {
-    const exists = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+    const exists = await this.prisma.user.findFirst({
+      where: { OR: [{ email: dto.email }, { phone_number: dto.phone_number }] },
     })
-    if (exists) throw new AppError('User already exists', 409)
+
+    if (exists)
+      throw new AppError('User with email or phone number already exists', 409)
 
     const { guestId, ...userInput } = dto
     dto.password = await Bcrypt.hash(dto.password)
