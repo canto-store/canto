@@ -85,7 +85,7 @@ export function RegisterForm({
       .catch((error) => {
         setIsPending(false);
         setError(parseApiError(error));
-        toast.error(t("registrationError"));
+        toast.error(t("registerError"));
       });
   };
 
