@@ -34,10 +34,11 @@ class AuthService {
     })
     if (exists) throw new AppError('User already exists', 409)
 
+    const { guestId, ...userInput } = dto
     dto.password = await Bcrypt.hash(dto.password)
     const user = await this.prisma.user.update({
-      where: { id: dto.guestId },
-      data: { ...dto, role: [UserRole.USER] },
+      where: { id: guestId },
+      data: { ...userInput, role: [UserRole.USER] },
     })
     const { password: _, ...rest } = user
     return rest
