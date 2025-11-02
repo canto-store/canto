@@ -1,6 +1,35 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ReactNode } from "react";
+import localFont from "next/font/local";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { FontPreloader } from "@/components/font-preloader";
+
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-ibm-plex-sans-arabic",
+  subsets: ["latin", "arabic"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
+});
+
+const opticianSans = localFont({
+  src: "../../public/fonts/Optician-Sans.woff2",
+  variable: "--font-optician-sans",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
+});
+
+const spaceGrotesk = localFont({
+  src: "../../public/fonts/SpaceGrotesk.woff2",
+  variable: "--font-space-grotesk",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -77,16 +106,26 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html>
       <head>
         <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <FontPreloader />
         <script
           async
           src="https://unpkg.com/pwacompat"
           crossOrigin="anonymous"
         ></script>
       </head>
-      <body>{children}</body>
+      <body
+        className={cn(
+          "bg-background font-sans antialiased",
+          spaceGrotesk.variable,
+          opticianSans.variable,
+          ibmPlexSansArabic.variable,
+        )}
+      >
+        {children}
+      </body>
     </html>
   );
 }

@@ -5,10 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* These variables are defined in layout.tsx */
+  /* These variables are defined in root layout.tsx to prevent hydration issues */
   --font-arabic: var(--font-ibm-plex-sans-arabic);
   --font-heading: var(--font-optician-sans);
   --font-latin: var(--font-space-grotesk);
+  --font-body: var(--font-space-grotesk);
 
   /* Color variables */
   --color-light-gray: oklch(0.9431 0 0);
@@ -72,10 +73,28 @@
 
   .font-arabic {
     font-family: var(--font-arabic), system-ui, sans-serif;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
+    font-optical-sizing: auto;
   }
 
   .font-latin {
     font-family: var(--font-body), var(--font-heading), system-ui, sans-serif;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
+    font-optical-sizing: auto;
+  }
+
+  /* Prevent font loading flashes */
+  .font-arabic,
+  .font-latin {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .bg-global {
