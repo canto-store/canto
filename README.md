@@ -12,7 +12,6 @@ A full-stack e-commerce application built with Next.js, React, TypeScript, and N
 - Tailwind CSS
 - Shadcn UI
 - React Query
-- Zustand (State Management)
 
 ### Dashboard
 
