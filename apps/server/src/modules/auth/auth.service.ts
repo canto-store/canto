@@ -37,7 +37,7 @@ class AuthService {
       throw new AppError('User with email or phone number already exists', 409)
 
     const { guestId, ...userInput } = dto
-    dto.password = await Bcrypt.hash(dto.password)
+    userInput.password = await Bcrypt.hash(dto.password)
     const user = await this.prisma.user.update({
       where: { id: guestId },
       data: { ...userInput, role: [UserRole.USER] },
