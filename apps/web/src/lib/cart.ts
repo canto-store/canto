@@ -19,6 +19,7 @@ export const useGetCart = () => {
           return { items: [], count: 0, price: 0 } as Cart;
         });
     },
+    retry: true,
   });
 };
 
