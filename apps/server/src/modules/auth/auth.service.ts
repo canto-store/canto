@@ -100,11 +100,8 @@ class AuthService {
         where: { id: guestCart.id },
         data: { userId: user.id },
       })
-      await this.prisma.cart.delete({
-        where: { id: guestCart.id },
-      })
     }
-    await this.prisma.user.delete({
+    await this.prisma.user.deleteMany({
       where: { id: dto.guestId, role: { has: UserRole.GUEST } },
     })
     await this.prisma.user.update({
