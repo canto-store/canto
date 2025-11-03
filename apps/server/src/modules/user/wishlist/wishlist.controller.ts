@@ -12,12 +12,12 @@ export default class WishlistController {
   async getWishlistItems(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        return next(new AppError('User not authenticated', 401, true))
+        return next(new AppError('User not authenticated', 401))
       }
       const response = await this.wishlistService.getWishlistItems(req.user.id)
       res.status(200).json(response)
     } catch (error) {
-      next(new AppError(error, 500, true))
+      next(new AppError(error, 500))
     }
   }
 
@@ -28,11 +28,11 @@ export default class WishlistController {
   ) {
     try {
       if (!req.user) {
-        return next(new AppError('User not authenticated', 401, true))
+        return next(new AppError('User not authenticated', 401))
       }
       const { productId } = req.body
       if (!productId) {
-        return next(new AppError('Product ID is required', 400, true))
+        return next(new AppError('Product ID is required', 400))
       }
       const response = await this.wishlistService.toggleWishlistItem(
         req.user.id,
@@ -40,7 +40,7 @@ export default class WishlistController {
       )
       res.status(200).json(response)
     } catch (error) {
-      next(new AppError(error, 500, true))
+      next(new AppError(error, 500))
     }
   }
 
@@ -51,16 +51,16 @@ export default class WishlistController {
   ) {
     try {
       if (!req.user) {
-        return next(new AppError('User not authenticated', 401, true))
+        return next(new AppError('User not authenticated', 401))
       }
       const productId = Number(req.params.productId)
       if (!productId) {
-        return next(new AppError('Product ID is required', 400, true))
+        return next(new AppError('Product ID is required', 400))
       }
       await this.wishlistService.removeWishlistItem(req.user.id, productId)
       res.status(200).json({ success: true })
     } catch (error) {
-      next(new AppError(error, 500, true))
+      next(new AppError(error, 500))
     }
   }
 }

@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
 import routes from './routes'
-import errorHandler from './middlewares/errorHandler'
+import errorMiddleware from './middlewares/error.middleware'
 import loggerMiddleware from './middlewares/logger.middleware'
 
 import { checkESConnection } from './modules/search'
@@ -44,7 +44,7 @@ app.get('/', (_req, res) => {
   res.send('<h1>Server Running</h1>')
 })
 
-app.use(errorHandler)
+app.use(errorMiddleware)
 
 const PORT: number = parseInt(process.env.PORT || '8000', 10)
 

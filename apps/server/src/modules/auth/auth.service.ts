@@ -160,6 +160,7 @@ class AuthService {
   }
 
   setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
+    res.clearCookie('token').clearCookie('refreshToken')
     res
       .cookie('token', accessToken, {
         ...(process.env.NODE_ENV === 'production' && {
@@ -193,8 +194,10 @@ class AuthService {
       const stored = await this.prisma.refreshToken.findUnique({
         where: { token: oldToken },
       })
-      if (!stored || stored.isRevoked || stored.expiresAt < new Date())
-        throw new AppError('Invalid refresh', 401)
+      if (!stored || stored.isRevoked || stored.expiresAt < new Date()) {
+        res.clearCookie('token').clearCookie('refreshToken')
+        return next(new AppError('Invalid refresh', 401))
+      }
       await this.prisma.refreshToken.update({
         where: { id: stored.id },
         data: { isRevoked: true },
@@ -217,6 +220,7 @@ class AuthService {
       }
       next()
     } catch {
+      res.clearCookie('token').clearCookie('refreshToken')
       const error = new AppError('Error rotating tokens', 401)
       next(error)
     }

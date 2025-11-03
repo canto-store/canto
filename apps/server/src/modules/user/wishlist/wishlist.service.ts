@@ -60,7 +60,7 @@ export default class WishlistService {
     })
 
     if (!product) {
-      throw new AppError('Product not found', 404, true)
+      throw new AppError('Product not found', 404)
     }
 
     const wishlist = await this.getOrCreateWishlist(userId)
@@ -103,7 +103,7 @@ export default class WishlistService {
     })
 
     if (!wishlistItem) {
-      throw new AppError('Item not found in wishlist', 404, true)
+      throw new AppError('Item not found in wishlist', 404)
     }
 
     // Delete the wishlist item
