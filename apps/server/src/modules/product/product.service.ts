@@ -653,6 +653,7 @@ class ProductService {
 
   async getHomeProducts() {
     const products = await this.prisma.product.findMany({
+      where: { status: ProductStatus.ACTIVE },
       select: {
         name: true,
         brand: { select: { name: true, slug: true } },
