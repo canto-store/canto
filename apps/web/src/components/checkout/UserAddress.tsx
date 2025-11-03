@@ -1,6 +1,7 @@
 import { type UserAddress } from "@/types/user";
 import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 export function UserAddress({
   userAddresses,
@@ -14,6 +15,17 @@ export function UserAddress({
   setShowShippingAddressForm: (show: boolean) => void;
 }) {
   const t = useTranslations();
+
+  useEffect(() => {
+    if (
+      userAddresses &&
+      userAddresses.length > 0 &&
+      selectedAddressId === undefined
+    ) {
+      setSelectedAddressId(userAddresses[0].id);
+    }
+  }, [userAddresses, selectedAddressId, setSelectedAddressId]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
