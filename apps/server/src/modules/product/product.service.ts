@@ -81,7 +81,6 @@ class ProductService {
                 match_phrase: {
                   name: {
                     query: search.trim(),
-                    boost: 5,
                   },
                 },
               },
@@ -90,35 +89,15 @@ class ProductService {
                 term: {
                   'name.exact': {
                     value: search.trim(),
-                    boost: 4,
                   },
                 },
               },
-              // 3. Partial word matching (n-grams)
-              {
-                match: {
-                  'name.ngram': {
-                    query: search.trim(),
-                    boost: 3,
-                  },
-                },
-              },
-              // 4. Fuzzy matching on name
+              // 3. Fuzzy matching on name
               {
                 match: {
                   name: {
                     query: search.trim(),
-                    fuzziness: 'AUTO',
-                    boost: 2,
-                  },
-                },
-              },
-              // 5. Description search (lower priority)
-              {
-                match: {
-                  description: {
-                    query: search.trim(),
-                    boost: 1,
+                    fuzziness: '1',
                   },
                 },
               },
@@ -132,6 +111,7 @@ class ProductService {
       // Extract product IDs, scores, and preserve order from Elasticsearch
       const productIds: number[] = []
       results.hits.hits.forEach((hit: any) => {
+        console.log('##### — hit =>', hit)
         const productId = +hit._id
         productIds.push(productId)
         elasticsearchScores.set(productId, hit._score)
