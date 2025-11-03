@@ -1116,7 +1116,7 @@ class ProductService {
 
     // Fetch products from database
     const products = await this.prisma.product.findMany({
-      where: { id: { in: productIds } },
+      where: { id: { in: productIds }, status: ProductStatus.ACTIVE },
       include: { brand: true, category: true },
     })
 
