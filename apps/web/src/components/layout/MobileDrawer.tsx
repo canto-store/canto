@@ -36,6 +36,7 @@ function MobileDrawer({
   const role = getUserRole(user?.role);
   const { mutate: logout } = useLogout();
   const handleNavigation = (href: string) => {
+    onOpenChange();
     router.push(href);
   };
 

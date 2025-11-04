@@ -27,6 +27,7 @@ enum DeliveryStatus {
 }
 
 type Order = {
+  id: number;
   orderCode: string;
   createdAt: string;
   deliveryStatus: DeliveryStatus;
@@ -66,7 +67,7 @@ export function CheckoutSuccess({ order }: { order: Order }) {
         <p className="text-sm text-gray-600">
           {t("checkout.deliveryStatus.label")}:{" "}
           <span className="font-medium">
-            {t(`checkout.deliveryStatus.${order.deliveryStatus.toLowerCase()}`)}
+            {t(`checkout.deliveryStatus.not_delivered_yet`)}
           </span>
         </p>
       </div>
@@ -79,7 +80,7 @@ export function CheckoutSuccess({ order }: { order: Order }) {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => router.push("/account/orders")}
+          onClick={() => router.push(`/orders/${order.id}`)}
         >
           {t("checkout.viewOrder")}
         </Button>

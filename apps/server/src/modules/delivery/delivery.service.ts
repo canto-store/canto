@@ -23,7 +23,8 @@ class DeliveryService {
   }
 
   public async createDelivery(
-    deliveryData: delivericDataInput[]
+    deliveryData: delivericDataInput[],
+    order_id: number
   ): Promise<DelivericDataOutput[]> {
     const response: DelivericDataOutput[] = await axios
       .post(this.DELIVERIC_API + '?action=addBulkShipments', {
@@ -39,7 +40,7 @@ class DeliveryService {
           data: {
             id: item.id,
             waybill: item.waybill,
-            orderId: item.order_id,
+            orderId: order_id,
             qrCode: item.qr_code,
           },
         })

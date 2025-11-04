@@ -122,18 +122,18 @@ export const createOrder = async (input: CreateOrderInput) => {
       phone_1: user.phone_number,
       price: item.priceAtOrder * item.quantity,
       sector_id: address.sector_id,
-      order_id: newOrder.id,
       client_id: user.id,
       product_name: item.productName,
       product_desc: item.productDescription,
       quantity: item.quantity,
     }))
-    await deliveryService.createDelivery(deliveryData)
+
+    await deliveryService.createDelivery(deliveryData, newOrder.id)
 
     return newOrder
   } catch (error) {
     if (error instanceof AppError) throw error
-    throw new AppError('Failed to create order', 500)
+    throw new AppError('Failed to create order: ' + error.message, 500)
   }
 }
 
