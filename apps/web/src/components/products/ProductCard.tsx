@@ -109,12 +109,6 @@ export function ProductCard({
               )}
             >
               {formatPrice(product.price)}
-              {product.maxPrice && (
-                <span className="font-bold sm:text-lg md:text-xl">
-                  {" "}
-                  - {formatPrice(product.maxPrice)}
-                </span>
-              )}
             </span>
           </div>
           {product.hasVariants ? (
