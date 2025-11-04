@@ -89,16 +89,6 @@ export function ProductCard({
           </button>
         </div>
 
-        <div className="mt-1 flex gap-1">
-          {product.colorVariants?.map((color, index) => (
-            <div
-              key={index}
-              className="h-4 w-4 rounded-full border-1 border-black"
-              style={{ backgroundColor: color }}
-            />
-          ))}
-        </div>
-
         <div
           className={cn(
             "flex items-center justify-between",
