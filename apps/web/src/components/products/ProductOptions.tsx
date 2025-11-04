@@ -104,7 +104,7 @@ export default function ProductOptions({
 
     if (allOptionsSelected) {
       // Use the map for faster variant lookup
-      const optionKeys = requiredOptionTypes.sort();
+      const optionKeys = requiredOptionTypes;
       const key = optionKeys.map((k) => newOptions[k]).join("|");
       const matchingVariant = variantsByOptions.get(key);
       onVariantChange(matchingVariant || undefined);
