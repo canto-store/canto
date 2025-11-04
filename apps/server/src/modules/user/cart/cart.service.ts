@@ -57,9 +57,7 @@ class CartService {
           },
           slug: item.variant.product.slug,
           price: item.variant.price,
-          image:
-            item.variant.images.find(img => img.url)?.url ??
-            '/placeholder-image.jpg',
+          image: item.variant.product.image,
           stock: item.variant.stock,
           variantId: item.variant.id,
           quantity: item.quantity,

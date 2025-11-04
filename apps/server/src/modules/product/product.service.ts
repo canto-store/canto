@@ -972,6 +972,7 @@ class ProductService {
           status: ProductStatus.PENDING,
           brand: { connect: { id: dto.brandId } },
           category: { connect: { id: dto.category } },
+          image: dto.variants[0].images[0] || '/placeholder-image.jpg',
         },
         include: {
           brand: true,
