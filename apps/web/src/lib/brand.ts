@@ -37,13 +37,15 @@ export const useMyBrand = (options?: UseMyBrandOptions) => {
   });
 };
 
-export const useBrands = () =>
+export const useBrands = (category?: string, enabled: boolean = true) =>
   useQuery<Brand[], Error>({
-    queryKey: ["brands"],
+    queryKey: ["brands", category],
     queryFn: async () => {
-      const { data } = await api.get<Brand[]>("/brand");
+      const endpoint = category ? `/brand?category=${category}` : "/brand";
+      const { data } = await api.get<Brand[]>(endpoint);
       return data;
     },
+    enabled, // ✅ conditionally enable/disable fetching
     staleTime: 30 * 60 * 1000, // 30 minutes
   });
 

@@ -21,7 +21,13 @@ export function FilterPanel({
   translations,
 }: FilterPanelProps) {
   const { data: categories, isLoading: categoriesLoading } = useCategories();
-  const { data: brands, isLoading: brandsLoading } = useBrands();
+
+  const isBrandsEnabled = selectedCategory !== "All";
+
+  const { data: brands, isLoading: brandsLoading } = useBrands(
+    isBrandsEnabled ? selectedCategory : undefined,
+    isBrandsEnabled,
+  );
 
   return (
     <div className="mb-6 rounded-lg border bg-white p-4 shadow-sm">
