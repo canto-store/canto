@@ -29,7 +29,7 @@ export default function ProductOptions({
     const map = new Map<string, ProductVariant>();
     variants.forEach((variant) => {
       // Create a key from all option values (sorted for consistency)
-      const optionKeys = Object.keys(variant.options).sort();
+      const optionKeys = Object.keys(variant.options);
       const key = optionKeys.map((k) => variant.options[k]).join("|");
       map.set(key, variant);
     });
