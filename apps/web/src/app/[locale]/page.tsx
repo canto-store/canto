@@ -5,10 +5,11 @@ import { HomeProducts } from "@/components/home/HomeProducts";
 import { HomeCategories } from "@/components/home/HomeCategories";
 import { useHomeProducts } from "@/lib/product";
 import { useEffect } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useGetCart } from "@/lib/cart";
+import { HeroSlider } from "@/components";
 
 export default function Home() {
   const { data, isLoading } = useHomeProducts();
@@ -23,7 +24,7 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none md:h-[calc(100vh-6.5rem)]">
+      {/* <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none md:h-[calc(100vh-6.5rem)]">
         <Image
           src="https://zdafrb7d2x.ufs.sh/f/aSLZIlWQkFimhqIo98vnb96RaXBYDdPWv37yFwM4pKkIchN5"
           alt="Hero"
@@ -31,7 +32,8 @@ export default function Home() {
           className="min-md:object-contain"
           priority
         />
-      </section>
+      </section> */}
+      <HeroSlider />
       <HomeProducts
         products={bestDeals}
         title="Canto's Deals"
