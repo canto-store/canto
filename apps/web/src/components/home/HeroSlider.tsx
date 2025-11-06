@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { SliderButton } from "@/components/common";
 import { cn } from "@/lib/utils";
-import { useBanner } from "@/providers";
+// import { useBanner } from "@/providers";
 import { useLocale } from "next-intl";
 import Image from "next/image";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -17,7 +17,7 @@ export function HeroSlider() {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const { showBanner } = useBanner();
+  // const { showBanner } = useBanner();
   const locale = useLocale();
   const isRTL = locale === "ar";
 
@@ -104,12 +104,7 @@ export function HeroSlider() {
   return (
     <section
       ref={sliderRef}
-      className={cn(
-        "relative right-[50%] left-[50%] -mx-[50vw] h-screen w-screen max-w-none overflow-hidden transition-all duration-300 ease-in-out",
-        showBanner
-          ? "h-[calc(100vh-6.5rem-5rem)] md:h-[calc(100vh-6.5rem)]"
-          : "h-[calc(100vh-4.5rem-5rem)] md:h-[calc(100vh-4.5rem)]",
-      )}
+      className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none md:h-[calc(100vh-6.5rem)]"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -136,7 +131,6 @@ export function HeroSlider() {
                     alt="Hero Slider"
                     fill
                     sizes="100vw"
-                    className="object-contain"
                     priority={index <= 1} // Prioritize first two slides (clone and first real slide)
                     quality={80}
                     loading={index <= 1 ? "eager" : "lazy"}
