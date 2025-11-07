@@ -149,9 +149,26 @@ jobs:
           services:
             web:
               image: \${WEB_IMAGE}
+            environment:
+                - UPLOADTHING_TOKEN=\${UPLOADTHING_TOKEN}
+                - SPACES_KEY=\${SPACES_KEY}
+                - SPACES_SECRET=\${SPACES_SECRET}
+                - SPACES_REGION=\${SPACES_REGION}
+                - SPACES_BUCKET=\${SPACES_BUCKET}
+                - JWT_SECRET=\${JWT_SECRET}
 
             server:
               image: \${SERVER_IMAGE}
+            environment:
+                - DATABASE_URL=\${DATABASE_URL}
+                - ELASTICSEARCH_NODE=\${ELASTICSEARCH_NODE}
+                - ELASTICSEARCH_USERNAME=\${ELASTICSEARCH_USERNAME}
+                - ELASTICSEARCH_PASSWORD=\${ELASTICSEARCH_PASSWORD}
+                - DELIVERIC_API=\${DELIVERIC_API}
+                - DELIVERIC_USER=\${DELIVERIC_USER}
+                - DELIVERIC_PASSWORD=\${DELIVERIC_PASSWORD}
+                - JWT_SECRET=\${JWT_SECRET}
+                - DOMAIN=\${DOMAIN}
 
             dashboard:
               image: \${DASHBOARD_IMAGE}
