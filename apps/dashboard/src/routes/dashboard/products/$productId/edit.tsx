@@ -232,7 +232,7 @@ export default function EditProduct() {
     const changedData = Object.entries(changedFields).reduce(
       (acc, [field]) => {
         // Map the field name back to the actual data field name
-        const dataField = field === 'category' ? 'category' : field
+        const dataField = field.startsWith('variant') ? 'variants' : field
         if (dataField in currentValues) {
           const key = dataField as keyof ProductFormValues
           acc[key] = currentValues[key]
