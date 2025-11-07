@@ -13,7 +13,7 @@ export const useGetCart = () => {
   const { data: user, isLoading: isUserLoading } = useUserQuery();
 
   return useQuery<Cart>({
-    queryKey: ["cart", user?.id],
+    queryKey: ["cart"],
     queryFn: async () => {
       return await api
         .get<Cart>("/cart/user")

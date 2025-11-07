@@ -67,7 +67,8 @@ export const useRegister = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["me", "cart"] });
+      queryClient.refetchQueries({ queryKey: ["me"] });
+      queryClient.refetchQueries({ queryKey: ["cart"] });
     },
   });
 };
