@@ -249,9 +249,7 @@ class ProductService {
         },
         price: minPrice,
         maxPrice: minPrice !== maxPrice ? maxPrice : undefined,
-        image:
-          p.variants.find(v => v.images.length > 0).images.find(img => img.url)
-            .url || '/placeholder-image.jpg',
+        image: p.image,
         stock: p.variants.reduce((sum, v) => sum + v.stock, 0),
         hasVariants: p.variants.length > 1,
         default_variant_id: p.variants.length === 1 ? p.variants[0]?.id : null,
@@ -602,7 +600,7 @@ class ProductService {
         id: related.id,
         name: related.name,
         slug: related.slug,
-        image: related.variants[0]?.images[0]?.url ?? '',
+        image: related.image,
         brand: { name: related.brand.name, slug: related.brand.slug },
         price: Math.min(...relatedPrices),
       }
@@ -638,6 +636,7 @@ class ProductService {
         name: true,
         brand: { select: { name: true, slug: true } },
         slug: true,
+        image: true,
         variants: {
           select: { images: true, price: true, id: true, stock: true },
         },
@@ -682,10 +681,7 @@ class ProductService {
       const prices = product.variants.map(v => v.price)
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
-      const image =
-        product.variants
-          .find(v => v.images.length > 0)
-          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg'
+      const image = product.image
 
       return {
         name: product.name,
@@ -725,10 +721,7 @@ class ProductService {
       const prices = product.variants.map(v => v.price)
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
-      const image =
-        product.variants
-          .find(v => v.images.length > 0)
-          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg'
+      const image = product.image
 
       return {
         name: product.name,
@@ -768,10 +761,7 @@ class ProductService {
       const prices = product.variants.map(v => v.price)
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
-      const image =
-        product.variants
-          .find(v => v.images.length > 0)
-          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg'
+      const image = product.image
 
       return {
         name: product.name,
