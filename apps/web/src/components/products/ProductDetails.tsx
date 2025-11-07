@@ -17,12 +17,14 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { HeartButton } from "../wishlist/HeartButton";
+import { toast } from "sonner";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
+  const [stock, setStock] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<
     ProductVariant | undefined
   >(undefined);
@@ -35,15 +37,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         (v) => v.id === product.default_variant_id,
       );
       setSelectedVariant(defaultVariant);
+      setStock(defaultVariant ? defaultVariant.stock : 0);
     }
   }, [product]);
 
+  const onVariantChange = (variant: ProductVariant | undefined) => {
+    setSelectedVariant(variant);
+    setStock(variant ? variant.stock : 0);
+    setQuantity(1);
+  };
+
   const handleAddToCart = async () => {
     if (!selectedVariant) return;
-    await addToCart({
+    addToCart({
       variantId: selectedVariant.id,
       quantity,
-    });
+    }).then(() => toast.success("Added to cart"));
   };
 
   const images = useMemo(() => {
@@ -134,11 +143,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <ProductDescription description={product.description} />
         <ProductOptions
           variants={product.variants}
-          onVariantChange={setSelectedVariant}
+          onVariantChange={onVariantChange}
         />
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
           <ProductQuantitySelector
             quantity={quantity}
+            stock={stock}
             onQuantityChange={setQuantity}
           />
           {/* <ProductAvailability
@@ -220,9 +230,11 @@ function ProductDescription({ description }: { description: string }) {
 
 function ProductQuantitySelector({
   quantity,
+  stock,
   onQuantityChange,
 }: {
   quantity: number;
+  stock: number;
   onQuantityChange: (quantity: number) => void;
 }) {
   return (
@@ -243,6 +255,7 @@ function ProductQuantitySelector({
           variant="outline"
           size="sm"
           className="h-8 md:h-9"
+          disabled={quantity >= stock}
           onClick={() => onQuantityChange(quantity + 1)}
         >
           +

@@ -26,8 +26,8 @@ export function CartItemComponent({
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const { mutate: deleteFromCart } = useDeleteFromCart();
-  const { mutateAsync: addToCart } = useAddToCart();
+  const { mutate: deleteFromCart, isPending: isRemoving } = useDeleteFromCart();
+  const { mutateAsync: addToCart, isPending: isAdding } = useAddToCart();
   const router = useRouter();
 
   const handleQuantityChange = async (newQuantity: number) => {
@@ -148,7 +148,7 @@ export function CartItemComponent({
                   size="icon"
                   className="h-7 w-7 rounded-none sm:h-8 sm:w-8"
                   onClick={() => handleQuantityChange(item.quantity - 1)}
-                  disabled={item.quantity <= 1}
+                  disabled={item.quantity <= 1 || isAdding || isRemoving}
                 >
                   <Minus className="h-3 w-3" />
                   <span className="sr-only">Decrease quantity</span>
@@ -160,6 +160,9 @@ export function CartItemComponent({
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 rounded-none sm:h-8 sm:w-8"
+                  disabled={
+                    isAdding || isRemoving || item.stock == item.quantity
+                  }
                   onClick={() => handleQuantityChange(item.quantity + 1)}
                 >
                   <Plus className="h-3 w-3" />
@@ -173,6 +176,7 @@ export function CartItemComponent({
                   "mt-2 text-xs text-gray-500 sm:mt-0 sm:text-sm",
                   isRTL ? "sm:mr-4" : "sm:ml-4",
                 )}
+                disabled={isRemoving || isAdding}
                 onClick={handleRemove}
               >
                 <Trash2

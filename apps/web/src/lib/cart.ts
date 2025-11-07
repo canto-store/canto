@@ -34,7 +34,6 @@ export const useAddToCart = () => {
           quantity,
         })
         .then((res) => {
-          toast.success("Added to cart");
           queryClient.invalidateQueries({ queryKey: ["cart"] });
           return res.data;
         })

@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useAddToCart } from "@/lib/cart";
+import { toast } from "sonner";
 
 interface ProductListProps {
   products: ProductSummary[];
@@ -23,11 +24,14 @@ export function ProductList({ products, title, className }: ProductListProps) {
   const params = useParams();
   const isRTL = params?.locale === "ar";
 
-  const { mutateAsync: addToCart } = useAddToCart();
+  const { mutateAsync: addToCart, isPending } = useAddToCart();
 
   const handleAddToCart = (product: CartItem) => {
-    addToCart({ variantId: product.variantId, quantity: 1 });
+    addToCart({ variantId: product.variantId, quantity: 1 }).then(() =>
+      toast.success("Added to cart"),
+    );
   };
+
   return (
     <SectionContainer title={title}>
       <div className={cn("space-y-4", className)} dir={isRTL ? "rtl" : "ltr"}>
@@ -82,6 +86,7 @@ export function ProductList({ products, title, className }: ProductListProps) {
                   className={`flex ${isRTL ? "flex-row-reverse" : ""} gap-2`}
                 >
                   <Button
+                    disabled={isPending}
                     onClick={() =>
                       handleAddToCart({
                         ...product,
