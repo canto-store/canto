@@ -1,0 +1,20 @@
+# Main website (Next.js)
+canto-store.com, www.canto-store.com {
+  reverse_proxy web:3000
+}
+
+# API (Express)
+api.canto-store.com {
+  reverse_proxy server:8000
+}
+
+# Dashboard (Vite)
+dashboard.canto-store.com {
+  reverse_proxy dashboard:5173
+}
+
+# Health check endpoint
+:80 {
+  @health path /health
+  respond @health "ok" 200
+}
