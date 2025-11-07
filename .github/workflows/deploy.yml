@@ -149,7 +149,7 @@ jobs:
           services:
             web:
               image: \${WEB_IMAGE}
-            environment:
+              environment:
                 - UPLOADTHING_TOKEN=\${UPLOADTHING_TOKEN}
                 - SPACES_KEY=\${SPACES_KEY}
                 - SPACES_SECRET=\${SPACES_SECRET}
@@ -159,7 +159,7 @@ jobs:
 
             server:
               image: \${SERVER_IMAGE}
-            environment:
+              environment:
                 - DATABASE_URL=\${DATABASE_URL}
                 - ELASTICSEARCH_NODE=\${ELASTICSEARCH_NODE}
                 - ELASTICSEARCH_USERNAME=\${ELASTICSEARCH_USERNAME}
