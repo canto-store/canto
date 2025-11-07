@@ -1,18 +1,18 @@
 name: Deploy
 
 on:
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - 'apps/**'
-      - 'nginx/**'
-      - 'pnpm-lock.yaml'
-      - 'package.json'
-      - 'pnpm-workspace.yaml'
-      - 'Dockerfile'
-      - 'docker-compose*.yml'
+      - "apps/**"
+      - "Caddyfile"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - "pnpm-workspace.yaml"
+      - "Dockerfile"
+      - "docker-compose*.yml"
 
 permissions:
   contents: read
@@ -48,40 +48,7 @@ jobs:
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Extract metadata for server
-        id: meta-server
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}-server
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Extract metadata for dashboard
-        id: meta-dashboard
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}-dashboard
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Extract metadata for nginx
-        id: meta-nginx
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}-nginx
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build and push web image
+      - name: Build and push web
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -94,7 +61,18 @@ jobs:
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
 
-      - name: Build and push server image
+      - name: Extract metadata for server
+        id: meta-server
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}-server
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push server
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -109,7 +87,18 @@ jobs:
           cache-from: type=gha,scope=server
           cache-to: type=gha,mode=max,scope=server
 
-      - name: Build and push dashboard image
+      - name: Extract metadata for dashboard
+        id: meta-dashboard
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}-dashboard
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push dashboard
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -121,16 +110,6 @@ jobs:
           labels: ${{ steps.meta-dashboard.outputs.labels }}
           cache-from: type=gha,scope=dashboard
           cache-to: type=gha,mode=max,scope=dashboard
-
-      - name: Build and push nginx image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./nginx
-          push: true
-          tags: ${{ steps.meta-nginx.outputs.tags }}
-          labels: ${{ steps.meta-nginx.outputs.labels }}
-          cache-from: type=gha,scope=nginx
-          cache-to: type=gha,mode=max,scope=nginx
 
   deploy:
     name: Deploy to Production
@@ -144,35 +123,24 @@ jobs:
       - name: Create production environment file
         run: |
           cat > .env.prod << EOF
-          # Domain configuration
           DOMAIN=${{ secrets.DOMAIN }}
-
-          # Database
           DATABASE_URL=${{ secrets.DATABASE_URL }}
-
-          # File upload services
-          UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
-          SPACES_KEY=${{ secrets.SPACES_KEY }}
-          SPACES_SECRET=${{ secrets.SPACES_SECRET }}
-          SPACES_REGION=${{ secrets.SPACES_REGION }}
-          SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
-
-          # Security
           JWT_SECRET=${{ secrets.JWT_SECRET }}
-
-          # External services
           ELASTICSEARCH_NODE=${{ secrets.ELASTICSEARCH_NODE }}
           ELASTICSEARCH_USERNAME=${{ secrets.ELASTICSEARCH_USERNAME }}
           ELASTICSEARCH_PASSWORD=${{ secrets.ELASTICSEARCH_PASSWORD }}
           DELIVERIC_API=${{ secrets.DELIVERIC_API }}
           DELIVERIC_USER=${{ secrets.DELIVERIC_USER }}
           DELIVERIC_PASSWORD=${{ secrets.DELIVERIC_PASSWORD }}
-
-          # Container image references
+          UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
+          SPACES_KEY=${{ secrets.SPACES_KEY }}
+          SPACES_SECRET=${{ secrets.SPACES_SECRET }}
+          SPACES_REGION=${{ secrets.SPACES_REGION }}
+          SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
           WEB_IMAGE=ghcr.io/${{ github.repository }}-web:latest
           SERVER_IMAGE=ghcr.io/${{ github.repository }}-server:latest
           DASHBOARD_IMAGE=ghcr.io/${{ github.repository }}-dashboard:latest
-          NGINX_IMAGE=ghcr.io/${{ github.repository }}-nginx:latest
+          CADDY_IMAGE=caddy:2.8
           EOF
 
       - name: Create production docker-compose override
@@ -181,33 +149,43 @@ jobs:
           services:
             web:
               image: \${WEB_IMAGE}
-              environment:
-                - UPLOADTHING_TOKEN=\${UPLOADTHING_TOKEN}
-                - SPACES_KEY=\${SPACES_KEY}
-                - SPACES_SECRET=\${SPACES_SECRET}
-                - SPACES_REGION=\${SPACES_REGION}
-                - SPACES_BUCKET=\${SPACES_BUCKET}
-                - JWT_SECRET=\${JWT_SECRET}
 
             server:
               image: \${SERVER_IMAGE}
-              environment:
-                - DATABASE_URL=\${DATABASE_URL}
-                - ELASTICSEARCH_NODE=\${ELASTICSEARCH_NODE}
-                - ELASTICSEARCH_USERNAME=\${ELASTICSEARCH_USERNAME}
-                - ELASTICSEARCH_PASSWORD=\${ELASTICSEARCH_PASSWORD}
-                - DELIVERIC_API=\${DELIVERIC_API}
-                - DELIVERIC_USER=\${DELIVERIC_USER}
-                - DELIVERIC_PASSWORD=\${DELIVERIC_PASSWORD}
-                - JWT_SECRET=\${JWT_SECRET}
-                - DOMAIN=\${DOMAIN}
 
             dashboard:
               image: \${DASHBOARD_IMAGE}
 
-            nginx:
-              image: \${NGINX_IMAGE}
+            caddy:
+              image: \${CADDY_IMAGE}
+              ports:
+                - "80:80"
+                - "443:443"
+              volumes:
+                - caddy-data:/data
+                - caddy-config:/config
+                - ./Caddyfile:/etc/caddy/Caddyfile
+              environment:
+                - DOMAIN=\${DOMAIN}
+              depends_on:
+                - web
+                - server
+                - dashboard
+          volumes:
+            caddy-data:
+            caddy-config:
           EOF
+
+      - name: Copy deployment files
+        uses: appleboy/scp-action@master
+        with:
+          port: 2121
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "docker-compose.yml,docker-compose.prod.yml,.env.prod,docker-compose.prod.override.yml"
+          target: "/home/omar/canto"
+          overwrite: true
 
       - name: Deploy to Production Server
         uses: appleboy/ssh-action@master
@@ -218,60 +196,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             set -e
-
-            # Create deployment directory
-            DEPLOY_DIR="/home/omar/canto"
-            mkdir -p $DEPLOY_DIR || true
-            cd $DEPLOY_DIR
-
-            # Create certbot directory if it doesn't exist
-            mkdir -p $DEPLOY_DIR/certbot || true
-
-            # Backup current deployment
-            if [ -f docker-compose.yml ]; then
-              echo "Creating backup of current deployment..."
-              cp docker-compose.yml docker-compose.yml.backup || true
-              cp .env.prod .env.prod.backup || true
-            fi
-
-            # Login to GitHub Container Registry
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-            # Pull latest images
-            echo "Pulling latest images..."
-            docker pull ghcr.io/${{ github.repository }}-web:latest
-            docker pull ghcr.io/${{ github.repository }}-server:latest
-            docker pull ghcr.io/${{ github.repository }}-dashboard:latest
-            docker pull ghcr.io/${{ github.repository }}-nginx:latest
-      - name: Copy deployment files
-        uses: appleboy/scp-action@master
-        with:
-          port: 2121
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: 'docker-compose.yml,docker-compose.prod.yml,.env.prod,docker-compose.prod.override.yml'
-          target: '/home/omar/canto'
-          overwrite: true
-
-      - name: Start services
-        uses: appleboy/ssh-action@master
-        with:
-          port: 2121
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            set -e
             cd /home/omar/canto
-
-            if [ -f docker-compose.yml ]; then
-              echo "Stopping current services..."
-              docker compose down --timeout 30 || true
-            fi
-
-            # Start services
-            echo "Starting services with docker-compose..."
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker compose down --timeout 30 || true
             docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.override.yml --env-file .env.prod up -d
 
       - name: Rollback on failure
@@ -284,21 +211,12 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/omar/canto
-
             echo "Deployment failed, attempting rollback..."
-
-            # Stop failed deployment
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.override.yml down --timeout 30 || true
-
-            # Restore backup if it exists
+            docker compose down --timeout 30 || true
             if [ -f docker-compose.yml.backup ] && [ -f .env.prod.backup ]; then
-              echo "Restoring previous deployment..."
               cp docker-compose.yml.backup docker-compose.yml
               cp .env.prod.backup .env.prod
-              
-              # Start previous version
               docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d || true
-              
               echo "Rollback completed"
             else
               echo "No backup found, manual intervention required"
