@@ -3,23 +3,24 @@ import api from "./api";
 import { Cart } from "@canto/types/cart";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { useUserQuery } from "./auth";
 interface AddToCartInput {
   variantId: number;
   quantity: number;
 }
 
 export const useGetCart = () => {
+  const { data: user, isLoading: isUserLoading } = useUserQuery();
+
   return useQuery<Cart>({
-    queryKey: ["cart"],
+    queryKey: ["cart", user?.id],
     queryFn: async () => {
       return await api
         .get<Cart>("/cart/user")
         .then((res) => res.data)
-        .catch(() => {
-          return { items: [], count: 0, price: 0 } as Cart;
-        });
+        .catch(() => ({ items: [], count: 0, price: 0 }));
     },
-    retry: true,
+    enabled: !!user && !isUserLoading,
   });
 };
 

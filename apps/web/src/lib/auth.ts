@@ -12,7 +12,7 @@ export const useUserQuery = () => {
         return response.data;
       });
     },
-    retry: true,
+    staleTime: 24 * 60 * 60 * 1000,
   });
 };
 
