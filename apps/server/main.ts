@@ -6,37 +6,21 @@ dotenv.config()
 async function main() {
   const prisma = new PrismaClient()
 
-  const products = await prisma.product.findMany()
+  const users = await prisma.user.findMany({})
+  console.log(`Found ${users.length} users.`)
 
-  for (const product of products) {
-    // Get all variants for this product
-    const variants = await prisma.productVariant.findMany({
-      where: { productId: product.id },
-      select: { id: true },
+  for (const user of users) {
+    const cart = await prisma.cart.findFirst({
+      where: { userId: user.id },
     })
-
-    if (!variants.length) continue // skip products with no variants
-
-    // Find the first variant that has at least one image
-    let firstImageUrl: string | null = null
-
-    for (const variant of variants) {
-      const firstImage = await prisma.productVariantImage.findFirst({
-        where: { variantId: variant.id },
-        orderBy: { id: 'asc' }, // optional, ensures consistent result
+    if (cart) {
+      await prisma.cartItem.deleteMany({
+        where: { cartId: cart.id },
       })
-
-      if (firstImage?.url) {
-        firstImageUrl = firstImage.url
-        break // stop once you find the first valid image
-      }
+      await prisma.cart.delete({
+        where: { id: cart.id },
+      })
     }
-
-    // Update the product with the found image or a placeholder
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { image: firstImageUrl ?? '/placeholder-image.jpg' },
-    })
   }
 }
 main().catch(err => {

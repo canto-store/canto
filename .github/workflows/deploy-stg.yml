@@ -1,0 +1,251 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - testing
+    paths:
+      - "apps/**"
+      - "Caddyfile"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - "pnpm-workspace.yaml"
+      - "Dockerfile"
+      - "docker-compose*.yml"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    name: Build and Push All Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for web
+        id: meta-web
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}-web
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push web
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: web
+          build-args: |
+            TARGET_APP=web
+          push: true
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Extract metadata for server
+        id: meta-server
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}-server
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push server
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: server
+          build-args: |
+            TARGET_APP=server
+          secrets: |
+            "database_url=${{ secrets.STG_DATABASE_URL }}"
+          push: true
+          tags: ${{ steps.meta-server.outputs.tags }}
+          labels: ${{ steps.meta-server.outputs.labels }}
+          cache-from: type=gha,scope=server
+          cache-to: type=gha,mode=max,scope=server
+
+      - name: Extract metadata for dashboard
+        id: meta-dashboard
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}-dashboard
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push dashboard
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: dashboard
+          build-args: |
+            TARGET_APP=dashboard
+          push: true
+          tags: ${{ steps.meta-dashboard.outputs.tags }}
+          labels: ${{ steps.meta-dashboard.outputs.labels }}
+          cache-from: type=gha,scope=dashboard
+          cache-to: type=gha,mode=max,scope=dashboard
+
+  deploy:
+    name: Deploy to Production
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create production environment file
+        run: |
+          cat > .env.prod << EOF
+          DOMAIN=${{ secrets.DOMAIN }}
+          DATABASE_URL=${{ secrets.STG_DATABASE_URL }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          ELASTICSEARCH_NODE=${{ secrets.ELASTICSEARCH_NODE }}
+          ELASTICSEARCH_USERNAME=${{ secrets.ELASTICSEARCH_USERNAME }}
+          ELASTICSEARCH_PASSWORD=${{ secrets.ELASTICSEARCH_PASSWORD }}
+          DELIVERIC_API=${{ secrets.DELIVERIC_API }}
+          DELIVERIC_USER=${{ secrets.DELIVERIC_USER }}
+          DELIVERIC_PASSWORD=${{ secrets.DELIVERIC_PASSWORD }}
+          UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
+          SPACES_KEY=${{ secrets.SPACES_KEY }}
+          SPACES_SECRET=${{ secrets.SPACES_SECRET }}
+          SPACES_REGION=${{ secrets.SPACES_REGION }}
+          SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
+          WEB_IMAGE=ghcr.io/${{ github.repository }}-web:latest
+          SERVER_IMAGE=ghcr.io/${{ github.repository }}-server:latest
+          DASHBOARD_IMAGE=ghcr.io/${{ github.repository }}-dashboard:latest
+          CADDY_IMAGE=caddy:2.8
+          EOF
+
+      - name: Create production docker-compose override
+        run: |
+          cat > docker-compose.prod.override.yml << EOF
+          services:
+            web:
+              image: \${WEB_IMAGE}
+              environment:
+                - UPLOADTHING_TOKEN=\${UPLOADTHING_TOKEN}
+                - SPACES_KEY=\${SPACES_KEY}
+                - SPACES_SECRET=\${SPACES_SECRET}
+                - SPACES_REGION=\${SPACES_REGION}
+                - SPACES_BUCKET=\${SPACES_BUCKET}
+                - JWT_SECRET=\${JWT_SECRET}
+                - PORT=5000
+                - NODE_ENV=test
+              expose:
+                - "5000"
+
+            server:
+              image: \${SERVER_IMAGE}
+              environment:
+                - DATABASE_URL=\${DATABASE_URL}
+                - ELASTICSEARCH_NODE=\${ELASTICSEARCH_NODE}
+                - ELASTICSEARCH_USERNAME=\${ELASTICSEARCH_USERNAME}
+                - ELASTICSEARCH_PASSWORD=\${ELASTICSEARCH_PASSWORD}
+                - DELIVERIC_API=\${DELIVERIC_API}
+                - DELIVERIC_USER=\${DELIVERIC_USER}
+                - DELIVERIC_PASSWORD=\${DELIVERIC_PASSWORD}
+                - JWT_SECRET=\${JWT_SECRET}
+                - DOMAIN=\${DOMAIN}
+                - PORT=9000
+              expose:
+                - "9000"
+
+            dashboard:
+              image: \${DASHBOARD_IMAGE}
+            enviroment:
+                - PORT=7000
+            expose:
+                - "7000"
+
+            caddy:
+              image: \${CADDY_IMAGE}
+              ports:
+                - "80:80"
+                - "443:443"
+              volumes:
+                - caddy-data:/data
+                - caddy-config:/config
+                - ./Caddyfile:/etc/caddy/Caddyfile
+              environment:
+                - DOMAIN=\${DOMAIN}
+              depends_on:
+                - web
+                - server
+                - dashboard
+          volumes:
+            caddy-data:
+            caddy-config:
+          EOF
+
+      - name: Copy deployment files
+        uses: appleboy/scp-action@master
+        with:
+          port: 2121
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "docker-compose.yml,docker-compose.prod.yml,.env.prod,docker-compose.prod.override.yml,Caddyfile"
+          target: "/home/omar/staging"
+          overwrite: true
+
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@master
+        with:
+          port: 2121
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+            cd /home/omar/staging
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker compose down --timeout 30 || true
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.override.yml --env-file .env.prod up -d
+
+      - name: Rollback on failure
+        if: failure()
+        uses: appleboy/ssh-action@master
+        with:
+          port: 2121
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/omar/staging
+            echo "Deployment failed, attempting rollback..."
+            docker compose down --timeout 30 || true
+            if [ -f docker-compose.yml.backup ] && [ -f .env.prod.backup ]; then
+              cp docker-compose.yml.backup docker-compose.yml
+              cp .env.prod.backup .env.prod
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d || true
+              echo "Rollback completed"
+            else
+              echo "No backup found, manual intervention required"
+            fi
