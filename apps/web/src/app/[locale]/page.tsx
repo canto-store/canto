@@ -9,7 +9,6 @@ import Image from "next/image";
 import { RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useGetCart } from "@/lib/cart";
-import { HeroSlider } from "@/components";
 import banner from "../../../public/banner.png";
 import bannerMobile from "../../../public/mobile-banner.png";
 
@@ -26,39 +25,37 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none max-sm:hidden">
-        {/* 👇 Shown only on screens smaller than 720px */}
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none sm:hidden">
+        {/* 👇 Shown only on screens smaller than 640px */}
         <Image
           src={bannerMobile}
           alt="Hero Mobile"
           fill
-          className="object-contain"
+          className="object-fill"
           priority
         />
       </section>
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none min-sm:block md:hidden">
+        {/* 👇 Shown only on screens between 640px and 768px */}
 
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-6.5rem)] w-screen max-w-none max-md:block">
-        {/* 👇 Shown only on screens 720px and up */}
         <Image
           src={banner}
-          alt="Hero Desktop"
+          alt="Hero Tablet"
           fill
           className="object-cover"
           priority
         />
       </section>
-
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-6.5rem)] w-screen max-w-none md:block">
-        {/* 👇 Shown only on screens 720px and up */}
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none md:block">
+        {/* 👇 Shown only on screens larger than 768px */}
         <Image
           src={banner}
           alt="Hero Desktop"
           fill
-          className="object-contain"
+          className="object-fill"
           priority
         />
       </section>
-
       <HomeProducts
         products={bestDeals}
         title="Canto's Deals"
