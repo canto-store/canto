@@ -12,7 +12,7 @@ export const useUserQuery = () => {
         return response.data;
       });
     },
-    retry: true,
+    staleTime: 24 * 60 * 60 * 1000,
   });
 };
 
@@ -67,7 +67,8 @@ export const useRegister = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["me", "cart"] });
+      queryClient.refetchQueries({ queryKey: ["me"] });
+      queryClient.refetchQueries({ queryKey: ["cart"] });
     },
   });
 };

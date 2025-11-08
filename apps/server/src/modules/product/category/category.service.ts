@@ -17,34 +17,57 @@ class CategoryService {
   }
 
   async findAll() {
-  return await this.prisma.category.findMany({
-    where: { parentId: null },
-    include: {
-      children: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          image: true,
-          aspect: true,
+    return await this.prisma.category.findMany({
+      where: {
+        parentId: null,
+        OR: [
+          {
+            Product: {
+              some: { status: 'ACTIVE' },
+            },
+          },
+          {
+            children: {
+              some: {
+                Product: {
+                  some: { status: 'ACTIVE' },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        children: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            image: true,
+            aspect: true,
+          },
+          where: {
+            Product: {
+              some: { status: 'ACTIVE' },
+            },
+          },
         },
       },
-    },
-  })
-}
+    })
+  }
 
   async findOne(id: number) {
-  const category = await this.prisma.category.findUnique({
-    where: { id },
-    include: {
-      parent: { select: { id: true, name: true, slug: true } },
-      children: { select: { id: true, name: true, slug: true } },
-    },
-  })
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+      include: {
+        parent: { select: { id: true, name: true, slug: true } },
+        children: { select: { id: true, name: true, slug: true } },
+      },
+    })
 
-  if (!category) throw new AppError('Category not found', 404)
-  return category
-}
+    if (!category) throw new AppError('Category not found', 404)
+    return category
+  }
 
   async update(id: number, dto: CreateCategoryDto) {
     const category = await this.prisma.category.findUnique({ where: { id } })

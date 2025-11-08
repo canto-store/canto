@@ -8,8 +8,22 @@ class BrandService {
     this.prisma = new PrismaClient()
   }
 
-  async getAllBrands() {
+  async getAllBrands(category?: string) {
     return await this.prisma.brand.findMany({
+      where: {
+        Product: {
+          some: {
+            status: 'ACTIVE',
+            ...(category
+              ? {
+                  category: {
+                    slug: category, // match category slug exactly
+                  },
+                }
+              : {}),
+          },
+        },
+      },
       select: {
         name: true,
         slug: true,

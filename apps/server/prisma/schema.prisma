@@ -121,7 +121,7 @@ model Product {
   id          Int               @id @default(autoincrement())
   name        String
   slug        String            @unique
-  image       String?           @default("placeholder-image.jpg")
+  image       String?           @default("/placeholder-image.jpg")
   description String?
   sizeChart   String?           @default("")
   brand       Brand             @relation(fields: [brandId], references: [id])

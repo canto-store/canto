@@ -17,7 +17,8 @@ class BrandController {
     next: NextFunction
   ) => {
     try {
-      const brands = await this.brandService.getAllBrands()
+      const { category } = req.query
+      const brands = await this.brandService.getAllBrands(category as string)
       res.status(200).json(brands)
     } catch (error) {
       next(error)
