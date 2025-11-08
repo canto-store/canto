@@ -62,15 +62,11 @@ services:
       - dashboard
     networks:
       - app-network
-      - staging-network
 
 networks:
   app-network:
     driver: bridge
-    internal: true
-  staging-network:
-    driver: bridge
-    internal: true
+    internal: false
 
 volumes:
   caddy-data:
