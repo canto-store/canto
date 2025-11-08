@@ -1,4 +1,10 @@
-import { Prisma, PrismaClient, Product } from '@prisma/client'
+import {
+  CartItem,
+  Prisma,
+  PrismaClient,
+  Product,
+  ProductVariant,
+} from '@prisma/client'
 import AppError from '../../utils/appError'
 import {
   CreateProductDto,
@@ -111,7 +117,6 @@ class ProductService {
       // Extract product IDs, scores, and preserve order from Elasticsearch
       const productIds: number[] = []
       results.hits.hits.forEach((hit: any) => {
-        console.log('##### — hit =>', hit)
         const productId = +hit._id
         productIds.push(productId)
         elasticsearchScores.set(productId, hit._score)
@@ -589,6 +594,7 @@ class ProductService {
       where: {
         categoryId: productRecord.categoryId,
         id: { not: productRecord.id },
+        status: ProductStatus.ACTIVE,
       },
       take: 5,
       include: { brand: true, variants: { include: { images: true } } },
@@ -1247,6 +1253,40 @@ class ProductService {
       select: { stock: true },
     })
     return variant?.stock > 0
+  }
+
+  async resolveCartItemQuantity(
+    cartItem: Pick<CartItem, 'id' | 'quantity'> & { variant: ProductVariant }
+  ) {
+    return Math.min(cartItem.quantity, cartItem.variant.stock)
+  }
+
+  async isVariantProductActive(variant: ProductVariant & { product: Product }) {
+    return variant.product.status === ProductStatus.ACTIVE
+  }
+
+  async validateCartItems(cartId: number) {
+    const cartItems = await this.prisma.cartItem.findMany({
+      where: { cartId },
+      select: {
+        id: true,
+        quantity: true,
+        variant: { include: { product: true } },
+      },
+    })
+
+    for (const cartItem of cartItems) {
+      const newQuantity = await this.resolveCartItemQuantity(cartItem)
+      const isActive = await this.isVariantProductActive(cartItem.variant)
+      if (newQuantity <= 0 || !isActive) {
+        await this.prisma.cartItem.delete({ where: { id: cartItem.id } })
+      } else if (newQuantity !== cartItem.quantity) {
+        await this.prisma.cartItem.update({
+          where: { id: cartItem.id },
+          data: { quantity: newQuantity },
+        })
+      }
+    }
   }
 }
 
