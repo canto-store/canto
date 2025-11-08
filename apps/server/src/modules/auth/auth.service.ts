@@ -10,8 +10,9 @@ import Bcrypt from '../../utils/bcrypt'
 import AppError from '../../utils/appError'
 import { NextFunction, Response } from 'express'
 import { AuthRequest } from '../../middlewares/auth.middleware'
-
-class AuthService {
+import { LoginDto as LoginDtoV2, AuthResponse } from '@canto/types/auth'
+import UserService from '../user/user.service'
+export class AuthServiceV1 {
   private readonly prisma = new PrismaClient()
 
   async registerGuest(req: AuthRequest, res: Response) {
@@ -224,4 +225,57 @@ class AuthService {
   }
 }
 
-export default AuthService
+export class AuthServiceV2 {
+  private readonly prisma = new PrismaClient()
+  private readonly userService = new UserService()
+
+  async login(dto: LoginDtoV2): Promise<AuthResponse> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    })
+
+    if (!user) throw new AppError('User not found', 404)
+
+    const valid = await Bcrypt.compare(dto.password, user.password)
+    if (!valid) throw new AppError('Invalid credentials', 401)
+
+    const { id, name, role } = user
+    const accessToken = signJwt({ id, name, role })
+
+    return { id, name, role, accessToken }
+  }
+
+  async register(dto: CreateUserDto): Promise<AuthResponse> {
+    const exists = await this.prisma.user.findFirst({
+      where: { OR: [{ email: dto.email }, { phone_number: dto.phone_number }] },
+    })
+
+    if (exists) {
+      throw new AppError('User with email or phone number already exists', 409)
+    }
+
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name,
+        email: dto.email,
+        password: await Bcrypt.hash(dto.password),
+        phone_number: dto.phone_number,
+        role: [UserRole.USER],
+      },
+    })
+
+    const { id, name, role } = user
+    const accessToken = signJwt({ id, name, role })
+
+    return { id, name, role, accessToken }
+  }
+
+  async createGuest(): Promise<AuthResponse> {
+    const guest = await this.userService.createGuest()
+
+    const { id, role, name } = guest
+
+    const accessToken = signJwt({ id, role })
+    return { id, role, accessToken, name }
+  }
+}

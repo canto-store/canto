@@ -1,11 +1,13 @@
-import { Response, NextFunction } from 'express'
-import AuthService from './auth.service'
+import { Request, Response, NextFunction } from 'express'
+import { AuthServiceV1, AuthServiceV2 } from './auth.service'
 import { CreateUserDto, LoginDto } from './auth.types'
 import { signJwt } from '../../utils/jwt'
 import { AuthRequest } from '../../middlewares/auth.middleware'
+import CartService from '../user/cart/cart.service'
+import UserService from '../user/user.service'
 
-class AuthController {
-  private readonly authService = new AuthService()
+export class AuthControllerV1 {
+  private readonly authService = new AuthServiceV1()
 
   public async register(req: AuthRequest, res: Response, next: NextFunction) {
     try {
@@ -77,4 +79,29 @@ class AuthController {
   }
 }
 
-export default AuthController
+export class AuthControllerV2 {
+  private readonly authService = new AuthServiceV2()
+  private readonly cartService = new CartService()
+  private readonly userService = new UserService()
+
+  public async login(req: AuthRequest, res: Response) {
+    const user = await this.authService.login(req.body)
+    if (req.user) {
+      await this.cartService.mergeCarts(req.user.id, user.id)
+      await this.userService.deleteUserById(req.user.id)
+    }
+    res.status(200).json(user)
+  }
+  public async register(req: AuthRequest, res: Response) {
+    const user = await this.authService.register(req.body)
+    if (req.user) {
+      await this.cartService.updateCartUserId(req.user.id, user.id)
+      await this.userService.deleteUserById(req.user.id)
+    }
+    res.status(201).json(user)
+  }
+  public async createGuest(req: Request, res: Response) {
+    const guest = await this.authService.createGuest()
+    res.status(201).json(guest)
+  }
+}

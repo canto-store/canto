@@ -18,17 +18,17 @@ import { InstallPWA } from "@/components/pwa/InstallPWA";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { useLogout, useUserQuery } from "@/lib/auth";
 import { getUserRole } from "@/lib/utils";
+import { useUserStore } from "@/stores/useUserStore";
 
 export default function Page() {
-  const { data: user } = useUserQuery();
+  const user = useUserStore((s) => s.user);
   const role = getUserRole(user?.role);
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const { mutate: logout } = useLogout();
+  const { logout } = useUserStore();
 
   const handleLanguageChange = () => {
     const value = locale === "en" ? "ar" : "en";

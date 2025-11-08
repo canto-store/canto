@@ -32,7 +32,6 @@ app.use(
       'Accept',
       'Origin',
     ],
-    exposedHeaders: ['Set-Cookie'],
   })
 )
 

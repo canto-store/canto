@@ -2,7 +2,7 @@ import { UserRole } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret'
-const JWT_EXPIRES_IN = '5m'
+// const JWT_EXPIRES_IN = '5m'
 const REFRESH_EXPIRES_IN = '7d'
 
 export interface JwtPayload {
@@ -12,7 +12,7 @@ export interface JwtPayload {
 }
 
 export function signJwt(payload: JwtPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+  return jwt.sign(payload, JWT_SECRET)
 }
 
 export function signRefreshToken(p: JwtPayload) {
