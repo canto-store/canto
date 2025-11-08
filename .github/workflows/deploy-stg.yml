@@ -179,10 +179,10 @@ jobs:
 
             dashboard:
               image: \${DASHBOARD_IMAGE}
-            enviroment:
-                - PORT=7000
-            expose:
-                - "7000"
+              enviroment:
+                  - PORT=7000
+              expose:
+                  - "7000"
 
             caddy:
               image: \${CADDY_IMAGE}
