@@ -5,7 +5,6 @@ services:
       target: web
       args:
         TARGET_APP: web
-    container_name: nextjs-web
     restart: unless-stopped
     environment:
       - NODE_ENV=production
@@ -21,7 +20,6 @@ services:
       target: server
       args:
         TARGET_APP: server
-    container_name: express-server
     restart: unless-stopped
     environment:
       - NODE_ENV=production
@@ -36,7 +34,6 @@ services:
       target: dashboard
       args:
         TARGET_APP: dashboard
-    container_name: vite-dashboard
     restart: unless-stopped
     environment:
       - NODE_ENV=production
@@ -65,11 +62,15 @@ services:
       - dashboard
     networks:
       - app-network
+      - staging-network
 
 networks:
   app-network:
     driver: bridge
-    internal: false
+    internal: true
+  staging-network:
+    driver: bridge
+    internal: true
 
 volumes:
   caddy-data:
