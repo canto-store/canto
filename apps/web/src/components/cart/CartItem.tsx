@@ -43,7 +43,7 @@ export function CartItemComponent({
   };
 
   const handleProductClick = () => {
-    router.push(`/product/${encodeURIComponent(item.name.toLowerCase())}`);
+    router.push(`/product/${item.slug.toLowerCase()}`);
   };
 
   if (compact) {
