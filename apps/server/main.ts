@@ -24,7 +24,6 @@ async function main() {
   }
 }
 main().catch(err => {
-  //hello
   console.error('Fatal error during startup:', err)
   process.exit(1)
 })

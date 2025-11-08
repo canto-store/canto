@@ -179,7 +179,7 @@ jobs:
 
             dashboard:
               image: \${DASHBOARD_IMAGE}
-              enviroment:
+              environment:
                   - PORT=7000
               expose:
                   - "7000"
