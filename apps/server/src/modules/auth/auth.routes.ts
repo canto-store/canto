@@ -1,26 +1,77 @@
 import { Router } from 'express'
-import AuthController from './auth.controller'
+import { AuthControllerV1, AuthControllerV2 } from './auth.controller'
 import AuthMiddleware from '../../middlewares/auth.middleware'
+import { catchAsync } from '../../utils/catchAsync'
+class AuthRoutesV1 {
+  public router: Router
+  private authController: AuthControllerV1
+  private authMiddleware: AuthMiddleware
 
-const router = Router()
-const authController = new AuthController()
-const authMiddleware = new AuthMiddleware()
+  constructor() {
+    this.router = Router()
+    this.authController = new AuthControllerV1()
+    this.authMiddleware = new AuthMiddleware()
+    this.initializeRoutes()
+  }
 
-router.post(
-  '/register',
-  authMiddleware.checkAuth.bind(authMiddleware),
-  authController.register.bind(authController)
-)
-router.post(
-  '/login',
-  authMiddleware.checkAuth.bind(authMiddleware),
-  authController.login.bind(authController)
-)
-router.get(
-  '/me',
-  authMiddleware.checkAuth.bind(authMiddleware),
-  authController.me.bind(authController)
-)
-router.post('/logout', authController.logout.bind(authController))
+  private initializeRoutes() {
+    this.router.post(
+      '/register',
+      this.authMiddleware.checkAuth.bind(this.authMiddleware),
+      this.authController.register.bind(this.authController)
+    )
 
-export default router
+    this.router.post(
+      '/login',
+      this.authMiddleware.checkAuth.bind(this.authMiddleware),
+      this.authController.login.bind(this.authController)
+    )
+
+    this.router.get(
+      '/me',
+      this.authMiddleware.checkAuth.bind(this.authMiddleware),
+      this.authController.me.bind(this.authController)
+    )
+
+    this.router.post(
+      '/logout',
+      this.authController.logout.bind(this.authController)
+    )
+  }
+}
+class AuthRoutesV2 {
+  public router: Router
+  private authController: AuthControllerV2
+  private authMiddleware: AuthMiddleware
+
+  constructor() {
+    this.router = Router()
+    this.authController = new AuthControllerV2()
+    this.authMiddleware = new AuthMiddleware()
+    this.initializeRoutes()
+  }
+
+  private initializeRoutes() {
+    this.router.post(
+      '/login',
+      this.authMiddleware.validateLogin.bind(this.authMiddleware),
+      this.authMiddleware.checkGuest.bind(this.authMiddleware),
+      catchAsync(this.authController.login.bind(this.authController))
+    )
+
+    this.router.post(
+      '/register',
+      this.authMiddleware.validateRegister.bind(this.authMiddleware),
+      this.authMiddleware.checkGuest.bind(this.authMiddleware),
+      catchAsync(this.authController.register.bind(this.authController))
+    )
+
+    this.router.post(
+      '/create-guest',
+      catchAsync(this.authController.createGuest.bind(this.authController))
+    )
+  }
+}
+
+export const authRouterV1 = new AuthRoutesV1().router
+export const authRouterV2 = new AuthRoutesV2().router

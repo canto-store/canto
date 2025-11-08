@@ -11,11 +11,9 @@ export function QueryProvider({ children }: { children: ReactNode }) {
         defaultOptions: {
           queries: {
             gcTime: 5 * 60 * 1000,
-            retry: 1,
             refetchOnWindowFocus: false,
           },
           mutations: {
-            retry: 1,
             onError(error) {
               const message = parseApiError(error);
               console.error(message);

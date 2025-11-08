@@ -21,13 +21,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 // Define the form validation schema with Zod
 const registerFormSchema = z
   .object({
     name: z.string().min(1, { message: "Name is required" }),
     email: z.email({ message: "Invalid email address" }),
-    phone_number: z.string().min(11, { message: "Phone number is required" }),
+    phone_number: z
+      .string()
+      .trim()
+      .refine((val) => {
+        const phone = parsePhoneNumberFromString(val, "EG");
+        return phone?.isValid() ?? false;
+      }, "Invalid Egyptian phone number"),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters" }),

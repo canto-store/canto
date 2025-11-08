@@ -21,8 +21,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
-import { useLogout, useUserQuery } from "@/lib/auth";
 import { getUserRole } from "@/lib/utils";
+import { useUserStore } from "@/stores/useUserStore";
 
 function MobileDrawer({
   open,
@@ -32,9 +32,9 @@ function MobileDrawer({
   onOpenChange: () => void;
 }) {
   const router = useRouter();
-  const { data: user } = useUserQuery();
+  const user = useUserStore((s) => s.user);
   const role = getUserRole(user?.role);
-  const { mutate: logout } = useLogout();
+  const logout = useUserStore((s) => s.logout);
   const handleNavigation = (href: string) => {
     onOpenChange();
     router.push(href);

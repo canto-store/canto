@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { XOctagon, LogOut } from "lucide-react";
 import { redirect } from "@/i18n/navigation";
-import { useLogout } from "@/lib/auth";
+import { useUserStore } from "@/stores/useUserStore";
 
 export const ForbiddenError = () => {
-  const { mutateAsync: logout } = useLogout();
+  const logout = useUserStore((s) => s.logout);
   const handleLogout = async () => {
     await logout();
     redirect({ href: "/sell", locale: "en" });

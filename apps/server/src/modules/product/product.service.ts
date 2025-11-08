@@ -1265,9 +1265,9 @@ class ProductService {
     return variant.product.status === ProductStatus.ACTIVE
   }
 
-  async validateCartItems(cartId: number) {
+  async validateCartItems(userId: number) {
     const cartItems = await this.prisma.cartItem.findMany({
-      where: { cartId },
+      where: { cart: { userId } },
       select: {
         id: true,
         quantity: true,
