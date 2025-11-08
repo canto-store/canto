@@ -1,5 +1,5 @@
 # Development overrides
-# This file is automatically loaded by docker-compose
+# Automatically loaded by docker-compose
 # Use docker-compose -f docker-compose.yml -f docker-compose.prod.yml for production
 services:
   web:
@@ -9,7 +9,7 @@ services:
       - ./src:/app/src:ro
       - ./public:/app/public:ro
     ports:
-      - '3000:3000'
+      - "3000:3000"
 
   server:
     environment:
@@ -17,7 +17,7 @@ services:
     volumes:
       - ./server:/app:ro
     ports:
-      - '8000:8000'
+      - "8000:8000"
 
   dashboard:
     environment:
@@ -25,10 +25,13 @@ services:
     volumes:
       - ./dashboard:/app:ro
     ports:
-      - '5173:5173'
+      - "5173:5173"
 
-  nginx:
+  caddy:
+    image: caddy:2.8
     volumes:
-      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
     ports:
-      - '8080:80'
+      - "8080:80"
+    environment:
+      - DOMAIN=localhost

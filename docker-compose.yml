@@ -11,7 +11,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
     expose:
-      - '3000'
+      - "3000"
     networks:
       - app-network
 
@@ -27,7 +27,7 @@ services:
       - NODE_ENV=production
       - PORT=8000
     expose:
-      - '8000'
+      - "8000"
     networks:
       - app-network
   dashboard:
@@ -42,36 +42,29 @@ services:
       - NODE_ENV=production
       - PORT=5173
     expose:
-      - '5173'
+      - "5173"
     networks:
       - app-network
 
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    container_name: nginx-proxy
+  caddy:
+    image: caddy:2.8
+    container_name: caddy-proxy
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - ssl-certs:/etc/nginx/ssl
-      - certbot-data:/etc/letsencrypt
-      - ./logs/nginx:/var/log/nginx
-      - ./certbot:/var/www/certbot
+      - "80:80"
+      - "443:443"
     environment:
-      - WEB_HOST=web
-      - SERVER_HOST=server
-      - DASHBOARD_HOST=dashboard
+      - DOMAIN=canto-store.com
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+      - server
+      - dashboard
     networks:
       - app-network
-    healthcheck:
-      test: ['CMD', 'nginx', '-t']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
 
 networks:
   app-network:
@@ -79,6 +72,5 @@ networks:
     internal: false
 
 volumes:
-  ssl-certs:
-  nginx-logs:
-  certbot-data:
+  caddy-data:
+  caddy-config:
