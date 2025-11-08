@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import authRouter from './modules/auth/auth.routes'
+import { authRouterV1, authRouterV2 } from './modules/auth/auth.routes'
 import sellerRouter from './modules/seller/seller.routes'
 import brandRoutes from './modules/seller/brand/brand.routes'
 import categoryRoutes from './modules/product/category/category.routes'
@@ -15,7 +15,8 @@ import wishlistRouter from './modules/user/wishlist/wishlist.routes'
 
 const router = Router()
 
-router.use('/auth', authRouter)
+router.use('/v1/auth', authRouterV1)
+router.use('/v2/auth', authRouterV2)
 router.use('/seller', sellerRouter)
 router.use('/brand', brandRoutes)
 router.use('/categories', categoryRoutes)

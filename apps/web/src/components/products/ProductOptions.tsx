@@ -118,6 +118,7 @@ export default function ProductOptions({
       {requiredOptionTypes.map((optionName) => {
         const availableValues = getAvailableOptions(optionName);
 
+        if (availableValues.length === 0) return null;
         return (
           <div key={optionName} className="mb-4">
             <h3 className="mb-2 font-medium">{optionName}</h3>

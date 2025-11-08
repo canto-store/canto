@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CircleUser, User, Settings, LogOut, Loader2Icon } from "lucide-react";
+import { CircleUser, User, Settings, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
-import { useLogout, useUserQuery } from "@/lib/auth";
 import { getUserRole } from "@/lib/utils";
+import { useUserStore } from "@/stores/useUserStore";
 
 export function UserDropdown() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -18,8 +18,8 @@ export function UserDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("header");
   const router = useRouter();
-  const { data: user } = useUserQuery();
-  const { mutateAsync: logoutMutation, isPending } = useLogout();
+  const user = useUserStore((s) => s.user);
+  const logout = useUserStore((s) => s.logout);
   const role = getUserRole(user?.role);
 
   useEffect(() => {
@@ -66,7 +66,8 @@ export function UserDropdown() {
   };
 
   const handleLogout = async () => {
-    logoutMutation().then(() => setUserDropdownOpen(false));
+    logout();
+    setUserDropdownOpen(false);
   };
 
   const dropDownItems = [
@@ -127,21 +128,9 @@ export function UserDropdown() {
                 variant="ghost"
                 className="text-primary hover:bg-primary/10 flex w-full items-center justify-normal px-4 py-2.5 text-sm transition-colors"
                 onClick={handleLogout}
-                disabled={isPending}
               >
-                {isPending ? (
-                  <>
-                    <Loader2Icon
-                      className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"} animate-spin`}
-                    />
-                    Loading
-                  </>
-                ) : (
-                  <>
-                    <LogOut className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />
-                    {t("logout")}
-                  </>
-                )}
+                <LogOut className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />
+                {t("logout")}
               </Button>
             </div>
           </div>

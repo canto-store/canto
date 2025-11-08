@@ -4,23 +4,22 @@ import { BrandForm } from "@/components/sell/BrandForm";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect } from "react";
 import Spinner from "../common/Spinner";
-import { useUserQuery } from "@/lib/auth";
-import { isUser } from "@/lib/utils";
+import { useUserStore } from "@/stores/useUserStore";
 
 export default function BrandPage() {
   const t = useTranslations("sell");
 
-  const { data: user, isLoading } = useUserQuery();
-  const isAuthenticated = isUser(user?.role);
+  const isAuthenticated = useUserStore((s) => s.isAuthenticated);
+
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
+    if (!isAuthenticated) {
       router.replace("/login");
     }
-  }, [user, isLoading, router]);
+  }, [isAuthenticated, router]);
 
-  if (!isLoading && isAuthenticated)
+  if (isAuthenticated)
     return (
       <div className="mx-auto flex max-w-2xl flex-col items-center justify-center p-10">
         <div className="mb-8 text-center">

@@ -3,33 +3,39 @@ import AppError from '../utils/appError'
 import { PrismaClient } from '@prisma/client'
 import { AuthRequest } from './auth.middleware'
 
+const prisma = new PrismaClient()
+
 const errorMiddleware: ErrorRequestHandler = async (
-  error: AppError,
+  err: any,
   req: AuthRequest,
   res,
   _next
 ) => {
-  const prisma = new PrismaClient()
-
   console.error('Error occurred:', {
-    message: error.message,
-    stack: error.stack,
+    message: err.message,
+    stack: err.stack,
   })
-  await prisma.errorLog
+
+  prisma.errorLog
     .create({
       data: {
-        message: error.message,
-        stack: error.stack ?? 'No stack trace available',
+        message: err.message,
+        stack: err.stack ?? 'No stack trace',
         userId: req.user?.id ?? null,
       },
     })
-    .catch(dbError => {
-      console.error('Failed to log error to database:', dbError)
+    .catch(dbError => console.error('Failed to log error:', dbError))
+
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
     })
-  res.status(500).json({
+  }
+
+  return res.status(500).json({
     status: 'error',
     message: 'Internal Server Error',
-    details: error.stack || error.message || String(error),
   })
 }
 

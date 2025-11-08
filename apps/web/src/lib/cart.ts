@@ -2,49 +2,44 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./api";
 import { Cart } from "@canto/types/cart";
 import { toast } from "sonner";
-import { AxiosError } from "axios";
-import { useUserQuery } from "./auth";
+import { useUserStore } from "@/stores/useUserStore";
 interface AddToCartInput {
   variantId: number;
   quantity: number;
 }
 
 export const useGetCart = () => {
-  const { data: user, isLoading: isUserLoading } = useUserQuery();
-
+  const { isAuthenticated } = useUserStore();
   return useQuery<Cart>({
     queryKey: ["cart"],
     queryFn: async () => {
-      return await api
-        .get<Cart>("/cart/user")
-        .then((res) => res.data)
-        .catch(() => ({ items: [], count: 0, price: 0 }));
+      return await api.get<Cart>("/cart/user").then((res) => res.data);
     },
-    enabled: !!user && !isUserLoading,
+    enabled: isAuthenticated,
+    placeholderData: { items: [], count: 0, price: 0 },
   });
 };
 
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
+  const { isAuthenticated, setAuth } = useUserStore();
   return useMutation({
     mutationFn: async ({ variantId, quantity }: AddToCartInput) => {
+      if (!isAuthenticated) {
+        await api.post("/v2/auth/create-guest").then((res) => {
+          setAuth(res.data);
+        });
+      }
       return await api
         .put("/cart/items", {
           variantId,
           quantity,
         })
-        .then((res) => {
+        .then(() => {
           queryClient.invalidateQueries({ queryKey: ["cart"] });
-          return res.data;
         })
-        .catch((err) => {
-          const message =
-            err instanceof AxiosError &&
-            err?.response?.status != null &&
-            err.response.status < 500
-              ? err.message
-              : "Failed to add to cart";
-          toast.error(message);
+        .catch(() => {
+          toast.error("Failed to add to cart");
         });
     },
   });
@@ -58,10 +53,8 @@ export const useDeleteFromCart = () => {
         .delete("/cart/items", {
           data: { variantId },
         })
-        .then((res) => {
-          toast.success("Removed from cart");
+        .then(() => {
           queryClient.invalidateQueries({ queryKey: ["cart"] });
-          return res.data;
         })
         .catch(() => {
           toast.error("Failed to remove from cart");
