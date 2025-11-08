@@ -13,6 +13,18 @@ dashboard.canto-store.com {
   reverse_proxy dashboard:5173
 }
 
+staging.canto-store.com {
+  reverse_proxy web:5000
+}
+
+api-staging.canto-store.com {
+  reverse_proxy server:9000
+}
+
+dashboard-staging.canto-store.com {
+  reverse_proxy dashboard:7000
+}
+
 # Health check endpoint
 :80 {
   @health path /health
