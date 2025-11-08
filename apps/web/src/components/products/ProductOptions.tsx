@@ -30,7 +30,12 @@ export default function ProductOptions({
     variants.forEach((variant) => {
       // Create a key from all option values (sorted for consistency)
       const optionKeys = Object.keys(variant.options);
-      const key = optionKeys.map((k) => variant.options[k]).join("|");
+
+      const key = Object.keys(variant.options)
+        .sort() // ✅ ensures consistent order
+        .map((k) => variant.options[k])
+        .join("|");
+
       map.set(key, variant);
     });
     return map;
@@ -88,7 +93,7 @@ export default function ProductOptions({
   const handleOptionSelect = (optionName: string, value: string) => {
     const newOptions = { ...selectedOptions };
 
-    // Toggle selection - deselect if clicking the same option
+    // Toggle selection
     if (newOptions[optionName] === value) {
       delete newOptions[optionName];
     } else {
@@ -97,20 +102,14 @@ export default function ProductOptions({
 
     setSelectedOptions(newOptions);
 
-    // Only return a variant if ALL required options are selected
-    const allOptionsSelected = requiredOptionTypes.every(
-      (type) => newOptions[type],
+    // Try to find the matching variant directly
+    const matchingVariant = variants.find((variant) =>
+      Object.entries(variant.options).every(
+        ([key, val]) => newOptions[key] === val,
+      ),
     );
 
-    if (allOptionsSelected) {
-      // Use the map for faster variant lookup
-      const optionKeys = requiredOptionTypes;
-      const key = optionKeys.map((k) => newOptions[k]).join("|");
-      const matchingVariant = variantsByOptions.get(key);
-      onVariantChange(matchingVariant || undefined);
-    } else {
-      onVariantChange(undefined);
-    }
+    onVariantChange(matchingVariant || undefined);
   };
 
   return (

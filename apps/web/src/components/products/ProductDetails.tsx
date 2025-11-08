@@ -11,6 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { useAddToCart } from "@/lib/cart";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -28,6 +29,14 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedVariant, setSelectedVariant] = useState<
     ProductVariant | undefined
   >(undefined);
+
+  const [api, setApi] = React.useState<CarouselApi | null>(null);
+
+  // Example: move to a specific slide
+  const showImage = (index: number) => {
+    if (!api) return;
+    api.scrollTo(index); // embla method to go to a specific slide
+  };
 
   const { mutateAsync: addToCart } = useAddToCart();
 
@@ -67,7 +76,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   return (
     <div className="mt-3 grid flex-1 items-center gap-4 md:grid-cols-2 md:gap-8">
       <div className="relative w-full">
-        <Carousel className="w-full">
+        <Carousel setApi={setApi} className="w-full">
           <CarouselContent>
             {images.map((image) => (
               <CarouselItem key={image.url} className="basis-full">

@@ -54,11 +54,11 @@ export function HeartButton({ productId, className }: HeartButtonProps) {
   }, [data, productId]);
 
   return (
-    <Suspense fallback={<Skeleton className="h-12 w-12" />}>
+    <Suspense fallback={<Skeleton className="h-12 w-12 md:h-10 md:w-10" />}>
       <Button
         variant="outline"
         size="icon"
-        className={cn("h-12 w-12 flex-shrink-0", className)}
+        className={cn("h-12 w-12 flex-shrink-0 md:h-10 md:w-10", className)}
         disabled={isPending}
         onClick={handleToggleWishlist}
       >
