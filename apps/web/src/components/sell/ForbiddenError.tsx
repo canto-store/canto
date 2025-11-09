@@ -2,11 +2,15 @@ import { Button } from "@/components/ui/button";
 import { XOctagon, LogOut } from "lucide-react";
 import { redirect } from "@/i18n/navigation";
 import { useUserStore } from "@/stores/useUserStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const ForbiddenError = () => {
   const logout = useUserStore((s) => s.logout);
-  const handleLogout = async () => {
-    await logout();
+  const queryClient = useQueryClient();
+
+  const handleLogout = () => {
+    logout();
+    queryClient.setQueryData(["cart"], { items: [], count: 0, price: 0 });
     redirect({ href: "/sell", locale: "en" });
   };
   return (

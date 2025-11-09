@@ -9,6 +9,7 @@ import { LoginModal } from "../auth/login";
 import { RegisterModal } from "../auth/register";
 import { getUserRole } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function UserDropdown() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -20,6 +21,8 @@ export function UserDropdown() {
   const router = useRouter();
   const user = useUserStore((s) => s.user);
   const logout = useUserStore((s) => s.logout);
+  const queryClient = useQueryClient();
+
   const role = getUserRole(user?.role);
 
   useEffect(() => {
@@ -67,6 +70,7 @@ export function UserDropdown() {
 
   const handleLogout = async () => {
     logout();
+    queryClient.setQueryData(["cart"], { items: [], count: 0, price: 0 });
     setUserDropdownOpen(false);
   };
 

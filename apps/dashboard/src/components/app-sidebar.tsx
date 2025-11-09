@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { useUserStore } from '@/stores/useUserStore'
+import { useQueryClient } from 'node_modules/@tanstack/react-query/build/modern/QueryClientProvider'
 
 const menuItems = [
   {
@@ -60,8 +61,11 @@ export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar()
 
   const { logout } = useUserStore()
+  const queryClient = useQueryClient()
+
   const handleLogout = () => {
     logout()
+    queryClient.setQueryData(['cart'], { items: [], count: 0, price: 0 })
     router.navigate({ to: '/' })
   }
 
