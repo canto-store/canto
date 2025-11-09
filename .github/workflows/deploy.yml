@@ -165,6 +165,6 @@ jobs:
             set -e
             cd /home/omar/canto
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker compose down --timeout 30 || true
+            docker compose --env-file .env.prod pull
             docker compose --env-file .env.prod up -d
             docker image prune -af
