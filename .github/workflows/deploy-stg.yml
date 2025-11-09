@@ -147,7 +147,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "docker-compose.staging.yml,.env.prod,Caddyfile"
+          source: "docker-compose.staging.yml,.env.prod"
           target: "/home/omar/staging"
           overwrite: true
 
@@ -170,10 +170,6 @@ jobs:
 
             # Deploy staging services (they'll join the canto-network)
             docker compose -f docker-compose.staging.yml --env-file .env.prod up -d
-
-            # Reload Caddy config in the production stack
-            cd /home/omar/canto
-            docker compose exec production-caddy caddy reload --config /etc/caddy/Caddyfile
 
             echo "✓ Staging deployed successfully"
 

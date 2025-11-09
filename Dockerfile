@@ -60,6 +60,9 @@ RUN npx prisma generate
 
 # Web app (Next.js) production image
 FROM base AS web
+ARG NODE_ENV=production
+ARG PORT=3000
+
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs
@@ -71,36 +74,43 @@ COPY --from=build --chown=nextjs:nodejs /usr/src/app/apps/web/public ./apps/web/
 
 USER nextjs
 
-ENV NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
+ENV PORT=${PORT}
 ENV HOSTNAME="0.0.0.0"
 
-EXPOSE 3000
+EXPOSE ${PORT}
 CMD ["node", "apps/web/server.js"]
 
 # Server app (Express) production image  
 FROM base AS server
+ARG NODE_ENV=production
+ARG PORT=8000
+
 WORKDIR /app
 
 # Copy the clean deployment (no symlinks, only prod dependencies)
 COPY --from=deploy-server /tmp/server ./
 
-ENV NODE_ENV=production
-ENV PORT=8000
+ENV NODE_ENV=${NODE_ENV}
+ENV PORT=${PORT}
 
-EXPOSE 8000
+EXPOSE ${PORT}
 CMD ["node", "build/src/index.js"]
 
 # Dashboard app (Vite React) production image
 FROM base AS dashboard
+ARG NODE_ENV=production
+ARG PORT=5173
+
 WORKDIR /app
 
 RUN npm install -g serve
 
 COPY --from=build /usr/src/app/apps/dashboard/dist ./dist
 
-ENV NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+ENV PORT=${PORT}
 
-EXPOSE 5173
-CMD ["serve", "-s", "dist", "-l", "5173"]
+EXPOSE ${PORT}
+CMD ["sh", "-c", "serve -s dist -l $PORT"]
