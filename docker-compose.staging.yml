@@ -3,7 +3,7 @@
 
 services:
   web:
-    image: ghcr.io/canto-store/canto-web:testing-latest
+    image: ${WEB_IMAGE}
     container_name: staging-web
     environment:
       - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
@@ -22,7 +22,7 @@ services:
     restart: unless-stopped
 
   server:
-    image: ghcr.io/canto-store/canto-server:testing-latest
+    image: ${SERVER_IMAGE}
     container_name: staging-server
     environment:
       - DATABASE_URL=${DATABASE_URL}
@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
 
   dashboard:
-    image: ghcr.io/canto-store/canto-dashboard:testing-latest
+    image: ${DASHBOARD_IMAGE}
     container_name: staging-dashboard
     environment:
       - PORT=7000

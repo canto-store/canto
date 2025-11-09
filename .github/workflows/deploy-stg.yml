@@ -118,7 +118,7 @@ jobs:
 
       - name: Create staging environment file
         run: |
-          cat > .env.staging << EOF
+          cat > .env.prod << EOF
           DOMAIN=${{ secrets.DOMAIN }}
           DATABASE_URL=${{ secrets.STG_DATABASE_URL }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
@@ -133,6 +133,10 @@ jobs:
           SPACES_SECRET=${{ secrets.SPACES_SECRET }}
           SPACES_REGION=${{ secrets.SPACES_REGION }}
           SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
+          WEB_IMAGE=ghcr.io/${{ github.repository }}-web:testing-latest
+          SERVER_IMAGE=ghcr.io/${{ github.repository }}-server:testing-latest
+          DASHBOARD_IMAGE=ghcr.io/${{ github.repository }}-dashboard:testing-latest
+          CADDY_IMAGE=caddy:2.8
           EOF
 
       - name: Copy deployment files
@@ -142,7 +146,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "docker-compose.staging.yml,.env.staging,Caddyfile"
+          source: "docker-compose.staging.yml,.env.prod,Caddyfile"
           target: "/home/omar/staging"
           overwrite: true
 
@@ -164,7 +168,7 @@ jobs:
             docker compose -f docker-compose.staging.yml pull
             
             # Deploy staging services (they'll join the canto-network)
-            docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
+            docker compose -f docker-compose.staging.yml --env-file .env.prod up -d
             
             # Reload Caddy config in the production stack
             cd /home/omar/canto
