@@ -235,14 +235,11 @@ export class AuthServiceV2 {
     })
 
     if (!user)
-      throw new AppError(
-        "We couldn't find an account with this email address. Please signup!",
-        410
-      )
+      throw new AppError('Invalid email or password. Please try again.', 401)
 
     const valid = await Bcrypt.compare(dto.password, user.password)
     if (!valid)
-      throw new AppError('The password you entered is incorrect.', 401)
+      throw new AppError('Invalid email or password. Please try again.', 401)
 
     const { id, name, role } = user
     const accessToken = signJwt({ id, name, role })
