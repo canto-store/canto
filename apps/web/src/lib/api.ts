@@ -2,11 +2,7 @@ import axios from "axios";
 import { useUserStore } from "@/stores/useUserStore";
 
 const BACKEND_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://api.canto-store.com/api"
-    : process.env.NODE_ENV === "test"
-      ? "http://api-staging.canto-store.com/api"
-      : "http://localhost:8000/api";
+  process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000/api";
 
 const api = axios.create({
   baseURL: BACKEND_URL,
