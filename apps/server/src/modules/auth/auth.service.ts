@@ -234,10 +234,15 @@ export class AuthServiceV2 {
       where: { email: dto.email },
     })
 
-    if (!user) throw new AppError('User not found', 404)
+    if (!user)
+      throw new AppError(
+        "We couldn't find an account with this email address. Please signup!",
+        410
+      )
 
     const valid = await Bcrypt.compare(dto.password, user.password)
-    if (!valid) throw new AppError('Invalid credentials', 401)
+    if (!valid)
+      throw new AppError('The password you entered is incorrect.', 401)
 
     const { id, name, role } = user
     const accessToken = signJwt({ id, name, role })
@@ -246,12 +251,23 @@ export class AuthServiceV2 {
   }
 
   async register(dto: CreateUserDto): Promise<AuthResponse> {
-    const exists = await this.prisma.user.findFirst({
+    const existingUser = await this.prisma.user.findFirst({
       where: { OR: [{ email: dto.email }, { phone_number: dto.phone_number }] },
     })
 
-    if (exists) {
-      throw new AppError('User with email or phone number already exists', 409)
+    if (existingUser) {
+      if (existingUser.email === dto.email) {
+        throw new AppError(
+          'An account with this email address already exists.',
+          409
+        )
+      }
+      if (existingUser.phone_number === dto.phone_number) {
+        throw new AppError(
+          'An account with this phone number already exists.',
+          409
+        )
+      }
     }
 
     const user = await this.prisma.user.create({
