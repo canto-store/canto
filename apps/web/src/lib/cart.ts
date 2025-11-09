@@ -9,13 +9,13 @@ interface AddToCartInput {
 }
 
 export const useGetCart = () => {
-  const { isAuthenticated } = useUserStore();
+  const { user } = useUserStore();
   return useQuery<Cart>({
     queryKey: ["cart"],
     queryFn: async () => {
       return await api.get<Cart>("/cart/user").then((res) => res.data);
     },
-    enabled: isAuthenticated,
+    enabled: user !== null,
     placeholderData: { items: [], count: 0, price: 0 },
   });
 };
