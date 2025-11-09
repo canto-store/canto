@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { Package, Building2, Users } from 'lucide-react'
 import {
   Card,
@@ -7,20 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { api } from '@/lib/auth-api'
 import { useLatestActivities, useDashboardCounts } from '@/hooks/use-data'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useUserStore } from '@/stores/useUserStore'
 
 export const Route = createFileRoute('/dashboard/')({
-  beforeLoad: async () => {
-    const isAuthenticated = await api
-      .me()
-      .then(res => {
-        if (res.data.role.includes('ADMIN')) return true
-        else throw redirect({ to: '/' })
-      })
-      .catch(() => false)
-    if (!isAuthenticated) throw redirect({ to: '/' })
+  beforeLoad: () => {
+    const { isAuthenticated } = useUserStore.getState()
+    if (!isAuthenticated) {
+      throw redirect({ to: '/' })
+    }
   },
   component: DashboardIndexPage,
 })

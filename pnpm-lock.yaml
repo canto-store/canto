@@ -48,6 +48,9 @@ importers:
 
   apps/dashboard:
     dependencies:
+      '@canto/types':
+        specifier: workspace:^
+        version: link:../../modules/types
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.62.0(react@19.1.1))
@@ -117,6 +120,9 @@ importers:
       zod:
         specifier: ^4.1.8
         version: 4.1.8
+      zustand:
+        specifier: ^5.0.8
+        version: 5.0.8(@types/react@19.1.13)(react@19.1.1)(use-sync-external-store@1.5.0(react@19.1.1))
     devDependencies:
       '@tanstack/eslint-plugin-query':
         specifier: ^5.86.0

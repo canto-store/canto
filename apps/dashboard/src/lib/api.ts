@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/useUserStore'
 import type { ProductFormValues } from '@/types/product'
 import axios from 'axios'
 
@@ -9,6 +10,14 @@ const BACKEND_URL =
 export const apiClient = axios.create({
   baseURL: BACKEND_URL,
   withCredentials: true,
+})
+
+apiClient.interceptors.request.use(config => {
+  const token = useUserStore.getState().accessToken
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
 export const api = {

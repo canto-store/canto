@@ -20,8 +20,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/auth-api'
-import { useState } from 'react'
+import { useUserStore } from '@/stores/useUserStore'
 
 const menuItems = [
   {
@@ -58,12 +57,11 @@ const menuItems = [
 
 export function AppSidebar() {
   const router = useRouter()
-  const [loading, setLoading] = useState<boolean>(false)
   const { isMobile, setOpenMobile } = useSidebar()
 
-  const handleLogout = async () => {
-    setLoading(true)
-    await api.logout().finally(() => setLoading(false))
+  const { logout } = useUserStore()
+  const handleLogout = () => {
+    logout()
     router.navigate({ to: '/' })
   }
 
@@ -104,9 +102,8 @@ export function AppSidebar() {
             variant="outline"
             size="sm"
             className="w-full"
-            disabled={loading}
           >
-            {loading ? 'Logging out...' : 'Logout'}
+            Logout
           </Button>
         </div>
       </SidebarFooter>

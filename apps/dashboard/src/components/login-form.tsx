@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { api } from '@/lib/auth-api'
 import { useState } from 'react'
+import { useUserStore } from '@/stores/useUserStore'
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required'),
   password: z.string().min(1, 'Password is required'),
@@ -24,6 +25,7 @@ export function LoginForm({
   const router = useRouter()
   const [error, setError] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const { setAuth } = useUserStore()
 
   const {
     register,
@@ -46,6 +48,7 @@ export function LoginForm({
             setError(true)
             throw new Error('Unauthorized: Only admins can log in')
           }
+          setAuth(res)
           router.navigate({ to: '/dashboard' })
         })
         .catch(err => {

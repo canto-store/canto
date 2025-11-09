@@ -1,28 +1,9 @@
 import { apiClient } from '@/lib/api'
-
-interface LoginCredentials {
-  email: string
-  password: string
-}
-
-interface User {
-  id: string
-  email: string
-  name: string
-  role: string[]
-}
+import type { AuthResponse, LoginDto } from '@canto/types/auth'
 
 export const api = {
-  login: async (credentials: LoginCredentials): Promise<User> => {
-    const response = await apiClient.post('/auth/login', credentials)
+  login: async (credentials: LoginDto): Promise<AuthResponse> => {
+    const response = await apiClient.post('/v2/auth/login', credentials)
     return response.data
-  },
-
-  me: async () => {
-    return await apiClient.get('/auth/me')
-  },
-
-  logout: async () => {
-    await apiClient.post('/auth/logout')
   },
 }
