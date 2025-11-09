@@ -58,7 +58,13 @@ export function FilterPanel({
                     }
                     size="sm"
                     className="text-sm"
-                    onClick={() => setSelectedCategory(category.slug)}
+                    onClick={() =>
+                      setSelectedCategory(
+                        selectedCategory === category.slug
+                          ? "All"
+                          : category.slug,
+                      )
+                    }
                   >
                     {category.name}
                   </Button>
@@ -95,9 +101,18 @@ export function FilterPanel({
                     }
                     size="sm"
                     className="text-sm"
-                    onClick={() =>
-                      setSelectedBrand([...(selectedBrand ?? []), brand.slug])
-                    }
+                    onClick={() => {
+                      if (selectedBrand?.includes(brand.slug)) {
+                        setSelectedBrand(
+                          selectedBrand.filter((b) => b !== brand.slug),
+                        );
+                      } else {
+                        setSelectedBrand([
+                          ...(selectedBrand ?? []),
+                          brand.slug,
+                        ]);
+                      }
+                    }}
                   >
                     {brand.name}
                   </Button>

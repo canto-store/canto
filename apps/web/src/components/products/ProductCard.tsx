@@ -53,10 +53,16 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-lg shadow-lg transition-transform duration-300 hover:scale-102 hover:shadow-xl",
+        "relative flex h-full flex-col rounded-lg shadow-lg transition-transform duration-300 hover:scale-102 hover:shadow-xl",
         className,
       )}
     >
+      {product.stock === 0 && (
+        <span className="absolute top-2 right-2 z-10 rounded-full bg-black/70 px-3 py-1 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm backdrop-blur-sm">
+          Out of Stock
+        </span>
+      )}
+
       <button
         onClick={() => handleProductClick(product)}
         className="hover:cursor-pointer"
