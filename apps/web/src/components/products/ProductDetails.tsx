@@ -33,9 +33,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [api, setApi] = React.useState<CarouselApi | null>(null);
 
   // Example: move to a specific slide
-  const showImage = (index: number) => {
+  const showImage = (matchingVariant: ProductVariant) => {
     if (!api) return;
-    api.scrollTo(index); // embla method to go to a specific slide
+
+    // 🔥 If the variant has images, find the index of its first image in the global images list
+    if (matchingVariant.images.length > 0) {
+      const firstImageUrl = matchingVariant.images[0].url;
+
+      // Find the index of this image inside the main carousel images array
+      const imageIndex = product.variants
+        .flatMap((variant) => variant.images)
+        .findIndex((img) => img.url === firstImageUrl);
+
+      if (imageIndex >= 0) {
+        api.scrollTo(imageIndex); // embla method to go to a specific slide
+      }
+    }
   };
 
   const { mutateAsync: addToCart } = useAddToCart();
@@ -153,6 +166,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <ProductOptions
           variants={product.variants}
           onVariantChange={onVariantChange}
+          showImage={showImage}
         />
         <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
           <ProductQuantitySelector
