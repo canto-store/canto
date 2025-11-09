@@ -1,11 +1,11 @@
 import { WebCategory } from "./WebCategory";
 import MobileCategory from "./MobileCategory";
-import { useCategories } from "@/lib/categories";
+import { useAllCategories } from "@/lib/categories";
 import { HomeCategoriesSkeleton } from "./HomeCategoriesSkeleton";
 import { useBrands } from "@/lib/brand";
 
 export function HomeCategories() {
-  const { data: categories, isLoading } = useCategories();
+  const { data: categories, isLoading } = useAllCategories();
   useBrands();
 
   if (isLoading || !categories) {

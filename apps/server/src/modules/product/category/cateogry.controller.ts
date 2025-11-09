@@ -15,6 +15,19 @@ class CategoryController {
     }
   }
 
+  public async getActiveCategories(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const categories = await this.categoryService.findActiveCategories()
+      res.status(200).json(categories)
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const categories = await this.categoryService.findAll()

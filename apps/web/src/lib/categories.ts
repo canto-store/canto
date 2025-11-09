@@ -15,5 +15,20 @@ export const useCategories = () =>
         aspect: category.aspect,
       }));
     },
-    staleTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+export const useAllCategories = () =>
+  useQuery<Category[], Error>({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data } = await api.get<Category[]>("/categories/all");
+      return data.map((category) => ({
+        id: category.id,
+        name: category.name,
+        image: category.image,
+        slug: category.slug,
+        aspect: category.aspect,
+      }));
+    },
+    staleTime: Infinity,
   });

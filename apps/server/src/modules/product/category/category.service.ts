@@ -17,6 +17,9 @@ class CategoryService {
   }
 
   async findAll() {
+    return await this.prisma.category.findMany()
+  }
+  async findActiveCategories() {
     return await this.prisma.category.findMany({
       where: {
         parentId: null,
