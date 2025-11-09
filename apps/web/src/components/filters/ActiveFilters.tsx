@@ -67,7 +67,12 @@ export function ActiveFilters({
           className="h-7 gap-1 rounded-full px-2 py-0 text-xs"
           onClick={() => setSelectedBrand([])}
         >
-          {brands?.find((brand) => selectedBrand.includes(brand.slug))?.name}
+          {selectedBrand
+            .map(
+              (slug) =>
+                brands?.find((brand) => brand.slug === slug)?.name ?? slug,
+            )
+            .join(", ")}
           <X className="h-3 w-3" />
         </Button>
       )}
