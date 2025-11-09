@@ -5,7 +5,9 @@ import axios from 'axios'
 const BACKEND_URL =
   process.env.NODE_ENV === 'production'
     ? 'https://api.canto-store.com/api'
-    : 'http://localhost:8000/api'
+    : process.env.NODE_ENV === 'staging'
+      ? 'https://staging-api.canto-store.com/api'
+      : 'http://localhost:8000/api'
 
 export const apiClient = axios.create({
   baseURL: BACKEND_URL,
