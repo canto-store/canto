@@ -36,6 +36,12 @@ class CartService {
     return cart
   }
 
+  async createCart(userId: number) {
+    return await this.prisma.cart.create({
+      data: { userId },
+    })
+  }
+
   async getCartByUser(userId: number): Promise<CartType> {
     await this.productService.validateCartItems(userId)
     const cart = await this.prisma.cart.findUnique({

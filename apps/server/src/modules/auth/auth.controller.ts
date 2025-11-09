@@ -97,6 +97,8 @@ export class AuthControllerV2 {
     if (req.user) {
       await this.cartService.updateCartUserId(req.user.id, user.id)
       await this.userService.deleteUserById(req.user.id)
+    } else {
+      await this.cartService.createCart(user.id)
     }
     res.status(201).json(user)
   }
