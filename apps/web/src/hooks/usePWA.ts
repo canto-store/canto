@@ -120,11 +120,14 @@ export function usePWASetup() {
       return;
     }
 
-    const promptToUse = window.deferredPrompt || installPrompt;
+    // Use the latest deferred prompt
+    const promptToUse = installPrompt;
     if (!promptToUse) return;
 
     try {
+      // Must be inside a user gesture (button click)
       await promptToUse.prompt();
+
       const choiceResult = await promptToUse.userChoice;
 
       if (choiceResult.outcome === "accepted") {
@@ -133,6 +136,7 @@ export function usePWASetup() {
         console.log("User dismissed the install prompt");
       }
 
+      // After using, clear the event
       setInstallPrompt(null);
       window.deferredPrompt = null;
       setIsInstallable(false);
