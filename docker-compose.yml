@@ -1,73 +1,45 @@
 services:
   web:
-    build:
-      context: .
-      target: web
-      args:
-        TARGET_APP: web
-    restart: unless-stopped
+    image: \${WEB_IMAGE}
     environment:
-      - NODE_ENV=production
-      - PORT=3000
-    expose:
-      - "3000"
-    networks:
-      - app-network
+      - UPLOADTHING_TOKEN=\${UPLOADTHING_TOKEN}
+      - SPACES_KEY=\${SPACES_KEY}
+      - SPACES_SECRET=\${SPACES_SECRET}
+      - SPACES_REGION=\${SPACES_REGION}
+      - SPACES_BUCKET=\${SPACES_BUCKET}
+      - JWT_SECRET=\${JWT_SECRET}
 
   server:
-    build:
-      context: .
-      target: server
-      args:
-        TARGET_APP: server
-    restart: unless-stopped
+    image: \${SERVER_IMAGE}
     environment:
-      - NODE_ENV=production
-      - PORT=8000
-    expose:
-      - "8000"
-    networks:
-      - app-network
+      - DATABASE_URL=\${DATABASE_URL}
+      - ELASTICSEARCH_NODE=\${ELASTICSEARCH_NODE}
+      - ELASTICSEARCH_USERNAME=\${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=\${ELASTICSEARCH_PASSWORD}
+      - DELIVERIC_API=\${DELIVERIC_API}
+      - DELIVERIC_USER=\${DELIVERIC_USER}
+      - DELIVERIC_PASSWORD=\${DELIVERIC_PASSWORD}
+      - JWT_SECRET=\${JWT_SECRET}
+      - DOMAIN=\${DOMAIN}
+
   dashboard:
-    build:
-      context: .
-      target: dashboard
-      args:
-        TARGET_APP: dashboard
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - PORT=5173
-    expose:
-      - "5173"
-    networks:
-      - app-network
+    image: \${DASHBOARD_IMAGE}
 
   caddy:
-    image: caddy:2.8
-    container_name: caddy-proxy
-    restart: unless-stopped
+    image: \${CADDY_IMAGE}
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      - DOMAIN=canto-store.com
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy-data:/data
       - caddy-config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    environment:
+      - DOMAIN=\${DOMAIN}
     depends_on:
       - web
       - server
       - dashboard
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-    internal: false
-
 volumes:
   caddy-data:
   caddy-config:
