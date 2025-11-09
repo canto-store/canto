@@ -32,11 +32,6 @@ export default class UserService {
         name: this.generateName(),
       },
     })
-    await this.prisma.cart.create({
-      data: {
-        userId: user.id,
-      },
-    })
     return user
   }
 

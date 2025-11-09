@@ -87,23 +87,32 @@ export class AuthControllerV2 {
   public async login(req: AuthRequest, res: Response) {
     const user = await this.authService.login(req.body)
     if (req.user) {
-      await this.cartService.mergeCarts(req.user.id, user.id)
-      await this.userService.deleteUserById(req.user.id)
+      try {
+        await this.cartService.mergeCarts(req.user.id, user.id)
+        await this.userService.deleteUserById(req.user.id)
+      } catch {
+        // ignore
+      }
     }
     res.status(200).json(user)
   }
   public async register(req: AuthRequest, res: Response) {
     const user = await this.authService.register(req.body)
     if (req.user) {
-      await this.cartService.updateCartUserId(req.user.id, user.id)
-      await this.userService.deleteUserById(req.user.id)
+      try {
+        await this.cartService.updateCartUserId(req.user.id, user.id)
+        await this.userService.deleteUserById(req.user.id)
+      } catch {
+        // ignore
+      }
     } else {
-      await this.cartService.createCart(user.id)
+      void this.cartService.createCart(user.id)
     }
     res.status(201).json(user)
   }
   public async createGuest(req: Request, res: Response) {
     const guest = await this.authService.createGuest()
+    void this.cartService.createCart(guest.id)
     res.status(201).json(guest)
   }
 }
