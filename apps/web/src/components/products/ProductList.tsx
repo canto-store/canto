@@ -24,12 +24,14 @@ export function ProductList({ products, title, className }: ProductListProps) {
   const params = useParams();
   const isRTL = params?.locale === "ar";
 
-  const { mutateAsync: addToCart, isPending } = useAddToCart();
+  const { mutateAsync: addToCart, isPending, isSuccess } = useAddToCart();
 
   const handleAddToCart = (product: CartItem) => {
-    addToCart({ variantId: product.variantId, quantity: 1 }).then(() =>
-      toast.success("Added to cart"),
-    );
+    addToCart({ variantId: product.variantId, quantity: 1 }).then(() => {
+      if (isSuccess) {
+        toast.success("Added to cart");
+      }
+    });
   };
 
   return (
@@ -86,7 +88,7 @@ export function ProductList({ products, title, className }: ProductListProps) {
                   className={`flex ${isRTL ? "flex-row-reverse" : ""} gap-2`}
                 >
                   <Button
-                    disabled={isPending}
+                    disabled={isPending || product.stock === 0}
                     onClick={() =>
                       handleAddToCart({
                         ...product,

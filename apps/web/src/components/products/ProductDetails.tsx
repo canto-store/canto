@@ -51,7 +51,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
-  const { mutateAsync: addToCart } = useAddToCart();
+  const { mutateAsync: addToCart, isSuccess } = useAddToCart();
 
   useEffect(() => {
     if (product.default_variant_id) {
@@ -74,7 +74,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     addToCart({
       variantId: selectedVariant.id,
       quantity,
-    }).then(() => toast.success("Added to cart"));
+    }).then(() => {
+      if (isSuccess) {
+        toast.success("Added to cart");
+      }
+    });
   };
 
   const images = useMemo(() => {
@@ -284,6 +288,11 @@ function ProductQuantitySelector({
           +
         </Button>
       </div>
+      {stock <= 5 && (
+        <span className="mt-4 block text-xs text-red-500 md:text-sm">
+          Hurry up! Only {stock} left in stock.
+        </span>
+      )}
     </div>
   );
 }

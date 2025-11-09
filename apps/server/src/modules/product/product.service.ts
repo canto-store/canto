@@ -636,7 +636,7 @@ class ProductService {
   }
 
   async getHomeProducts() {
-    const products = await this.prisma.product.findMany({
+    const allProducts = await this.prisma.product.findMany({
       where: { status: ProductStatus.ACTIVE },
       select: {
         name: true,
@@ -648,6 +648,9 @@ class ProductService {
         },
       },
     })
+    const products = allProducts.filter(
+      p => p.variants.map(v => v.stock).reduce((a, b) => a + b, 0) > 0
+    )
     const colorVariantOption = await this.prisma.productOption.findUnique({
       where: { name: 'Color' },
     })

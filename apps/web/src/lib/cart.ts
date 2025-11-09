@@ -22,25 +22,24 @@ export const useGetCart = () => {
 
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
-  const { isAuthenticated, setAuth } = useUserStore();
+  const { user, setAuth } = useUserStore();
   return useMutation({
     mutationFn: async ({ variantId, quantity }: AddToCartInput) => {
-      if (!isAuthenticated) {
+      if (user === null) {
         await api.post("/v2/auth/create-guest").then((res) => {
           setAuth(res.data);
         });
       }
-      return await api
-        .put("/cart/items", {
-          variantId,
-          quantity,
-        })
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ["cart"] });
-        })
-        .catch(() => {
-          toast.error("Failed to add to cart");
-        });
+      return await api.put("/cart/items", {
+        variantId,
+        quantity,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: () => {
+      toast.error("Failed to add to cart");
     },
   });
 };
