@@ -18,7 +18,8 @@
     "viewCart": "عرض العربة",
     "checkout": "الدفع",
     "login": "تسجيل الدخول",
-    "hello": "نوّرت، {name}"
+    "hello": "نوّرت، {name}",
+    "order": "الطلبات"
   },
   "products": {
     "addToCart": "أضف إلى العربة",
