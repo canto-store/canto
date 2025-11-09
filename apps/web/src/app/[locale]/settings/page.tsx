@@ -20,6 +20,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { getUserRole } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Page() {
   const user = useUserStore((s) => s.user);
@@ -29,6 +30,7 @@ export default function Page() {
   const pathname = usePathname();
   const locale = useLocale();
   const { logout } = useUserStore();
+  const queryClient = useQueryClient();
 
   const handleLanguageChange = () => {
     const value = locale === "en" ? "ar" : "en";
@@ -37,6 +39,11 @@ export default function Page() {
 
   const handleNavigation = (href: string) => {
     router.push(href);
+  };
+
+  const handleLogout = () => {
+    logout();
+    queryClient.setQueryData(["cart"], { items: [], count: 0, price: 0 });
   };
   if (isMobile) {
     return (
@@ -130,7 +137,7 @@ export default function Page() {
           <InstallPWA variant="menu" className="p-0" />
         </div>
         {Boolean(user) && role !== "GUEST" && (
-          <Button variant="ghost" onClick={() => logout()} className="mt-4">
+          <Button variant="ghost" onClick={handleLogout} className="mt-4">
             <LogOut className="text-orange-red mr-2 h-5 w-5" />
             <p className="text-orange-red text-lg">Logout</p>
           </Button>

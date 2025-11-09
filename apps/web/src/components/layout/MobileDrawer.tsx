@@ -23,6 +23,7 @@ import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { getUserRole } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 function MobileDrawer({
   open,
@@ -35,11 +36,18 @@ function MobileDrawer({
   const user = useUserStore((s) => s.user);
   const role = getUserRole(user?.role);
   const logout = useUserStore((s) => s.logout);
+  const queryClient = useQueryClient();
+
   const handleNavigation = (href: string) => {
     onOpenChange();
     router.push(href);
   };
 
+  const handleLogout = () => {
+    queryClient.setQueryData(["cart"], { items: [], count: 0, price: 0 });
+
+    logout();
+  };
   return (
     <Drawer direction="left" open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
@@ -92,7 +100,7 @@ function MobileDrawer({
         </div>
         <DrawerFooter>
           {user && role !== "GUEST" ? (
-            <Button variant="ghost" onClick={() => logout()}>
+            <Button variant="ghost" onClick={handleLogout}>
               <LogOut className="text-orange-red mr-2 h-5 w-5" />
               <p className="text-orange-red text-lg">Logout</p>
             </Button>
