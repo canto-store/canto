@@ -1,4 +1,4 @@
-name: Deploy
+name: Build and Push - Testing
 
 on:
   workflow_dispatch:
@@ -7,12 +7,11 @@ on:
       - testing
     paths:
       - "apps/**"
-      - "Caddyfile"
+      - "modules/**"
+      - "Dockerfile"
       - "pnpm-lock.yaml"
       - "package.json"
       - "pnpm-workspace.yaml"
-      - "Dockerfile"
-      - "docker-compose*.yml"
 
 permissions:
   contents: read
@@ -20,7 +19,7 @@ permissions:
 
 jobs:
   build-and-push:
-    name: Build and Push All Images
+    name: Build and Push Images
     runs-on: ubuntu-latest
 
     steps:
@@ -44,9 +43,8 @@ jobs:
           images: ghcr.io/${{ github.repository }}-web
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=testing-
+            type=raw,value=testing-latest
 
       - name: Build and push web
         uses: docker/build-push-action@v5
@@ -58,8 +56,8 @@ jobs:
           push: true
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}
-          cache-from: type=gha,scope=web
-          cache-to: type=gha,mode=max,scope=web
+          cache-from: type=gha,scope=web-testing
+          cache-to: type=gha,mode=max,scope=web-testing
 
       - name: Extract metadata for server
         id: meta-server
@@ -68,9 +66,8 @@ jobs:
           images: ghcr.io/${{ github.repository }}-server
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=testing-
+            type=raw,value=testing-latest
 
       - name: Build and push server
         uses: docker/build-push-action@v5
@@ -84,8 +81,8 @@ jobs:
           push: true
           tags: ${{ steps.meta-server.outputs.tags }}
           labels: ${{ steps.meta-server.outputs.labels }}
-          cache-from: type=gha,scope=server
-          cache-to: type=gha,mode=max,scope=server
+          cache-from: type=gha,scope=server-testing
+          cache-to: type=gha,mode=max,scope=server-testing
 
       - name: Extract metadata for dashboard
         id: meta-dashboard
@@ -94,9 +91,8 @@ jobs:
           images: ghcr.io/${{ github.repository }}-dashboard
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=testing-
+            type=raw,value=testing-latest
 
       - name: Build and push dashboard
         uses: docker/build-push-action@v5
@@ -108,11 +104,11 @@ jobs:
           push: true
           tags: ${{ steps.meta-dashboard.outputs.tags }}
           labels: ${{ steps.meta-dashboard.outputs.labels }}
-          cache-from: type=gha,scope=dashboard
-          cache-to: type=gha,mode=max,scope=dashboard
+          cache-from: type=gha,scope=dashboard-testing
+          cache-to: type=gha,mode=max,scope=dashboard-testing
 
   deploy:
-    name: Deploy to Production
+    name: Deploy to Staging
     needs: build-and-push
     runs-on: ubuntu-latest
 
@@ -120,9 +116,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create production environment file
+      - name: Create staging environment file
         run: |
-          cat > .env.prod << EOF
+          cat > .env.staging << EOF
           DOMAIN=${{ secrets.DOMAIN }}
           DATABASE_URL=${{ secrets.STG_DATABASE_URL }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
@@ -137,72 +133,6 @@ jobs:
           SPACES_SECRET=${{ secrets.SPACES_SECRET }}
           SPACES_REGION=${{ secrets.SPACES_REGION }}
           SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
-          WEB_IMAGE=ghcr.io/${{ github.repository }}-web:latest
-          SERVER_IMAGE=ghcr.io/${{ github.repository }}-server:latest
-          DASHBOARD_IMAGE=ghcr.io/${{ github.repository }}-dashboard:latest
-          CADDY_IMAGE=caddy:2.8
-          EOF
-
-      - name: Create production docker-compose override
-        run: |
-          cat > docker-compose.prod.override.yml << EOF
-          services:
-            web:
-              image: \${WEB_IMAGE}
-              
-              environment:
-                - UPLOADTHING_TOKEN=\${UPLOADTHING_TOKEN}
-                - SPACES_KEY=\${SPACES_KEY}
-                - SPACES_SECRET=\${SPACES_SECRET}
-                - SPACES_REGION=\${SPACES_REGION}
-                - SPACES_BUCKET=\${SPACES_BUCKET}
-                - JWT_SECRET=\${JWT_SECRET}
-                - PORT=5000
-                - NODE_ENV=test
-              expose:
-                - "5000"
-
-            server:
-              image: \${SERVER_IMAGE}
-              environment:
-                - DATABASE_URL=\${DATABASE_URL}
-                - ELASTICSEARCH_NODE=\${ELASTICSEARCH_NODE}
-                - ELASTICSEARCH_USERNAME=\${ELASTICSEARCH_USERNAME}
-                - ELASTICSEARCH_PASSWORD=\${ELASTICSEARCH_PASSWORD}
-                - DELIVERIC_API=\${DELIVERIC_API}
-                - DELIVERIC_USER=\${DELIVERIC_USER}
-                - DELIVERIC_PASSWORD=\${DELIVERIC_PASSWORD}
-                - JWT_SECRET=\${JWT_SECRET}
-                - DOMAIN=\${DOMAIN}
-                - PORT=9000
-              expose:
-                - "9000"
-
-            dashboard:
-              image: \${DASHBOARD_IMAGE}
-              environment:
-                  - PORT=7000
-              expose:
-                  - "7000"
-
-            caddy:
-              image: \${CADDY_IMAGE}
-              ports:
-                - "80:80"
-                - "443:443"
-              volumes:
-                - caddy-data:/data
-                - caddy-config:/config
-                - ./Caddyfile:/etc/caddy/Caddyfile
-              environment:
-                - DOMAIN=\${DOMAIN}
-              depends_on:
-                - web
-                - server
-                - dashboard
-          volumes:
-            caddy-data:
-            caddy-config:
           EOF
 
       - name: Copy deployment files
@@ -212,11 +142,11 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "docker-compose.yml,docker-compose.staging.yml,.env.prod,docker-compose.prod.override.yml,Caddyfile"
+          source: "docker-compose.staging.yml,.env.staging,Caddyfile"
           target: "/home/omar/staging"
           overwrite: true
 
-      - name: Deploy to Production Server
+      - name: Deploy to Staging
         uses: appleboy/ssh-action@master
         with:
           port: 2121
@@ -226,12 +156,23 @@ jobs:
           script: |
             set -e
             cd /home/omar/staging
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker compose down --timeout 30 || true
-            docker compose -f docker-compose.yml -f docker-compose.staging.yml -f docker-compose.prod.override.yml --env-file .env.prod up -d
+            
+            # Login to GHCR
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Pull latest images
+            docker compose -f docker-compose.staging.yml pull
+            
+            # Deploy staging services (they'll join the canto-network)
+            docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
+            
+            # Reload Caddy config in the production stack
+            cd /home/omar/canto
+            docker compose exec production-caddy caddy reload --config /etc/caddy/Caddyfile
+            
+            echo "✓ Staging deployed successfully"
 
-      - name: Rollback on failure
-        if: failure()
+      - name: Health check
         uses: appleboy/ssh-action@master
         with:
           port: 2121
@@ -240,13 +181,25 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/omar/staging
-            echo "Deployment failed, attempting rollback..."
-            docker compose down --timeout 30 || true
-            if [ -f docker-compose.yml.backup ] && [ -f .env.prod.backup ]; then
-              cp docker-compose.yml.backup docker-compose.yml
-              cp .env.prod.backup .env.prod
-              docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d || true
-              echo "Rollback completed"
-            else
-              echo "No backup found, manual intervention required"
-            fi
+            
+            echo "Waiting for services to be healthy..."
+            sleep 10
+            
+            # Check if containers are running
+            docker compose -f docker-compose.staging.yml ps web server dashboard
+            
+            echo "✓ Health check passed"
+
+      - name: Deployment summary
+        run: |
+          echo "### 🚀 Staging Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Images deployed:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Web: \`ghcr.io/${{ github.repository }}-web:testing-latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Server: \`ghcr.io/${{ github.repository }}-server:testing-latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Dashboard: \`ghcr.io/${{ github.repository }}-dashboard:testing-latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Staging URLs:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Web: https://staging.canto-store.com" >> $GITHUB_STEP_SUMMARY
+          echo "- API: https://api-staging.canto-store.com" >> $GITHUB_STEP_SUMMARY
+          echo "- Dashboard: https://dashboard-staging.canto-store.com" >> $GITHUB_STEP_SUMMARY

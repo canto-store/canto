@@ -1,7 +1,10 @@
+# Staging services - shares network with production Caddy
+# Production Caddy proxies to these services via the shared canto-network
+
 services:
   web:
-    image: ${WEB_IMAGE}
-    container_name: production-web
+    image: ghcr.io/canto-store/canto-web:testing-latest
+    container_name: staging-web
     environment:
       - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
       - SPACES_KEY=${SPACES_KEY}
@@ -9,13 +12,18 @@ services:
       - SPACES_REGION=${SPACES_REGION}
       - SPACES_BUCKET=${SPACES_BUCKET}
       - JWT_SECRET=${JWT_SECRET}
+      - PORT=5000
+      - HOSTNAME=0.0.0.0
+      - NODE_ENV=production
+    expose:
+      - "5000"
     networks:
       - canto-network
     restart: unless-stopped
 
   server:
-    image: ${SERVER_IMAGE}
-    container_name: production-server
+    image: ghcr.io/canto-store/canto-server:testing-latest
+    container_name: staging-server
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - ELASTICSEARCH_NODE=${ELASTICSEARCH_NODE}
@@ -26,42 +34,25 @@ services:
       - DELIVERIC_PASSWORD=${DELIVERIC_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - DOMAIN=${DOMAIN}
+      - PORT=9000
+      - NODE_ENV=production
+    expose:
+      - "9000"
     networks:
       - canto-network
     restart: unless-stopped
 
   dashboard:
-    image: ${DASHBOARD_IMAGE}
-    container_name: production-dashboard
-    networks:
-      - canto-network
-    restart: unless-stopped
-
-  caddy:
-    image: ${CADDY_IMAGE}
-    container_name: production-caddy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - caddy-data:/data
-      - caddy-config:/config
-      - ./Caddyfile:/etc/caddy/Caddyfile
+    image: ghcr.io/canto-store/canto-dashboard:testing-latest
+    container_name: staging-dashboard
     environment:
-      - DOMAIN=${DOMAIN}
+      - PORT=7000
+    expose:
+      - "7000"
     networks:
       - canto-network
-    depends_on:
-      - web
-      - server
-      - dashboard
     restart: unless-stopped
 
 networks:
   canto-network:
-    name: canto-network
-    driver: bridge
-
-volumes:
-  caddy-data:
-  caddy-config:
+    external: true

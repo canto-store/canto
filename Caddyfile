@@ -1,28 +1,28 @@
-# Main website (Next.js)
+# Production - Main website (Next.js)
 canto-store.com, www.canto-store.com {
-  reverse_proxy web:3000
+  reverse_proxy production-web:3000
 }
 
-# API (Express)
+# Production - API (Express)
 api.canto-store.com {
-  reverse_proxy server:8000
+  reverse_proxy production-server:8000
 }
 
-# Dashboard (Vite)
+# Production - Dashboard (Vite)
 dashboard.canto-store.com {
-  reverse_proxy dashboard:5173
+  reverse_proxy production-dashboard:5173
 }
 
 staging.canto-store.com {
-  reverse_proxy web:5000
+  reverse_proxy staging-web:5000
 }
 
 api-staging.canto-store.com {
-  reverse_proxy server:9000
+  reverse_proxy staging-server:9000
 }
 
 dashboard-staging.canto-store.com {
-  reverse_proxy dashboard:7000
+  reverse_proxy staging-dashboard:7000
 }
 
 # Health check endpoint
