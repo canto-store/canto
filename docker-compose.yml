@@ -3,6 +3,8 @@ services:
     image: ${WEB_IMAGE}
     container_name: production-web
     environment:
+      - NODE_ENV=production
+      - PORT=3000
       - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
       - SPACES_KEY=${SPACES_KEY}
       - SPACES_SECRET=${SPACES_SECRET}
@@ -17,6 +19,8 @@ services:
     image: ${SERVER_IMAGE}
     container_name: production-server
     environment:
+      - NODE_ENV=production
+      - PORT=8000
       - DATABASE_URL=${DATABASE_URL}
       - ELASTICSEARCH_NODE=${ELASTICSEARCH_NODE}
       - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
@@ -33,6 +37,9 @@ services:
   dashboard:
     image: ${DASHBOARD_IMAGE}
     container_name: production-dashboard
+    environment:
+      - NODE_ENV=production
+      - PORT=5173
     networks:
       - canto-network
     restart: unless-stopped

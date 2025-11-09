@@ -12,6 +12,7 @@ export default async function Page({
   const router = useRouter();
 
   useEffect(() => {
+    // Redirect to login if not authenticated
     if (!isAuthenticated) {
       router.push("/login");
     }

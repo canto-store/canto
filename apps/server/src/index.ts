@@ -18,11 +18,21 @@ const prodOrigins = [
   'https://dashboard.canto-store.com',
 ]
 
+const stagingOrigins = [
+  'https://staging.canto-store.com',
+  'https://dashboard-staging.canto-store.com/',
+]
+
 const devOrigins = ['http://localhost:5000', 'http://localhost:5173']
 
 app.use(
   cors({
-    origin: process.env.NODE_ENV === 'production' ? prodOrigins : devOrigins,
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? prodOrigins
+        : process.env.NODE_ENV === 'test'
+          ? stagingOrigins
+          : devOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [

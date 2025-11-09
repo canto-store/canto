@@ -9,6 +9,7 @@ on:
       - "apps/**"
       - "modules/**"
       - "Dockerfile"
+      - deploy-stg.yml
       - "pnpm-lock.yaml"
       - "package.json"
       - "pnpm-workspace.yaml"
@@ -133,6 +134,10 @@ jobs:
           SPACES_SECRET=${{ secrets.SPACES_SECRET }}
           SPACES_REGION=${{ secrets.SPACES_REGION }}
           SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
+          WEB_IMAGE=ghcr.io/${{ github.repository }}-web:testing-latest
+          SERVER_IMAGE=ghcr.io/${{ github.repository }}-server:testing-latest
+          DASHBOARD_IMAGE=ghcr.io/${{ github.repository }}-dashboard:testing-latest
+          CADDY_IMAGE=caddy:2.8
           EOF
 
       - name: Copy deployment files
@@ -142,7 +147,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "docker-compose.staging.yml,.env.staging,Caddyfile"
+          source: "docker-compose.staging.yml,.env.staging"
           target: "/home/omar/staging"
           overwrite: true
 
@@ -156,50 +161,14 @@ jobs:
           script: |
             set -e
             cd /home/omar/staging
-            
+
             # Login to GHCR
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
+
             # Pull latest images
-            docker compose -f docker-compose.staging.yml pull
-            
+            docker compose -f docker-compose.staging.yml --env-file .env.staging pull
+
             # Deploy staging services (they'll join the canto-network)
             docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
-            
-            # Reload Caddy config in the production stack
-            cd /home/omar/canto
-            docker compose exec production-caddy caddy reload --config /etc/caddy/Caddyfile
-            
+
             echo "✓ Staging deployed successfully"
-
-      - name: Health check
-        uses: appleboy/ssh-action@master
-        with:
-          port: 2121
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /home/omar/staging
-            
-            echo "Waiting for services to be healthy..."
-            sleep 10
-            
-            # Check if containers are running
-            docker compose -f docker-compose.staging.yml ps web server dashboard
-            
-            echo "✓ Health check passed"
-
-      - name: Deployment summary
-        run: |
-          echo "### 🚀 Staging Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Images deployed:**" >> $GITHUB_STEP_SUMMARY
-          echo "- Web: \`ghcr.io/${{ github.repository }}-web:testing-latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Server: \`ghcr.io/${{ github.repository }}-server:testing-latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Dashboard: \`ghcr.io/${{ github.repository }}-dashboard:testing-latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Staging URLs:**" >> $GITHUB_STEP_SUMMARY
-          echo "- Web: https://staging.canto-store.com" >> $GITHUB_STEP_SUMMARY
-          echo "- API: https://api-staging.canto-store.com" >> $GITHUB_STEP_SUMMARY
-          echo "- Dashboard: https://dashboard-staging.canto-store.com" >> $GITHUB_STEP_SUMMARY
