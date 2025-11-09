@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type { AuthResponse, User } from "@canto/types/auth";
+import { getUserRole } from "@/lib/utils";
 
 type UserState = {
   user: User | null;
@@ -24,7 +25,7 @@ export const useUserStore = create<UserState>()(
           set({
             user: { id, name, role },
             accessToken,
-            isAuthenticated: true,
+            isAuthenticated: getUserRole(role) !== "GUEST",
           });
         },
 
