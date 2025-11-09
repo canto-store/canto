@@ -42,7 +42,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-2 md:grid-cols-5">
           <div className="md:col-span-4">
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-6 md:grid-cols-4">
               <div>
                 <h3 className="font-bold">About Canto</h3>
                 <ul className="space-y-1">
@@ -50,7 +50,7 @@ export function Footer() {
                     <li key={item.label}>
                       <button
                         onClick={() => handleNavigate(item.href)}
-                        className="hover:underline"
+                        className="text-start hover:underline"
                       >
                         {item.label}
                       </button>
@@ -65,7 +65,7 @@ export function Footer() {
                     <li key={item.label}>
                       <button
                         onClick={() => handleNavigate(item.href)}
-                        className="hover:underline"
+                        className="text-start hover:underline"
                       >
                         {item.label}
                       </button>
@@ -80,7 +80,7 @@ export function Footer() {
                     <li key={item.label}>
                       <button
                         onClick={() => handleNavigate(item.href)}
-                        className="hover:underline"
+                        className="text-start hover:underline"
                       >
                         {item.label}
                       </button>
@@ -95,7 +95,7 @@ export function Footer() {
                     <li key={item.label}>
                       <button
                         onClick={() => handleNavigate(item.href)}
-                        className="hover:underline"
+                        className="text-start hover:underline"
                       >
                         {item.label}
                       </button>
