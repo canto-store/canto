@@ -54,6 +54,8 @@ jobs:
           target: web
           build-args: |
             TARGET_APP=web
+            NODE_ENV=test
+            PORT=5000
           push: true
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}
@@ -77,6 +79,8 @@ jobs:
           target: server
           build-args: |
             TARGET_APP=server
+            NODE_ENV=test
+            PORT=9000
           secrets: |
             "database_url=${{ secrets.STG_DATABASE_URL }}"
           push: true
@@ -102,6 +106,8 @@ jobs:
           target: dashboard
           build-args: |
             TARGET_APP=dashboard
+            NODE_ENV=test
+            PORT=7000
           push: true
           tags: ${{ steps.meta-dashboard.outputs.tags }}
           labels: ${{ steps.meta-dashboard.outputs.labels }}
