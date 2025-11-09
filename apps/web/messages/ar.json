@@ -1,7 +1,7 @@
 {
   "header": {
     "home": "الرئيسية",
-    "browse": "تصفح",
+    "browse": "تسوّق",
     "sell": "بيع",
     "myAccount": "حسابي",
     "account": "حسابي",
@@ -23,7 +23,7 @@
   "products": {
     "addToCart": "أضف إلى العربة",
     "addedToCart": "{productName} تمت إضافته إلى عربتك.",
-    "browseTitle": "تصفح المنتجات",
+    "browseTitle": "تسوّق المنتجات",
     "filters": "الفلاتر",
     "hideFilters": "إخفاء الفلاتر",
     "activeFilters": "الفلاتر النشطة",

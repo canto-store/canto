@@ -15,7 +15,7 @@ export default function EmptyState() {
         products you love!
       </p>
       <Button size="lg" asChild>
-        <Link href="/browse">Browse Products</Link>
+        <Link href="/browse">Shop Products</Link>
       </Button>
     </div>
   );
