@@ -24,10 +24,15 @@ RUN pnpm install --frozen-lockfile
 # Build stage - build only the target app
 FROM deps AS build
 ARG TARGET_APP
+ARG NODE_ENV=production
+ARG NEXT_PUBLIC_BACKEND_URL=https://api.canto-store.com/api
 
 # Copy source code only after dependencies are installed
 COPY apps/ ./apps/
 COPY modules/ ./modules/
+
+ENV NODE_ENV=${NODE_ENV}
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
 
 # Build only the target app
 RUN pnpm --filter=modules/** build
