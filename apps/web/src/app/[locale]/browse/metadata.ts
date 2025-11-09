@@ -9,12 +9,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://canto-store.com";
 
   return {
-    title: "Browse Products",
+    title: "Shop Products",
     description:
       "Browse our wide selection of products. Find the latest trends in fashion, electronics, home goods, and more on Canto.",
     keywords: ["browse", "products", "marketplace", "canto", "shopping"],
     openGraph: {
-      title: "Browse Products - Canto",
+      title: "Shop Products - Canto",
       description:
         "Browse our wide selection of products. Find the latest trends in fashion, electronics, home goods, and more on Canto.",
       url: `${baseUrl}/${locale}/browse`,
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Browse Products - Canto",
+      title: "Shop Products - Canto",
       description:
         "Browse our wide selection of products. Find the latest trends in fashion, electronics, home goods, and more on Canto.",
       images: [`${baseUrl}/web-app-manifest-512x512.png`],

@@ -1,7 +1,7 @@
 {
   "header": {
     "home": "Home",
-    "browse": "Browse",
+    "browse": "Shop",
     "sell": "Sell",
     "account": "Account",
     "favorites": "Favorites",
@@ -21,7 +21,7 @@
   "products": {
     "addToCart": "Add to Cart",
     "addedToCart": "{productName} has been added to your cart.",
-    "browseTitle": "Browse Products",
+    "browseTitle": "Shop Products",
     "filters": "Filters",
     "hideFilters": "Hide Filters",
     "activeFilters": "Active Filters",

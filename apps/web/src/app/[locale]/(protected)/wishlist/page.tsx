@@ -108,7 +108,7 @@ function WishlistPage() {
                     href="/browse"
                     className="flex items-center justify-center gap-2"
                   >
-                    Browse Products
+                    Shop Products
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
