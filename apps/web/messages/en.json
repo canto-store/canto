@@ -16,7 +16,7 @@
     "viewCart": "View Cart",
     "checkout": "Checkout",
     "login": "Sign in",
-    "hello": "Nawwart, {name}"
+    "hello": "{name} ،نوّرت"
   },
   "products": {
     "addToCart": "Add to Cart",
