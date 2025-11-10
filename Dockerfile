@@ -26,6 +26,8 @@ FROM deps AS build
 ARG TARGET_APP
 ARG NODE_ENV=production
 ARG NEXT_PUBLIC_BACKEND_URL=https://api.canto-store.com/api
+ARG VITE_BACKEND_URL=https://api.canto-store.com/api
+
 
 # Copy source code only after dependencies are installed
 COPY apps/ ./apps/
@@ -33,6 +35,7 @@ COPY modules/ ./modules/
 
 ENV NODE_ENV=${NODE_ENV}
 ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
 # Build only the target app
 RUN pnpm --filter=modules/** build
@@ -107,7 +110,6 @@ CMD ["node", "build/src/index.js"]
 FROM base AS dashboard
 ARG NODE_ENV=production
 ARG PORT=5173
-ARG VITE_BACKEND_URL=https://api.canto-store.com/api
 
 
 WORKDIR /app
@@ -118,7 +120,6 @@ COPY --from=build /usr/src/app/apps/dashboard/dist ./dist
 
 ENV NODE_ENV=${NODE_ENV}
 ENV PORT=${PORT}
-ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
 EXPOSE ${PORT}
 CMD ["sh", "-c", "serve -s dist -l $PORT"]
