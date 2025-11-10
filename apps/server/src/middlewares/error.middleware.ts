@@ -21,6 +21,7 @@ const errorMiddleware: ErrorRequestHandler = async (
     })
   }
 
+  await logError(err, req)
   return res.status(500).json({
     status: 'error',
     message: 'Internal Server Error',
