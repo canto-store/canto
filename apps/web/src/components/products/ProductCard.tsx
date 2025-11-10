@@ -25,18 +25,14 @@ export function ProductCard({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const {
-    mutateAsync: addToCart,
-    isPending: isAdding,
-    isSuccess,
-  } = useAddToCart();
+  const { mutateAsync: addToCart, isPending: isAdding } = useAddToCart();
 
   const handleAddToCart = (product: ProductSummary) => {
     addToCart({
       variantId: product.default_variant_id!,
       quantity: 1,
-    }).then(() => {
-      if (isSuccess) {
+    }).then((res) => {
+      if (res.status === 201) {
         toast.success("Added to cart");
       }
     });

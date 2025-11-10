@@ -51,7 +51,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
-  const { mutateAsync: addToCart, isSuccess } = useAddToCart();
+  const { mutateAsync: addToCart } = useAddToCart();
 
   useEffect(() => {
     if (product.default_variant_id) {
@@ -74,8 +74,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     addToCart({
       variantId: selectedVariant.id,
       quantity,
-    }).then(() => {
-      if (isSuccess) {
+    }).then((res) => {
+      if (res.status === 201) {
         toast.success("Added to cart");
       }
     });

@@ -24,11 +24,11 @@ export function ProductList({ products, title, className }: ProductListProps) {
   const params = useParams();
   const isRTL = params?.locale === "ar";
 
-  const { mutateAsync: addToCart, isPending, isSuccess } = useAddToCart();
+  const { mutateAsync: addToCart, isPending } = useAddToCart();
 
   const handleAddToCart = (product: CartItem) => {
-    addToCart({ variantId: product.variantId, quantity: 1 }).then(() => {
-      if (isSuccess) {
+    addToCart({ variantId: product.variantId, quantity: 1 }).then((res) => {
+      if (res.status === 201) {
         toast.success("Added to cart");
       }
     });
