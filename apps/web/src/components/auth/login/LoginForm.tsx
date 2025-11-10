@@ -21,9 +21,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { parseApiError } from "@/lib/utils";
+import { useSearchParams } from "next/dist/client/components/navigation";
 
 const loginFormSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  email: z.email({ message: "Please enter a valid email address" }),
   password: z.string().min(1, { message: "Password is required" }),
 });
 
@@ -32,16 +33,14 @@ type FormData = z.infer<typeof loginFormSchema>;
 interface LoginFormProps {
   onClose?: () => void;
   switchToRegister?: () => void;
-  redirectUrl?: string;
 }
 
-export function LoginForm({
-  onClose,
-  switchToRegister,
-  redirectUrl = "/",
-}: LoginFormProps) {
+export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const redirectUrl = decodeURIComponent(searchParams.get("redirect") || "/");
 
   const t = useTranslations();
   const { mutateAsync: login } = useLogin();
