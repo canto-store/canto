@@ -2,7 +2,8 @@ import { useUserStore } from '@/stores/useUserStore'
 import type { ProductFormValues } from '@/types/product'
 import axios from 'axios'
 
-const BACKEND_URL = process.env.VITE_BACKEND_URL ?? 'http://localhost:8000/api'
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000/api'
 
 export const apiClient = axios.create({
   baseURL: BACKEND_URL,
