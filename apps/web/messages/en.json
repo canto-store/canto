@@ -172,6 +172,8 @@
     "creditCard": "Credit Card",
     "continueShopping": "Continue Shopping",
     "viewOrder": "View Order",
+    "viewOrders": "View Orders",
+
     "errors": {
       "fullNameRequired": "Full name is required",
       "addressTypeRequired": "Please select an address type",
