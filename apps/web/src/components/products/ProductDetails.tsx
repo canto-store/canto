@@ -60,12 +60,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       );
       setSelectedVariant(defaultVariant);
       setStock(defaultVariant ? defaultVariant.stock : 0);
+    } else {
+      setStock(product.total_stock);
+      if (product.total_stock === 0) {
+        setQuantity(0);
+      }
     }
   }, [product]);
 
   const onVariantChange = (variant: ProductVariant | undefined) => {
     setSelectedVariant(variant);
-    setStock(variant ? variant.stock : 0);
+    if (variant) {
+      setStock(variant.stock);
+    } else {
+      setStock(product.total_stock);
+    }
     setQuantity(1);
   };
 
@@ -288,9 +297,14 @@ function ProductQuantitySelector({
           +
         </Button>
       </div>
-      {stock <= 5 && (
+      {stock <= 5 && stock > 0 && (
         <span className="mt-4 block text-xs text-red-500 md:text-sm">
           Hurry up! Only {stock} left in stock.
+        </span>
+      )}
+      {stock === 0 && (
+        <span className="mt-4 block text-xs text-gray-500 md:text-sm">
+          Sorry, this item is out of stock.
         </span>
       )}
     </div>
