@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 import { useGetCart } from "@/lib/cart";
 import banner from "../../../public/banner.png";
 import bannerMobile from "../../../public/mobile-banner.png";
+import { HomeCategoriesBanner } from "@/components/home/HomeCategoriesBanner";
 
 export default function Home() {
   const { data, isLoading } = useHomeProducts();
@@ -25,6 +26,8 @@ export default function Home() {
 
   return (
     <>
+      <HomeCategoriesBanner />
+
       <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none sm:hidden">
         {/* 👇 Shown only on screens smaller than 640px */}
         <Image
