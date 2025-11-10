@@ -56,6 +56,7 @@ jobs:
             TARGET_APP=web
             NODE_ENV=test
             PORT=5000
+            NEXT_PUBLIC_BACKEND_URL=https://api-staging.canto-store.com/api
           push: true
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}
@@ -108,6 +109,8 @@ jobs:
             TARGET_APP=dashboard
             NODE_ENV=test
             PORT=7000
+            VITE_BACKEND_URL=https://api-staging.canto-store.com/api
+
           push: true
           tags: ${{ steps.meta-dashboard.outputs.tags }}
           labels: ${{ steps.meta-dashboard.outputs.labels }}

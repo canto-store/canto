@@ -11,6 +11,7 @@ services:
       - SPACES_REGION=${SPACES_REGION}
       - SPACES_BUCKET=${SPACES_BUCKET}
       - JWT_SECRET=${JWT_SECRET}
+      - NEXT_PUBLIC_BACKEND_URL=https://api.canto-store.com/api
     networks:
       - canto-network
     restart: unless-stopped
@@ -40,6 +41,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5173
+      - VITE_BACKEND_URL=https://api.canto-store.com/api
     networks:
       - canto-network
     restart: unless-stopped
