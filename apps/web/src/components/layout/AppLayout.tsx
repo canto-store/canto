@@ -1,32 +1,35 @@
 "use client";
 
+import "@khmyznikov/pwa-install";
 import { ReactNode } from "react";
-import dynamic from "next/dynamic";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
-import { usePWASetup } from "@/hooks/usePWA";
+import { useIsInstalled } from "@/hooks/useIsInstalled";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const InstallPWA = dynamic(
-    () => import("@/components/pwa").then((m) => m.InstallPWA),
-    { ssr: false },
-  );
-  const { isInstalled } = usePWASetup();
-
+  const isInstalled = useIsInstalled();
   return (
     <>
+      <pwa-install
+        name="Canto App"
+        icon="/logo-192.png"
+        disable-install-description="true"
+        disable-screenshots="true"
+        description="Egyptian Marketplace"
+        manual-apple="true"
+        manual-chrome="true"
+      ></pwa-install>
       <Header />
       <main className="container mx-auto mb-10 space-y-10 px-4 md:space-y-20">
         {children}
       </main>
       <Footer />
       {isInstalled && <MobileBottomNavigation />}
-      <InstallPWA variant="message" displayDelay={8 * 1000} />
       {/* <PromoModal displayDelay={2 * 1000} /> */}
     </>
   );

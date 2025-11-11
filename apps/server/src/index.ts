@@ -23,7 +23,11 @@ const stagingOrigins = [
   'https://dashboard-staging.canto-store.com',
 ]
 
-const devOrigins = ['http://localhost:5000', 'http://localhost:5173']
+const devOrigins = [
+  'http://localhost:5000',
+  'http://localhost:5173',
+  'https://localhost:3000',
+]
 
 app.use(
   cors({
@@ -64,7 +68,10 @@ async function startServer() {
     const esConnected = await checkESConnection()
     const preflightRunner = new PreflightRunner()
     preflightRunner.register(envCheck)
-    await preflightRunner.runAll()
+    await preflightRunner.runAll().catch(error => {
+      console.error('Preflight checks failed:', error)
+      process.exit(1)
+    })
 
     app.listen(PORT, () => {
       console.log(`🔗 Elasticsearch connection: ${esConnected}`)

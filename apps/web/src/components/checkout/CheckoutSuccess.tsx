@@ -80,9 +80,9 @@ export function CheckoutSuccess({ order }: { order: Order }) {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => router.push(`/orders/${order.id}`)}
+          onClick={() => router.push(`/orders`)}
         >
-          {t("checkout.viewOrder")}
+          {t("checkout.viewOrders")}
         </Button>
       </div>
     </div>

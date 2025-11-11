@@ -12,6 +12,9 @@ import { NextFunction, Response } from 'express'
 import { AuthRequest } from '../../middlewares/auth.middleware'
 import { LoginDto as LoginDtoV2, AuthResponse } from '@canto/types/auth'
 import UserService from '../user/user.service'
+import { MailService } from '../mail/mail.service'
+import { ForgotPasswordMail } from '../mail/mail.types'
+import crypto from 'crypto'
 export class AuthServiceV1 {
   private readonly prisma = new PrismaClient()
 
@@ -228,6 +231,7 @@ export class AuthServiceV1 {
 export class AuthServiceV2 {
   private readonly prisma = new PrismaClient()
   private readonly userService = new UserService()
+  private readonly mailService = new MailService()
 
   async login(dto: LoginDtoV2): Promise<AuthResponse> {
     const user = await this.prisma.user.findUnique({
@@ -243,6 +247,8 @@ export class AuthServiceV2 {
 
     const { id, name, role } = user
     const accessToken = signJwt({ id, name, role })
+
+    await this.userService.updateUser(user.id, { last_login: new Date() })
 
     return { id, name, role, accessToken }
   }
@@ -290,5 +296,69 @@ export class AuthServiceV2 {
 
     const accessToken = signJwt({ id, role })
     return { id, role, accessToken, name }
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email } })
+
+    if (!user) {
+      return
+    }
+    const env = process.env.NODE_ENV || 'development'
+
+    const token = crypto.randomBytes(32).toString('hex')
+    const tokenExpiry = new Date(Date.now() + 3600000)
+
+    await this.userService.updateUser(user.id, {
+      resetToken: token,
+      resetTokenExpiry: tokenExpiry,
+    })
+
+    let resetLink: string
+    switch (env) {
+      case 'development':
+        resetLink = `http://localhost:5000/en/reset-password`
+        break
+      case 'test':
+        resetLink = `https://staging.canto-store.com/en/reset-password`
+        break
+      case 'production':
+        resetLink = `https://canto-store.com/en/reset-password`
+        break
+    }
+
+    resetLink += `?token=${token}`
+
+    const mail: ForgotPasswordMail = {
+      to: user.email,
+      subject: 'Canto — Password Reset',
+      name: user.name,
+      resetLink,
+    }
+    console.log('##### — mail.resetLink =>', mail.resetLink)
+    await this.mailService.sendForgotPasswordEmail(mail)
+  }
+
+  async resetPassword(resetToken: string, newPassword: string): Promise<void> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        resetToken,
+        resetTokenExpiry: {
+          gt: new Date(),
+        },
+      },
+    })
+
+    if (!user) {
+      throw new AppError('Invalid or expired password reset token', 400)
+    }
+
+    const hashedPassword = await Bcrypt.hash(newPassword)
+
+    await this.userService.updateUser(user.id, {
+      resetToken: null,
+      password: hashedPassword,
+      resetTokenExpiry: null,
+    })
   }
 }
