@@ -11,6 +11,24 @@ const errorMiddleware: ErrorRequestHandler = async (
   res,
   _next
 ) => {
+  if (err instanceof AppError) {
+    if (!err.isOperational) {
+      await logError(err, req)
+    }
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    })
+  }
+
+  await logError(err, req)
+  return res.status(500).json({
+    status: 'error',
+    message: 'Internal Server Error',
+  })
+}
+
+const logError = async (err: any, req: AuthRequest) => {
   console.error('Error occurred:', {
     message: err.message,
     stack: err.stack,
@@ -25,18 +43,6 @@ const errorMiddleware: ErrorRequestHandler = async (
       },
     })
     .catch(dbError => console.error('Failed to log error:', dbError))
-
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    })
-  }
-
-  return res.status(500).json({
-    status: 'error',
-    message: 'Internal Server Error',
-  })
 }
 
 export default errorMiddleware

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CircleUser, User, Settings, LogOut } from "lucide-react";
+import { CircleUser, LogOut, Heart, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
@@ -76,14 +76,14 @@ export function UserDropdown() {
 
   const dropDownItems = [
     {
-      label: t("account"),
-      href: "/account",
-      icon: <User className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
+      label: t("order"),
+      href: "/orders",
+      icon: <ShoppingBag className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
     },
     {
-      label: t("settings"),
-      href: "/settings",
-      icon: <Settings className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
+      label: t("wishlist"),
+      href: "/wishlist",
+      icon: <Heart className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
     },
   ];
 

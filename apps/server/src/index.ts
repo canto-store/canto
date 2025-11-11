@@ -20,7 +20,7 @@ const prodOrigins = [
 
 const stagingOrigins = [
   'https://staging.canto-store.com',
-  'https://dashboard-staging.canto-store.com/',
+  'https://dashboard-staging.canto-store.com',
 ]
 
 const devOrigins = ['http://localhost:5000', 'http://localhost:5173']

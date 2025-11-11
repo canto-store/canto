@@ -19,7 +19,7 @@ export const useCategories = () =>
 
 export const useAllCategories = () =>
   useQuery<Category[], Error>({
-    queryKey: ["categories"],
+    queryKey: ["all-categories"],
     queryFn: async () => {
       const { data } = await api.get<Category[]>("/categories/all");
       return data.map((category) => ({

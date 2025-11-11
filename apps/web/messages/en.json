@@ -16,7 +16,9 @@
     "viewCart": "View Cart",
     "checkout": "Checkout",
     "login": "Sign in",
-    "hello": "{name} ،نوّرت"
+    "hello": "{name} ،نوّرت",
+    "order": "Orders",
+    "wishlist": "Wishlist"
   },
   "products": {
     "addToCart": "Add to Cart",
