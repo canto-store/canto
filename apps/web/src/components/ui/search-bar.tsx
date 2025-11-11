@@ -203,7 +203,7 @@ export function SearchBar({
   return (
     <form
       onSubmit={handleFormSubmit}
-      className={cn("relative flex gap-2", containerClassName)}
+      className={cn("relative flex gap-4", containerClassName)}
     >
       <div className="relative flex-1">
         <Input
@@ -258,7 +258,11 @@ export function SearchBar({
           </div>
         )}
       </div>
-      {showButton && <Button type="submit">{buttonText}</Button>}
+      {showButton && (
+        <Button className="h-10" type="submit">
+          {buttonText}
+        </Button>
+      )}
     </form>
   );
 }

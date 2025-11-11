@@ -39,7 +39,7 @@ export function ActiveFilters({
   if (!hasActiveFilters) return null;
 
   return (
-    <div className="mb-4 hidden flex-wrap items-center gap-2 rounded-md bg-gray-50 p-2 sm:mb-6 sm:flex">
+    <div className="mb-4 hidden flex-wrap items-center gap-2 rounded-md bg-gray-50 p-2 sm:my-2 sm:flex">
       <SlidersHorizontal className="h-4 w-4 text-gray-500" />
       <span className="text-xs font-medium text-gray-700 sm:text-sm">
         {translations.filters}:
