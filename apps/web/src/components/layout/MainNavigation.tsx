@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { Home, Search, Store } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import ShopPopover from "../home/ShopPopover";
 
 interface NavigationItem {
   label: string;
@@ -48,17 +49,29 @@ export function MainNavigation() {
   return (
     <nav className="flex w-3/5 justify-center">
       <ul className="flex items-center space-x-12">
-        {navigationItems.map((item) => (
-          <li key={item.label}>
-            <Button
-              variant="ghost"
-              onClick={() => handleNavigation(item.href)}
-              className="text-primary hovers:bg-primary/10 text-base font-medium transition-colors"
-            >
-              {item.label}
-            </Button>
-          </li>
-        ))}
+        <li key={navigationItems[0].label}>
+          <Button
+            variant="ghost"
+            onClick={() => handleNavigation(navigationItems[0].href)}
+            className="text-primary hovers:bg-primary/10 text-base font-medium transition-colors"
+          >
+            {navigationItems[0].label}
+          </Button>
+        </li>
+
+        <li key={navigationItems[1].label}>
+          <ShopPopover />
+        </li>
+
+        <li key={navigationItems[2].label}>
+          <Button
+            variant="ghost"
+            onClick={() => handleNavigation(navigationItems[2].href)}
+            className="text-primary hovers:bg-primary/10 text-base font-medium transition-colors"
+          >
+            {navigationItems[2].label}
+          </Button>
+        </li>
       </ul>
     </nav>
   );
