@@ -1,14 +1,4 @@
 export {};
-interface Navigator {
-  /**
-   * Indicates if the web application is running in standalone mode (PWA).
-   * Supported primarily by Safari on iOS.
-   */
-  standalone?: boolean;
-  userAgentData?: {
-    platform?: string;
-  };
-}
 
 declare module "react" {
   namespace JSX {
