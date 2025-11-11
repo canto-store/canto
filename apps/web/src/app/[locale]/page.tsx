@@ -11,6 +11,16 @@ import { useTranslations } from "next-intl";
 import { useGetCart } from "@/lib/cart";
 import banner from "../../../public/banner.png";
 import bannerMobile from "../../../public/mobile-banner.png";
+import { HomeCategoriesBanner } from "@/components/home/HomeCategoriesBanner";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+  Accordion,
+  AccordionItem,
+} from "@heroui/react";
 
 export default function Home() {
   const { data, isLoading } = useHomeProducts();
