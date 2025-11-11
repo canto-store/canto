@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense } from "react";
 import { ProductGrid } from "@/components/products";
 import { notFound } from "next/navigation";
 import { ProductDetails } from "@/components/products/ProductDetails";
@@ -19,17 +19,7 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
-  const [resolvedParams, setResolvedParams] = useState<{ slug: string } | null>(
-    null,
-  );
-
-  useEffect(() => {
-    params.then(setResolvedParams);
-  }, [params]);
-
-  if (!resolvedParams) {
-    return <ProductDetailLoading />;
-  }
+  const resolvedParams = React.use(params);
 
   const { slug } = resolvedParams;
 
