@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { parseApiError } from "@/lib/utils";
-import { useSearchParams } from "next/dist/client/components/navigation";
+import { ForgotPasswordModal } from "../forgot-password/ForgotPasswordModal";
 
 const loginFormSchema = z.object({
   email: z.email({ message: "Please enter a valid email address" }),
@@ -38,9 +38,7 @@ interface LoginFormProps {
 export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const searchParams = useSearchParams();
-  const redirectUrl = decodeURIComponent(searchParams.get("redirect") || "/");
+  const [openForgotPassword, setOpenForgotPassword] = useState(false);
 
   const t = useTranslations();
   const { mutateAsync: login } = useLogin();
@@ -80,6 +78,15 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
       router.push(`/register`);
     }
   };
+
+  if (openForgotPassword) {
+    return (
+      <ForgotPasswordModal
+        isOpen={openForgotPassword}
+        onClose={() => setOpenForgotPassword(false)}
+      />
+    );
+  }
 
   return (
     <Form {...form}>
@@ -132,24 +139,15 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
           )}
         />
 
-        {/* <div className="flex items-center justify-between pt-2">
-          <Button
-            type="button"
-            variant="link"
-            className="h-auto px-0 text-sm font-normal"
-            onClick={() => router.push("/forgot-password")}
-            disabled={isLoading}
-          >
-            {t("auth.forgotPassword")}
-          </Button>
-          <Button type="submit" disabled={isLoading} className="w-24">
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              t("auth.loginButton")
-            )}
-          </Button>
-        </div> */}
+        <Button
+          type="button"
+          variant="link"
+          className="h-auto px-0 text-sm font-normal"
+          onClick={() => setOpenForgotPassword(true)}
+          disabled={isLoading}
+        >
+          {t("auth.forgotPassword")}
+        </Button>
 
         <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
           {isLoading ? (

@@ -47,6 +47,7 @@ model User {
   email_verified Boolean     @default(false)
   phone_number   String?     @unique
   balance        Float       @default(0)
+  resetToken String?    @unique
   Address        Address[]
   Cart           Cart? 
   Order          Order[]
@@ -59,6 +60,7 @@ model User {
   last_login     DateTime?
   created_at     DateTime    @default(now())
   updated_at     DateTime    @updatedAt
+  resetTokenExpiry DateTime?
 
   @@map("users")
 }

@@ -70,4 +70,12 @@ export default class UserService {
       where: { id },
     })
   }
+
+  async updateUser(id: number, data: Partial<User>) {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data,
+    })
+    return user
+  }
 }

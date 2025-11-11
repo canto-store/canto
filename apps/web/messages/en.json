@@ -361,6 +361,7 @@
     "emailLabel": "Email",
     "emailPlaceholder": "name@example.com",
     "passwordLabel": "Password",
+    "newPasswordLabel": "New Password",
     "passwordPlaceholder": "Enter your password",
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account?",

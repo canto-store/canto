@@ -68,7 +68,10 @@ async function startServer() {
     const esConnected = await checkESConnection()
     const preflightRunner = new PreflightRunner()
     preflightRunner.register(envCheck)
-    await preflightRunner.runAll()
+    await preflightRunner.runAll().catch(error => {
+      console.error('Preflight checks failed:', error)
+      process.exit(1)
+    })
 
     app.listen(PORT, () => {
       console.log(`🔗 Elasticsearch connection: ${esConnected}`)
