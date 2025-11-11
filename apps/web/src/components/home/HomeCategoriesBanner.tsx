@@ -19,7 +19,7 @@ export function HomeCategoriesBanner() {
   );
 
   return (
-    <div className="scrollbar-hide container my-0 flex justify-between gap-2 overflow-x-auto py-4 lg:gap-4">
+    <div className="scrollbar-hide container my-0 flex justify-between gap-2 overflow-x-auto py-2">
       {rectangleCategories.slice(0, 2).map((category) => (
         <CategoryCard
           key={category.name}
