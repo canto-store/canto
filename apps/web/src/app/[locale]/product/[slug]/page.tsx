@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { ProductGrid } from "@/components/products";
 import { notFound } from "next/navigation";
 import { ProductDetails } from "@/components/products/ProductDetails";
