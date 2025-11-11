@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { parseApiError } from "@/lib/utils";
 import { ForgotPasswordModal } from "../forgot-password/ForgotPasswordModal";
+import { useSearchParams } from "next/navigation";
 
 const loginFormSchema = z.object({
   email: z.email({ message: "Please enter a valid email address" }),
@@ -43,6 +44,9 @@ export function LoginForm({ onClose, switchToRegister }: LoginFormProps) {
   const t = useTranslations();
   const { mutateAsync: login } = useLogin();
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const redirectUrl = decodeURIComponent(searchParams.get("redirect") || "/");
 
   const form = useForm<FormData>({
     resolver: zodResolver(loginFormSchema),
