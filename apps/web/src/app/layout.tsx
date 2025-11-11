@@ -109,6 +109,7 @@ export default async function RootLayout({
     <html>
       <head>
         <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
         <FontPreloader />
         <script
           async

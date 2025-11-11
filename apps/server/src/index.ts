@@ -23,7 +23,11 @@ const stagingOrigins = [
   'https://dashboard-staging.canto-store.com',
 ]
 
-const devOrigins = ['http://localhost:5000', 'http://localhost:5173']
+const devOrigins = [
+  'http://localhost:5000',
+  'http://localhost:5173',
+  'https://localhost:3000',
+]
 
 app.use(
   cors({
