@@ -1,15 +1,31 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { useCategories } from "@/lib/categories";
+import { useAllCategories, useCategories } from "@/lib/categories";
 import { useBrands } from "@/lib/brand";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/react";
+import { Slider } from "@heroui/react";
+import { useState } from "react";
 
 interface FilterPanelProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
   selectedBrand: string[] | undefined;
   setSelectedBrand: (brand: string[] | undefined) => void;
+  selectedSize?: string;
+  setSelectedSize?: (size: string) => void;
+  selectedPriceRange?: [number, number];
+  setSelectedPriceRange?: (range: [number, number]) => void;
   translations: {
     categories: string;
     brands: string;
+    size?: string;
+    price?: string;
   };
 }
 
@@ -18,23 +34,40 @@ export function FilterPanel({
   setSelectedCategory,
   selectedBrand,
   setSelectedBrand,
+  selectedSize,
+  setSelectedSize,
+  selectedPriceRange,
+  setSelectedPriceRange,
   translations,
 }: FilterPanelProps) {
   const { data: categories, isLoading: categoriesLoading } = useCategories();
-
   const isBrandsEnabled = selectedCategory !== "All";
-
   const { data: brands, isLoading: brandsLoading } = useBrands(
     isBrandsEnabled ? selectedCategory : undefined,
     isBrandsEnabled,
   );
 
+  // Default sizes
+  const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
+
+  // Default price range (0 to 1000)
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(
+    selectedPriceRange || [0, 1000],
+  );
+
+  const handlePriceChange = (value: number | number[]) => {
+    if (Array.isArray(value)) {
+      setLocalPriceRange([value[0], value[1]]);
+      setSelectedPriceRange?.([value[0], value[1]]);
+    }
+  };
+
   return (
-    <div className="mb-6 rounded-lg border bg-white p-4 shadow-sm">
-      <div className="grid gap-6 md:grid-cols-2">
+    <div className="mb-6 rounded-lg border bg-white p-4 shadow-sm sm:my-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {/* Categories */}
         <div>
-          <h4 className="mb-3 text-sm font-medium text-gray-700">
+          <h4 className="mb-1 text-sm font-medium text-gray-700">
             {translations.categories}
           </h4>
           {categoriesLoading ? (
@@ -75,7 +108,7 @@ export function FilterPanel({
 
         {/* Brands */}
         <div>
-          <h4 className="mb-3 text-sm font-medium text-gray-700">
+          <h4 className="mb-1 text-sm font-medium text-gray-700">
             {translations.brands}
           </h4>
           {brandsLoading ? (
@@ -119,6 +152,51 @@ export function FilterPanel({
                 ))}
             </div>
           )}
+        </div>
+
+        {/* Size Dropdown */}
+        <div>
+          <h4 className="mb-1 text-sm font-medium text-gray-700">
+            {translations.size || "Size"}
+          </h4>
+          <Dropdown placement="bottom-start">
+            <DropdownTrigger>
+              <Button className="w-full justify-between border border-gray-300 bg-white text-gray-700">
+                {selectedSize || "Select Size"}
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              aria-label="Select size"
+              onAction={(key) => setSelectedSize?.(String(key))}
+            >
+              {sizes.map((size) => (
+                <DropdownItem key={size}>{size}</DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+
+        {/* Price Range Slider */}
+        <div>
+          <h4 className="mb-2 text-sm font-medium text-gray-700">
+            {translations.price || "Price Range"}
+          </h4>
+          <div className="px-2">
+            <Slider
+              aria-label="Price range"
+              minValue={0}
+              maxValue={1000}
+              step={10}
+              value={localPriceRange}
+              onChange={handlePriceChange}
+              formatOptions={{ style: "currency", currency: "USD" }}
+              showTooltip
+            />
+            <div className="mt-2 flex justify-between text-xs text-gray-600">
+              <span>EGP {localPriceRange[0]}</span>
+              <span>EGP {localPriceRange[1]}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

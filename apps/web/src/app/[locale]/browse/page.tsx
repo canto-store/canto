@@ -195,102 +195,107 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="mt-3">
-      {/* Search and Filter Controls */}
-      <SearchFilterBar
-        searchQuery={searchQuery}
-        onSearch={handleSearch}
-        showFilters={showFilters}
-        setShowFilters={setShowFilters}
-        hasActiveFilters={hasActiveFilters}
-        clearFilters={clearFilters}
-      />
+    <div className="flex h-screen flex-col">
+      {/* Top Fixed Controls */}
+      <div className="sticky top-0 z-40 border-b border-gray-200 bg-white">
+        {/* Search and Filter Controls */}
+        <SearchFilterBar
+          searchQuery={searchQuery}
+          onSearch={handleSearch}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
+          hasActiveFilters={hasActiveFilters}
+          clearFilters={clearFilters}
+        />
 
-      {/* Mobile Controls Bar */}
-      <MobileControlsBar
-        isFilterDrawerOpen={isFilterDrawerOpen}
-        setIsFilterDrawerOpen={setIsFilterDrawerOpen}
-        isViewDrawerOpen={isViewDrawerOpen}
-        setIsViewDrawerOpen={setIsViewDrawerOpen}
-        isSortDrawerOpen={isSortDrawerOpen}
-        setIsSortDrawerOpen={setIsSortDrawerOpen}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedBrand={selectedBrand}
-        setSelectedBrand={setSelectedBrand}
-        selectedPriceRange={selectedPriceRange}
-        setSelectedPriceRange={setSelectedPriceRange}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        clearFilters={clearFilters}
-        activeFiltersCount={activeFiltersCount}
-        hasActiveFilters={hasActiveFilters}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        sortOption={sortOption}
-        setSortOption={setSortOption}
-        filterTranslations={filterTranslations}
-        viewOptionsTranslations={viewOptionsTranslations}
-        sortTranslations={sortTranslations}
-        sortOptionTranslations={sortOptionTranslations}
-      />
-
-      {/* Active Filters Summary */}
-      <ActiveFilters
-        hasActiveFilters={hasActiveFilters}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedBrand={selectedBrand}
-        setSelectedBrand={setSelectedBrand}
-        selectedPriceRange={selectedPriceRange}
-        defaultPriceRange={PRICE_RANGES[0]}
-        setSelectedPriceRange={setSelectedPriceRange}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        translations={{ filters: filterTranslations.filters }}
-      />
-
-      {/* Desktop Filters Panel */}
-      {showFilters && (
-        <FilterPanel
+        {/* Mobile Controls Bar */}
+        <MobileControlsBar
+          isFilterDrawerOpen={isFilterDrawerOpen}
+          setIsFilterDrawerOpen={setIsFilterDrawerOpen}
+          isViewDrawerOpen={isViewDrawerOpen}
+          setIsViewDrawerOpen={setIsViewDrawerOpen}
+          isSortDrawerOpen={isSortDrawerOpen}
+          setIsSortDrawerOpen={setIsSortDrawerOpen}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           selectedBrand={selectedBrand}
           setSelectedBrand={setSelectedBrand}
-          translations={{
-            categories: filterTranslations.categories,
-            brands: filterTranslations.brands,
-          }}
+          selectedPriceRange={selectedPriceRange}
+          setSelectedPriceRange={setSelectedPriceRange}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          clearFilters={clearFilters}
+          activeFiltersCount={activeFiltersCount}
+          hasActiveFilters={hasActiveFilters}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+          filterTranslations={filterTranslations}
+          viewOptionsTranslations={viewOptionsTranslations}
+          sortTranslations={sortTranslations}
+          sortOptionTranslations={sortOptionTranslations}
         />
-      )}
 
-      {/* Results Controls */}
-      <ResultsControls
-        filteredProductsCount={searchResult?.total || 0}
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        isRTL={isRTL}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        sortOption={sortOption}
-        setSortOption={setSortOption}
-        onItemsPerPageChange={handleItemsPerPageChange}
-        formatNumber={formatNumber}
-      />
+        {/* Active Filters Summary */}
+        <ActiveFilters
+          hasActiveFilters={hasActiveFilters}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedBrand={selectedBrand}
+          setSelectedBrand={setSelectedBrand}
+          selectedPriceRange={selectedPriceRange}
+          defaultPriceRange={PRICE_RANGES[0]}
+          setSelectedPriceRange={setSelectedPriceRange}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          translations={{ filters: filterTranslations.filters }}
+        />
 
-      {/* Products Display */}
-      <ProductsDisplay
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        filteredProducts={searchResult?.products || []}
-        paginatedProducts={searchResult?.products || []}
-        currentPage={currentPage}
-        totalPages={searchResult?.totalPages || 1}
-        onPageChange={handlePageChange}
-        clearFilters={clearFilters}
-        isRTL={isRTL}
-        isLoading={isLoading}
-      />
+        {/* Desktop Filters Panel */}
+        {showFilters && (
+          <FilterPanel
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            selectedBrand={selectedBrand}
+            setSelectedBrand={setSelectedBrand}
+            translations={{
+              categories: filterTranslations.categories,
+              brands: filterTranslations.brands,
+            }}
+          />
+        )}
+
+        {/* Results Controls */}
+        <ResultsControls
+          filteredProductsCount={searchResult?.total || 0}
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          isRTL={isRTL}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          formatNumber={formatNumber}
+        />
+      </div>
+
+      {/* Scrollable Products Section */}
+      <div className="flex-1 overflow-y-auto px-2 pb-8">
+        <ProductsDisplay
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          filteredProducts={searchResult?.products || []}
+          paginatedProducts={searchResult?.products || []}
+          currentPage={currentPage}
+          totalPages={searchResult?.totalPages || 1}
+          onPageChange={handlePageChange}
+          clearFilters={clearFilters}
+          isRTL={isRTL}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }

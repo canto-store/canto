@@ -26,7 +26,7 @@ export function SearchFilterBar({
   const isMobile = useMediaQuery("(max-width: 768px)", false);
 
   return (
-    <div className="mb-3 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:gap-4">
+    <div className="mb-3 flex flex-col gap-3 sm:my-2 sm:flex-row sm:items-center sm:gap-4">
       <div className="flex-1">
         <SearchBar
           placeholder={t("header.placeholder")}
