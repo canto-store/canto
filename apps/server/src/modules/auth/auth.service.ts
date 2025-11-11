@@ -248,6 +248,8 @@ export class AuthServiceV2 {
     const { id, name, role } = user
     const accessToken = signJwt({ id, name, role })
 
+    await this.userService.updateUser(user.id, { last_login: new Date() })
+
     return { id, name, role, accessToken }
   }
 
