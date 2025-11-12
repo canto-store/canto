@@ -10,7 +10,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { PRICE_RANGES, type PriceRange } from "@/lib/data";
 import { useCategories } from "@/lib/categories";
 import { useBrands } from "@/lib/brand";
 
@@ -21,8 +20,6 @@ interface FilterDrawerProps {
   setSelectedCategory: (category: string) => void;
   selectedBrand: string[] | undefined;
   setSelectedBrand: (brand: string[]) => void;
-  selectedPriceRange: PriceRange;
-  setSelectedPriceRange: (range: PriceRange) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   clearFilters: () => void;
@@ -49,8 +46,7 @@ export function FilterDrawer({
   setSelectedCategory,
   selectedBrand,
   setSelectedBrand,
-  selectedPriceRange,
-  setSelectedPriceRange,
+
   searchQuery,
   setSearchQuery,
   clearFilters,
@@ -137,18 +133,6 @@ export function FilterDrawer({
                     <X className="h-3 w-3" />
                   </Button>
                 ))}
-
-              {selectedPriceRange !== PRICE_RANGES[0] && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="h-7 gap-1 rounded-full px-2 py-0 text-xs font-medium"
-                  onClick={() => setSelectedPriceRange(PRICE_RANGES[0])}
-                >
-                  {selectedPriceRange.label}
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
 
               {searchQuery && (
                 <Button

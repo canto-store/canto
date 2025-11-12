@@ -88,7 +88,7 @@ export interface ProductQueryParams {
   minPrice?: string
   maxPrice?: string
   colors?: string // comma-separated color values
-  sizes?: string // comma-separated size values
+  size?: string // comma-separated size values
   inStock?: string
   sortBy?: 'name' | 'price' | 'created_at' | 'popularity'
   sortOrder?: 'asc' | 'desc'

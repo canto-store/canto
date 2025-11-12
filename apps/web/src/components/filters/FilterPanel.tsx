@@ -1,26 +1,36 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useAllCategories, useCategories } from "@/lib/categories";
+import { useCategories } from "@/lib/categories";
 import { useBrands } from "@/lib/brand";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Skeleton,
 } from "@heroui/react";
 import { Slider } from "@heroui/react";
-import { useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
+import { formatPrice } from "@/lib/utils";
+import { usePriceRange, useSizes } from "@/lib/filters";
 
 interface FilterPanelProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
   selectedBrand: string[] | undefined;
   setSelectedBrand: (brand: string[] | undefined) => void;
-  selectedSize?: string;
-  setSelectedSize?: (size: string) => void;
-  selectedPriceRange?: [number, number];
-  setSelectedPriceRange?: (range: [number, number]) => void;
+  selectedSize: string | undefined;
+  setSelectedSize: (size: string) => void;
+  selectedPriceRange: [number, number];
+  setSelectedPriceRange: Dispatch<SetStateAction<[number, number]>>;
   translations: {
     categories: string;
     brands: string;
@@ -46,21 +56,56 @@ export function FilterPanel({
     isBrandsEnabled ? selectedCategory : undefined,
     isBrandsEnabled,
   );
+  const { data: sizes, isSuccess } = useSizes();
 
-  // Default sizes
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
+  const { data: priceRange } = usePriceRange();
 
-  // Default price range (0 to 1000)
-  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(
-    selectedPriceRange || [0, 1000],
+  // Local state for immediate UI feedback
+  const [localPriceRange, setLocalPriceRange] =
+    useState<[number, number]>(selectedPriceRange);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Update local state when selectedPriceRange changes from parent (e.g., on initial load or reset)
+  useEffect(() => {
+    setLocalPriceRange(selectedPriceRange);
+  }, [selectedPriceRange]);
+
+  const handlePriceChange = useCallback(
+    (value: number | number[]) => {
+      if (Array.isArray(value)) {
+        const newRange: [number, number] = [value[0], value[1]];
+
+        // Update local state immediately for instant visual feedback
+        setLocalPriceRange(newRange);
+
+        // Clear existing timer
+        if (debounceTimer.current) {
+          clearTimeout(debounceTimer.current);
+        }
+
+        // Debounce only the parent state update (which triggers API calls)
+        debounceTimer.current = setTimeout(() => {
+          setSelectedPriceRange?.(newRange);
+        }, 300); // Reduced to 300ms for better UX
+      }
+    },
+    [setSelectedPriceRange],
   );
 
-  const handlePriceChange = (value: number | number[]) => {
-    if (Array.isArray(value)) {
-      setLocalPriceRange([value[0], value[1]]);
-      setSelectedPriceRange?.([value[0], value[1]]);
+  useEffect(() => {
+    if (priceRange) {
+      setSelectedPriceRange(priceRange);
     }
-  };
+  }, [priceRange]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="mb-6 rounded-lg border bg-white p-4 shadow-sm sm:my-2">
@@ -155,26 +200,31 @@ export function FilterPanel({
         </div>
 
         {/* Size Dropdown */}
-        <div>
-          <h4 className="mb-1 text-sm font-medium text-gray-700">
-            {translations.size || "Size"}
-          </h4>
-          <Dropdown placement="bottom-start">
-            <DropdownTrigger>
-              <Button className="w-full justify-between border border-gray-300 bg-white text-gray-700">
-                {selectedSize || "Select Size"}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Select size"
-              onAction={(key) => setSelectedSize?.(String(key))}
-            >
-              {sizes.map((size) => (
-                <DropdownItem key={size}>{size}</DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-        </div>
+
+        {isSuccess ? (
+          <div>
+            <h4 className="mb-1 text-sm font-medium text-gray-700">
+              {translations.size || "Size"}
+            </h4>
+            <Dropdown placement="bottom-start">
+              <DropdownTrigger className="hover:bg-primary-50">
+                <Button className="w-full justify-between border border-gray-300 bg-white text-gray-700">
+                  {selectedSize || "Select Size"}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Select size"
+                onAction={(key) => setSelectedSize(String(key))}
+              >
+                {sizes.map((size) => (
+                  <DropdownItem key={size.value}>{size.value}</DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        ) : (
+          <Skeleton className="h-10 w-full" />
+        )}
 
         {/* Price Range Slider */}
         <div>
@@ -184,17 +234,17 @@ export function FilterPanel({
           <div className="px-2">
             <Slider
               aria-label="Price range"
-              minValue={0}
-              maxValue={1000}
+              minValue={priceRange?.[0] ?? 1000}
+              maxValue={priceRange?.[1] ?? 1000}
               step={10}
               value={localPriceRange}
               onChange={handlePriceChange}
-              formatOptions={{ style: "currency", currency: "USD" }}
+              formatOptions={{ style: "currency", currency: "EGP" }}
               showTooltip
             />
             <div className="mt-2 flex justify-between text-xs text-gray-600">
-              <span>EGP {localPriceRange[0]}</span>
-              <span>EGP {localPriceRange[1]}</span>
+              <span>{formatPrice(localPriceRange[0])}</span>
+              <span>{formatPrice(localPriceRange[1])}</span>
             </div>
           </div>
         </div>

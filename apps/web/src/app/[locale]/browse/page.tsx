@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { useProductSearch, ProductSearchParams } from "@/lib/product";
-import { PRICE_RANGES } from "@/lib/data";
 import { useProductTranslations } from "./hooks";
 import {
   SearchFilterBar,
@@ -30,16 +29,33 @@ export default function BrowsePage() {
   const initialItemsPerPage = Number(searchParams.get("perPage") || "10");
   const initialSort = searchParams.get("sort") || "featured";
 
+  const initialSize = searchParams.get("size") || undefined;
+
+  const initialPriceMin = searchParams.get("minPrice")
+    ? Number(searchParams.get("minPrice"))
+    : 0;
+  const initialPriceMax = searchParams.get("maxPrice")
+    ? Number(searchParams.get("maxPrice"))
+    : Infinity;
+  const initialPriceRange: [number, number] = [
+    initialPriceMin,
+    initialPriceMax,
+  ];
+
   // State
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedBrand, setSelectedBrand] = useState(initialBrand);
-  const [selectedPriceRange, setSelectedPriceRange] = useState(PRICE_RANGES[0]);
   const [showFilters, setShowFilters] = useState(false);
   const [sortOption, setSortOption] = useState(initialSort);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(
+    initialSize,
+  );
+  const [priceRange, setPriceRange] =
+    useState<[number, number]>(initialPriceRange);
 
   // Mobile drawer states
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -56,10 +72,9 @@ export default function BrowsePage() {
     if (searchQuery) params.search = searchQuery;
     if (selectedCategory !== "All") params.category = selectedCategory;
     if (selectedBrand) params.brand = selectedBrand?.join("+");
-    if (selectedPriceRange.min > 0)
-      params.minPrice = selectedPriceRange.min.toString();
-    if (selectedPriceRange.max < Infinity)
-      params.maxPrice = selectedPriceRange.max.toString();
+    if (priceRange[0] > 0) params.minPrice = priceRange[0].toString();
+    if (priceRange[1] < Infinity) params.maxPrice = priceRange[1].toString();
+    if (selectedSize) params.size = selectedSize;
 
     // Map sort options to API format
     switch (sortOption) {
@@ -86,7 +101,8 @@ export default function BrowsePage() {
     searchQuery,
     selectedCategory,
     selectedBrand,
-    selectedPriceRange,
+    selectedSize,
+    priceRange,
     sortOption,
     currentPage,
     itemsPerPage,
@@ -105,10 +121,9 @@ export default function BrowsePage() {
     if (selectedCategory !== "All") count++;
     if (selectedBrand && selectedBrand.length > 0)
       count += selectedBrand.length;
-    if (selectedPriceRange !== PRICE_RANGES[0]) count++;
     if (searchQuery) count++;
     return count;
-  }, [selectedCategory, selectedBrand, selectedPriceRange, searchQuery]);
+  }, [selectedCategory, selectedBrand, searchQuery]);
 
   const hasActiveFilters = activeFiltersCount > 0;
 
@@ -131,6 +146,10 @@ export default function BrowsePage() {
     if (activeTab !== "grid") urlParams.set("tab", activeTab);
     if (currentPage !== 1) urlParams.set("page", currentPage.toString());
     if (itemsPerPage !== 10) urlParams.set("perPage", itemsPerPage.toString());
+    if (selectedSize) urlParams.set("size", selectedSize);
+    if (priceRange[0] > 0) urlParams.set("minPrice", priceRange[0].toString());
+    if (priceRange[1] < Infinity)
+      urlParams.set("maxPrice", priceRange[1].toString());
 
     const locale = typeof params.locale === "string" ? params.locale : "en";
     const newUrl = `/${locale}/browse${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
@@ -143,6 +162,8 @@ export default function BrowsePage() {
     selectedCategory,
     selectedBrand,
     sortOption,
+    selectedSize,
+    priceRange,
     activeTab,
     currentPage,
     itemsPerPage,
@@ -166,7 +187,6 @@ export default function BrowsePage() {
     setSearchQuery("");
     setSelectedCategory("All");
     setSelectedBrand([]);
-    setSelectedPriceRange(PRICE_RANGES[0]);
     setSortOption("featured");
     setCurrentPage(1);
   };
@@ -220,8 +240,6 @@ export default function BrowsePage() {
           setSelectedCategory={setSelectedCategory}
           selectedBrand={selectedBrand}
           setSelectedBrand={setSelectedBrand}
-          selectedPriceRange={selectedPriceRange}
-          setSelectedPriceRange={setSelectedPriceRange}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           clearFilters={clearFilters}
@@ -244,9 +262,6 @@ export default function BrowsePage() {
           setSelectedCategory={setSelectedCategory}
           selectedBrand={selectedBrand}
           setSelectedBrand={setSelectedBrand}
-          selectedPriceRange={selectedPriceRange}
-          defaultPriceRange={PRICE_RANGES[0]}
-          setSelectedPriceRange={setSelectedPriceRange}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           translations={{ filters: filterTranslations.filters }}
@@ -259,6 +274,10 @@ export default function BrowsePage() {
             setSelectedCategory={setSelectedCategory}
             selectedBrand={selectedBrand}
             setSelectedBrand={setSelectedBrand}
+            selectedPriceRange={priceRange}
+            setSelectedPriceRange={setPriceRange}
+            selectedSize={selectedSize}
+            setSelectedSize={setSelectedSize}
             translations={{
               categories: filterTranslations.categories,
               brands: filterTranslations.brands,

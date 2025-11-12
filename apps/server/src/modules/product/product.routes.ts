@@ -23,6 +23,10 @@ router.get(
   productController.getProductFilters.bind(productController)
 )
 router.get(
+  '/price-range',
+  productController.getPriceRange.bind(productController)
+)
+router.get(
   '/home-products',
   productController.getHomeProducts.bind(productController)
 )

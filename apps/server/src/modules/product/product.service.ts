@@ -62,7 +62,7 @@ class ProductService {
       minPrice,
       maxPrice,
       colors,
-      sizes,
+      size,
       inStock,
       sortBy = 'created_at',
       sortOrder = 'desc',
@@ -146,13 +146,12 @@ class ProductService {
       })
     }
 
-    if (sizes) {
-      const vals = sizes.split(',').map(s => s.trim())
+    if (size) {
       variantFilters.push({
         optionLinks: {
           some: {
             productOption: { name: { equals: 'Size', mode: 'insensitive' } },
-            optionValue: { value: { in: vals, mode: 'insensitive' } },
+            optionValue: { value: { in: [size], mode: 'insensitive' } },
           },
         },
       })
@@ -1248,6 +1247,14 @@ class ProductService {
           value: v.value,
         })) || [],
     }
+  }
+
+  async getPriceRange() {
+    const priceRange = await this.prisma.productVariant.aggregate({
+      _min: { price: true },
+      _max: { price: true },
+    })
+    return [priceRange._min.price || 0, priceRange._max.price || 0]
   }
 
   async isProductVariantInStock(productVariantId: number) {
