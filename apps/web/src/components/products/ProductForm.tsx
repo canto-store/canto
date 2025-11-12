@@ -26,7 +26,7 @@ import {
 import ProductVariants, {
   ProductVariantsRef,
 } from "@/components/products/product-variants";
-import { useCategories } from "@/lib/categories";
+import { useAllCategories } from "@/lib/categories";
 import {
   productFormSchema,
   ProductFormValues,
@@ -47,7 +47,7 @@ export default function ProductForm({
 }: {
   products: ProductFormValues | null;
 }) {
-  const { data: categories } = useCategories();
+  const { data: categories } = useAllCategories();
   const { data: brand } = useMyBrand();
   const { mutateAsync: createProduct, isPending: isCreating } =
     useSubmitProduct();
