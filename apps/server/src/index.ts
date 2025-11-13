@@ -7,8 +7,6 @@ import { ErrorHandler } from './middlewares/error.middleware'
 import loggerMiddleware from './middlewares/logger.middleware'
 
 import { checkESConnection } from './modules/search'
-import { PreflightRunner } from './preflight/preflight'
-import { envCheck } from './preflight/checks/env'
 
 const app: Express = express()
 
@@ -67,12 +65,6 @@ const PORT: number = parseInt(process.env.PORT || '8000', 10)
 async function startServer() {
   try {
     const esConnected = await checkESConnection()
-    const preflightRunner = new PreflightRunner()
-    preflightRunner.register(envCheck)
-    await preflightRunner.runAll().catch(error => {
-      console.error('Preflight checks failed:', error)
-      process.exit(1)
-    })
 
     app.listen(PORT, () => {
       console.log(`🔗 Elasticsearch connection: ${esConnected}`)
