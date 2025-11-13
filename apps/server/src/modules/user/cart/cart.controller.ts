@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express'
 import CartService from './cart.service'
 import { AuthRequest } from '../../../middlewares/auth.middleware'
+import AppError from '../../../utils/appError'
 
 class CartController {
   private readonly service = new CartService()
@@ -29,6 +30,9 @@ class CartController {
     try {
       const userId = req.user.id
       const { variantId, quantity } = req.body
+      if (!variantId || !quantity) {
+        throw new AppError('variantId and quantity are required', 400)
+      }
       const item = await this.service.addItem(userId, variantId, quantity)
       res.status(201).json(item)
     } catch (err) {

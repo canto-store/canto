@@ -106,7 +106,9 @@ class CartService {
   async addItem(userId: number, variantId: number, quantity: number) {
     if (quantity == null || quantity < 0)
       throw new AppError('quantity must be ≥ 0', 400)
-    const inStock = await this.productService.isProductVariantInStock(variantId)
+    const variant = await this.productService.getProductVariantById(variantId)
+    if (!variant) throw new AppError('Product variant not found', 404)
+    const inStock = await this.productService.isProductVariantInStock(variant)
 
     if (!inStock)
       throw new AppError('Cannot add out-of-stock item to cart', 400)

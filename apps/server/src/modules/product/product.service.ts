@@ -1253,12 +1253,14 @@ class ProductService {
     return [priceRange._min.price || 0, priceRange._max.price || 0]
   }
 
-  async isProductVariantInStock(productVariantId: number) {
-    const variant = await this.prisma.productVariant.findUnique({
-      where: { id: productVariantId },
-      select: { stock: true },
+  async getProductVariantById(id: number) {
+    return await this.prisma.productVariant.findUnique({
+      where: { id },
     })
-    return variant?.stock > 0
+  }
+
+  async isProductVariantInStock(variant: ProductVariant) {
+    return variant.stock > 0
   }
 
   async resolveCartItemQuantity(
