@@ -41,7 +41,7 @@ export function WebHeader({ className }: WebHeaderProps) {
       <MainNavigation />
 
       <div className="flex items-center gap-4 md:w-1/5 md:justify-end">
-        <LanguageSelector />
+        {/* <LanguageSelector /> */}
         <CartDropdown />
         <UserDropdown />
       </div>
