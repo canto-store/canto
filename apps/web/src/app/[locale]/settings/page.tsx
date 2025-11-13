@@ -80,7 +80,7 @@ export default function Page() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => handleNavigation("/returns")}
+                // onClick={() => handleNavigation("/returns")}
               >
                 <ArrowLeftRight className="mr-2 h-4 w-4" />
                 Returns
@@ -123,7 +123,7 @@ export default function Page() {
         )}
         <div className="flex flex-col gap-2">
           <h2 className="text-md">Settings</h2>
-          <Button variant="outline" onClick={handleLanguageChange}>
+          <Button variant="outline">
             <Globe className="mr-2 h-4 w-4" />
             <p className="w-full text-left">Language</p>
             <ChevronRight className="ml-auto h-4 w-4" />
