@@ -10,12 +10,7 @@ export function signJwt(payload: JwtPayload): string {
 }
 
 async function main() {
-  const token = signJwt({
-    id: 17,
-    name: 'Omar Soubky',
-    role: ['USER', 'SELLER', 'ADMIN'],
-  })
-  console.log('##### — token =>', token)
+  throw new Error('Test error for debugging purposes')
 }
 main().catch(err => {
   console.error('Fatal error during startup:', err)

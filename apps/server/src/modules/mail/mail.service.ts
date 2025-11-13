@@ -1,8 +1,10 @@
-import { ForgotPasswordMail } from './mail.types'
+import { ForgotPasswordMail, Mail } from './mail.types'
 import nodemailer from 'nodemailer'
 import React from 'react'
 import ForgotPasswordEmail from '../../../emails/ForgotPasswordEmail'
 import { render } from '@react-email/render'
+import ErrorNotificationEmail from '../../../emails/ErrorNotificationEmail'
+import { ErrorContext } from '../../types/error.types'
 
 export class MailService {
   private transporter = nodemailer.createTransport({
@@ -16,19 +18,44 @@ export class MailService {
   })
 
   async sendForgotPasswordEmail(mail: ForgotPasswordMail): Promise<void> {
-    const html = await Promise.resolve(
-      render(
+    try {
+      const html = await render(
         React.createElement(ForgotPasswordEmail, {
           name: mail.name,
           resetLink: mail.resetLink,
         })
       )
-    )
+      await this.sendMail({
+        to: mail.to,
+        subject: 'Canto — Password Reset',
+        html,
+      })
+    } catch (err) {
+      console.error('Failed to send forgot password email:', err)
+    }
+  }
+
+  async sendErrorEmail(ctx: ErrorContext): Promise<void> {
+    try {
+      const html = await render(
+        React.createElement(ErrorNotificationEmail, ctx)
+      )
+      await this.sendMail({
+        to: '0xsoubky@gmail.com',
+        subject: 'Canto — Application Error Logged',
+        html,
+      })
+    } catch (err) {
+      console.error('Failed to send error email:', err)
+    }
+  }
+
+  async sendMail(mail: Mail): Promise<void> {
     await this.transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: mail.to,
       subject: mail.subject,
-      html,
+      html: mail.html,
     })
   }
 }

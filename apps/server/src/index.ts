@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
 import routes from './routes'
-import errorMiddleware from './middlewares/error.middleware'
+import { ErrorHandler } from './middlewares/error.middleware'
 import loggerMiddleware from './middlewares/logger.middleware'
 
 import { checkESConnection } from './modules/search'
@@ -58,6 +58,7 @@ app.use('/api', routes)
 app.get('/', (_req, res) => {
   res.send('<h1>Server Running</h1>')
 })
+const errorMiddleware = new ErrorHandler().handle
 
 app.use(errorMiddleware)
 

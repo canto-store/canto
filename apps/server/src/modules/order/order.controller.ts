@@ -29,7 +29,7 @@ export class OrderController {
       const { id: userId } = req.user
 
       if (!userId || !addressId) {
-        return next(new AppError('UserId and AddressId are required', 400))
+        throw new AppError('UserId and AddressId are required', 400)
       }
 
       const order = await orderService.createOrder({

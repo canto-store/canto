@@ -331,12 +331,10 @@ export class AuthServiceV2 {
 
     const mail: ForgotPasswordMail = {
       to: user.email,
-      subject: 'Canto — Password Reset',
       name: user.name,
       resetLink,
     }
-    console.log('##### — mail.resetLink =>', mail.resetLink)
-    await this.mailService.sendForgotPasswordEmail(mail)
+    this.mailService.sendForgotPasswordEmail(mail)
   }
 
   async resetPassword(resetToken: string, newPassword: string): Promise<void> {

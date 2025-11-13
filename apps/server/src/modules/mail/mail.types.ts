@@ -1,10 +1,11 @@
 export type Mail = {
   to: string
   subject: string
-  body: string
+  html: string
 }
 
-export type ForgotPasswordMail = Omit<Mail, 'body'> & {
+export type ForgotPasswordMail = {
+  to: string
   name: string
   resetLink: string
 }

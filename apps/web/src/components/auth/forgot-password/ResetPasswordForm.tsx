@@ -50,7 +50,6 @@ export function ResetPasswordForm() {
   const router = useRouter();
 
   const onSubmit = (data: FormData) => {
-    console.log("##### — data =>", data);
     const token = params.get("token") || "";
     resetPassword({ token, password: data.password }).then(() => {
       router.push("/login");

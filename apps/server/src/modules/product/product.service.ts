@@ -283,36 +283,32 @@ class ProductService {
   async updateProduct(id: number, dto: UpdateProductDto) {
     const { rejectionReason, ...updateProductData } = dto
     return await this.prisma.$transaction(async tx => {
-      try {
-        const product = await tx.product.update({
-          where: { id },
-          data: updateProductData,
+      const product = await tx.product.update({
+        where: { id },
+        data: updateProductData,
+      })
+      // creating rejection reason
+      if (rejectionReason && dto.status !== ProductStatus.REJECTED) {
+        await tx.productRejection.create({
+          data: {
+            productId: id,
+            reason: rejectionReason,
+          },
         })
-        // creating rejection reason
-        if (rejectionReason && dto.status !== ProductStatus.REJECTED) {
-          await tx.productRejection.create({
-            data: {
-              productId: id,
-              reason: rejectionReason,
-            },
-          })
-        }
-        // updating rejection reason
-        if (rejectionReason) {
-          await tx.productRejection.update({
-            where: { productId: id },
-            data: { reason: rejectionReason },
-          })
-        }
-        // deleting rejection reason if product is no longer rejected
-        if (
-          product.status === ProductStatus.REJECTED &&
-          dto.status !== ProductStatus.REJECTED
-        ) {
-          await tx.productRejection.delete({ where: { productId: id } })
-        }
-      } catch (error) {
-        throw new AppError(error, 500)
+      }
+      // updating rejection reason
+      if (rejectionReason) {
+        await tx.productRejection.update({
+          where: { productId: id },
+          data: { reason: rejectionReason },
+        })
+      }
+      // deleting rejection reason if product is no longer rejected
+      if (
+        product.status === ProductStatus.REJECTED &&
+        dto.status !== ProductStatus.REJECTED
+      ) {
+        await tx.productRejection.delete({ where: { productId: id } })
       }
     })
   }

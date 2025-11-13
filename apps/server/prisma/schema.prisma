@@ -331,6 +331,9 @@ model ErrorLog {
   stack     String
   userId    Int?     @map("user_id")
   user      User?    @relation(fields: [userId], references: [id])
+  path      String   @default("")  
+  method    String   @default("")
+  service   String   @default("")
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("error_logs")
