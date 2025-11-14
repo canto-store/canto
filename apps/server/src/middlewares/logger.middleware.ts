@@ -18,6 +18,10 @@ const logger = morgan((tokens, req: Request, res: Response) => {
   const now = new Date()
   const formattedTime = now.toLocaleString('en-US')
 
+  if (tokens.method(req, res) === 'HEAD') {
+    return
+  }
+
   return [
     formattedTime,
     tokens.method(req, res),
