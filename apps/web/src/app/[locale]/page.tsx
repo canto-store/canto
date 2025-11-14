@@ -35,8 +35,7 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-3.5rem)] w-screen max-w-none sm:hidden">
-        {/* 👇 Shown only on screens smaller than 640px */}
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] block h-[calc(100vh-3.5rem)] w-screen max-w-none sm:hidden">
         <Image
           src={bannerMobile}
           alt="Hero Mobile"
@@ -45,24 +44,12 @@ export default function Home() {
           priority
         />
       </section>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-3.5rem)] w-screen max-w-none max-lg:hidden min-sm:block">
-        {/* 👇 Shown only on screens between 640px and 1024px */}
-
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-3.5rem)] w-screen max-w-none sm:block">
         <Image
           src={banner}
           alt="Hero Tablet"
           fill
-          className="object-cover"
-          priority
-        />
-      </section>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-3.5rem)] w-screen max-w-none lg:block">
-        {/* 👇 Shown only on screens larger than 1024px */}
-        <Image
-          src={banner}
-          alt="Hero Desktop"
-          fill
-          className="object-fill"
+          className="object-cover max-lg:object-fill"
           priority
         />
       </section>
