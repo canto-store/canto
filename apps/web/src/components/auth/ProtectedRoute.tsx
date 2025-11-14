@@ -18,7 +18,7 @@ export default function ProtectedRoute({
     if (!isAuthenticated) {
       router.replace("/login?redirect=" + encodeURIComponent(pathname));
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, pathname]);
 
   if (!isAuthenticated)
     return (

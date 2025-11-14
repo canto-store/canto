@@ -14,7 +14,7 @@ export const useMyBrand = () => {
   });
 };
 
-export const useBrands = (category?: string) =>
+export const useBrands = (category?: string, enabled?: boolean) =>
   useQuery<Brand[], Error>({
     queryKey: ["brands", category],
     queryFn: async () => {
@@ -22,6 +22,7 @@ export const useBrands = (category?: string) =>
       const { data } = await api.get<Brand[]>(endpoint);
       return data;
     },
+    enabled,
   });
 
 export const useSubmitBrand = () =>

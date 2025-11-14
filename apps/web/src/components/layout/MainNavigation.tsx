@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { Home, Search, Store } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import ShopPopover from "../home/ShopPopover";
 
 interface NavigationItem {

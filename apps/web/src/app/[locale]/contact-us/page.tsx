@@ -8,9 +8,9 @@ function ContactUsPage() {
           </h1>
 
           <p className="text-gray-600">
-            We'd love to hear from you! Whether you have questions about our
-            products, need help with an order, or want to partner with us, don't
-            hesitate to reach out.
+            We&apos;d love to hear from you! Whether you have questions about
+            our products, need help with an order, or want to partner with us,
+            don&apos;t hesitate to reach out.
           </p>
 
           <div className="space-y-4">
@@ -49,7 +49,7 @@ function ContactUsPage() {
               We typically respond within 24 hours during business days. Thank
               you for choosing u.
             </p>
-            <strong>Canto — Egypt's brands, one destination</strong>
+            <strong>Canto — Egypt&apos;s brands, one destination</strong>
           </div>
         </div>
       </section>

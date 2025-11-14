@@ -15,8 +15,9 @@ import {
   Wallet,
 } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { useLocale } from "next-intl";
+// import { usePathname, useRouter } from "@/i18n/navigation";
+// import { useLocale } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { getUserRole } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,15 +27,15 @@ export default function Page() {
   const role = getUserRole(user?.role);
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
+  // const pathname = usePathname();
+  // const locale = useLocale();
   const { logout } = useUserStore();
   const queryClient = useQueryClient();
 
-  const handleLanguageChange = () => {
-    const value = locale === "en" ? "ar" : "en";
-    router.replace(pathname, { locale: value });
-  };
+  // const handleLanguageChange = () => {
+  //   const value = locale === "en" ? "ar" : "en";
+  //   router.replace(pathname, { locale: value });
+  // };
 
   const handleNavigation = (href: string) => {
     router.push(href);

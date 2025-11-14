@@ -3,8 +3,6 @@
 /* Note: You may need to change the path to fit your project structure */
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 
-@import "uploadthing/tw/v4";
-@source "../node_modules/@uploadthing/react/dist"; /** <-- depends on your project structure */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
