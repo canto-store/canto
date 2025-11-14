@@ -86,21 +86,13 @@ class BrandController {
     }
   }
 
-  public getMyBrand = async (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const userId = req.user.id
-      const brand = await this.brandService.getMyBrand(userId)
-      if (!brand) {
-        throw new AppError('Brand not found', 404)
-      }
-      res.status(200).json(brand)
-    } catch (error) {
-      next(error)
+  public getMyBrand = async (req: AuthRequest, res: Response) => {
+    const userId = req.user.id
+    const brand = await this.brandService.getMyBrand(userId)
+    if (!brand) {
+      throw new AppError('Brand not found', 404)
     }
+    res.status(200).json(brand)
   }
 }
 

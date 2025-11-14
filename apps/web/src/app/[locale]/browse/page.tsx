@@ -215,9 +215,9 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       {/* Top Fixed Controls */}
-      <div className="sticky top-0 z-40 border-b border-gray-200 bg-white">
+      <div className="sticky top-14 z-40 border-b border-gray-200 bg-white">
         {/* Search and Filter Controls */}
         <SearchFilterBar
           searchQuery={searchQuery}
@@ -301,7 +301,7 @@ export default function BrowsePage() {
       </div>
 
       {/* Scrollable Products Section */}
-      <div className="flex-1 overflow-y-auto px-2 pb-8">
+      <div className="flex-1 px-2 pb-8">
         <ProductsDisplay
           activeTab={activeTab}
           setActiveTab={setActiveTab}
