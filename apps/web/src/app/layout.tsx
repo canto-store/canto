@@ -116,6 +116,10 @@ export default async function RootLayout({
           src="https://unpkg.com/pwacompat"
           crossOrigin="anonymous"
         ></script>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
       </head>
       <body
         className={cn(
