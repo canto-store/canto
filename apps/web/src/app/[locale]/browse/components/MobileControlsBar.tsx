@@ -3,7 +3,6 @@ import {
   ViewOptionsDrawer,
   SortDrawer,
 } from "@/components/filters";
-import { PriceRange } from "@/lib/data";
 
 // Define interfaces for the translation objects
 interface FilterTranslations {
@@ -52,8 +51,6 @@ interface MobileControlsBarProps {
   setSelectedCategory: (category: string) => void;
   selectedBrand: string[] | undefined;
   setSelectedBrand: (brand: string[]) => void;
-  selectedPriceRange: PriceRange;
-  setSelectedPriceRange: (range: PriceRange) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   clearFilters: () => void;
@@ -80,8 +77,7 @@ export function MobileControlsBar({
   setSelectedCategory,
   selectedBrand,
   setSelectedBrand,
-  selectedPriceRange,
-  setSelectedPriceRange,
+
   searchQuery,
   setSearchQuery,
   clearFilters,
@@ -106,8 +102,6 @@ export function MobileControlsBar({
         setSelectedCategory={setSelectedCategory}
         selectedBrand={selectedBrand}
         setSelectedBrand={setSelectedBrand}
-        selectedPriceRange={selectedPriceRange}
-        setSelectedPriceRange={setSelectedPriceRange}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         clearFilters={clearFilters}

@@ -121,7 +121,7 @@ export interface ProductSearchParams {
   minPrice?: string;
   maxPrice?: string;
   colors?: string;
-  sizes?: string;
+  size?: string;
   inStock?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";

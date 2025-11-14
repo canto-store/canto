@@ -101,19 +101,6 @@ function WishlistPage() {
               <div className="grid w-full max-w-md grid-cols-1 gap-4 sm:grid-cols-2">
                 <Button
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 shadow-primary/20 hover:shadow-primary/30 rounded-full shadow-lg transition-all hover:shadow-xl"
-                  asChild
-                >
-                  <Link
-                    href="/browse"
-                    className="flex items-center justify-center gap-2"
-                  >
-                    Shop Products
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
                   variant="outline"
                   className="rounded-full border-gray-300 transition-all hover:border-gray-400 hover:bg-gray-50"
                   asChild
@@ -124,6 +111,19 @@ function WishlistPage() {
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Back to Home
+                  </Link>
+                </Button>
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 shadow-primary/20 hover:shadow-primary/30 rounded-full shadow-lg transition-all hover:shadow-xl"
+                  asChild
+                >
+                  <Link
+                    href="/browse"
+                    className="flex items-center justify-center gap-2"
+                  >
+                    Shop Products
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </div>
@@ -167,17 +167,18 @@ function WishlistPage() {
 }
 
 function WishlistItem({ item }: { item: WishlistItem; isLast?: boolean }) {
-  const { mutate: removeItem, isPending: removeIsPending } =
+  const { mutateAsync: removeItem, isPending: removeIsPending } =
     useRemoveFromWishlist();
 
   const [isHovered, setIsHovered] = useState(false);
 
   const handleRemove = () => {
     if (item.id) {
-      removeItem(item.id);
-      toast.success("Item removed from wishlist", {
-        icon: <Trash2 className="h-4 w-4 text-red-500" />,
-      });
+      removeItem(item.id).then(() =>
+        toast.success("Item removed from wishlist", {
+          icon: <Trash2 className="h-4 w-4 text-red-500" />,
+        }),
+      );
     }
   };
 

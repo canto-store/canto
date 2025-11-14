@@ -20,6 +20,7 @@ interface ProductDetailPageProps {
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const resolvedParams = React.use(params);
+
   const { slug } = resolvedParams;
 
   const { data: product, isError, isLoading } = useProduct(slug);
@@ -44,7 +45,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   if (product)
     return (
-      <div className="mt-3 flex flex-col md:mt-7">
+      <div className="flex flex-col gap-2.5 py-2.5">
         <Breadcrumb>
           <BreadcrumbList>
             {breadcrumbItems.map((item, index) => (
@@ -74,7 +75,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           <ProductGrid
             products={product.related_products}
             title="You May Also Like"
-            className="mt-10 mb-10"
           />
         )}
       </div>

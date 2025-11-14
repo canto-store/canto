@@ -1,4 +1,3 @@
-import { useRouter } from "@/i18n/navigation";
 import { type Category } from "@/types/category";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -14,8 +13,6 @@ export function CategoryCard({
   variant = "square",
   type = "category",
 }: CategoryCardProps) {
-  const router = useRouter();
-
   return (
     <a
       href={`/browse?category=${category.slug}`}

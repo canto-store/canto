@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { useUserStore } from "@/stores/useUserStore";
 import { Skeleton } from "../ui/skeleton";
 
@@ -12,12 +12,13 @@ export default function ProtectedRoute({
 }) {
   const { isAuthenticated } = useUserStore();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.replace("/login");
+      router.replace("/login?redirect=" + encodeURIComponent(pathname));
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, pathname]);
 
   if (!isAuthenticated)
     return (

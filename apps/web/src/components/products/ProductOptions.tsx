@@ -26,23 +26,6 @@ export default function ProductOptions({
     return Array.from(types);
   }, [variants]);
 
-  // Create a map of option combinations to variants for quick lookup
-  const variantsByOptions = useMemo(() => {
-    const map = new Map<string, ProductVariant>();
-    variants.forEach((variant) => {
-      // Create a key from all option values (sorted for consistency)
-      const optionKeys = Object.keys(variant.options);
-
-      const key = Object.keys(variant.options)
-        .sort() // ✅ ensures consistent order
-        .map((k) => variant.options[k])
-        .join("|");
-
-      map.set(key, variant);
-    });
-    return map;
-  }, [variants]);
-
   // Get available values for each option type based on current selection
   const getAvailableOptions = (optionType: string) => {
     const availableValues = new Set<string>();

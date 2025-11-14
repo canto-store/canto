@@ -109,12 +109,17 @@ export default async function RootLayout({
     <html>
       <head>
         <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
         <FontPreloader />
         <script
           async
           src="https://unpkg.com/pwacompat"
           crossOrigin="anonymous"
         ></script>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
       </head>
       <body
         className={cn(

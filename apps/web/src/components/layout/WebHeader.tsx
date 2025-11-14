@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { CartDropdown } from "@/components/cart/CartDropdown";
 import { UserDropdown } from "@/components/home/UserDropdown";
 import { MainNavigation } from "@/components/layout/MainNavigation";
-import LanguageSelector from "@/components/common/LanguageSelector";
 
 interface WebHeaderProps {
   className?: string;
@@ -41,7 +40,7 @@ export function WebHeader({ className }: WebHeaderProps) {
       <MainNavigation />
 
       <div className="flex items-center gap-4 md:w-1/5 md:justify-end">
-        <LanguageSelector />
+        {/* <LanguageSelector /> */}
         <CartDropdown />
         <UserDropdown />
       </div>

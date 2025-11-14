@@ -115,4 +115,19 @@ export class AuthControllerV2 {
     void this.cartService.createCart(guest.id)
     res.status(201).json(guest)
   }
+
+  public async forgotPassword(req: Request, res: Response) {
+    await this.authService.forgotPassword(req.body.email)
+    res.status(200).json({
+      message: 'If a user with that email exists, a reset link has been sent.',
+    })
+  }
+
+  public async resetPassword(req: Request, res: Response) {
+    const { token, password } = req.body
+    await this.authService.resetPassword(token, password)
+    res.status(200).json({
+      message: 'Password has been reset successfully. You can now log in.',
+    })
+  }
 }

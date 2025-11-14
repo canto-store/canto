@@ -12,7 +12,7 @@ import dashboardRouter from './modules/dashboard/dashboard.routes'
 import balanceRouter from './modules/user/balance/balance.routes'
 import salesRouter from './modules/seller/sales/sales.routes'
 import wishlistRouter from './modules/user/wishlist/wishlist.routes'
-
+import optionsRoutes from './modules/product/options/options.routes'
 const router = Router()
 
 router.use('/v1/auth', authRouterV1)
@@ -20,6 +20,7 @@ router.use('/v2/auth', authRouterV2)
 router.use('/seller', sellerRouter)
 router.use('/brand', brandRoutes)
 router.use('/categories', categoryRoutes)
+router.use('/options', optionsRoutes)
 router.use('/product', productRoutes)
 router.use('/address', addressRouter)
 router.use('/cart', cartRouter)

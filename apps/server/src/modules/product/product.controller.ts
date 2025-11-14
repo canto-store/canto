@@ -58,7 +58,7 @@ class ProductController {
         minPrice: request.query.minPrice as string,
         maxPrice: request.query.maxPrice as string,
         colors: request.query.colors as string,
-        sizes: request.query.sizes as string,
+        size: request.query.size as string,
         inStock: request.query.inStock as string,
         sortBy: request.query.sortBy as any,
         sortOrder: request.query.sortOrder as any,
@@ -85,6 +85,11 @@ class ProductController {
     } catch (error) {
       nextFunction(error)
     }
+  }
+
+  async getPriceRange(_request: Request, response: Response) {
+    const priceRange = await this.productService.getPriceRange()
+    response.status(200).json(priceRange)
   }
 
   async getProductById(

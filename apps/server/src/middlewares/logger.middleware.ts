@@ -1,7 +1,6 @@
 import morgan from 'morgan'
 import { Request, Response } from 'express'
 import { getColorStatus } from '../utils/helper'
-import { AuthRequest } from './auth.middleware'
 
 /**
  * HTTP request logger middleware
@@ -10,13 +9,12 @@ import { AuthRequest } from './auth.middleware'
  * Example: GET /api/users 200 in 5.123 ms [user:123]
  */
 const logger = morgan((tokens, req: Request, res: Response) => {
-  const authReq = req as AuthRequest
-  const userId = authReq.user?.id
-  const userInfo = userId ? ` [userId:${userId}]` : ''
-  const origin = req.headers.origin || ''
-  const originInfo = origin ? ` [origin:${origin}]` : ''
   const now = new Date()
   const formattedTime = now.toLocaleString('en-US')
+
+  if (tokens.method(req, res) === 'HEAD') {
+    return
+  }
 
   return [
     formattedTime,
@@ -26,8 +24,6 @@ const logger = morgan((tokens, req: Request, res: Response) => {
     'in',
     tokens['response-time'](req, res),
     'ms',
-    userInfo,
-    originInfo,
   ].join(' ')
 })
 

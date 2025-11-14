@@ -70,6 +70,15 @@ class AuthRoutesV2 {
       '/create-guest',
       catchAsync(this.authController.createGuest.bind(this.authController))
     )
+
+    this.router.post(
+      '/forgot-password',
+      catchAsync(this.authController.forgotPassword.bind(this.authController))
+    )
+    this.router.post(
+      '/reset-password',
+      catchAsync(this.authController.resetPassword.bind(this.authController))
+    )
   }
 }
 

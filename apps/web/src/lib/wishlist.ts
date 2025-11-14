@@ -45,7 +45,6 @@ export const useRemoveFromWishlist = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-      toast.success("Item removed from wishlist");
     },
     onError: () => {
       toast.error("Failed to remove item from wishlist");
