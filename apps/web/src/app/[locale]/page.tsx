@@ -35,7 +35,7 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none sm:hidden">
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] h-[calc(100vh-3.5rem)] w-screen max-w-none sm:hidden">
         {/* 👇 Shown only on screens smaller than 640px */}
         <Image
           src={bannerMobile}
@@ -45,8 +45,8 @@ export default function Home() {
           priority
         />
       </section>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none min-sm:block md:hidden">
-        {/* 👇 Shown only on screens between 640px and 768px */}
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-3.5rem)] w-screen max-w-none max-lg:hidden min-sm:block">
+        {/* 👇 Shown only on screens between 640px and 1024px */}
 
         <Image
           src={banner}
@@ -56,8 +56,8 @@ export default function Home() {
           priority
         />
       </section>
-      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-6.5rem-5rem)] w-screen max-w-none md:block">
-        {/* 👇 Shown only on screens larger than 768px */}
+      <section className="relative right-[50%] left-[50%] -mx-[50vw] hidden h-[calc(100vh-3.5rem)] w-screen max-w-none lg:block">
+        {/* 👇 Shown only on screens larger than 1024px */}
         <Image
           src={banner}
           alt="Hero Desktop"
