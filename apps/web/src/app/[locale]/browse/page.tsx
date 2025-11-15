@@ -240,6 +240,10 @@ export default function BrowsePage() {
           setSelectedCategory={setSelectedCategory}
           selectedBrand={selectedBrand}
           setSelectedBrand={setSelectedBrand}
+          selectedSize={selectedSize}
+          setSelectedSize={setSelectedSize}
+          selectedPriceRange={priceRange}
+          setSelectedPriceRange={setPriceRange}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           clearFilters={clearFilters}

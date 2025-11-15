@@ -12,6 +12,17 @@ import {
 } from "@/components/ui/drawer";
 import { useCategories } from "@/lib/categories";
 import { useBrands } from "@/lib/brand";
+import { usePriceRange, useSizes } from "@/lib/filters";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Skeleton,
+  Slider,
+} from "@heroui/react";
+import { formatPrice } from "@/lib/utils";
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -20,6 +31,10 @@ interface FilterDrawerProps {
   setSelectedCategory: (category: string) => void;
   selectedBrand: string[] | undefined;
   setSelectedBrand: (brand: string[]) => void;
+  selectedSize: string | undefined;
+  setSelectedSize: (size: string) => void;
+  selectedPriceRange: [number, number];
+  setSelectedPriceRange: Dispatch<SetStateAction<[number, number]>>;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   clearFilters: () => void;
@@ -32,7 +47,8 @@ interface FilterDrawerProps {
     clearAll: string;
     categories: string;
     brands: string;
-    priceRange: string;
+    size?: string;
+    price?: string;
     applyFilters: string;
     clearFilters: string;
     close: string;
@@ -46,6 +62,10 @@ export function FilterDrawer({
   setSelectedCategory,
   selectedBrand,
   setSelectedBrand,
+  selectedSize,
+  setSelectedSize,
+  selectedPriceRange,
+  setSelectedPriceRange,
 
   searchQuery,
   setSearchQuery,
@@ -56,6 +76,38 @@ export function FilterDrawer({
 }: FilterDrawerProps) {
   const { data: categories } = useCategories();
   const { data: brands } = useBrands();
+
+  const { data: sizes, isSuccess } = useSizes();
+  const { data: priceRange } = usePriceRange();
+
+  // Local state for immediate UI feedback
+  const [localPriceRange, setLocalPriceRange] =
+    useState<[number, number]>(selectedPriceRange);
+
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handlePriceChange = useCallback(
+    (value: number | number[]) => {
+      if (Array.isArray(value)) {
+        const newRange: [number, number] = [value[0], value[1]];
+
+        // Update local state immediately for instant visual feedback
+        setLocalPriceRange(newRange);
+
+        // Clear existing timer
+        if (debounceTimer.current) {
+          clearTimeout(debounceTimer.current);
+        }
+
+        // Debounce only the parent state update (which triggers API calls)
+        debounceTimer.current = setTimeout(() => {
+          setSelectedPriceRange?.(newRange);
+        }, 300); // Reduced to 300ms for better UX
+      }
+    },
+    [setSelectedPriceRange],
+  );
+
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>
@@ -211,33 +263,68 @@ export function FilterDrawer({
               </div>
             </div>
 
-            {/* Price Ranges */}
-            {/* <div>
-              <h4 className="mb-2 text-sm font-semibold text-gray-800">
-                {translations.priceRange}
-              </h4>
-              <div className="flex flex-wrap gap-1.5 rounded-md border border-gray-100 p-2 shadow-sm sm:gap-2">
-                {PRICE_RANGES.map((range) => (
-                  <Button
-                    key={range.label}
-                    variant={
-                      selectedPriceRange === range ? "default" : "outline"
-                    }
-                    size="sm"
-                    className={`text-xs font-medium sm:text-sm ${
-                      selectedPriceRange === range
-                        ? "bg-primary text-primary-foreground"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
-                    onClick={() => {
-                      setSelectedPriceRange(range);
+            {/* Size Dropdown */}
+
+            {isSuccess ? (
+              <div>
+                <h4 className="mb-1 text-sm font-medium text-gray-700">
+                  {translations.size || "Size"}
+                </h4>
+                <Dropdown placement="bottom-start">
+                  <DropdownTrigger>
+                    <Button className="w-full justify-between border border-gray-300 bg-white text-gray-700">
+                      {selectedSize || "Select Size"}
+                    </Button>
+                  </DropdownTrigger>
+
+                  <DropdownMenu
+                    aria-label="Select size"
+                    closeOnSelect
+                    onAction={(key) => {
+                      console.log("Selected:", key);
+                      setSelectedSize(String(key));
                     }}
                   >
-                    {range.label}
-                  </Button>
-                ))}
+                    {sizes.map((size) => (
+                      <DropdownItem
+                        key={size.value}
+                        onPress={() => {
+                          console.log("onPress:", size.value);
+                          setSelectedSize(size.value);
+                        }}
+                      >
+                        {size.value}
+                      </DropdownItem>
+                    ))}
+                  </DropdownMenu>
+                </Dropdown>
               </div>
-            </div> */}
+            ) : (
+              <Skeleton className="h-10 w-full" />
+            )}
+
+            {/* Price Range Slider */}
+            <div>
+              <h4 className="mb-2 text-sm font-medium text-gray-700">
+                {translations.price || "Price Range"}
+              </h4>
+              <div className="px-2">
+                <Slider
+                  aria-label="Price range"
+                  minValue={priceRange?.[0] ?? 1000}
+                  maxValue={priceRange?.[1] ?? 1000}
+                  step={10}
+                  value={localPriceRange}
+                  onChange={handlePriceChange}
+                  formatOptions={{ style: "currency", currency: "EGP" }}
+                  showTooltip
+                />
+                <div className="mt-2 flex justify-between text-xs text-gray-600">
+                  <span>{formatPrice(localPriceRange[0])}</span>
+                  <span>{formatPrice(localPriceRange[1])}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <DrawerFooter className="border-t bg-gray-50 pt-4">
