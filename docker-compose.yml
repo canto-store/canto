@@ -31,6 +31,9 @@ services:
       - DELIVERIC_PASSWORD=${DELIVERIC_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - DOMAIN=${DOMAIN}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      
     networks:
       - canto-network
     restart: unless-stopped
