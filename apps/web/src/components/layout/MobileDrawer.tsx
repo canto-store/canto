@@ -53,8 +53,6 @@ function MobileDrawer({
     logout();
   };
 
-  const { data: categories, isLoading } = useAllCategories();
-
   return (
     <Drawer direction="left" open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
@@ -100,9 +98,7 @@ function MobileDrawer({
                 trigger: "p-0",
               }}
             >
-              {!isLoading && categories && (
-                <MobileCategoryDrawer categories={categories} />
-              )}
+              <MobileCategoryDrawer />
             </AccordionItem>
           </Accordion>
 
