@@ -39,7 +39,8 @@ export default function MobileCategoryDrawer() {
         const IconComponent = iconMap[category.slug] || Tags; // default icon
 
         return (
-          <button
+          <a
+            href={`/browse?category=${category.slug}`}
             key={category.name}
             className="flex w-full items-center gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 shadow-sm transition hover:shadow-md active:scale-[0.98]"
             onClick={() => console.log(category.slug)}
@@ -48,7 +49,7 @@ export default function MobileCategoryDrawer() {
             <span className="font-sans text-sm font-light text-black uppercase">
               {category.name}
             </span>
-          </button>
+          </a>
         );
       })}
     </div>
