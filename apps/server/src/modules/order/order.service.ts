@@ -75,66 +75,61 @@ export const createOrder = async (input: CreateOrderInput) => {
   const orderCode = generateOrderCode()
 
   const deliveryService = new DeliveryService()
-  try {
-    const newOrder = await prisma.$transaction(async tx => {
-      // Create Order
-      const order = await tx.order.create({
-        data: {
-          userId,
-          addressId,
-          orderCode,
-          items: {
-            create: orderItemsData.map(item => ({
-              variantId: item.variantId,
-              quantity: item.quantity,
-              priceAtOrder: item.priceAtOrder,
-            })),
-          },
+  const newOrder = await prisma.$transaction(async tx => {
+    // Create Order
+    const order = await tx.order.create({
+      data: {
+        userId,
+        addressId,
+        orderCode,
+        items: {
+          create: orderItemsData.map(item => ({
+            variantId: item.variantId,
+            quantity: item.quantity,
+            priceAtOrder: item.priceAtOrder,
+          })),
         },
-        include: {
-          items: true, // Include items in the response
-        },
-      })
-
-      // Decrement stock for each variant
-      for (const item of cart.items) {
-        await tx.productVariant.update({
-          where: { id: item.variantId },
-          data: {
-            stock: {
-              decrement: item.quantity,
-            },
-          },
-        })
-      }
-
-      // Clear cart items
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.id },
-      })
-
-      return order
+      },
+      include: {
+        items: true, // Include items in the response
+      },
     })
 
-    const deliveryData = orderItemsData.map(item => ({
-      address: address.address_string,
-      client_name: user.name,
-      phone_1: user.phone_number,
-      price: item.priceAtOrder * item.quantity,
-      sector_id: address.sector_id,
-      client_id: user.id,
-      product_name: item.productName,
-      product_desc: item.productDescription,
-      quantity: item.quantity,
-    }))
+    // Decrement stock for each variant
+    for (const item of cart.items) {
+      await tx.productVariant.update({
+        where: { id: item.variantId },
+        data: {
+          stock: {
+            decrement: item.quantity,
+          },
+        },
+      })
+    }
 
-    await deliveryService.createDelivery(deliveryData, newOrder.id)
+    // Clear cart items
+    await tx.cartItem.deleteMany({
+      where: { cartId: cart.id },
+    })
 
-    return newOrder
-  } catch (error) {
-    if (error instanceof AppError) throw error
-    throw new AppError('Failed to create order: ' + error.message, 500)
-  }
+    return order
+  })
+
+  const deliveryData = orderItemsData.map(item => ({
+    address: address.address_string,
+    client_name: user.name,
+    phone_1: user.phone_number,
+    price: item.priceAtOrder * item.quantity,
+    sector_id: address.sector_id,
+    client_id: user.id,
+    product_name: item.productName,
+    product_desc: item.productDescription,
+    quantity: item.quantity,
+  }))
+
+  await deliveryService.createDelivery(deliveryData, newOrder.id)
+
+  return newOrder
 }
 
 export const getOrders = async () => {

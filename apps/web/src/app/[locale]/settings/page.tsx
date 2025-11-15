@@ -14,10 +14,10 @@ import {
   ShoppingBag,
   Wallet,
 } from "lucide-react";
-import { InstallPWA } from "@/components/pwa/InstallPWA";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { useLocale } from "next-intl";
+// import { usePathname, useRouter } from "@/i18n/navigation";
+// import { useLocale } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { getUserRole } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,15 +27,15 @@ export default function Page() {
   const role = getUserRole(user?.role);
   const isMobile = useMediaQuery("(max-width: 768px)", false);
   const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
+  // const pathname = usePathname();
+  // const locale = useLocale();
   const { logout } = useUserStore();
   const queryClient = useQueryClient();
 
-  const handleLanguageChange = () => {
-    const value = locale === "en" ? "ar" : "en";
-    router.replace(pathname, { locale: value });
-  };
+  // const handleLanguageChange = () => {
+  //   const value = locale === "en" ? "ar" : "en";
+  //   router.replace(pathname, { locale: value });
+  // };
 
   const handleNavigation = (href: string) => {
     router.push(href);
@@ -81,7 +81,7 @@ export default function Page() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => handleNavigation("/returns")}
+                // onClick={() => handleNavigation("/returns")}
               >
                 <ArrowLeftRight className="mr-2 h-4 w-4" />
                 Returns
@@ -124,7 +124,7 @@ export default function Page() {
         )}
         <div className="flex flex-col gap-2">
           <h2 className="text-md">Settings</h2>
-          <Button variant="outline" onClick={handleLanguageChange}>
+          <Button variant="outline">
             <Globe className="mr-2 h-4 w-4" />
             <p className="w-full text-left">Language</p>
             <ChevronRight className="ml-auto h-4 w-4" />
@@ -134,7 +134,6 @@ export default function Page() {
             <p className="w-full text-left">Notifications</p>
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
-          <InstallPWA variant="menu" className="p-0" />
         </div>
         {Boolean(user) && role !== "GUEST" && (
           <Button variant="ghost" onClick={handleLogout} className="mt-4">

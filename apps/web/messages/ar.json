@@ -370,6 +370,8 @@
     "creditCard": "بطاقة ائتمان",
     "continueShopping": "مواصلة التسوق",
     "viewOrder": "عرض الطلب",
+    "viewOrders": "عرض الطلبات",
+
     "errors": {
       "fullNameRequired": "الاسم الكامل مطلوب",
       "addressTypeRequired": "يرجى اختيار نوع العنوان",

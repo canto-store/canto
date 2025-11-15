@@ -1,24 +1,20 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, ShoppingCart, Star } from "lucide-react";
-import Image from "next/image";
+import { Bell, ShoppingCart } from "lucide-react";
 import { ProductDetails as ProductDetailsType, ProductVariant } from "@/types";
 import ProductOptions from "./ProductOptions";
 import { Link } from "@/i18n/navigation";
 import { useAddToCart } from "@/lib/cart";
-import {
-  Carousel,
-  CarouselApi,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+
 import { HeartButton } from "../wishlist/HeartButton";
 import { toast } from "sonner";
+import ProductQuantitySelector from "./ProductQuantitySelector";
+import ProductRating from "./ProductRating";
+import { CarouselApi } from "../ui/carousel";
+import ProductImages from "./ProductImages";
 interface ProductDetailsProps {
   product: ProductDetailsType;
 }
@@ -30,28 +26,24 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     ProductVariant | undefined
   >(undefined);
 
-  const [api, setApi] = React.useState<CarouselApi | null>(null);
-
-  // Example: move to a specific slide
+  const [api, setApi] = useState<CarouselApi | null>(null);
   const showImage = (matchingVariant: ProductVariant) => {
     if (!api) return;
 
-    // 🔥 If the variant has images, find the index of its first image in the global images list
     if (matchingVariant.images.length > 0) {
       const firstImageUrl = matchingVariant.images[0].url;
 
-      // Find the index of this image inside the main carousel images array
       const imageIndex = product.variants
         .flatMap((variant) => variant.images)
         .findIndex((img) => img.url === firstImageUrl);
 
       if (imageIndex >= 0) {
-        api.scrollTo(imageIndex); // embla method to go to a specific slide
+        api.scrollTo(imageIndex);
       }
     }
   };
 
-  const { mutateAsync: addToCart, isSuccess } = useAddToCart();
+  const { mutateAsync: addToCart } = useAddToCart();
 
   useEffect(() => {
     if (product.default_variant_id) {
@@ -60,12 +52,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       );
       setSelectedVariant(defaultVariant);
       setStock(defaultVariant ? defaultVariant.stock : 0);
+    } else {
+      setStock(product.total_stock);
+      if (product.total_stock === 0) {
+        setQuantity(0);
+      }
     }
   }, [product]);
 
   const onVariantChange = (variant: ProductVariant | undefined) => {
     setSelectedVariant(variant);
-    setStock(variant ? variant.stock : 0);
+    if (variant) {
+      setStock(variant.stock);
+    } else {
+      setStock(product.total_stock);
+    }
     setQuantity(1);
   };
 
@@ -74,58 +75,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     addToCart({
       variantId: selectedVariant.id,
       quantity,
-    }).then(() => {
-      if (isSuccess) {
+    }).then((res) => {
+      if (res.status === 201) {
         toast.success("Added to cart");
       }
     });
   };
 
-  const images = useMemo(() => {
-    return product.variants.flatMap((variant) =>
-      variant.images.map((image) => ({
-        url: image.url,
-        alt: image.alt_text || product.name,
-      })),
-    );
-  }, [product.variants, product.name]);
-
   return (
-    <div className="mt-3 grid flex-1 items-center gap-4 md:grid-cols-2 md:gap-8">
-      <div className="relative w-full">
-        <Carousel setApi={setApi} className="w-full">
-          <CarouselContent>
-            {images.map((image) => (
-              <CarouselItem key={image.url} className="basis-full">
-                <div className="relative aspect-square w-full overflow-hidden rounded-md">
-                  <Image
-                    src={image.url}
-                    alt={image.alt || product.name}
-                    fill
-                    priority
-                    className="object-cover"
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          {images.length > 1 && (
-            <>
-              <CarouselPrevious className="absolute top-1/2 left-2 -translate-y-1/2 bg-white/70 hover:bg-white/90" />
-              <CarouselNext className="absolute top-1/2 right-2 -translate-y-1/2 bg-white/70 hover:bg-white/90" />
-            </>
-          )}
-        </Carousel>
-      </div>
-
-      {/* Product Info */}
-      <div>
-        <h1 className="mb-1 text-2xl font-bold md:mb-2 md:text-3xl">
-          {product.name}
-        </h1>
+    <div className="grid items-center gap-4 md:grid-cols-2 md:gap-8">
+      <ProductImages product={product} setApi={setApi} />
+      <div className="flex flex-col gap-1.5">
+        <h1 className="text-2xl font-bold md:text-3xl">{product.name}</h1>
         <Link
           href={`/browse?brand=${product.brand.slug}`}
-          className="mb-2 text-base text-gray-600 md:mb-4 md:text-lg"
+          className="text-base text-gray-600 md:text-lg"
         >
           {product.brand.name}
         </Link>
@@ -135,7 +99,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           reviewCount={product.reviews.count}
         />
 
-        <p className="mb-3 text-xl font-bold md:mb-6 md:text-2xl">
+        <p className="text-xl font-bold md:text-2xl">
           {selectedVariant ? (
             <>
               {selectedVariant.original_price &&
@@ -166,26 +130,23 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           )}
         </p>
 
-        <ProductDescription description={product.description} />
+        <h3 className="font-medium">Description</h3>
+        <p className="text-sm text-gray-600">{product.description}</p>
+
         <ProductOptions
           variants={product.variants}
           onVariantChange={onVariantChange}
           showImage={showImage}
         />
-        <div className="mb mb-4 grid grid-cols-2 grid-rows-2 gap-4 md:mb-6">
-          <ProductQuantitySelector
-            quantity={quantity}
-            stock={stock}
-            onQuantityChange={setQuantity}
-          />
-          {/* <ProductAvailability
-            isInStock={product.variants.some((v) => v.stock > 0)}
-          /> */}
-        </div>
+        <ProductQuantitySelector
+          quantity={quantity}
+          stock={stock}
+          onQuantityChange={setQuantity}
+        />
 
         {/* Add to Cart - Desktop only */}
-        <div className="mb-6 hidden gap-2 md:flex">
-          {product.variants.some((v) => v.stock > 0) ? (
+        <div className="hidden gap-2 md:flex">
+          {stock > 0 ? (
             <Button
               size="lg"
               className="flex-1 gap-2"
@@ -205,7 +166,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </div>
       </div>
 
-      {/* Floating Add to Cart - Mobile only */}
       <div className="bg-global fixed right-0 bottom-0 left-0 z-50 flex gap-2 border-t border-gray-200 p-4 shadow-lg md:hidden">
         <HeartButton productId={product.id} />
         <Button
@@ -221,102 +181,3 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     </div>
   );
 }
-
-// Subcomponents
-function ProductRating({
-  rating,
-  reviewCount,
-}: {
-  rating: number;
-  reviewCount: number;
-}) {
-  return (
-    <div className="mb-2 flex items-center gap-1 md:mb-4">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className="h-4 w-4 md:h-5 md:w-5"
-          fill={i < rating ? "currentColor" : "none"}
-        />
-      ))}
-      <span className="ml-2 text-xs text-gray-600 md:text-sm">
-        ({reviewCount} reviews)
-      </span>
-    </div>
-  );
-}
-
-function ProductDescription({ description }: { description: string }) {
-  return (
-    <div className="mb-4 md:mb-6">
-      <h3 className="mb-1 font-medium md:mb-2">Description</h3>
-      <p className="text-sm text-gray-600">{description}</p>
-    </div>
-  );
-}
-
-function ProductQuantitySelector({
-  quantity,
-  stock,
-  onQuantityChange,
-}: {
-  quantity: number;
-  stock: number;
-  onQuantityChange: (quantity: number) => void;
-}) {
-  return (
-    <div>
-      <h3 className="mb-1 font-medium md:mb-2">Quantity</h3>
-      <div className="flex w-24 items-center md:w-32">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 md:h-9"
-          onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
-          disabled={quantity <= 1}
-        >
-          -
-        </Button>
-        <span className="flex-1 text-center">{quantity}</span>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 md:h-9"
-          disabled={quantity >= stock}
-          onClick={() => onQuantityChange(quantity + 1)}
-        >
-          +
-        </Button>
-      </div>
-      {stock <= 5 && (
-        <span className="mt-4 block text-xs text-red-500 md:text-sm">
-          Hurry up! Only {stock} left in stock.
-        </span>
-      )}
-    </div>
-  );
-}
-
-// function ProductAvailability({ isInStock }: { isInStock: boolean }) {
-//   return isInStock ? (
-//     <div className="rounded-lg border p-3 md:p-4">
-//       <div className="mb-1 flex items-center gap-2 md:mb-2">
-//         <div className="h-2 w-2 rounded-full bg-green-500" />
-//         <span className="text-xs font-medium md:text-sm">In Stock</span>
-//       </div>
-//       <p className="text-xs text-gray-600 md:text-sm">
-//         Free shipping on orders over $50
-//       </p>
-//     </div>
-//   ) : (
-//     <div className="rounded-lg border p-3 md:p-4">
-//       <div className="mb-1 flex items-center gap-2 md:mb-2">
-//         <div className="h-2 w-2 rounded-full bg-red-500" />
-//         <span className="text-xs font-medium md:text-sm">Out of stock</span>
-//       </div>
-//       <p className="text-xs text-gray-600 md:text-sm">
-//         Sorry this product is currently out of stock. Please check back later.
-//       </p>
-//     </div>
-//   );
-// }

@@ -3,12 +3,10 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
 import routes from './routes'
-import errorMiddleware from './middlewares/error.middleware'
+import { ErrorHandler } from './middlewares/error.middleware'
 import loggerMiddleware from './middlewares/logger.middleware'
 
 import { checkESConnection } from './modules/search'
-import { PreflightRunner } from './preflight/preflight'
-import { envCheck } from './preflight/checks/env'
 
 const app: Express = express()
 
@@ -23,7 +21,11 @@ const stagingOrigins = [
   'https://dashboard-staging.canto-store.com',
 ]
 
-const devOrigins = ['http://localhost:5000', 'http://localhost:5173']
+const devOrigins = [
+  'http://localhost:5000',
+  'http://localhost:5173',
+  'https://localhost:3000',
+]
 
 app.use(
   cors({
@@ -54,6 +56,7 @@ app.use('/api', routes)
 app.get('/', (_req, res) => {
   res.send('<h1>Server Running</h1>')
 })
+const errorMiddleware = new ErrorHandler().handle
 
 app.use(errorMiddleware)
 
@@ -62,9 +65,6 @@ const PORT: number = parseInt(process.env.PORT || '8000', 10)
 async function startServer() {
   try {
     const esConnected = await checkESConnection()
-    const preflightRunner = new PreflightRunner()
-    preflightRunner.register(envCheck)
-    await preflightRunner.runAll()
 
     app.listen(PORT, () => {
       console.log(`🔗 Elasticsearch connection: ${esConnected}`)

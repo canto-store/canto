@@ -62,7 +62,7 @@ class ProductService {
       minPrice,
       maxPrice,
       colors,
-      sizes,
+      size,
       inStock,
       sortBy = 'created_at',
       sortOrder = 'desc',
@@ -146,13 +146,12 @@ class ProductService {
       })
     }
 
-    if (sizes) {
-      const vals = sizes.split(',').map(s => s.trim())
+    if (size) {
       variantFilters.push({
         optionLinks: {
           some: {
             productOption: { name: { equals: 'Size', mode: 'insensitive' } },
-            optionValue: { value: { in: vals, mode: 'insensitive' } },
+            optionValue: { value: { in: [size], mode: 'insensitive' } },
           },
         },
       })
@@ -284,36 +283,32 @@ class ProductService {
   async updateProduct(id: number, dto: UpdateProductDto) {
     const { rejectionReason, ...updateProductData } = dto
     return await this.prisma.$transaction(async tx => {
-      try {
-        const product = await tx.product.update({
-          where: { id },
-          data: updateProductData,
+      const product = await tx.product.update({
+        where: { id },
+        data: updateProductData,
+      })
+      // creating rejection reason
+      if (rejectionReason && dto.status !== ProductStatus.REJECTED) {
+        await tx.productRejection.create({
+          data: {
+            productId: id,
+            reason: rejectionReason,
+          },
         })
-        // creating rejection reason
-        if (rejectionReason && dto.status !== ProductStatus.REJECTED) {
-          await tx.productRejection.create({
-            data: {
-              productId: id,
-              reason: rejectionReason,
-            },
-          })
-        }
-        // updating rejection reason
-        if (rejectionReason) {
-          await tx.productRejection.update({
-            where: { productId: id },
-            data: { reason: rejectionReason },
-          })
-        }
-        // deleting rejection reason if product is no longer rejected
-        if (
-          product.status === ProductStatus.REJECTED &&
-          dto.status !== ProductStatus.REJECTED
-        ) {
-          await tx.productRejection.delete({ where: { productId: id } })
-        }
-      } catch (error) {
-        throw new AppError(error, 500)
+      }
+      // updating rejection reason
+      if (rejectionReason) {
+        await tx.productRejection.update({
+          where: { productId: id },
+          data: { reason: rejectionReason },
+        })
+      }
+      // deleting rejection reason if product is no longer rejected
+      if (
+        product.status === ProductStatus.REJECTED &&
+        dto.status !== ProductStatus.REJECTED
+      ) {
+        await tx.productRejection.delete({ where: { productId: id } })
       }
     })
   }
@@ -1250,12 +1245,22 @@ class ProductService {
     }
   }
 
-  async isProductVariantInStock(productVariantId: number) {
-    const variant = await this.prisma.productVariant.findUnique({
-      where: { id: productVariantId },
-      select: { stock: true },
+  async getPriceRange() {
+    const priceRange = await this.prisma.productVariant.aggregate({
+      _min: { price: true },
+      _max: { price: true },
     })
-    return variant?.stock > 0
+    return [priceRange._min.price || 0, priceRange._max.price || 0]
+  }
+
+  async getProductVariantById(id: number) {
+    return await this.prisma.productVariant.findUnique({
+      where: { id },
+    })
+  }
+
+  async isProductVariantInStock(variant: ProductVariant) {
+    return variant.stock > 0
   }
 
   async resolveCartItemQuantity(

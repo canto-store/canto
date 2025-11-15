@@ -11,9 +11,9 @@ const navigation = {
   shop: [
     { label: "Your Orders", href: "/orders" },
     { label: "Your Account", href: "/settings" },
-    { label: "Your Return items", href: "/returns" },
-    { label: "Your Refund items", href: "/returns" },
-    { label: "Track you Latest Order", href: "/orders" },
+    // { label: "Your Return items", href: "/returns" },
+    // { label: "Your Refund items", href: "/returns" },
+    { label: "Track your Latest Order", href: "/orders" },
   ],
   business: [
     { label: "Sell your products on Canto", href: "/sell" },
@@ -24,10 +24,7 @@ const navigation = {
     // },
     // { label: "Know about our terms and conditions", href: "#" },
   ],
-  help: [
-    { label: "Contact us", href: "#" },
-    { label: "FAQ", href: "#" },
-  ],
+  help: [{ label: "Contact us", href: "/contact-us" }],
 };
 
 export function Footer() {
