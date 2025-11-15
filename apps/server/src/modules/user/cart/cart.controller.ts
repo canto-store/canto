@@ -9,7 +9,7 @@ class CartController {
   async getCartByUser(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user.id
-      const cart = await this.service.getCartByUser(userId)
+      const cart = await this.service.getUserCart(userId)
       res.status(200).json(cart)
     } catch (err) {
       next(err)
@@ -46,16 +46,6 @@ class CartController {
       const variantId = req.body.variantId
       await this.service.deleteItem(variantId, userId)
       res.status(200).json({ message: 'Cart item removed' })
-    } catch (err) {
-      next(err)
-    }
-  }
-  async syncCart(req: AuthRequest, res: Response, next: NextFunction) {
-    try {
-      const userId = req.user.id
-      const { items } = req.body
-      const result = await this.service.syncCart(userId, items)
-      res.status(200).json(result)
     } catch (err) {
       next(err)
     }
