@@ -23,6 +23,14 @@ import {
 } from "@heroui/react";
 import { formatPrice } from "@/lib/utils";
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { FormControl } from "../ui/form";
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -270,7 +278,7 @@ export function FilterDrawer({
                 <h4 className="mb-1 text-sm font-medium text-gray-700">
                   {translations.size || "Size"}
                 </h4>
-                <Dropdown placement="bottom-start">
+                {/* <Dropdown placement="bottom-start">
                   <DropdownTrigger>
                     <Button className="w-full justify-between border border-gray-300 bg-white text-gray-700">
                       {selectedSize || "Select Size"}
@@ -297,7 +305,27 @@ export function FilterDrawer({
                       </DropdownItem>
                     ))}
                   </DropdownMenu>
-                </Dropdown>
+                </Dropdown> */}
+
+                <Select
+                  value={selectedSize || ""}
+                  onValueChange={(value) => {
+                    console.log("Selected size:", value);
+                    setSelectedSize(value);
+                  }}
+                >
+                  <SelectTrigger className="w-full border border-gray-300 bg-white text-gray-700">
+                    <SelectValue placeholder="Select Size" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {sizes.map((size) => (
+                      <SelectItem key={size.value} value={size.value}>
+                        {size.value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             ) : (
               <Skeleton className="h-10 w-full" />
