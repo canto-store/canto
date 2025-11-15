@@ -12,11 +12,24 @@ export class OrderController {
 
   async getMyOrders(req: AuthRequest, res: Response) {
     const userId = req.user?.id
-    const take = req.query.take ?? 5
+    const take = req.query.take ?? 6
     const skip = req.query.skip ?? 0
 
     const result = await this.orderService.getUserOrders(userId, +take, +skip)
     res.status(200).json(result)
+  }
+
+  async getOrderById(req, res) {
+    const { id } = req.params
+    const userId = req.user.id
+
+    const order = await this.orderService.getOrderById(id, userId)
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' })
+    }
+
+    res.status(200).json({ order })
   }
 
   async createOrder(req: AuthRequest, res: Response) {

@@ -104,6 +104,10 @@
     "itemAdded": "Item added to cart",
     "cartUpdated": "Cart updated successfully"
   },
+  "orders": {
+    "itemsInCart": "{count} items in your order",
+    "orderSummary": "Order Summary"
+  },
   "checkout": {
     "deliveryStatus": {
       "label": "Delivery Status",

@@ -3,6 +3,7 @@ import { Order } from "@canto/types/order";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatDate, formatPrice } from "@/lib/utils";
+import Link from "next/link";
 
 type OrderCardProps = {
   order: Order;
@@ -10,7 +11,10 @@ type OrderCardProps = {
 
 export function OrderCard({ order }: OrderCardProps) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+    <Link
+      href={`/orders/${order.id}`}
+      className="cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] dark:border-gray-800 dark:bg-gray-950"
+    >
       <div className="flex flex-row items-center justify-between">
         <Badge className="w-fit bg-amber-100 text-xs font-medium text-amber-800 capitalize hover:bg-amber-200">
           {order.status}
@@ -52,6 +56,6 @@ export function OrderCard({ order }: OrderCardProps) {
           <p className="text-sm font-medium">{formatPrice(order.totalPrice)}</p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

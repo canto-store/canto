@@ -36,3 +36,20 @@ export const useGetMyOrders = ({
     },
   });
 };
+
+export const useGetSingleOrder = (orderId: number) => {
+  return useSuspenseQuery({
+    queryKey: ["order", orderId],
+    queryFn: async () => {
+      try {
+        const response = await api.get<{ order: Order }>(`/orders/${orderId}`);
+        return response.data.order;
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          return null; // order not found
+        }
+        throw err; // rethrow other errors
+      }
+    },
+  });
+};

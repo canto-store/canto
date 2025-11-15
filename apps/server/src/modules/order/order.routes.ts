@@ -18,4 +18,10 @@ router.get(
   catchAsync(orderController.getMyOrders.bind(orderController))
 )
 
+router.get(
+  '/:id',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  catchAsync(orderController.getOrderById.bind(orderController))
+)
+
 export default router
