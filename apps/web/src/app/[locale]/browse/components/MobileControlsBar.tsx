@@ -104,7 +104,7 @@ export function MobileControlsBar({
   sortOptionTranslations,
 }: MobileControlsBarProps) {
   return (
-    <div className="mb-5 flex items-center justify-between gap-2 sm:hidden">
+    <div className="mb-2 flex items-center justify-between gap-2 sm:hidden">
       {/* Mobile Filter Drawer */}
       <FilterDrawer
         isOpen={isFilterDrawerOpen}
