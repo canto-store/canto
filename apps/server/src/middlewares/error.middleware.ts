@@ -46,7 +46,12 @@ export class ErrorHandler {
 
   private processError(context: ErrorContext) {
     this.logError(context)
-    this.mailService.sendErrorEmail(context)
+    if (
+      process.env.NODE_ENV === 'production' ||
+      process.env.NODE_ENV === 'test'
+    ) {
+      this.mailService.sendErrorEmail(context)
+    }
   }
 
   private getHttpStatus(err: any): number {
