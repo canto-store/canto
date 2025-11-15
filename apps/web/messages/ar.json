@@ -106,6 +106,10 @@
     "itemAdded": "تم إضافة العنصر إلى العربة",
     "cartUpdated": "تم تحديث العربة بنجاح"
   },
+  "orders": {
+    "itemsInCart": "{count} عناصر في طلبك",
+    "orderSummary": "ملخص الأوردر"
+  },
   "features": {
     "payment": {
       "title": "الدفع والتوصيل",

@@ -177,4 +177,52 @@ export class OrderService {
       totalPages,
     }
   }
+
+  async getOrderById(orderId, userId) {
+    const order = await this.prisma.order.findFirst({
+      where: {
+        id: Number(orderId),
+        userId: Number(userId),
+      },
+      include: {
+        // include full address info
+        address: true,
+
+        // include full order items details
+        items: {
+          include: {
+            variant: {
+              include: {
+                product: {
+                  include: {
+                    brand: true,
+                  },
+                },
+                images: true,
+                optionLinks: {
+                  include: {
+                    optionValue: true,
+                    productOption: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if (!order) return null
+
+    // calculate totalPrice
+    const totalPrice = order.items.reduce(
+      (sum, item) => sum + item.priceAtOrder * item.quantity,
+      0
+    )
+
+    return {
+      ...order,
+      totalPrice,
+    }
+  }
 }
