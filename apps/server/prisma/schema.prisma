@@ -136,6 +136,7 @@ model Product {
   brandId     Int
   category    Category          @relation(fields: [categoryId], references: [id])
   categoryId  Int
+  returnWindow Int              @default(0)
   status      ProductStatus
   variants    ProductVariant[]
   rejection   ProductRejection?

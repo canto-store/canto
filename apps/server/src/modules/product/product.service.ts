@@ -810,6 +810,9 @@ class ProductService {
       if (dto.status !== undefined) {
         productUpdateData.status = dto.status
       }
+      if (dto.returnWindow !== undefined) {
+        productUpdateData.returnWindow = dto.returnWindow
+      }
 
       let updatedProduct: Product
       if (Object.keys(productUpdateData).length > 0) {
@@ -967,6 +970,7 @@ class ProductService {
           brand: { connect: { id: dto.brandId } },
           category: { connect: { id: dto.category } },
           image: dto.variants[0].images[0] || '/placeholder-image.jpg',
+          returnWindow: dto.returnWindow,
         },
         include: {
           brand: true,
@@ -1118,6 +1122,7 @@ class ProductService {
           include: { images: { select: { url: true } }, optionLinks: true },
         },
         status: true,
+        returnWindow: true,
       },
     })
 
