@@ -74,6 +74,7 @@ export type Order = {
   totalPrice: number;
   status: OrderStatus;
   createdAt: string;
+  returnDeadline: string;
   shippingAddress: {
     name: string;
     street: string;

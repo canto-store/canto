@@ -187,7 +187,6 @@ export class OrderService {
       include: {
         // include full address info
         address: true,
-
         // include full order items details
         items: {
           include: {
@@ -254,6 +253,10 @@ export class OrderService {
     }
 
     if (order.status === 'DELIVERED') {
+      if (order.returnDeadline.getTime() > Date.now()) {
+        throw new AppError('Return deadline has passed', 400)
+      }
+
       await this.prisma.$transaction(async tx => {
         await tx.order.update({
           where: {

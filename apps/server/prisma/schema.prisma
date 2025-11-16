@@ -292,6 +292,7 @@ model Order {
   address         Address           @relation(fields: [addressId], references: [id])
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
+  returnDeadline  DateTime          @default(now()) @map("return_deadline")
   items           OrderItem[]
   status          OrderStatus       @default(PROCESSING)
   DelivericOrders DelivericOrders[]
