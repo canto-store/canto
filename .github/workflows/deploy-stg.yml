@@ -19,26 +19,21 @@ permissions:
   packages: write
 
 jobs:
-  build-and-push:
-    name: Build and Push Images
+  build-web:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for web
-        id: meta-web
+      - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}-web
@@ -47,8 +42,7 @@ jobs:
             type=sha,prefix=testing-
             type=raw,value=testing-latest
 
-      - name: Build and push web
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: .
           target: web
@@ -58,13 +52,26 @@ jobs:
             PORT=5000
             NEXT_PUBLIC_BACKEND_URL=https://api-staging.canto-store.com/api
           push: true
-          tags: ${{ steps.meta-web.outputs.tags }}
-          labels: ${{ steps.meta-web.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=web-testing
           cache-to: type=gha,mode=max,scope=web-testing
 
-      - name: Extract metadata for server
-        id: meta-server
+  build-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}-server
@@ -73,8 +80,7 @@ jobs:
             type=sha,prefix=testing-
             type=raw,value=testing-latest
 
-      - name: Build and push server
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: .
           target: server
@@ -85,13 +91,26 @@ jobs:
           secrets: |
             "database_url=${{ secrets.STG_DATABASE_URL }}"
           push: true
-          tags: ${{ steps.meta-server.outputs.tags }}
-          labels: ${{ steps.meta-server.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=server-testing
           cache-to: type=gha,mode=max,scope=server-testing
 
-      - name: Extract metadata for dashboard
-        id: meta-dashboard
+  build-dashboard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}-dashboard
@@ -100,8 +119,7 @@ jobs:
             type=sha,prefix=testing-
             type=raw,value=testing-latest
 
-      - name: Build and push dashboard
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: .
           target: dashboard
@@ -110,21 +128,18 @@ jobs:
             NODE_ENV=test
             PORT=7000
             VITE_BACKEND_URL=https://api-staging.canto-store.com/api
-
           push: true
-          tags: ${{ steps.meta-dashboard.outputs.tags }}
-          labels: ${{ steps.meta-dashboard.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=dashboard-testing
           cache-to: type=gha,mode=max,scope=dashboard-testing
 
   deploy:
-    name: Deploy to Staging
-    needs: build-and-push
     runs-on: ubuntu-latest
+    needs: [build-web, build-server, build-dashboard]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Create staging environment file
         run: |
@@ -173,13 +188,8 @@ jobs:
             set -e
             cd /home/omar/staging
 
-            # Login to GHCR
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-            # Pull latest images
             docker compose -f docker-compose.staging.yml --env-file .env.staging pull
-
-            # Deploy staging services (they'll join the canto-network)
             docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
 
             echo "✓ Staging deployed successfully"

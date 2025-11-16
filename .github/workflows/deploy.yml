@@ -19,37 +19,29 @@ permissions:
   packages: write
 
 jobs:
-  build-and-push:
-    name: Build and Push All Images
+  build-web:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for web
-        id: meta-web
+      - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}-web
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push web
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: .
           target: web
@@ -59,24 +51,32 @@ jobs:
             PORT=3000
             NEXT_PUBLIC_BACKEND_URL=https://api.canto-store.com/api
           push: true
-          tags: ${{ steps.meta-web.outputs.tags }}
-          labels: ${{ steps.meta-web.outputs.labels }}
-          cache-from: type=gha,scope=web
-          cache-to: type=gha,mode=max,scope=web
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Extract metadata for server
-        id: meta-server
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}-server
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push server
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: .
           target: server
@@ -87,24 +87,32 @@ jobs:
           secrets: |
             "database_url=${{ secrets.DATABASE_URL }}"
           push: true
-          tags: ${{ steps.meta-server.outputs.tags }}
-          labels: ${{ steps.meta-server.outputs.labels }}
-          cache-from: type=gha,scope=server
-          cache-to: type=gha,mode=max,scope=server
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Extract metadata for dashboard
-        id: meta-dashboard
+  build-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}-dashboard
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push dashboard
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: .
           target: dashboard
@@ -114,19 +122,18 @@ jobs:
             PORT=5173
             VITE_BACKEND_URL=https://api.canto-store.com/api
           push: true
-          tags: ${{ steps.meta-dashboard.outputs.tags }}
-          labels: ${{ steps.meta-dashboard.outputs.labels }}
-          cache-from: type=gha,scope=dashboard
-          cache-to: type=gha,mode=max,scope=dashboard
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
+  # --------------------------
+  # DEPLOY JOB
+  # --------------------------
   deploy:
-    name: Deploy to Production
-    needs: build-and-push
     runs-on: ubuntu-latest
+    needs: [build-web, build-server, build-dashboard]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Create production environment file
         run: |

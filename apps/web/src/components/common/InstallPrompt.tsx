@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -21,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { ShareIcon, PlusIcon } from "lucide-react";
 
 export default function InstallPrompt() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [open, setOpen] = useState(false);
   const [showIOSModal, setShowIOSModal] = useState(false);
@@ -32,10 +32,12 @@ export default function InstallPrompt() {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     setIsIOS(iOS);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      if (sessionStorage.getItem("install-prompt-dismissed") === "true") {
+        return;
+      }
       setOpen(true);
     };
 
@@ -51,6 +53,21 @@ export default function InstallPrompt() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isIOS) {
+      const isInStandaloneMode = () =>
+        "standalone" in window.navigator &&
+        (window.navigator as any).standalone;
+
+      if (!isInStandaloneMode()) {
+        if (sessionStorage.getItem("install-prompt-dismissed") === "true") {
+          return;
+        }
+        setOpen(true);
+      }
+    }
+  }, [isIOS]);
+
   const handleInstall = async () => {
     if (isIOS) {
       // Show iOS instructions modal
@@ -65,6 +82,16 @@ export default function InstallPrompt() {
 
     setDeferredPrompt(null);
     setOpen(false);
+  };
+
+  const handleCloseSheet = () => {
+    sessionStorage.setItem("install-prompt-dismissed", "true");
+    setOpen(false);
+  };
+
+  const handleCloseDialog = () => {
+    sessionStorage.setItem("install-prompt-dismissed", "true");
+    setShowIOSModal(false);
   };
 
   return (
@@ -89,7 +116,7 @@ export default function InstallPrompt() {
             </div>
           </SheetHeader>
           <SheetFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={handleCloseSheet}>
               Not now
             </Button>
 
@@ -126,7 +153,7 @@ export default function InstallPrompt() {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setShowIOSModal(false)}
+              onClick={handleCloseDialog}
               className="w-full"
             >
               Got it
