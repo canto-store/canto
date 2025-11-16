@@ -2,6 +2,7 @@ import { Router } from 'express'
 import BrandController from './brand.controller'
 import AuthMiddleware from '../../../middlewares/auth.middleware'
 import { UserRole } from '@prisma/client'
+import { catchAsync } from '../../../utils/catchAsync'
 
 const router = Router()
 const controller = new BrandController()
@@ -11,7 +12,7 @@ router.get('/', controller.getAllBrands.bind(controller))
 router.get(
   '/my-brand',
   authMiddleware.checkAuth.bind(authMiddleware),
-  controller.getMyBrand.bind(controller)
+  catchAsync(controller.getMyBrand.bind(controller))
 )
 router.get(
   '/:id',

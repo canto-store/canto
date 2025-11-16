@@ -96,7 +96,7 @@ export function FilterPanel({
     if (priceRange) {
       setSelectedPriceRange(priceRange);
     }
-  }, [priceRange]);
+  }, [priceRange, setSelectedPriceRange]);
 
   // Cleanup timer on unmount
   useEffect(() => {

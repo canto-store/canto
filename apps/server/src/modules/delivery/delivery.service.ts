@@ -80,9 +80,9 @@ class DeliveryService {
       async order => await this.getDeliveryStatus(order.waybill)
     )
   }
-  public async getDelivericOrder(orderId: string) {
+  public async getDelivericOrder(orderId: number) {
     return this.prisma.delivericOrders.findFirst({
-      where: { orderId: +orderId },
+      where: { orderId: orderId },
     })
   }
 
@@ -95,24 +95,25 @@ class DeliveryService {
     const status = await this.getDeliveryStatus(waybill)
     return status
   }
-  async updateDeliveryStatus(orderId: string): Promise<DelivericOrders> {
+  async updateDeliveryStatus(orderId: number): Promise<DelivericOrders> {
     const delivericOrder = await this.getDelivericOrder(orderId)
     const { waybill } = delivericOrder
     const status = await this.getDeliveryStatus(waybill)
     return await this.prisma.delivericOrders.update({
-      where: { id: delivericOrder.orderId },
+      where: { waybill },
       data: { deliveryStatus: status },
     })
   }
 
-  async getDeliveryStatus(waybill: string): Promise<string> {
-    return axios
+  private async getDeliveryStatus(waybill: string): Promise<string> {
+    const res = await axios
       .post(this.DELIVERIC_API + '?action=statusHistory', {
         user: this.DELIVERIC_USER,
         password: this.DELIVERIC_PASSWORD,
         waybill,
       })
-      .then(res => res.data.status_en)
+      .then(res => res.data)
+    return res[0].status_en
   }
 }
 

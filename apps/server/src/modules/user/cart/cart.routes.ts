@@ -12,12 +12,6 @@ router.get(
   controller.getCartByUser.bind(controller)
 )
 
-router.put(
-  '/user',
-  authMiddleware.checkAuth.bind(authMiddleware),
-  controller.syncCart.bind(controller)
-)
-
 router.delete(
   '/user',
   authMiddleware.checkAuth.bind(authMiddleware),

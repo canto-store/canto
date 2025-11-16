@@ -30,5 +30,6 @@ export type Order = {
     name: string
     street: string
   }
+  deliveryStatus?: string
   trackingInfo?: TrackingInfo
 }

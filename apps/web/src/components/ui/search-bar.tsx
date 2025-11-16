@@ -100,7 +100,7 @@ export function SearchBar({
 
       return () => clearTimeout(handler);
     },
-    [onSearch, fetchSuggestions, debounceMs],
+    [onSearch, fetchSuggestions, debounceMs, value],
   );
 
   useEffect(() => {

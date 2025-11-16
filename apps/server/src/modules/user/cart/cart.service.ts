@@ -1,6 +1,6 @@
-import { Cart, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import AppError from '../../../utils/appError'
-import { Cart as CartType } from '@canto/types/cart'
+import { Cart } from '@canto/types/cart'
 import ProductService from '../../product/product.service'
 import UserService from '../user.service'
 class CartService {
@@ -11,13 +11,6 @@ class CartService {
   constructor() {
     this.productService = new ProductService()
     this.userService = new UserService()
-  }
-
-  private async getCartByUserId(userId: number): Promise<Cart | null> {
-    const cart = await this.prisma.cart.findUnique({
-      where: { userId },
-    })
-    return cart
   }
 
   private async getOrCreateCart(userId: number) {
@@ -42,20 +35,9 @@ class CartService {
     })
   }
 
-  async getCartByUser(userId: number): Promise<CartType> {
+  async getUserCart(userId: number): Promise<Cart> {
     await this.productService.validateCartItems(userId)
-    const cart = await this.prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        items: {
-          include: {
-            variant: {
-              include: { product: { include: { brand: true } }, images: true },
-            },
-          },
-        },
-      },
-    })
+    const cart = await this.getCartByUserId(userId)
 
     const items = cart.items.map(item => {
       return {
@@ -77,6 +59,21 @@ class CartService {
       count: items.length,
       price: items.reduce((acc, item) => acc + item.price * item.quantity, 0),
     }
+  }
+
+  async getCartByUserId(userId: number) {
+    return await this.prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            variant: {
+              include: { product: { include: { brand: true } }, images: true },
+            },
+          },
+        },
+      },
+    })
   }
 
   async clearCart(userId: number) {
@@ -144,42 +141,6 @@ class CartService {
     return await this.prisma.cartItem.delete({
       where: { id: cartItemId },
     })
-  }
-
-  async syncCart(
-    userId: number,
-    items: { variantId: number; quantity: number }[]
-  ) {
-    const cart = await this.getOrCreateCart(userId)
-    const existingItems = await this.prisma.cartItem.findMany({
-      where: {
-        cartId: cart.id,
-        variantId: { in: items.map(item => item.variantId) },
-      },
-    })
-    existingItems.forEach(async item => {
-      await this.prisma.cartItem.update({
-        where: { id: item.id },
-        data: {
-          quantity: {
-            increment: items.find(i => i.variantId === item.variantId).quantity,
-          },
-        },
-      })
-    })
-
-    items
-      .filter(item => !existingItems.some(i => i.variantId === item.variantId))
-      .forEach(async item => {
-        await this.prisma.cartItem.create({
-          data: {
-            cartId: cart.id,
-            variantId: item.variantId,
-            quantity: item.quantity,
-          },
-        })
-      })
-    return this.getCartByUser(userId)
   }
 
   async mergeCarts(guestId: number, userId: number) {

@@ -1,38 +1,57 @@
 "use client";
 
-import { OrderList } from "@/components/orders";
+import { OrderCard } from "@/components/orders";
+import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/ui/pagination";
+import { useRouter } from "@/i18n/navigation";
 import { useGetMyOrders } from "@/lib/order";
-import { ShoppingBag } from "lucide-react";
+import { Suspense, useState } from "react";
 
 export default function Page() {
-  const { data: orders, isLoading } = useGetMyOrders();
+  const [currentPage, setCurrentPage] = useState(1);
 
-  if (isLoading) {
-    return (
-      <div className="from-background to-muted/20 flex min-h-[75vh] flex-col items-center justify-center bg-gradient-to-b">
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-background/80 h-16 w-16 rounded-full backdrop-blur-sm"></div>
-          </div>
-          <ShoppingBag className="text-primary relative z-10 mx-auto h-8 w-8 animate-pulse" />
-        </div>
-        <h3 className="mt-6 text-xl font-medium">Loading Orders</h3>
-        <p className="text-muted-foreground mt-2 max-w-xs text-center">
-          We&apos;re collecting all your orders
-        </p>
-        <div className="mt-4 flex gap-1">
-          <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:0.2s]"></span>
-          <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:0.4s]"></span>
-          <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:0.6s]"></span>
-        </div>
-      </div>
-    );
-  }
+  const take = 6;
+  const skip = (currentPage - 1) * take;
+
+  const { data } = useGetMyOrders({ take, skip });
+  const router = useRouter();
+
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
-      {/* <OrderFilters onFilterChange={handleFilterChange} /> */}
-      {orders && <OrderList orders={orders} />}
+      {data.orders.length === 0 ? (
+        <div className="flex min-h-screen flex-col items-center justify-center gap-5 text-center">
+          <h3 className="text-lg font-medium">No orders yet</h3>
+          <p className="text-sm text-gray-500">
+            When you place orders, they will appear here.
+          </p>
+          <Button
+            onClick={() => {
+              router.push("/browse");
+            }}
+            variant="default"
+          >
+            Shop Products
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            {data.orders.map((order) => (
+              <OrderCard key={order.id} order={order} />
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            totalPages={data.totalPages}
+          />
+        </div>
+      )}
     </div>
   );
 }

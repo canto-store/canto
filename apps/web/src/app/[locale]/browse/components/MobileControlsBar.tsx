@@ -3,6 +3,7 @@ import {
   ViewOptionsDrawer,
   SortDrawer,
 } from "@/components/filters";
+import { Dispatch, SetStateAction } from "react";
 
 // Define interfaces for the translation objects
 interface FilterTranslations {
@@ -13,6 +14,8 @@ interface FilterTranslations {
   categories: string;
   brands: string;
   priceRange: string;
+  size?: string;
+  price?: string;
   applyFilters: string;
   clearFilters: string;
   close: string;
@@ -51,6 +54,10 @@ interface MobileControlsBarProps {
   setSelectedCategory: (category: string) => void;
   selectedBrand: string[] | undefined;
   setSelectedBrand: (brand: string[]) => void;
+  selectedSize: string | undefined;
+  setSelectedSize: (size: string) => void;
+  selectedPriceRange: [number, number];
+  setSelectedPriceRange: Dispatch<SetStateAction<[number, number]>>;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   clearFilters: () => void;
@@ -77,6 +84,10 @@ export function MobileControlsBar({
   setSelectedCategory,
   selectedBrand,
   setSelectedBrand,
+  selectedSize,
+  setSelectedSize,
+  selectedPriceRange,
+  setSelectedPriceRange,
 
   searchQuery,
   setSearchQuery,
@@ -93,7 +104,7 @@ export function MobileControlsBar({
   sortOptionTranslations,
 }: MobileControlsBarProps) {
   return (
-    <div className="mb-5 flex items-center justify-between gap-2 sm:hidden">
+    <div className="mb-2 flex items-center justify-between gap-2 sm:hidden">
       {/* Mobile Filter Drawer */}
       <FilterDrawer
         isOpen={isFilterDrawerOpen}
@@ -108,6 +119,10 @@ export function MobileControlsBar({
         activeFiltersCount={activeFiltersCount}
         hasActiveFilters={hasActiveFilters}
         translations={filterTranslations}
+        selectedSize={selectedSize}
+        setSelectedSize={setSelectedSize}
+        selectedPriceRange={selectedPriceRange}
+        setSelectedPriceRange={setSelectedPriceRange}
       />
 
       {/* Mobile View Drawer */}

@@ -66,7 +66,7 @@ export function ProductCard({
         <Image
           src={product.image || "/placeholder-image.jpg"}
           alt={product.name}
-          className="aspect-square w-full transform rounded-t-lg object-cover"
+          className="aspect-square w-full transform rounded-t-lg object-contain"
           width={600}
           height={600}
           priority={priority}

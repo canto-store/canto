@@ -39,6 +39,12 @@ enum UserRole {
   ADMIN
 }
 
+enum OrderStatus {
+  PROCESSING
+  OUT_FOR_DELIVERY
+  SHIPPED
+}
+
 model User {
   id             Int         @id @default(autoincrement())
   name           String?
@@ -282,6 +288,7 @@ model Order {
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
   items           OrderItem[]
+  status          OrderStatus       @default(PROCESSING)
   DelivericOrders DelivericOrders[]
 
   @@map("orders")
