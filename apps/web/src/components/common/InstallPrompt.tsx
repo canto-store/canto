@@ -84,9 +84,14 @@ export default function InstallPrompt() {
     setOpen(false);
   };
 
-  const handleNotNow = () => {
+  const handleCloseSheet = () => {
     sessionStorage.setItem("install-prompt-dismissed", "true");
     setOpen(false);
+  };
+
+  const handleCloseDialog = () => {
+    sessionStorage.setItem("install-prompt-dismissed", "true");
+    setShowIOSModal(false);
   };
 
   return (
@@ -111,7 +116,7 @@ export default function InstallPrompt() {
             </div>
           </SheetHeader>
           <SheetFooter>
-            <Button variant="outline" onClick={handleNotNow}>
+            <Button variant="outline" onClick={handleCloseSheet}>
               Not now
             </Button>
 
@@ -148,7 +153,7 @@ export default function InstallPrompt() {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setShowIOSModal(false)}
+              onClick={handleCloseDialog}
               className="w-full"
             >
               Got it
