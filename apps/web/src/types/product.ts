@@ -131,6 +131,7 @@ export const productFormSchema = z.object({
     .min(1, { message: "Please select a category" })
     .optional(),
   description: z.string().optional(),
+  returnWindow: z.number().int().min(0).optional(),
   variants: z.array(selectedVariantSchema).optional(),
 });
 
@@ -155,6 +156,7 @@ export type UpdateProductFormValues = {
   slug: string;
   category?: number;
   description?: string;
+  returnWindow?: number;
   variants?: Array<{
     id?: number; // Optional for new variants
     price?: number;
@@ -171,6 +173,7 @@ export type CreateProductFormValues = {
   name: string;
   category: number;
   description?: string;
+  returnWindow: number;
   variants: Array<{
     price: number;
     stock: number;

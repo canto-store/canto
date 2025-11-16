@@ -80,6 +80,7 @@ export default function EditProduct() {
       status: product.status,
       // rejectionReason: product.rejection?.reason || '',
       variants: product.variants,
+      returnWindow: product.returnWindow || 0,
     },
   })
 
@@ -130,6 +131,12 @@ export default function EditProduct() {
       changes.rejectionReason = {
         old: product.rejectionReason || '',
         new: data.rejectionReason,
+      }
+    }
+    if (data.returnWindow !== product.returnWindow) {
+      changes.returnWindow = {
+        old: product.returnWindow || 0,
+        new: data.returnWindow || 0,
       }
     }
     for (const variant of data.variants) {
@@ -329,6 +336,23 @@ export default function EditProduct() {
                     )}
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="returnWindow"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Return Window (days)</FormLabel>
+                <FormControl>
+                  <Input
+                    min={0}
+                    {...field}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

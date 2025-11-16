@@ -23,6 +23,10 @@ export const productFormSchema = z.object({
   status: z.enum(['PENDING', 'ACTIVE', 'INACTIVE', 'REJECTED'] as const),
   rejectionReason: z.string().optional(),
   variants: z.array(selectedVariantSchema),
+  returnWindow: z
+    .number()
+    .min(0, 'Return window must be at least 0 days')
+    .optional(),
 })
 
 export type ProductFormValues = z.infer<typeof productFormSchema>

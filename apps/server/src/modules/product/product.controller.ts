@@ -92,18 +92,10 @@ class ProductController {
     response.status(200).json(priceRange)
   }
 
-  async getProductById(
-    request: Request,
-    response: Response,
-    nextFunction: NextFunction
-  ) {
-    try {
-      const productId = Number(request.params.id)
-      const product = await this.productService.getProductById(productId)
-      response.status(200).json(product)
-    } catch (error) {
-      nextFunction(error)
-    }
+  async getProductById(request: Request, response: Response) {
+    const productId = Number(request.params.id)
+    const product = await this.productService.getProductById(productId)
+    response.status(200).json(product)
   }
 
   async updateProduct(
@@ -282,32 +274,16 @@ class ProductController {
     }
   }
 
-  async submitProductForm(
-    request: AuthRequest,
-    response: Response,
-    nextFunction: NextFunction
-  ) {
+  async submitProductForm(request: AuthRequest, response: Response) {
     const productForm = request.body as SubmitProductFormDto
-    try {
-      await this.productService.submitProductForm(productForm, request.user?.id)
-      response.status(201).json({ message: 'Product created' })
-    } catch (error) {
-      nextFunction(error)
-    }
+    await this.productService.submitProductForm(productForm, request.user?.id)
+    response.status(201).json({ message: 'Product created' })
   }
 
-  async updateProductForm(
-    request: AuthRequest,
-    response: Response,
-    nextFunction: NextFunction
-  ) {
+  async updateProductForm(request: AuthRequest, response: Response) {
     const productForm = request.body as UpdateProductFormDto
-    try {
-      await this.productService.updateProductForm(productForm, request.user?.id)
-      response.status(200).json({ message: 'Product updated' })
-    } catch (error) {
-      nextFunction(error)
-    }
+    await this.productService.updateProductForm(productForm, request.user?.id)
+    response.status(200).json({ message: 'Product updated' })
   }
 
   async getProductsByBrand(
