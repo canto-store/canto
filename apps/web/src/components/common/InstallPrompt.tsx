@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -21,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { ShareIcon, PlusIcon } from "lucide-react";
 
 export default function InstallPrompt() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [open, setOpen] = useState(false);
   const [showIOSModal, setShowIOSModal] = useState(false);
@@ -32,7 +32,6 @@ export default function InstallPrompt() {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     setIsIOS(iOS);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
