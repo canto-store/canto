@@ -96,7 +96,7 @@ export default function InstallPrompt() {
 
   return (
     <>
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={open} onOpenChange={handleCloseSheet}>
         <SheetContent side="bottom" className="rounded-t-2xl">
           <SheetHeader>
             <div className="flex flex-col items-center gap-3">
@@ -106,6 +106,7 @@ export default function InstallPrompt() {
                 width={60}
                 height={60}
                 className="rounded-lg"
+                priority
               />
               <div className="text-center">
                 <SheetTitle>Install App</SheetTitle>
@@ -127,7 +128,7 @@ export default function InstallPrompt() {
         </SheetContent>
       </Sheet>
 
-      <Dialog open={showIOSModal} onOpenChange={setShowIOSModal}>
+      <Dialog open={showIOSModal} onOpenChange={handleCloseDialog}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
