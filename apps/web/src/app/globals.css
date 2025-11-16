@@ -26,6 +26,7 @@
 
   --color-primary: var(--color-navy);
   --color-secondary: var(--color-burgundy);
+  --color-destructive: var(--color-orange-red);
   --color-tertiary: var(--color-pink);
 
   --color-primary-foreground: var(--color-light-gray);

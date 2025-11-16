@@ -163,7 +163,7 @@ export class OrderService {
         (total, item) => total + item.priceAtOrder * item.quantity,
         0
       ),
-      status: o.status.toLowerCase(),
+      status: o.status,
       createdAt: o.createdAt.toISOString(),
       shippingAddress: {
         name: o.address.address_label,
@@ -178,11 +178,11 @@ export class OrderService {
     }
   }
 
-  async getOrderById(orderId, userId) {
+  async getOrderById(orderId: number, userId: number) {
     const order = await this.prisma.order.findFirst({
       where: {
-        id: Number(orderId),
-        userId: Number(userId),
+        id: orderId,
+        userId: userId,
       },
       include: {
         // include full address info
@@ -223,6 +223,93 @@ export class OrderService {
     return {
       ...order,
       totalPrice,
+    }
+  }
+
+  async deleteOrder(orderId: number): Promise<string> {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+    })
+
+    if (!order) {
+      throw new AppError('Order not found', 404)
+    }
+
+    if (order.status === 'CANCELLED') {
+      throw new AppError('Order is already cancelled', 400)
+    }
+
+    if (order.status === 'SHIPPED') {
+      throw new AppError('Shipped orders cannot be cancelled', 400)
+    }
+
+    if (order.status === 'OUT_FOR_DELIVERY') {
+      throw new AppError('Orders out for delivery cannot be cancelled', 400)
+    }
+
+    if (order.status === 'RETURNED') {
+      throw new AppError('Returned orders cannot be cancelled', 400)
+    }
+
+    if (order.status === 'DELIVERED') {
+      await this.prisma.$transaction(async tx => {
+        await tx.order.update({
+          where: {
+            id: orderId,
+          },
+          data: {
+            status: 'RETURN_REQUESTED',
+          },
+        })
+      })
+      return 'Return request initiated for the delivered order.'
+    }
+
+    if (order.status === 'PROCESSING') {
+      await this.prisma.$transaction(async tx => {
+        const order = await tx.order.update({
+          where: {
+            id: orderId,
+          },
+          data: {
+            status: 'CANCELLED',
+          },
+          include: {
+            items: true,
+          },
+        })
+
+        for (const item of order.items) {
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: {
+              stock: {
+                increment: item.quantity,
+              },
+            },
+          })
+        }
+      })
+
+      return 'Order has been successfully cancelled.'
+    }
+  }
+
+  async canDeleteOrder(orderId: number, userId: number): Promise<void> {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+    })
+
+    if (!order) {
+      throw new AppError('Order not found', 404)
+    }
+
+    if (order.userId !== userId) {
+      throw new AppError("You don't have permission to cancel this order", 403)
     }
   }
 }

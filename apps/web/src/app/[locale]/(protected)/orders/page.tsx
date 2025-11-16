@@ -1,11 +1,11 @@
 "use client";
 
-import { OrderCard } from "@/components/orders";
+import { OrderCard } from "@/components/orders/OrderCard";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
 import { useGetMyOrders } from "@/lib/order";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);

@@ -10,7 +10,7 @@ export class OrderController {
     this.orderService = new OrderService()
   }
 
-  async getMyOrders(req: AuthRequest, res: Response) {
+  async getUserOrders(req: AuthRequest, res: Response) {
     const userId = req.user?.id
     const take = req.query.take ?? 6
     const skip = req.query.skip ?? 0
@@ -19,11 +19,11 @@ export class OrderController {
     res.status(200).json(result)
   }
 
-  async getOrderById(req, res) {
+  async getOrderById(req: AuthRequest, res: Response) {
     const { id } = req.params
     const userId = req.user.id
 
-    const order = await this.orderService.getOrderById(id, userId)
+    const order = await this.orderService.getOrderById(+id, userId)
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' })
@@ -50,5 +50,18 @@ export class OrderController {
         order,
       },
     })
+  }
+
+  async deleteOrder(req: AuthRequest, res: Response) {
+    const { id } = req.params
+    const { id: userId } = req.user
+
+    if (!id) {
+      throw new AppError('Order ID is required', 400)
+    }
+
+    await this.orderService.canDeleteOrder(+id, userId)
+    const response = await this.orderService.deleteOrder(+id)
+    res.status(202).send(response)
   }
 }

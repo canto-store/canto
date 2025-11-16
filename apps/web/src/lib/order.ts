@@ -53,3 +53,18 @@ export const useGetSingleOrder = (orderId: number) => {
     },
   });
 };
+
+export const useDeleteOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderId: number) => {
+      const res = await api.delete(`/orders/${orderId}`);
+      return res.data;
+    },
+    onSuccess: (_data, orderId) => {
+      queryClient.refetchQueries({ queryKey: ["order", orderId] });
+      queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+    },
+  });
+};

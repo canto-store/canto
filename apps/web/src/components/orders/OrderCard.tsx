@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { Order } from "@canto/types/order";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { formatDate, formatPrice } from "@/lib/utils";
+import { cn, formatDate, formatPrice } from "@/lib/utils";
 import Link from "next/link";
 
 type OrderCardProps = {
@@ -16,9 +15,22 @@ export function OrderCard({ order }: OrderCardProps) {
       className="cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] dark:border-gray-800 dark:bg-gray-950"
     >
       <div className="flex flex-row items-center justify-between">
-        <Badge className="w-fit bg-amber-100 text-xs font-medium text-amber-800 capitalize hover:bg-amber-200">
-          {order.status}
-        </Badge>
+        <span
+          className={cn(
+            "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize",
+            order.status === "PROCESSING" && "bg-amber-100 text-amber-800",
+            order.status === "SHIPPED" && "bg-blue-100 text-blue-800",
+            order.status === "OUT_FOR_DELIVERY" &&
+              "bg-orange-100 text-orange-800",
+            order.status === "DELIVERED" && "bg-green-100 text-green-800",
+            order.status === "CANCELLED" && "bg-red-100 text-red-800",
+            order.status === "RETURNED" && "bg-purple-100 text-purple-800",
+            order.status === "RETURN_REQUESTED" &&
+              "bg-yellow-100 text-yellow-800",
+          )}
+        >
+          {order.status.split("_").join(" ").toLowerCase()}
+        </span>
         <p className="text-xs text-gray-500 dark:text-gray-400">
           {formatDate(order.createdAt)}
         </p>

@@ -6,23 +6,35 @@ import { useTranslations } from "next-intl";
 import { cn, formatDate } from "@/lib/utils";
 import { OrderItemComponent } from "@/components/orders/Ordertem";
 import { OrderSummary } from "@/components/orders/OrderSummary";
-import { useGetSingleOrder } from "@/lib/order";
+import { useDeleteOrder, useGetSingleOrder } from "@/lib/order";
 import { OrderAddress } from "@/components/orders/OrderAddress";
 import { useParams } from "next/navigation";
 import OrderNotFound from "@/components/orders/OrderNotFound";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 export default function SingleOrderPage() {
   const params = useParams();
   const orderId = params.id ? Number(params.id) : undefined;
 
   if (!orderId) return <OrderNotFound />;
 
-  const { data: order, isLoading, error } = useGetSingleOrder(orderId!);
+  const { data: order, isLoading } = useGetSingleOrder(orderId);
+
+  const { mutateAsync: deleteOrder } = useDeleteOrder();
 
   if (!order) return <OrderNotFound />;
 
   const count = order?.items.length ?? 0;
   const t = useTranslations();
   const [isUpdating] = useState(false);
+
+  const handleDeleteOrder = async () => {
+    if (!orderId) return;
+
+    await deleteOrder(orderId).then((res) => {
+      toast.success(res);
+    });
+  };
 
   if (isLoading) {
     return (
@@ -68,19 +80,18 @@ export default function SingleOrderPage() {
           <span
             className={cn(
               "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize",
-              order.status.toLowerCase() === "processing" &&
-                "bg-amber-100 text-amber-800",
-              order.status.toLowerCase() === "shipped" &&
-                "bg-blue-100 text-blue-800",
-              order.status.toLowerCase() === "out_for_delivery" &&
+              order.status === "PROCESSING" && "bg-amber-100 text-amber-800",
+              order.status === "SHIPPED" && "bg-blue-100 text-blue-800",
+              order.status === "OUT_FOR_DELIVERY" &&
                 "bg-orange-100 text-orange-800",
-              order.status.toLowerCase() === "delivered" &&
-                "bg-green-100 text-green-800",
-              order.status.toLowerCase() === "null" &&
-                "bg-red-100 text-red-800",
+              order.status === "DELIVERED" && "bg-green-100 text-green-800",
+              order.status === "CANCELLED" && "bg-red-100 text-red-800",
+              order.status === "RETURNED" && "bg-purple-100 text-purple-800",
+              order.status === "RETURN_REQUESTED" &&
+                "bg-yellow-100 text-yellow-800",
             )}
           >
-            {order.status}
+            {order.status.split("_").join(" ").toLowerCase()}
           </span>
         </div>
       </div>
@@ -124,6 +135,25 @@ export default function SingleOrderPage() {
             />
           </div>
         </div>
+
+        {order.status === "PROCESSING" && (
+          <Button
+            variant="destructive"
+            className="w-full"
+            onClick={handleDeleteOrder}
+          >
+            Cancel Order
+          </Button>
+        )}
+        {order.status === "DELIVERED" && (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleDeleteOrder}
+          >
+            Return Order
+          </Button>
+        )}
       </div>
     </div>
   );
