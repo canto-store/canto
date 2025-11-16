@@ -36,6 +36,9 @@ export default function InstallPrompt() {
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      if (sessionStorage.getItem("install-prompt-dismissed") === "true") {
+        return;
+      }
       setOpen(true);
     };
 
@@ -51,6 +54,21 @@ export default function InstallPrompt() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isIOS) {
+      const isInStandaloneMode = () =>
+        "standalone" in window.navigator &&
+        (window.navigator as any).standalone;
+
+      if (!isInStandaloneMode()) {
+        if (sessionStorage.getItem("install-prompt-dismissed") === "true") {
+          return;
+        }
+        setOpen(true);
+      }
+    }
+  }, [isIOS]);
+
   const handleInstall = async () => {
     if (isIOS) {
       // Show iOS instructions modal
@@ -64,6 +82,11 @@ export default function InstallPrompt() {
     deferredPrompt.prompt();
 
     setDeferredPrompt(null);
+    setOpen(false);
+  };
+
+  const handleNotNow = () => {
+    sessionStorage.setItem("install-prompt-dismissed", "true");
     setOpen(false);
   };
 
@@ -89,7 +112,7 @@ export default function InstallPrompt() {
             </div>
           </SheetHeader>
           <SheetFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={handleNotNow}>
               Not now
             </Button>
 
