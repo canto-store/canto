@@ -20,6 +20,20 @@ router.delete(
 )
 
 router.get(
+  '/',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  catchAsync(orderController.getOrders.bind(orderController))
+)
+
+router.put(
+  '/',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  catchAsync(orderController.updateOrder.bind(orderController))
+)
+
+router.get(
   '/my-orders',
   authMiddleware.checkAuth.bind(authMiddleware),
   catchAsync(orderController.getUserOrders.bind(orderController))

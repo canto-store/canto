@@ -104,4 +104,26 @@ export const api = {
     const response = await apiClient.post('/product/options', data)
     return response.data
   },
+  getOrders: async () => {
+    const response = await apiClient.get('/orders')
+    return response.data
+  },
+  updateOrderStatus: async (orderId: string, status: string) => {
+    const response = await apiClient.put(`/orders`, {
+      id: orderId,
+      data: { status },
+    })
+    return response.data
+  },
+  getReturns: async () => {
+    const response = await apiClient.get('/returns/all')
+    return response.data
+  },
+  updateReturnStatus: async (returnId: number, status: string) => {
+    const response = await apiClient.put(`/returns`, {
+      id: returnId,
+      data: { status },
+    })
+    return response.data
+  },
 }

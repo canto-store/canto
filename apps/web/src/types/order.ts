@@ -43,6 +43,7 @@ export type OrderItem = {
   price: number;
   thumbnailUrl: string;
   optionLinks?: OptionLinks[];
+  returnDeadline: string;
 };
 
 export type Address = {
@@ -74,7 +75,6 @@ export type Order = {
   totalPrice: number;
   status: OrderStatus;
   createdAt: string;
-  returnDeadline: string;
   shippingAddress: {
     name: string;
     street: string;

@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import { Order, OrderStatus, PrismaClient } from '@prisma/client'
 import AppError from '../../utils/appError'
 import { CreateOrderInput } from './order.types'
 import DeliveryService from '../delivery/delivery.service'
-import { Order } from '@canto/types/order'
 import CartService from '../user/cart/cart.service'
 
 export class OrderService {
@@ -120,15 +119,16 @@ export class OrderService {
   async getUserOrders(
     userId: number,
     take: number,
-    skip: number
-  ): Promise<{ orders: Order[]; totalPages: number }> {
+    skip: number,
+    status?: OrderStatus
+  ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
     if (!user) {
       throw new AppError('User not found', 404)
     }
 
     const orders = await this.prisma.order.findMany({
-      where: { userId },
+      where: { userId, ...(status && { status }) },
       orderBy: {
         createdAt: 'desc',
       },
@@ -178,6 +178,63 @@ export class OrderService {
     }
   }
 
+  async getOrders() {
+    const orders = await this.prisma.order.findMany({
+      include: {
+        items: {
+          include: {
+            variant: {
+              include: { product: true, images: true },
+            },
+          },
+        },
+        user: true,
+        address: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return orders
+  }
+
+  async updateOrder(orderId: number, data: Partial<Order>) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      select: {
+        items: { select: { id: true, variant: { select: { product: true } } } },
+      },
+    })
+
+    if (!order) {
+      throw new AppError('Order not found', 404)
+    }
+
+    if (data.status === 'DELIVERED') {
+      data['deliveredAt'] = new Date()
+
+      for (const item of order.items) {
+        await this.prisma.orderItem.update({
+          where: { id: item.id },
+          data: {
+            returnDeadline: new Date(
+              Date.now() +
+                item.variant.product.returnWindow * 24 * 60 * 60 * 1000
+            ),
+          },
+        })
+      }
+    }
+
+    const updatedOrder = await this.prisma.order.update({
+      where: { id: orderId },
+      data,
+    })
+
+    return updatedOrder
+  }
+
   async getOrderById(orderId: number, userId: number) {
     const order = await this.prisma.order.findFirst({
       where: {
@@ -206,6 +263,7 @@ export class OrderService {
                 },
               },
             },
+            returns: true,
           },
         },
       },
@@ -248,26 +306,8 @@ export class OrderService {
       throw new AppError('Orders out for delivery cannot be cancelled', 400)
     }
 
-    if (order.status === 'RETURNED') {
-      throw new AppError('Returned orders cannot be cancelled', 400)
-    }
-
     if (order.status === 'DELIVERED') {
-      if (order.returnDeadline.getTime() > Date.now()) {
-        throw new AppError('Return deadline has passed', 400)
-      }
-
-      await this.prisma.$transaction(async tx => {
-        await tx.order.update({
-          where: {
-            id: orderId,
-          },
-          data: {
-            status: 'RETURN_REQUESTED',
-          },
-        })
-      })
-      return 'Return request initiated for the delivered order.'
+      throw new AppError('Delivered orders  cannot be cancelled', 400)
     }
 
     if (order.status === 'PROCESSING') {

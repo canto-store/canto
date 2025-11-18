@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { ProductFormValues, ProductOption } from '@/types/product'
+import type { Return } from '@/types/return'
 
 // Products hook
 export function useProducts() {
@@ -87,6 +88,42 @@ export function useCreateProductOption() {
     mutationFn: api.createProductOption,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['product-options'] })
+    },
+  })
+}
+
+export function useOrders() {
+  return useQuery({
+    queryKey: ['orders'],
+    queryFn: api.getOrders,
+  })
+}
+
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ orderId, status }: { orderId: string; status: string }) =>
+      api.updateOrderStatus(orderId, status),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['orders'] })
+    },
+  })
+}
+
+export function useReturns() {
+  return useQuery<{ returnRequests: Return[] }, Error>({
+    queryKey: ['returns'],
+    queryFn: api.getReturns,
+  })
+}
+
+export function useUpdateReturnStatus() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ returnId, status }: { returnId: number; status: string }) =>
+      api.updateReturnStatus(returnId, status),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['returns'] })
     },
   })
 }

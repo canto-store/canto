@@ -14,7 +14,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
 import { Route as DashboardSellersRouteImport } from './routes/dashboard/sellers'
+import { Route as DashboardReturnsRouteImport } from './routes/dashboard/returns'
 import { Route as DashboardProductOptionsRouteImport } from './routes/dashboard/product-options'
+import { Route as DashboardOrdersRouteImport } from './routes/dashboard/orders'
 import { Route as DashboardBrandsRouteImport } from './routes/dashboard/brands'
 import { Route as DashboardProductsIndexRouteImport } from './routes/dashboard/products/index'
 import { Route as DashboardProductOptionValuesOptionIdRouteImport } from './routes/dashboard/product-option-values/$optionId'
@@ -45,9 +47,19 @@ const DashboardSellersRoute = DashboardSellersRouteImport.update({
   path: '/sellers',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardReturnsRoute = DashboardReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardProductOptionsRoute = DashboardProductOptionsRouteImport.update({
   id: '/product-options',
   path: '/product-options',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardBrandsRoute = DashboardBrandsRouteImport.update({
@@ -77,7 +89,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/product-options': typeof DashboardProductOptionsRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/sellers': typeof DashboardSellersRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -88,7 +102,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/product-options': typeof DashboardProductOptionsRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/sellers': typeof DashboardSellersRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -101,7 +117,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/product-options': typeof DashboardProductOptionsRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/sellers': typeof DashboardSellersRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -115,7 +133,9 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/brands'
+    | '/dashboard/orders'
     | '/dashboard/product-options'
+    | '/dashboard/returns'
     | '/dashboard/sellers'
     | '/dashboard/users'
     | '/dashboard/'
@@ -126,7 +146,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard/brands'
+    | '/dashboard/orders'
     | '/dashboard/product-options'
+    | '/dashboard/returns'
     | '/dashboard/sellers'
     | '/dashboard/users'
     | '/dashboard'
@@ -138,7 +160,9 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/brands'
+    | '/dashboard/orders'
     | '/dashboard/product-options'
+    | '/dashboard/returns'
     | '/dashboard/sellers'
     | '/dashboard/users'
     | '/dashboard/'
@@ -189,11 +213,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSellersRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/returns': {
+      id: '/dashboard/returns'
+      path: '/returns'
+      fullPath: '/dashboard/returns'
+      preLoaderRoute: typeof DashboardReturnsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/product-options': {
       id: '/dashboard/product-options'
       path: '/product-options'
       fullPath: '/dashboard/product-options'
       preLoaderRoute: typeof DashboardProductOptionsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/orders': {
+      id: '/dashboard/orders'
+      path: '/orders'
+      fullPath: '/dashboard/orders'
+      preLoaderRoute: typeof DashboardOrdersRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/brands': {
@@ -229,7 +267,9 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardBrandsRoute: typeof DashboardBrandsRoute
+  DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductOptionsRoute: typeof DashboardProductOptionsRoute
+  DashboardReturnsRoute: typeof DashboardReturnsRoute
   DashboardSellersRoute: typeof DashboardSellersRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -240,7 +280,9 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardBrandsRoute: DashboardBrandsRoute,
+  DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductOptionsRoute: DashboardProductOptionsRoute,
+  DashboardReturnsRoute: DashboardReturnsRoute,
   DashboardSellersRoute: DashboardSellersRoute,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,

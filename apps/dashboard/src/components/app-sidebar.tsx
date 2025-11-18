@@ -5,6 +5,8 @@ import {
   UserCheck,
   UserStar,
   Settings,
+  ShoppingBag,
+  Receipt,
 } from 'lucide-react'
 import { Link, useRouter } from '@tanstack/react-router'
 import {
@@ -52,6 +54,16 @@ const menuItems = [
     title: 'Users',
     url: '/dashboard/users',
     icon: UserCheck,
+  },
+  {
+    title: 'Orders',
+    url: '/dashboard/orders',
+    icon: ShoppingBag,
+  },
+  {
+    title: 'Returns',
+    url: '/dashboard/returns',
+    icon: Receipt,
   },
 ]
 

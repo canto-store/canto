@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CircleUser, LogOut, Heart, ShoppingBag } from "lucide-react";
+import {
+  CircleUser,
+  LogOut,
+  Heart,
+  ShoppingBag,
+  Receipt,
+  Wallet,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "../ui/button";
@@ -79,6 +86,16 @@ export function UserDropdown() {
       label: t("order"),
       href: "/orders",
       icon: <ShoppingBag className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
+    },
+    {
+      label: "Returns",
+      href: "/returns",
+      icon: <Receipt className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
+    },
+    {
+      label: "Wallet",
+      href: "/wallet",
+      icon: <Wallet className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
     },
     {
       label: t("wishlist"),

@@ -45,9 +45,15 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
-  RETURNED
-  RETURN_REQUESTED
 }
+
+enum ReturnStatus {
+  PENDING
+  REFUNDED
+  REJECTED
+}
+
+
 
 model User {
   id             Int         @id @default(autoincrement())
@@ -292,7 +298,7 @@ model Order {
   address         Address           @relation(fields: [addressId], references: [id])
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
-  returnDeadline  DateTime          @default(now()) @map("return_deadline")
+  deliveredAt     DateTime?         @map("delivered_at")
   items           OrderItem[]
   status          OrderStatus       @default(PROCESSING)
   DelivericOrders DelivericOrders[]
@@ -322,8 +328,22 @@ model OrderItem {
   quantity     Int            @map("quantity")
   priceAtOrder Float          @map("price_at_order")
   User         User[]
+  returnDeadline  DateTime?   @map("return_deadline")
+  returns Return[]
 
   @@map("order_items")
+}
+
+model Return {
+  id          Int      @id @default(autoincrement()) @map("id")
+  orderItemId Int      @map("order_item_id")
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  reason      String   @map("reason")
+  status      ReturnStatus   @default(PENDING) @map("status")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("returns")
 }
 
 model Activity {
