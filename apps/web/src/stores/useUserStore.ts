@@ -7,6 +7,8 @@ type UserState = {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;
+  hasHydrated: boolean;
+  set: (fn: (state: UserState) => Partial<UserState>) => void;
   setAuth: (data: AuthResponse) => void;
   logout: () => void;
 };
@@ -14,11 +16,13 @@ type UserState = {
 export const useUserStore = create<UserState>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         user: null,
         accessToken: null,
-        refreshToken: null,
         isAuthenticated: false,
+        hasHydrated: false,
+
+        set: (fn) => set(fn(get())),
 
         setAuth: (data) => {
           const { id, name, role, accessToken } = data;
@@ -44,6 +48,9 @@ export const useUserStore = create<UserState>()(
           accessToken: state.accessToken,
           isAuthenticated: state.isAuthenticated,
         }),
+        onRehydrateStorage: () => (state) => {
+          state?.set(() => ({ hasHydrated: true }));
+        },
       },
     ),
   ),
