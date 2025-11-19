@@ -15,7 +15,7 @@ export function CategoryCard({
 }: CategoryCardProps) {
   return (
     <a
-      href={`/browse?category=${category.slug}`}
+      href={`/shop?category=${category.slug}`}
       key={category.name}
       className={cn(
         "shadow-lg transition-transform duration-300 hover:scale-102 hover:cursor-pointer hover:shadow-xl",

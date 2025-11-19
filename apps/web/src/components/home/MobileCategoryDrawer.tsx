@@ -40,7 +40,7 @@ export default function MobileCategoryDrawer() {
 
         return (
           <a
-            href={`/browse?category=${category.slug}`}
+            href={`/shop?category=${category.slug}`}
             key={category.name}
             className="flex w-full items-center gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 shadow-sm transition hover:shadow-md active:scale-[0.98]"
             onClick={() => console.log(category.slug)}

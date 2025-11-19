@@ -4,7 +4,7 @@ import Image from "next/image";
 const navigation = {
   about: [
     { label: "About Us", href: "/about-us" },
-    { label: "Canto Products", href: "/browse" },
+    { label: "Canto Products", href: "/shop" },
     // { label: "Our Social Responsibility", href: "#" },
     // { label: "Our Partners", href: "#" },
   ],

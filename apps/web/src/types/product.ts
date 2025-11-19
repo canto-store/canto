@@ -86,11 +86,15 @@ export type ProductVariants = {
   images: ProductImages[];
 };
 
-export interface HomeProducts {
-  bestSellers: ProductSummary[];
-  bestDeals: ProductSummary[];
-  newArrivals: ProductSummary[];
-}
+export type HomeProducts = {
+  id: number;
+  title: string;
+  description: string | null;
+  position: number;
+  created_at: string;
+  updated_at: string;
+  products: ProductSummary[];
+};
 
 export interface OptionValue {
   id: number;

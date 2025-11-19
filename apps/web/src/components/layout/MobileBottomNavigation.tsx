@@ -19,7 +19,7 @@ export function MobileBottomNavigation() {
     },
     {
       label: t("browse"),
-      href: "/browse",
+      href: "/shop",
       icon: <Search className="h-5 w-5" />,
     },
     {

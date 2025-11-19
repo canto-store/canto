@@ -152,7 +152,7 @@ export default function BrowsePage() {
       urlParams.set("maxPrice", priceRange[1].toString());
 
     const locale = typeof params.locale === "string" ? params.locale : "en";
-    const newUrl = `/${locale}/browse${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
+    const newUrl = `/${locale}/shop${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
 
     // Use replace instead of push to avoid adding to history stack
     // and prevent navigation during render

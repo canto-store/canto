@@ -119,7 +119,7 @@ function WishlistPage() {
                   asChild
                 >
                   <Link
-                    href="/browse"
+                    href="/shop"
                     className="flex items-center justify-center gap-2"
                   >
                     Shop Products

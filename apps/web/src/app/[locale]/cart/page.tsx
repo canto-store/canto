@@ -17,7 +17,7 @@ export default function CartPage() {
 
   // Handle continue shopping button click
   const handleContinueShopping = () => {
-    router.push("/browse");
+    router.push("/shop");
   };
 
   if (isLoading) {

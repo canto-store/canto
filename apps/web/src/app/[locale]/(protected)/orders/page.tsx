@@ -30,7 +30,7 @@ export default function Page() {
           </p>
           <Button
             onClick={() => {
-              router.push("/browse");
+              router.push("/shop");
             }}
             variant="default"
           >

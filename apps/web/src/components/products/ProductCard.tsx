@@ -43,7 +43,7 @@ export function ProductCard({
   };
 
   const handleBrandClick = (product: ProductSummary) => {
-    router.push(`/browse?brand=${encodeURIComponent(product.brand.slug)}`);
+    router.push(`/shop?brand=${encodeURIComponent(product.brand.slug)}`);
   };
 
   return (

@@ -88,7 +88,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       <div className="flex flex-col gap-1.5">
         <h1 className="text-2xl font-bold md:text-3xl">{product.name}</h1>
         <Link
-          href={`/browse?brand=${product.brand.slug}`}
+          href={`/shop?brand=${product.brand.slug}`}
           className="text-base text-gray-600 md:text-lg"
         >
           {product.brand.name}

@@ -33,7 +33,7 @@ export function CartSummary({ className }: CartSummaryProps) {
         </p>
         <Button
           className="w-full text-sm sm:text-base"
-          onClick={() => router.push("/browse")}
+          onClick={() => router.push("/shop")}
         >
           {t("cart.startShopping")}
         </Button>
@@ -78,7 +78,7 @@ export function CartSummary({ className }: CartSummaryProps) {
           <Button
             variant="outline"
             className="w-full text-xs sm:text-sm"
-            onClick={() => router.push("/browse")}
+            onClick={() => router.push("/shop")}
           >
             {t("cart.continueShopping")}
           </Button>

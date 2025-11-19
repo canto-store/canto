@@ -34,7 +34,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     { name: "Home", url: `/${locale}/` },
     {
       name: product?.category.name,
-      url: `/${locale}/browse?category=${product?.category.slug}`,
+      url: `/${locale}/shop?category=${product?.category.slug}`,
     },
     { name: product?.name, url: `/${locale}/product/${slug}` },
   ];

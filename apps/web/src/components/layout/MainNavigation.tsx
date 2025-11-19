@@ -32,7 +32,7 @@ export function MainNavigation() {
     },
     {
       label: t("browse"),
-      href: "/browse",
+      href: "/shop",
       icon: <Search className={`h-4 w-4 ${isRTL ? "mr-3" : "mr-3"}`} />,
     },
     {

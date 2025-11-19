@@ -175,10 +175,7 @@ export function CartDropdown({ className }: CartDropdownProps) {
             <div className="px-4 py-6 text-center">
               <ShoppingCart className="mx-auto mb-4 h-12 w-12 text-gray-400" />
               <p className="mb-4 text-gray-500">{t("cart.emptyCart")}</p>
-              <Button
-                className="text-sm"
-                onClick={() => router.push("/browse")}
-              >
+              <Button className="text-sm" onClick={() => router.push("/shop")}>
                 {t("cart.startShopping")}
               </Button>
             </div>

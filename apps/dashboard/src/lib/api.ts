@@ -126,4 +126,45 @@ export const api = {
     })
     return response.data
   },
+  getHomepage: async () => {
+    const response = await apiClient.get('/home/products')
+    return response.data
+  },
+  getHomeSections: async () => {
+    const response = await apiClient.get('/home/sections')
+    return response.data
+  },
+  createHomeSection: async (data: { title: string; position: number }) => {
+    const response = await apiClient.post('/home/sections', data)
+    return response.data
+  },
+  updateHomeSection: async (
+    sectionId: number,
+    data: { title: string; position: number }
+  ) => {
+    const response = await apiClient.put(`/home/sections/${sectionId}`, data)
+    return response.data
+  },
+  deleteHomeSection: async (sectionId: number) => {
+    const response = await apiClient.delete(`/home/sections/${sectionId}`)
+    return response.data
+  },
+  addProductToSection: async (data: {
+    homepageSectionId: number
+    productId: number
+    position: number
+  }) => {
+    const response = await apiClient.post(`/home/products`, data)
+    return response.data
+  },
+  removeProductFromSection: async (productId: number) => {
+    const response = await apiClient.delete(
+      `/home/sections/products/${productId}`
+    )
+    return response.data
+  },
+  getSectionProducts: async (sectionId: number) => {
+    const response = await apiClient.get(`/home/sections/${sectionId}/products`)
+    return response.data
+  },
 }

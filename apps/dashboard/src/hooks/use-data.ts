@@ -127,3 +127,98 @@ export function useUpdateReturnStatus() {
     },
   })
 }
+
+export function useGetHomeProducts() {
+  return useQuery({
+    queryKey: ['home-products'],
+    queryFn: api.getHomepage,
+  })
+}
+export function useCreateHomeSection() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: api.createHomeSection,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['home-sections'] })
+      queryClient.invalidateQueries({ queryKey: ['home-products'] })
+    },
+  })
+}
+
+export function useUpdateHomeSection() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      sectionId,
+      data,
+    }: {
+      sectionId: number
+      data: { title: string; position: number }
+    }) => api.updateHomeSection(sectionId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['home-sections'] })
+      queryClient.invalidateQueries({ queryKey: ['home-products'] })
+    },
+  })
+}
+
+export function useDeleteHomeSection() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: api.deleteHomeSection,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['home-sections'] })
+      queryClient.invalidateQueries({ queryKey: ['home-products'] })
+    },
+  })
+}
+
+export function useAddProductToSection() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      sectionId,
+      productId,
+      position,
+    }: {
+      sectionId: number
+      productId: number
+      position?: number
+    }) =>
+      api.addProductToSection({
+        homepageSectionId: sectionId,
+        productId,
+        position: position || 0,
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['home-sections'] })
+      queryClient.invalidateQueries({ queryKey: ['home-products'] })
+      queryClient.invalidateQueries({
+        queryKey: ['section-products', variables.sectionId],
+      })
+    },
+  })
+}
+
+export function useRemoveProductFromSection() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ productId }: { sectionId: number; productId: number }) =>
+      api.removeProductFromSection(productId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['home-sections'] })
+      queryClient.invalidateQueries({ queryKey: ['home-products'] })
+      queryClient.invalidateQueries({
+        queryKey: ['section-products', variables.sectionId],
+      })
+    },
+  })
+}
+
+export function useSectionProducts(sectionId: number) {
+  return useQuery({
+    queryKey: ['section-products', sectionId],
+    queryFn: () => api.getSectionProducts(sectionId),
+    enabled: !!sectionId,
+  })
+}

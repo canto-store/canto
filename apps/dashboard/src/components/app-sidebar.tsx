@@ -7,6 +7,7 @@ import {
   Settings,
   ShoppingBag,
   Receipt,
+  HomeIcon,
 } from 'lucide-react'
 import { Link, useRouter } from '@tanstack/react-router'
 import {
@@ -64,6 +65,11 @@ const menuItems = [
     title: 'Returns',
     url: '/dashboard/returns',
     icon: Receipt,
+  },
+  {
+    title: 'Homepage',
+    url: '/dashboard/homepage',
+    icon: HomeIcon,
   },
 ]
 

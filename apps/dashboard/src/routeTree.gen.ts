@@ -17,6 +17,7 @@ import { Route as DashboardSellersRouteImport } from './routes/dashboard/sellers
 import { Route as DashboardReturnsRouteImport } from './routes/dashboard/returns'
 import { Route as DashboardProductOptionsRouteImport } from './routes/dashboard/product-options'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard/orders'
+import { Route as DashboardHomepageRouteImport } from './routes/dashboard/homepage'
 import { Route as DashboardBrandsRouteImport } from './routes/dashboard/brands'
 import { Route as DashboardProductsIndexRouteImport } from './routes/dashboard/products/index'
 import { Route as DashboardProductOptionValuesOptionIdRouteImport } from './routes/dashboard/product-option-values/$optionId'
@@ -62,6 +63,11 @@ const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardHomepageRoute = DashboardHomepageRouteImport.update({
+  id: '/homepage',
+  path: '/homepage',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardBrandsRoute = DashboardBrandsRouteImport.update({
   id: '/brands',
   path: '/brands',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/homepage': typeof DashboardHomepageRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/product-options': typeof DashboardProductOptionsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/homepage': typeof DashboardHomepageRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/product-options': typeof DashboardProductOptionsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/brands': typeof DashboardBrandsRoute
+  '/dashboard/homepage': typeof DashboardHomepageRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/product-options': typeof DashboardProductOptionsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/brands'
+    | '/dashboard/homepage'
     | '/dashboard/orders'
     | '/dashboard/product-options'
     | '/dashboard/returns'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard/brands'
+    | '/dashboard/homepage'
     | '/dashboard/orders'
     | '/dashboard/product-options'
     | '/dashboard/returns'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/brands'
+    | '/dashboard/homepage'
     | '/dashboard/orders'
     | '/dashboard/product-options'
     | '/dashboard/returns'
@@ -234,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrdersRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/homepage': {
+      id: '/dashboard/homepage'
+      path: '/homepage'
+      fullPath: '/dashboard/homepage'
+      preLoaderRoute: typeof DashboardHomepageRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/brands': {
       id: '/dashboard/brands'
       path: '/brands'
@@ -267,6 +286,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardBrandsRoute: typeof DashboardBrandsRoute
+  DashboardHomepageRoute: typeof DashboardHomepageRoute
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductOptionsRoute: typeof DashboardProductOptionsRoute
   DashboardReturnsRoute: typeof DashboardReturnsRoute
@@ -280,6 +300,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardBrandsRoute: DashboardBrandsRoute,
+  DashboardHomepageRoute: DashboardHomepageRoute,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductOptionsRoute: DashboardProductOptionsRoute,
   DashboardReturnsRoute: DashboardReturnsRoute,

@@ -155,6 +155,7 @@ model Product {
   updated_at  DateTime          @updatedAt
 
   @@map("products")
+  homepageProducts HomepageProduct[]
 }
 
 model ProductRejection {
@@ -398,5 +399,29 @@ model WishlistItem {
 
   @@unique([wishlistId, productId])
   @@map("wishlist_items")
+}
+
+model HomepageSection {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  position    Int       @unique
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  products    HomepageProduct[]
+
+  @@map("homepage_sections")
+}
+
+model HomepageProduct {
+  id                 Int                 @id @default(autoincrement())
+  homepageSectionId  Int
+  homepageSection    HomepageSection    @relation(fields: [homepageSectionId], references: [id], onDelete: Cascade)
+  productId          Int
+  product            Product            @relation(fields: [productId], references: [id])
+  position           Int
+
+  @@unique([homepageSectionId, productId])
+  @@map("homepage_products")
 }
 
