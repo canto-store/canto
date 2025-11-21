@@ -47,6 +47,8 @@ async function seedCategories() {
         name: 'Home',
         slug: 'home',
         aspect: 'SQUARE',
+        image:
+          'https://canto-storage.fra1.cdn.digitaloceanspaces.com/screenshot-2025-11-21_17-43-01.png',
         coming_soon: false,
       },
     })
