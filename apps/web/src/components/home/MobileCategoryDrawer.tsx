@@ -19,7 +19,6 @@ import {
   ShoppingBag,
   Circle,
   Ear,
-  Watch,
 } from "lucide-react";
 
 export default function MobileCategoryDrawer() {
@@ -70,7 +69,7 @@ export default function MobileCategoryDrawer() {
               href={
                 category.coming_soon
                   ? undefined
-                  : `/browse?category=${category.slug}`
+                  : `/shop?category=${category.slug}`
               }
               className={`flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-2 py-1 shadow-sm transition hover:shadow-md ${
                 !category.coming_soon
@@ -134,7 +133,7 @@ export default function MobileCategoryDrawer() {
 
                   return (
                     <a
-                      href={`/browse?category=${subcategory.slug}`}
+                      href={`/shop?category=${subcategory.slug}`}
                       key={subcategory.id}
                       className={`flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 shadow-sm transition hover:shadow-md active:scale-[0.98] ${
                         subcategory.coming_soon
