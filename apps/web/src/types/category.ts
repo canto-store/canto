@@ -4,4 +4,6 @@ export type Category = {
   image: string;
   slug: string;
   aspect: "SQUARE" | "RECTANGLE";
+  coming_soon?: boolean;
+  children?: Category[];
 };

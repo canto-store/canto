@@ -11,32 +11,17 @@ export function HomeCategoriesBanner() {
     return <HomeCategoriesBannerSkeleton />;
   }
 
-  const rectangleCategories = categories.filter(
-    (category) => category.aspect === "RECTANGLE",
-  );
-  const squareCategories = categories.filter(
-    (category) => category.aspect === "SQUARE",
+  const sortedCategories = categories.sort((a, b) =>
+    a.coming_soon === b.coming_soon ? 0 : a.coming_soon ? 1 : -1
   );
 
   return (
     <div className="scrollbar-hide container my-0 flex justify-between gap-2 overflow-x-auto py-2">
-      {rectangleCategories.slice(0, 2).map((category) => (
+      {sortedCategories.map((category) => (
         <CategoryCard
           key={category.name}
           category={category}
-          variant="rectangle"
-          type="banner"
-        />
-      ))}
-
-      {squareCategories.map((category) => (
-        <CategoryCard key={category.name} category={category} type="banner" />
-      ))}
-      {rectangleCategories.slice(2).map((category) => (
-        <CategoryCard
-          key={category.name}
-          category={category}
-          variant="rectangle"
+          variant={category.aspect === "RECTANGLE" ? "rectangle" : "square"}
           type="banner"
         />
       ))}

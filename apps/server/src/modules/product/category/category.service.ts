@@ -17,7 +17,29 @@ class CategoryService {
   }
 
   async findAll() {
-    return await this.prisma.category.findMany()
+    return await this.prisma.category.findMany({
+      where: {
+        parentId: null,
+      },
+      include: {
+        children: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            image: true,
+            aspect: true,
+            coming_soon: true,
+          },
+          orderBy: {
+            coming_soon: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        coming_soon: 'asc',
+      },
+    })
   }
   async findActiveCategories() {
     return await this.prisma.category.findMany({
@@ -48,6 +70,7 @@ class CategoryService {
             slug: true,
             image: true,
             aspect: true,
+            coming_soon: true,
           },
           where: {
             Product: {

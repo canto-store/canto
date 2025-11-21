@@ -4,5 +4,6 @@ export type CreateCategoryDto = {
   aspect: 'SQUARE' | 'RECTANGLE'
   description?: string
   image?: string
-  parentId?: number 
+  parentId?: number
+  coming_soon?: boolean
 }

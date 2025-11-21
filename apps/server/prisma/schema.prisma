@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,60 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum SaleType {
-  PERCENTAGE
-  FIXED
-}
-
-enum ProductStatus {
-  PENDING
-  ACTIVE
-  INACTIVE
-  REJECTED
-}
-
-enum ActivityType {
-  SELLER_REGISTERED
-  BRAND_CREATED
-  PRODUCT_ADDED
-  PRODUCT_UPDATED
-}
-
-enum UserRole {
-  GUEST
-  USER
-  SELLER
-  ADMIN
-}
-
-enum OrderStatus {
-  PROCESSING
-  OUT_FOR_DELIVERY
-  SHIPPED
-}
-
 model User {
-  id             Int         @id @default(autoincrement())
-  name           String?
-  email          String?     @unique
-  password       String?
-  email_verified Boolean     @default(false)
-  phone_number   String?     @unique
-  balance        Float       @default(0)
-  resetToken String?    @unique
-  Address        Address[]
-  Cart           Cart? 
-  Order          Order[]
-  brands         Brand[]
-  sales          OrderItem[]
-  role           UserRole[]  @default([GUEST])
-  Activity       Activity[]
-  ErrorLog       ErrorLog[]
-  Wishlist       Wishlist[]
-  last_login     DateTime?
-  created_at     DateTime    @default(now())
-  updated_at     DateTime    @updatedAt
+  id               Int         @id @default(autoincrement())
+  name             String?
+  email            String?     @unique
+  password         String?
+  email_verified   Boolean     @default(false)
+  phone_number     String?     @unique
+  last_login       DateTime?
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @updatedAt
+  role             UserRole[]  @default([GUEST])
+  balance          Float       @default(0)
+  resetToken       String?     @unique
   resetTokenExpiry DateTime?
+  Activity         Activity[]
+  Address          Address[]
+  brands           Brand[]
+  Cart             Cart?
+  ErrorLog         ErrorLog[]
+  Order            Order[]
+  Wishlist         Wishlist?
+  sales            OrderItem[] @relation("OrderItemToUser")
 
   @@map("users")
 }
@@ -77,31 +39,31 @@ model Brand {
   slug          String?
   email         String    @unique
   logo          String?
-  seller        User      @relation(fields: [sellerId], references: [id])
   sellerId      Int
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
-  Product       Product[]
   description   String?
   instagram_url String?
+  seller        User      @relation(fields: [sellerId], references: [id])
+  Product       Product[]
 
   @@map("brands")
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
-  slug        String    @unique
+  slug        String     @unique
   description String?
   image       String?
   aspect      String
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  Product     Product[]
-
+  coming_soon Boolean    @default(false)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
   parentId    Int?       @map("parent_id")
   parent      Category?  @relation("CategoryToSubcategories", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryToSubcategories")
+  Product     Product[]
 
   @@map("categories")
 }
@@ -118,30 +80,32 @@ model ProductOption {
 model ProductOptionValue {
   id                 Int                  @id @default(autoincrement())
   value              String
-  productOption      ProductOption        @relation(fields: [productOptionId], references: [id])
   productOptionId    Int
+  productOption      ProductOption        @relation(fields: [productOptionId], references: [id])
   VariantOptionValue VariantOptionValue[]
 
   @@map("product_option_values")
 }
 
 model Product {
-  id          Int               @id @default(autoincrement())
-  name        String
-  slug        String            @unique
-  image       String?           @default("/placeholder-image.jpg")
-  description String?
-  sizeChart   String?           @default("")
-  brand       Brand             @relation(fields: [brandId], references: [id])
-  brandId     Int
-  category    Category          @relation(fields: [categoryId], references: [id])
-  categoryId  Int
-  status      ProductStatus
-  variants    ProductVariant[]
-  rejection   ProductRejection?
-  WishlistItem WishlistItem[]
-  created_at  DateTime          @default(now())
-  updated_at  DateTime          @updatedAt
+  id                Int                 @id @default(autoincrement())
+  name              String
+  slug              String              @unique
+  description       String?
+  sizeChart         String?             @default("")
+  brandId           Int
+  categoryId        Int
+  status            ProductStatus
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  image             String?             @default("/placeholder-image.jpg")
+  returnWindow      Int                 @default(0)
+  homepage_products homepage_products[]
+  rejection         ProductRejection?
+  variants          ProductVariant[]
+  brand             Brand               @relation(fields: [brandId], references: [id])
+  category          Category            @relation(fields: [categoryId], references: [id])
+  WishlistItem      WishlistItem[]
 
   @@map("products")
 }
@@ -149,10 +113,10 @@ model Product {
 model ProductRejection {
   id         Int      @id @default(autoincrement())
   productId  Int      @unique
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   reason     String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("product_rejections")
 }
@@ -160,43 +124,43 @@ model ProductRejection {
 model ProductVariant {
   id          Int                   @id @default(autoincrement())
   productId   Int
-  product     Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
   sku         String                @unique
   price       Float
   stock       Int
   sale_id     Int?
-  sale        Sale?                 @relation(fields: [sale_id], references: [id])
-  optionLinks VariantOptionValue[]
-  images      ProductVariantImage[]
-  CartItem    CartItem[]
   created_at  DateTime              @default(now())
   updated_at  DateTime              @updatedAt
+  CartItem    CartItem[]
   OrderItem   OrderItem[]
+  images      ProductVariantImage[]
+  product     Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sale        Sale?                 @relation(fields: [sale_id], references: [id])
+  optionLinks VariantOptionValue[]
 
   @@map("product_variants")
 }
 
 model VariantOptionValue {
   id              Int                @id @default(autoincrement())
-  variant         ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
   variantId       Int
-  optionValue     ProductOptionValue @relation(fields: [optionValueId], references: [id])
   optionValueId   Int
+  productOptionId Int
+  optionValue     ProductOptionValue @relation(fields: [optionValueId], references: [id])
   productOption   ProductOption      @relation(fields: [productOptionId], references: [id])
-  productOptionId Int // Ensures this link is tied to a specific ProductOption type
+  variant         ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
-  @@unique([variantId, productOptionId]) // A variant can only have one value for a given option type
+  @@unique([variantId, productOptionId])
   @@map("variant_option_values")
 }
 
 model ProductVariantImage {
   id         Int            @id @default(autoincrement())
-  variant    ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   variantId  Int
   url        String
   alt_text   String?
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
+  variant    ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
   @@map("product_variant_images")
 }
@@ -224,12 +188,6 @@ model Sale {
   @@map("sales")
 }
 
-enum AddressType {
-  HOUSE
-  APARTMENT
-  OFFICE
-}
-
 model Address {
   id                   Int         @id @default(autoincrement())
   user_id              Int
@@ -248,9 +206,8 @@ model Address {
   sector_name          String
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
-
-  user  User    @relation(fields: [user_id], references: [id])
-  Order Order[]
+  user                 User        @relation(fields: [user_id], references: [id])
+  Order                Order[]
 
   @@map("addresses")
 }
@@ -258,9 +215,9 @@ model Address {
 model Cart {
   id        Int        @id @default(autoincrement())
   userId    Int        @unique
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     CartItem[]
 
   @@map("cart")
@@ -268,11 +225,11 @@ model Cart {
 
 model CartItem {
   id        Int            @id @default(autoincrement())
-  cart      Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId    Int
-  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   variantId Int
   quantity  Int
+  cart      Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, variantId])
   @@map("cart_items")
@@ -282,14 +239,15 @@ model Order {
   id              Int               @id @default(autoincrement()) @map("id")
   orderCode       String            @unique @map("order_code")
   userId          Int               @map("user_id")
-  user            User              @relation(fields: [userId], references: [id])
   addressId       Int               @map("address_id")
-  address         Address           @relation(fields: [addressId], references: [id])
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
-  items           OrderItem[]
   status          OrderStatus       @default(PROCESSING)
+  delivered_at    DateTime?
   DelivericOrders DelivericOrders[]
+  items           OrderItem[]
+  address         Address           @relation(fields: [addressId], references: [id])
+  user            User              @relation(fields: [userId], references: [id])
 
   @@map("orders")
 }
@@ -297,25 +255,27 @@ model Order {
 model DelivericOrders {
   id             Int      @id @map("id")
   orderId        Int      @map("order_id")
-  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   waybill        String   @unique @map("waybill")
   qrCode         String   @unique @map("qr_code")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   deliveryStatus String   @default("created") @map("delivery_status")
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("deliveric_orders")
 }
 
 model OrderItem {
-  id           Int            @id @default(autoincrement()) @map("id")
-  orderId      Int            @map("order_id")
-  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  variantId    Int            @map("variant_id")
-  variant      ProductVariant @relation(fields: [variantId], references: [id])
-  quantity     Int            @map("quantity")
-  priceAtOrder Float          @map("price_at_order")
-  User         User[]
+  id              Int            @id @default(autoincrement()) @map("id")
+  orderId         Int            @map("order_id")
+  variantId       Int            @map("variant_id")
+  quantity        Int            @map("quantity")
+  priceAtOrder    Float          @map("price_at_order")
+  return_deadline DateTime?
+  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant         ProductVariant @relation(fields: [variantId], references: [id])
+  returns         returns[]
+  User            User[]         @relation("OrderItemToUser")
 
   @@map("order_items")
 }
@@ -337,30 +297,116 @@ model ErrorLog {
   message   String
   stack     String
   userId    Int?     @map("user_id")
-  user      User?    @relation(fields: [userId], references: [id])
-  path      String   @default("")  
+  createdAt DateTime @default(now()) @map("created_at")
+  path      String   @default("")
   method    String   @default("")
   service   String   @default("")
-  createdAt DateTime @default(now()) @map("created_at")
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@map("error_logs")
 }
 
 model Wishlist {
   id         Int            @id @default(autoincrement())
-  userId     Int
-  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int            @unique
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
-
   items      WishlistItem[]
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId]) // one wishlist per user
   @@map("wishlists")
 }
 
 model WishlistItem {
   id         Int      @id @default(autoincrement())
+  wishlistId Int
+  productId  Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  product    Product  @relation(fields: [productId], references: [id])
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+
+  @@unique([wishlistId, productId])
+  @@map("wishlist_items")
+}
+
+model homepage_products {
+  id                Int               @id @default(autoincrement())
+  homepageSectionId Int
+  productId         Int
+  position          Int
+  homepage_sections homepage_sections @relation(fields: [homepageSectionId], references: [id], onDelete: Cascade)
+  products          Product           @relation(fields: [productId], references: [id])
+
+  @@unique([homepageSectionId, productId])
+}
+
+model homepage_sections {
+  id                Int                 @id @default(autoincrement())
+  title             String
+  description       String?
+  position          Int                 @unique
+  created_at        DateTime            @default(now())
+  updated_at        DateTime
+  homepage_products homepage_products[]
+}
+
+model returns {
+  id            Int          @id @default(autoincrement())
+  order_item_id Int
+  reason        String
+  status        ReturnStatus @default(PENDING)
+  created_at    DateTime     @default(now())
+  updated_at    DateTime
+  order_items   OrderItem    @relation(fields: [order_item_id], references: [id], onDelete: Cascade)
+}
+
+enum SaleType {
+  PERCENTAGE
+  FIXED
+}
+
+enum ProductStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  REJECTED
+}
+
+enum ActivityType {
+  SELLER_REGISTERED
+  BRAND_CREATED
+  PRODUCT_ADDED
+  PRODUCT_UPDATED
+}
+
+enum UserRole {
+  USER
+  SELLER
+  ADMIN
+  GUEST
+}
+
+enum OrderStatus {
+  PROCESSING
+  OUT_FOR_DELIVERY
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum AddressType {
+  HOUSE
+  APARTMENT
+  OFFICE
+}
+
+enum ReturnStatus {
+  PENDING
+  REFUNDED
+  REJECTED
+}
+d @default(autoincrement())
   wishlistId Int
   wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
 
