@@ -13,6 +13,8 @@ export const useCategories = () =>
         image: category.image,
         slug: category.slug,
         aspect: category.aspect,
+        coming_soon: category.coming_soon,
+        children: category.children,
       }));
     },
   });
@@ -28,6 +30,8 @@ export const useAllCategories = () =>
         image: category.image,
         slug: category.slug,
         aspect: category.aspect,
+        coming_soon: category.coming_soon,
+        children: category.children,
       }));
     },
     staleTime: Infinity,

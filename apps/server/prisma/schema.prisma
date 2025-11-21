@@ -108,6 +108,7 @@ model Category {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   Product     Product[]
+  coming_soon Boolean   @default(false)
 
   parentId    Int?       @map("parent_id")
   parent      Category?  @relation("CategoryToSubcategories", fields: [parentId], references: [id])
