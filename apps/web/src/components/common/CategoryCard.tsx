@@ -64,13 +64,13 @@ export function CategoryCard({
       {
         key: category.slug,
         label: `All ${category.name}`,
-        href: `/browse?category=${category.slug}`,
+        href: `/shop?category=${category.slug}`,
         comingSoon: false,
       },
       ...category.children!.map((subcategory) => ({
         key: subcategory.slug,
         label: subcategory.name,
-        href: `/browse?category=${subcategory.slug}`,
+        href: `/shop?category=${subcategory.slug}`,
         comingSoon: subcategory.coming_soon || false,
       })),
     ];
@@ -114,7 +114,7 @@ export function CategoryCard({
   return (
     <a
       href={
-        category.coming_soon ? undefined : `/browse?category=${category.slug}`
+        category.coming_soon ? undefined : `/shop?category=${category.slug}`
       }
       key={category.name}
       onClick={(e) => {
