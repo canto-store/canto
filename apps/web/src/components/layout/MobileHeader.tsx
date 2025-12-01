@@ -23,14 +23,14 @@ export function MobileHeader() {
     setMenuOpen((prev) => !prev);
   };
 
-  if (pathname === "/browse") {
+  if (pathname === "/shop") {
     return (
       <div className="relative container mx-auto flex h-14 items-center justify-between px-4">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
 
-        <h1 className="text-2xl font-semibold">Browse</h1>
+        <h1 className="text-2xl font-semibold">Shop</h1>
         <Button
           variant="ghost"
           size="icon"

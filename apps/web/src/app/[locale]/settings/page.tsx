@@ -81,7 +81,7 @@ export default function Page() {
               </Button>
               <Button
                 variant="outline"
-                // onClick={() => handleNavigation("/returns")}
+                onClick={() => handleNavigation("/returns")}
               >
                 <ArrowLeftRight className="mr-2 h-4 w-4" />
                 Returns

@@ -2,6 +2,7 @@ import { Router } from 'express'
 import ProductController from './product.controller'
 import AuthMiddleware from '../../middlewares/auth.middleware'
 import { UserRole } from '@prisma/client'
+import { catchAsync } from '../../utils/catchAsync'
 
 const router = Router()
 const productController = new ProductController()
@@ -34,7 +35,7 @@ router.get(
   '/id/:id',
   authMiddleware.checkAuth.bind(authMiddleware),
   authMiddleware.checkProductAccess(),
-  productController.getProductById.bind(productController)
+  catchAsync(productController.getProductById.bind(productController))
 )
 
 router.get(
@@ -65,14 +66,14 @@ router.post(
   '/submit',
   authMiddleware.checkAuth.bind(authMiddleware),
   authMiddleware.checkRole(UserRole.SELLER),
-  productController.submitProductForm.bind(productController)
+  catchAsync(productController.submitProductForm.bind(productController))
 )
 
 router.put(
   '/update-form',
   authMiddleware.checkAuth.bind(authMiddleware),
   authMiddleware.checkRole(UserRole.SELLER),
-  productController.updateProductForm.bind(productController)
+  catchAsync(productController.updateProductForm.bind(productController))
 )
 
 router.get(

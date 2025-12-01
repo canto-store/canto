@@ -46,7 +46,7 @@ export function CheckoutSuccess({ order }: { order: Order }) {
         </p>
       </div>
 
-      <Button className="w-full" onClick={() => router.push("/browse")}>
+      <Button className="w-full" onClick={() => router.push("/shop")}>
         {t("checkout.continueShopping")}
       </Button>
 

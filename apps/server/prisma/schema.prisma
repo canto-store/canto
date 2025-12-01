@@ -43,7 +43,17 @@ enum OrderStatus {
   PROCESSING
   OUT_FOR_DELIVERY
   SHIPPED
+  DELIVERED
+  CANCELLED
 }
+
+enum ReturnStatus {
+  PENDING
+  REFUNDED
+  REJECTED
+}
+
+
 
 model User {
   id             Int         @id @default(autoincrement())
@@ -98,6 +108,7 @@ model Category {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   Product     Product[]
+  coming_soon Boolean   @default(false)
 
   parentId    Int?       @map("parent_id")
   parent      Category?  @relation("CategoryToSubcategories", fields: [parentId], references: [id])
@@ -136,6 +147,7 @@ model Product {
   brandId     Int
   category    Category          @relation(fields: [categoryId], references: [id])
   categoryId  Int
+  returnWindow Int              @default(0)
   status      ProductStatus
   variants    ProductVariant[]
   rejection   ProductRejection?
@@ -144,6 +156,7 @@ model Product {
   updated_at  DateTime          @updatedAt
 
   @@map("products")
+  homepageProducts HomepageProduct[]
 }
 
 model ProductRejection {
@@ -287,6 +300,7 @@ model Order {
   address         Address           @relation(fields: [addressId], references: [id])
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
+  deliveredAt     DateTime?         @map("delivered_at")
   items           OrderItem[]
   status          OrderStatus       @default(PROCESSING)
   DelivericOrders DelivericOrders[]
@@ -316,8 +330,22 @@ model OrderItem {
   quantity     Int            @map("quantity")
   priceAtOrder Float          @map("price_at_order")
   User         User[]
+  returnDeadline  DateTime?   @map("return_deadline")
+  returns Return[]
 
   @@map("order_items")
+}
+
+model Return {
+  id          Int      @id @default(autoincrement()) @map("id")
+  orderItemId Int      @map("order_item_id")
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  reason      String   @map("reason")
+  status      ReturnStatus   @default(PENDING) @map("status")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("returns")
 }
 
 model Activity {
@@ -372,5 +400,29 @@ model WishlistItem {
 
   @@unique([wishlistId, productId])
   @@map("wishlist_items")
+}
+
+model HomepageSection {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  position    Int       @unique
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  products    HomepageProduct[]
+
+  @@map("homepage_sections")
+}
+
+model HomepageProduct {
+  id                 Int                 @id @default(autoincrement())
+  homepageSectionId  Int
+  homepageSection    HomepageSection    @relation(fields: [homepageSectionId], references: [id], onDelete: Cascade)
+  productId          Int
+  product            Product            @relation(fields: [productId], references: [id])
+  position           Int
+
+  @@unique([homepageSectionId, productId])
+  @@map("homepage_products")
 }
 

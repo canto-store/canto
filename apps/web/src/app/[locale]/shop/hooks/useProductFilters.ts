@@ -66,7 +66,7 @@ export function useProductFilters() {
     if (itemsPerPage !== 10) urlParams.set("perPage", itemsPerPage.toString());
 
     const locale = typeof params.locale === "string" ? params.locale : "en";
-    const newUrl = `/${locale}/browse${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
+    const newUrl = `/${locale}/shop${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
 
     // Use replace instead of push to avoid adding to history stack
     // and prevent navigation during render

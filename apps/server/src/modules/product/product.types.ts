@@ -20,12 +20,14 @@ export interface SubmitProductFormDto {
   name: string
   category: number
   description: string
+  returnWindow: number
   variants: SelectedVariant[]
 }
 export interface UpdateProductFormDto {
   id: number
   name: string
   slug: string
+  returnWindow?: number
   category?: number
   description?: string
   variants?: UpdateSelectedVariant[]

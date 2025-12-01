@@ -1,4 +1,11 @@
-export type OrderStatus = "Processing" | "Shipped" | "Delivered" | "Cancelled";
+export type OrderStatus =
+  | "PROCESSING"
+  | "OUT_FOR_DELIVERY"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "RETURNED"
+  | "RETURN_REQUESTED";
 
 export type TrackingInfo = {
   carrier: string;
@@ -36,6 +43,7 @@ export type OrderItem = {
   price: number;
   thumbnailUrl: string;
   optionLinks?: OptionLinks[];
+  returnDeadline: string;
 };
 
 export type Address = {

@@ -33,11 +33,11 @@ export const useProduct = (slug: string) => {
 };
 
 export const useHomeProducts = () =>
-  useQuery<HomeProducts, Error>({
+  useQuery<HomeProducts[], Error>({
     queryKey: ["home-products"],
     queryFn: async () => {
       try {
-        const { data } = await api.get<HomeProducts>("/product/home-products");
+        const { data } = await api.get<HomeProducts[]>("/home/products");
         return data;
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {

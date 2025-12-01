@@ -158,7 +158,7 @@ export function SearchBar({
     if (onSearch) {
       onSearch(searchTerm);
     }
-    router.push(`/browse?q=${encodeURIComponent(searchTerm)}`);
+    router.push(`/shop?q=${encodeURIComponent(searchTerm)}`);
   };
 
   const handleSuggestionSelect = (suggestion: string) => {
@@ -171,7 +171,7 @@ export function SearchBar({
     if (onSearch) {
       onSearch(suggestion);
     }
-    router.push(`/browse?q=${encodeURIComponent(suggestion)}`);
+    router.push(`/shop?q=${encodeURIComponent(suggestion)}`);
   };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {

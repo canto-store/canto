@@ -79,7 +79,7 @@ export function CheckoutSummary({
         </p>
         <Button
           className="w-full text-sm sm:text-base"
-          onClick={() => router.push("/browse")}
+          onClick={() => router.push("/shop")}
         >
           {t("cart.startShopping")}
         </Button>

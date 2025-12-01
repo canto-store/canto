@@ -13,6 +13,8 @@ import balanceRouter from './modules/user/balance/balance.routes'
 import salesRouter from './modules/seller/sales/sales.routes'
 import wishlistRouter from './modules/user/wishlist/wishlist.routes'
 import optionsRoutes from './modules/product/options/options.routes'
+import returnRoutes from './modules/return/return.routes'
+import homeRouter from './modules/product/home/home.routes'
 const router = Router()
 
 router.use('/v1/auth', authRouterV1)
@@ -30,5 +32,7 @@ router.use('/dashboard', dashboardRouter)
 router.use('/balance', balanceRouter)
 router.use('/sales', salesRouter)
 router.use('/wishlist', wishlistRouter)
+router.use('/returns', returnRoutes)
+router.use('/home', homeRouter)
 
 export default router

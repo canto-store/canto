@@ -10,6 +10,7 @@ export const useGetBalance = () => {
       const response = await api.get("/balance");
       return response.data.balance;
     },
+    staleTime: 0,
   });
 };
 

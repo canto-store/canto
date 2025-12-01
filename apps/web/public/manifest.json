@@ -51,8 +51,8 @@
       "icons": [{ "src": "/logo-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Browse",
-      "url": "/browse",
+      "name": "Shop",
+      "url": "/shop",
       "icons": [{ "src": "/logo-192.png", "sizes": "192x192" }]
     }
   ],

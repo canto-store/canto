@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import { Order, OrderStatus, PrismaClient } from '@prisma/client'
 import AppError from '../../utils/appError'
 import { CreateOrderInput } from './order.types'
 import DeliveryService from '../delivery/delivery.service'
-import { Order } from '@canto/types/order'
 import CartService from '../user/cart/cart.service'
 
 export class OrderService {
@@ -120,15 +119,16 @@ export class OrderService {
   async getUserOrders(
     userId: number,
     take: number,
-    skip: number
-  ): Promise<{ orders: Order[]; totalPages: number }> {
+    skip: number,
+    status?: OrderStatus
+  ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
     if (!user) {
       throw new AppError('User not found', 404)
     }
 
     const orders = await this.prisma.order.findMany({
-      where: { userId },
+      where: { userId, ...(status && { status }) },
       orderBy: {
         createdAt: 'desc',
       },
@@ -163,7 +163,7 @@ export class OrderService {
         (total, item) => total + item.priceAtOrder * item.quantity,
         0
       ),
-      status: o.status.toLowerCase(),
+      status: o.status,
       createdAt: o.createdAt.toISOString(),
       shippingAddress: {
         name: o.address.address_label,
@@ -178,16 +178,72 @@ export class OrderService {
     }
   }
 
-  async getOrderById(orderId, userId) {
+  async getOrders() {
+    const orders = await this.prisma.order.findMany({
+      include: {
+        items: {
+          include: {
+            variant: {
+              include: { product: true, images: true },
+            },
+          },
+        },
+        user: true,
+        address: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return orders
+  }
+
+  async updateOrder(orderId: number, data: Partial<Order>) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      select: {
+        items: { select: { id: true, variant: { select: { product: true } } } },
+      },
+    })
+
+    if (!order) {
+      throw new AppError('Order not found', 404)
+    }
+
+    if (data.status === 'DELIVERED') {
+      data['deliveredAt'] = new Date()
+
+      for (const item of order.items) {
+        await this.prisma.orderItem.update({
+          where: { id: item.id },
+          data: {
+            returnDeadline: new Date(
+              Date.now() +
+                item.variant.product.returnWindow * 24 * 60 * 60 * 1000
+            ),
+          },
+        })
+      }
+    }
+
+    const updatedOrder = await this.prisma.order.update({
+      where: { id: orderId },
+      data,
+    })
+
+    return updatedOrder
+  }
+
+  async getOrderById(orderId: number, userId: number) {
     const order = await this.prisma.order.findFirst({
       where: {
-        id: Number(orderId),
-        userId: Number(userId),
+        id: orderId,
+        userId: userId,
       },
       include: {
         // include full address info
         address: true,
-
         // include full order items details
         items: {
           include: {
@@ -207,6 +263,7 @@ export class OrderService {
                 },
               },
             },
+            returns: true,
           },
         },
       },
@@ -223,6 +280,79 @@ export class OrderService {
     return {
       ...order,
       totalPrice,
+    }
+  }
+
+  async deleteOrder(orderId: number): Promise<string> {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+    })
+
+    if (!order) {
+      throw new AppError('Order not found', 404)
+    }
+
+    if (order.status === 'CANCELLED') {
+      throw new AppError('Order is already cancelled', 400)
+    }
+
+    if (order.status === 'SHIPPED') {
+      throw new AppError('Shipped orders cannot be cancelled', 400)
+    }
+
+    if (order.status === 'OUT_FOR_DELIVERY') {
+      throw new AppError('Orders out for delivery cannot be cancelled', 400)
+    }
+
+    if (order.status === 'DELIVERED') {
+      throw new AppError('Delivered orders  cannot be cancelled', 400)
+    }
+
+    if (order.status === 'PROCESSING') {
+      await this.prisma.$transaction(async tx => {
+        const order = await tx.order.update({
+          where: {
+            id: orderId,
+          },
+          data: {
+            status: 'CANCELLED',
+          },
+          include: {
+            items: true,
+          },
+        })
+
+        for (const item of order.items) {
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: {
+              stock: {
+                increment: item.quantity,
+              },
+            },
+          })
+        }
+      })
+
+      return 'Order has been successfully cancelled.'
+    }
+  }
+
+  async canDeleteOrder(orderId: number, userId: number): Promise<void> {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+    })
+
+    if (!order) {
+      throw new AppError('Order not found', 404)
+    }
+
+    if (order.userId !== userId) {
+      throw new AppError("You don't have permission to cancel this order", 403)
     }
   }
 }

@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: "Shop Products - Canto",
       description:
         "Browse our wide selection of products. Find the latest trends in fashion, electronics, home goods, and more on Canto.",
-      url: `${baseUrl}/${locale}/browse`,
+      url: `${baseUrl}/${locale}/shop`,
       type: "website",
       images: [
         {
@@ -36,10 +36,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [`${baseUrl}/web-app-manifest-512x512.png`],
     },
     alternates: {
-      canonical: `${baseUrl}/${locale}/browse`,
+      canonical: `${baseUrl}/${locale}/shop`,
       languages: {
-        en: `${baseUrl}/en/browse`,
-        ar: `${baseUrl}/ar/browse`,
+        en: `${baseUrl}/en/shop`,
+        ar: `${baseUrl}/ar/shop`,
       },
     },
   };

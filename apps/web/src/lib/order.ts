@@ -22,15 +22,17 @@ export const useCreateOrder = () => {
 export const useGetMyOrders = ({
   take,
   skip,
+  status,
 }: {
   take: number;
   skip: number;
+  status?: string;
 }) => {
   return useSuspenseQuery({
-    queryKey: ["my-orders", { take, skip }],
+    queryKey: ["my-orders", { take, skip, status }],
     queryFn: async () => {
       const response = await api.get<{ orders: Order[]; totalPages: number }>(
-        `/orders/my-orders?take=${take}&skip=${skip}`,
+        `/orders/my-orders?take=${take}&skip=${skip}${status ? `&status=${status}` : ""}`,
       );
       return response.data;
     },
@@ -50,6 +52,21 @@ export const useGetSingleOrder = (orderId: number) => {
         }
         throw err; // rethrow other errors
       }
+    },
+  });
+};
+
+export const useDeleteOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderId: number) => {
+      const res = await api.delete(`/orders/${orderId}`);
+      return res.data;
+    },
+    onSuccess: (_data, orderId) => {
+      queryClient.refetchQueries({ queryKey: ["order", orderId] });
+      queryClient.invalidateQueries({ queryKey: ["my-orders"] });
     },
   });
 };

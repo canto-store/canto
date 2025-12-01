@@ -83,6 +83,7 @@ export default function ProductForm({
         category: products.category || 0,
         description: products.description || "",
         variants: products.variants || [],
+        returnWindow: products.returnWindow || 0,
       };
       form.reset(nextValues);
       setOriginalValues(nextValues);
@@ -93,6 +94,7 @@ export default function ProductForm({
         category: 0,
         description: "",
         variants: [],
+        returnWindow: 0,
       };
       form.reset(emptyValues);
       setOriginalValues(null);
@@ -138,6 +140,10 @@ export default function ProductForm({
     }
     if (currentValues.description !== originalValues.description) {
       changes.description = currentValues.description;
+      hasChanges = true;
+    }
+    if (currentValues.returnWindow !== originalValues.returnWindow) {
+      changes.returnWindow = currentValues.returnWindow;
       hasChanges = true;
     }
 
@@ -242,6 +248,7 @@ export default function ProductForm({
           name: freshData.name!,
           category: freshData.category!,
           description: freshData.description,
+          returnWindow: freshData.returnWindow!,
           variants: freshData.variants!.map((variant) => ({
             price: variant.price!,
             stock: variant.stock!,
@@ -369,6 +376,26 @@ export default function ProductForm({
                       placeholder="Enter product description"
                       className="resize-none"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="returnWindow"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base">
+                    Return Window (days) <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      min={0}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      placeholder="Enter return window in days"
                     />
                   </FormControl>
                   <FormMessage />

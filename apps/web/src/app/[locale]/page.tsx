@@ -11,7 +11,8 @@ import { useIsInstalled } from "@/hooks/useIsInstalled";
 
 export default function Home() {
   const { data, isLoading } = useHomeProducts();
-  const { bestDeals, bestSellers, newArrivals } = data || {};
+  const sortedSections = data?.sort((a, b) => a.position - b.position);
+
   useGetCart();
   const isInstalled = useIsInstalled();
 
@@ -48,21 +49,22 @@ export default function Home() {
         />
       </section>
       <HomeProducts
-        products={bestDeals}
-        title="Canto's Deals"
+        products={sortedSections?.[0]?.products}
+        title={sortedSections?.[0]?.title ?? "Section 1"}
         isLoading={isLoading}
       />
       <HomeCategories />
-      <HomeProducts
-        products={bestSellers}
-        title="Best Sellers"
-        isLoading={isLoading}
-      />
-      <HomeProducts
-        products={newArrivals}
-        title="New Arrivals"
-        isLoading={isLoading}
-      />
+      {sortedSections &&
+        sortedSections
+          .slice(1, sortedSections.length)
+          .map((section) => (
+            <HomeProducts
+              key={section.id}
+              products={section.products}
+              title={section.title}
+              isLoading={isLoading}
+            />
+          ))}
     </>
   );
 }

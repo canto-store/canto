@@ -12,10 +12,31 @@ router.post(
   authMiddleware.checkAuth.bind(authMiddleware),
   catchAsync(orderController.createOrder.bind(orderController))
 )
+
+router.delete(
+  '/:id',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  catchAsync(orderController.deleteOrder.bind(orderController))
+)
+
+router.get(
+  '/',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  catchAsync(orderController.getOrders.bind(orderController))
+)
+
+router.put(
+  '/',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  catchAsync(orderController.updateOrder.bind(orderController))
+)
+
 router.get(
   '/my-orders',
   authMiddleware.checkAuth.bind(authMiddleware),
-  catchAsync(orderController.getMyOrders.bind(orderController))
+  catchAsync(orderController.getUserOrders.bind(orderController))
 )
 
 router.get(
