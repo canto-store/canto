@@ -49,7 +49,7 @@ export const api = {
   },
 
   getCategories: async () => {
-    const response = await apiClient.get('/categories')
+    const response = await apiClient.get('/categories/all')
     return response.data
   },
 

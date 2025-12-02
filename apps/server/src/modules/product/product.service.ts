@@ -68,6 +68,7 @@ class ProductService {
       sortOrder = 'desc',
       page = '1',
       limit = '10',
+      subCategory,
     } = queryParams
 
     const where: Prisma.ProductWhereInput = {}
@@ -128,6 +129,19 @@ class ProductService {
     if (categorySlug) where.category = { slug: categorySlug }
     if (brandSlug) where.brand = { slug: { in: brandSlug.split('+') } }
     if (status) where.status = status as ProductStatus
+
+    // Filter by subcategory using the many-to-many relationship
+    if (subCategory) {
+      const subCategorySlugs = subCategory.split(',').map(s => s.trim())
+      where.categories = {
+        some: {
+          category: {
+            slug: { in: subCategorySlugs },
+          },
+        },
+      }
+    }
+
     const variantFilters: Prisma.ProductVariantWhereInput[] = []
 
     if (minPrice) variantFilters.push({ price: { gte: parseFloat(minPrice) } })
@@ -826,6 +840,24 @@ class ProductService {
         })
       }
 
+      // Handle subcategories (many-to-many relationship)
+      if (dto.subcategories !== undefined) {
+        // Delete existing product-category relations
+        await tx.productCategory.deleteMany({
+          where: { productId: dto.id },
+        })
+
+        // Create new product-category relations
+        if (dto.subcategories.length > 0) {
+          await tx.productCategory.createMany({
+            data: dto.subcategories.map(categoryId => ({
+              productId: dto.id,
+              categoryId,
+            })),
+          })
+        }
+      }
+
       await tx.activity.create({
         data: {
           entityId: updatedProduct.id,
@@ -1118,6 +1150,9 @@ class ProductService {
         description: true,
         slug: true,
         category: { select: { id: true } },
+        categories: {
+          select: { categoryId: true },
+        },
         variants: {
           include: { images: { select: { url: true } }, optionLinks: true },
         },
@@ -1133,6 +1168,7 @@ class ProductService {
     const transformedProductRecord = {
       ...productRecord,
       category: productRecord.category.id,
+      subcategories: productRecord.categories.map(c => c.categoryId),
       variants: productRecord.variants?.map(variant => {
         const { optionLinks, ...restOfVariant } = variant
         return {
@@ -1148,6 +1184,9 @@ class ProductService {
         }
       }),
     }
+
+    // Remove the raw categories property from the response
+    delete (transformedProductRecord as any).categories
 
     return transformedProductRecord
   }

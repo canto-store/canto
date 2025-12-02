@@ -113,6 +113,7 @@ model Category {
   parentId    Int?       @map("parent_id")
   parent      Category?  @relation("CategoryToSubcategories", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryToSubcategories")
+  productCategories ProductCategory[]
 
   @@map("categories")
 }
@@ -154,9 +155,22 @@ model Product {
   WishlistItem WishlistItem[]
   created_at  DateTime          @default(now())
   updated_at  DateTime          @updatedAt
+  categories  ProductCategory[]
 
   @@map("products")
   homepageProducts HomepageProduct[]
+}
+
+model ProductCategory {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+
+  @@unique([productId, categoryId])
+  @@map("product_categories")
 }
 
 model ProductRejection {

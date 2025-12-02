@@ -42,6 +42,8 @@ export default function BrowsePage() {
     initialPriceMax,
   ];
 
+  const subCategory = searchParams.get("subCategory") || undefined;
+
   // State
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -75,6 +77,7 @@ export default function BrowsePage() {
     if (priceRange[0] > 0) params.minPrice = priceRange[0].toString();
     if (priceRange[1] < Infinity) params.maxPrice = priceRange[1].toString();
     if (selectedSize) params.size = selectedSize;
+    if (subCategory) params.subCategory = subCategory;
 
     // Map sort options to API format
     switch (sortOption) {
@@ -150,6 +153,7 @@ export default function BrowsePage() {
     if (priceRange[0] > 0) urlParams.set("minPrice", priceRange[0].toString());
     if (priceRange[1] < Infinity)
       urlParams.set("maxPrice", priceRange[1].toString());
+    if (subCategory) urlParams.set("subCategory", subCategory);
 
     const locale = typeof params.locale === "string" ? params.locale : "en";
     const newUrl = `/${locale}/shop${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;

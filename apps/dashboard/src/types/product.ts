@@ -20,6 +20,7 @@ export const productFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   category: z.number().min(1, 'Category is required'),
+  subcategories: z.array(z.number()).optional(),
   status: z.enum(['PENDING', 'ACTIVE', 'INACTIVE', 'REJECTED'] as const),
   rejectionReason: z.string().optional(),
   variants: z.array(selectedVariantSchema),

@@ -127,6 +127,7 @@ export interface ProductSearchParams {
   sortOrder?: "asc" | "desc";
   page?: string;
   limit?: string;
+  subCategory?: string;
 }
 
 export interface ProductSearchResult {
