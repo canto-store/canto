@@ -70,7 +70,7 @@ export function CategoryCard({
       ...category.children!.map((subcategory) => ({
         key: subcategory.slug,
         label: subcategory.name,
-        href: `/shop?category=${subcategory.slug}`,
+        href: `/shop?subCategory=${subcategory.slug}`,
         comingSoon: subcategory.coming_soon || false,
       })),
     ];

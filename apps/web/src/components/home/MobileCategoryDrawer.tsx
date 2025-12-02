@@ -133,7 +133,7 @@ export default function MobileCategoryDrawer() {
 
                   return (
                     <a
-                      href={`/shop?category=${subcategory.slug}`}
+                      href={`/shop?subCategory=${subcategory.slug}`}
                       key={subcategory.id}
                       className={`flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 shadow-sm transition hover:shadow-md active:scale-[0.98] ${
                         subcategory.coming_soon

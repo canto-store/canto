@@ -64,6 +64,7 @@ class ProductController {
         sortOrder: request.query.sortOrder as any,
         page: request.query.page as string,
         limit: request.query.limit as string,
+        subCategory: request.query.subCategory as string,
       }
 
       const result =
