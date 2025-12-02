@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { api } from '@/lib/api'
@@ -32,6 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 
 import { AlertCircleIcon, ArrowLeft, ArrowRight } from 'lucide-react'
 import { productFormSchema, type ProductFormValues } from '@/types/product'
@@ -39,6 +40,26 @@ import { useProductOptions, useUpdateProduct } from '@/hooks/use-data'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { parseApiError } from '@/lib/utils'
 import ProductVariants from '@/components/products/product-variants'
+
+type CategoryChild = {
+  id: number
+  name: string
+  slug: string
+  image: string | null
+  aspect: string
+  coming_soon: boolean
+}
+
+type Category = {
+  id: number
+  name: string
+  slug: string
+  description: string | null
+  image: string | null
+  aspect: string
+  coming_soon: boolean
+  children: CategoryChild[]
+}
 
 export const Route = createFileRoute('/dashboard/products/$productId/edit')({
   loader: async ({ params }) => {
@@ -55,6 +76,14 @@ export const Route = createFileRoute('/dashboard/products/$productId/edit')({
 export default function EditProduct() {
   const { productId } = Route.useParams()
   const { product, categories } = Route.useLoaderData()
+
+  console.log(
+    'EditProduct RENDER - categories:',
+    categories,
+    'product.category:',
+    product.category
+  )
+
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false)
   const [changedFields, setChangedFields] = useState<
@@ -77,12 +106,43 @@ export default function EditProduct() {
       name: product.name,
       description: product.description || '',
       category: product.category,
+      subcategories: product.subcategories || [],
       status: product.status,
       // rejectionReason: product.rejection?.reason || '',
       variants: product.variants,
       returnWindow: product.returnWindow || 0,
     },
   })
+
+  const selectedCategoryId = form.watch('category')
+
+  // Debug: log categories structure on mount
+  useEffect(() => {
+    console.log('categories from loader:', categories)
+    console.log('product.category:', product.category)
+  }, [])
+
+  const selectedCategory = useMemo(() => {
+    console.log(
+      'Computing selectedCategory, selectedCategoryId:',
+      selectedCategoryId,
+      'type:',
+      typeof selectedCategoryId
+    )
+    const found = (categories as Category[]).find(c => {
+      console.log(
+        'Comparing category id:',
+        c.id,
+        'type:',
+        typeof c.id,
+        'with selectedCategoryId:',
+        selectedCategoryId
+      )
+      return c.id === selectedCategoryId
+    })
+    console.log('Found category:', found)
+    return found
+  }, [categories, selectedCategoryId])
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -138,6 +198,31 @@ export default function EditProduct() {
         old: product.returnWindow || 0,
         new: data.returnWindow || 0,
       }
+    }
+    // Check for subcategory changes
+    const oldSubcategories = product.subcategories || []
+    const newSubcategories = data.subcategories || []
+    const subcategoriesChanged =
+      oldSubcategories.length !== newSubcategories.length ||
+      oldSubcategories.some((id: number) => !newSubcategories.includes(id)) ||
+      newSubcategories.some((id: number) => !oldSubcategories.includes(id))
+
+    if (subcategoriesChanged) {
+      // Get all subcategory names from all categories
+      const allSubcategories = (categories as Category[]).flatMap(
+        c => c.children || []
+      )
+      const oldNames =
+        oldSubcategories
+          .map((id: number) => allSubcategories.find(sc => sc.id === id)?.name)
+          .filter(Boolean)
+          .join(', ') || 'None'
+      const newNames =
+        newSubcategories
+          .map((id: number) => allSubcategories.find(sc => sc.id === id)?.name)
+          .filter(Boolean)
+          .join(', ') || 'None'
+      changes.subcategories = { old: oldNames, new: newNames }
     }
     for (const variant of data.variants) {
       const oldVariant = product.variants.find((v: any) => v.id === variant.id)
@@ -315,7 +400,11 @@ export default function EditProduct() {
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <Select
-                  onValueChange={value => field.onChange(Number(value))}
+                  onValueChange={value => {
+                    field.onChange(Number(value))
+                    // Clear subcategories when category changes
+                    form.setValue('subcategories', [])
+                  }}
                   value={field.value?.toString()}
                 >
                   <FormControl>
@@ -340,6 +429,58 @@ export default function EditProduct() {
               </FormItem>
             )}
           />
+
+          {selectedCategory &&
+            selectedCategory.children &&
+            selectedCategory.children.length > 0 && (
+              <FormField
+                control={form.control}
+                name="subcategories"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subcategories</FormLabel>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                      {selectedCategory.children.map(subcategory => (
+                        <div
+                          key={subcategory.id}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            id={`subcategory-${subcategory.id}`}
+                            checked={(field.value || []).includes(
+                              subcategory.id
+                            )}
+                            onCheckedChange={(checked: boolean) => {
+                              const currentValues = field.value || []
+                              if (checked) {
+                                field.onChange([
+                                  ...currentValues,
+                                  subcategory.id,
+                                ])
+                              } else {
+                                field.onChange(
+                                  currentValues.filter(
+                                    id => id !== subcategory.id
+                                  )
+                                )
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`subcategory-${subcategory.id}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {subcategory.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
           <FormField
             control={form.control}
             name="returnWindow"

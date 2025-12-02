@@ -29,6 +29,7 @@ export interface UpdateProductFormDto {
   slug: string
   returnWindow?: number
   category?: number
+  subcategories?: number[]
   description?: string
   variants?: UpdateSelectedVariant[]
   status?: ProductStatus
@@ -96,4 +97,5 @@ export interface ProductQueryParams {
   sortOrder?: 'asc' | 'desc'
   page?: string
   limit?: string
+  subCategory?: string
 }
