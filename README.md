@@ -1,6 +1,6 @@
 # Canto E-Commerce
 
-A full-stack e-commerce application built with Next.js, React, TypeScript, and Node.js, organized as a pnpm monorepo workspace.
+A full-stack e-commerce application built with Next.js, React, TypeScript, and Node.js, organized as a Bun monorepo workspace.
 
 ## Tech Stack
 
@@ -47,7 +47,7 @@ The complete database schema and relationships can be found in our [Database Doc
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10+
+- Bun 1.0+
 - PostgreSQL
 
 ### Installation
@@ -62,7 +62,7 @@ The complete database schema and relationships can be found in our [Database Doc
 2. Install all dependencies (this will install dependencies for all workspace packages):
 
    ```bash
-   pnpm install
+   bun install
    ```
 
 3. Set up environment variables:
@@ -82,7 +82,7 @@ The complete database schema and relationships can be found in our [Database Doc
    cd apps/server
 
    # Create and migrate the database
-   pnpm db:migrate
+   bun run db:migrate
 
    # Generate Prisma client
    npx prisma generate
@@ -97,20 +97,20 @@ Start all applications in development mode:
 
 ```bash
 # Start all apps in parallel (from root directory)
-pnpm dev
+bun run dev
 ```
 
 Or start individual applications:
 
 ```bash
 # Start backend server only
-pnpm --filter server dev
+bun run --cwd apps/server dev
 
 # Start web frontend only
-pnpm --filter web dev
+bun run --cwd apps/web dev
 
 # Start dashboard only
-pnpm --filter dashboard dev
+bun run --cwd apps/dashboard dev
 ```
 
 The applications will be available at:
@@ -148,8 +148,8 @@ canto/
 │       ├── prisma/       # Database schema and migrations
 │
 ├── package.json         # Root workspace configuration
-├── pnpm-workspace.yaml  # pnpm workspace configuration
-└── pnpm-lock.yaml      # Lockfile for all dependencies
+├── bunfig.toml          # Bun workspace configuration
+└── bun.lock             # Lockfile for all dependencies
 ```
 
 ## Available Scripts
@@ -158,36 +158,36 @@ canto/
 
 ```bash
 # Install dependencies for all packages
-pnpm install
+bun install
 
 # Run development servers for all apps
-pnpm dev
+bun run dev
 
 # Build all applications
-pnpm build
+bun run build
 
 # Lint all packages
-pnpm lint
+bun run lint
 
 # Format all code
-pnpm format
+bun run format
 
 # Type check all packages
-pnpm type-check
+bun run type-check
 ```
 
 ### Package-Specific Commands
 
 ```bash
 # Run commands for specific packages
-pnpm --filter web <command>        # Web frontend
-pnpm --filter server <command>     # Backend server
-pnpm --filter dashboard <command>  # Dashboard
+bun run --cwd apps/web <command>        # Web frontend
+bun run --cwd apps/server <command>     # Backend server
+bun run --cwd apps/dashboard <command>  # Dashboard
 
 # Examples:
-pnpm --filter web build
-pnpm --filter server db:migrate
-pnpm --filter dashboard preview
+bun run --cwd apps/web build
+bun run --cwd apps/server db:migrate
+bun run --cwd apps/dashboard preview
 ```
 
 ## API Documentation
@@ -205,16 +205,16 @@ The complete API documentation is available in our [Apidog Project](https://app.
 ```bash
 # Generate Prisma client after schema changes
 cd apps/server
-npx prisma generate
+bunx prisma generate
 
 # Create new migration
-pnpm db:migrate
+bun run db:migrate
 
 # Reset database
-npx prisma migrate reset
+bunx prisma migrate reset
 
 # Deploy migrations (production)
-pnpm db:deploy
+bun run db:deploy
 ```
 
 ### Frontend Development
@@ -222,11 +222,11 @@ pnpm db:deploy
 ```bash
 # Web app (Next.js)
 cd apps/web
-pnpm dev
+bun run dev
 
 # Dashboard (Vite)
 cd apps/dashboard
-pnpm dev
+bun run dev
 ```
 
 ### Docker Support

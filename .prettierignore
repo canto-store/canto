@@ -4,7 +4,7 @@ build/
 .next/
 *.min.js
 *.min.css
-pnpm-lock.yaml
+bun.lock
 routeTree.gen.ts
 .git/
 coverage/
