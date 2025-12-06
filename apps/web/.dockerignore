@@ -1,6 +1,5 @@
 # Dependencies
 node_modules
-.pnpm-store
 
 # Next.js build output
 .next
@@ -10,7 +9,7 @@ out
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
+bun-debug.log*
 
 # Environment variables
 .env
@@ -45,7 +44,7 @@ coverage
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+bun-debug.log*
 
 # Misc
 README.md

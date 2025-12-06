@@ -3,15 +3,12 @@
   "version": "1.0.0",
   "description": "Canto monorepo",
   "private": true,
+  "workspaces": ["apps/*", "modules/*"],
   "scripts": {
-    "build": "pnpm -r build",
-    "dev": "pnpm -r --parallel dev",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "type-check": "pnpm -r type-check",
-    "prepare": "husky"
+    "dev": "bun run dev:server & bun run dev:web & bun run dev:dashboard",
+    "dev:web": "cd apps/web && bun run dev",
+    "dev:server": "cd apps/server && bun run dev",
+    "dev:dashboard": "cd apps/dashboard && bun run dev"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -25,6 +22,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.35.0",
+    "baseline-browser-mapping": "^2.9.3",
     "eslint": "^9.35.0",
     "eslint-config-next": "15.5.3",
     "eslint-plugin-react": "^7.37.5",
@@ -35,6 +33,5 @@
     "prettier-plugin-tailwindcss": "^0.6.14",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.43.0"
-  },
-  "packageManager": "pnpm@10.14.0-0+sha512.2cd47a0cbf5f1d1de7693a88307a0ede5be94e0d3b34853d800ee775efbea0650cb562b77605ec80bc8d925f5cd27c4dfe8bb04d3a0b76090784c664450d32d6"
+  }
 }
