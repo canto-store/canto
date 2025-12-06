@@ -45,7 +45,7 @@ ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
 ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
 # Build shared modules
-RUN bun run --filter=modules build
+RUN bun run --filter='@canto/*' build
 
 # Build only target
 RUN bun run --filter=${TARGET_APP} build
