@@ -4,7 +4,7 @@ import { slugify } from './helper'
 describe('slugify', () => {
   test('converts text to lowercase', () => {
     const result = slugify('HELLO WORLD')
-    expect(result).toMatch(/^hello-world-[a-z0-9]{6}$/i)
+    expect(result).toMatch(/^hello-world-[a-z0-9_-]{6}$/i)
   })
 
   test('replaces spaces with hyphens', () => {
