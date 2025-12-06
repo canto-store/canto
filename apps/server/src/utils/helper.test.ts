@@ -45,10 +45,6 @@ describe('slugify', () => {
     expect(result1).not.toBe(result2)
   })
 
-  test('handles empty string', () => {
-    expect(() => slugify('')).toThrowError('Input text cannot be empty')
-  })
-
   test('handles string with only special characters', () => {
     const result = slugify('!@#$%^&*()')
     expect(result).toMatch(/and-[a-z0-9_-]{6}$/i)

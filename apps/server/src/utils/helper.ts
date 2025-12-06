@@ -3,9 +3,6 @@ import { nanoid } from 'nanoid'
 
 export function slugify(text: string): string {
   const trimmed = text.toString().toLowerCase().trim()
-  if (!trimmed) {
-    throw new Error('Input text cannot be empty')
-  }
   return trimmed
     .replace(/\s+/g, '-') // Replace spaces with hyphens
     .replace(/&/g, '-and-') // Replace & with 'and'

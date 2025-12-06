@@ -15,6 +15,7 @@ import wishlistRouter from './modules/user/wishlist/wishlist.routes'
 import optionsRoutes from './modules/product/options/options.routes'
 import returnRoutes from './modules/return/return.routes'
 import homeRouter from './modules/product/home/home.routes'
+import uploadRouter from './modules/upload/upload.routes'
 const router = Router()
 
 router.use('/v1/auth', authRouterV1)
@@ -34,5 +35,6 @@ router.use('/sales', salesRouter)
 router.use('/wishlist', wishlistRouter)
 router.use('/returns', returnRoutes)
 router.use('/home', homeRouter)
+router.use('/upload', uploadRouter)
 
 export default router

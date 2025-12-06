@@ -1,19 +1,15 @@
 import { PrismaClient } from '@prisma/client'
-import { CreateCategoryDto } from './category.types'
+import { CreateCategoryDto, UpdateCategoryDto } from '@canto/types/category'
 import AppError from '../../../utils/appError'
+import { slugify } from '../../../utils/helper'
 
 class CategoryService {
   private readonly prisma = new PrismaClient()
 
-  async create(dto: CreateCategoryDto) {
-    const exists = await this.prisma.category.findUnique({
-      where: { slug: dto.slug },
-    })
-    if (exists)
-      throw new AppError('Category with this slug already exists', 409)
-
-    const category = await this.prisma.category.create({ data: dto })
-    return category
+  async create(dto: CreateCategoryDto): Promise<boolean> {
+    const slug = slugify(dto.name)
+    await this.prisma.category.create({ data: { ...dto, slug } })
+    return true
   }
 
   async findAll() {
@@ -95,11 +91,16 @@ class CategoryService {
     return category
   }
 
-  async update(id: number, dto: CreateCategoryDto) {
-    const category = await this.prisma.category.findUnique({ where: { id } })
+  async update(dto: UpdateCategoryDto) {
+    const category = await this.prisma.category.findUnique({
+      where: { id: dto.id },
+    })
     if (!category) throw new AppError('Category not found', 404)
 
-    return await this.prisma.category.update({ where: { id }, data: dto })
+    return await this.prisma.category.update({
+      where: { id: dto.id },
+      data: dto,
+    })
   }
 
   async delete(id: number) {

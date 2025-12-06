@@ -1,18 +1,15 @@
 import { Request, Response, NextFunction } from 'express'
 import CategoryService from './category.service'
-import { CreateCategoryDto } from './category.types'
+import { CreateCategoryDto, UpdateCategoryDto } from '@canto/types/category'
+import { AuthRequest } from '../../../middlewares/auth.middleware'
 
 class CategoryController {
   private readonly categoryService = new CategoryService()
 
-  public async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data: CreateCategoryDto = req.body
-      const category = await this.categoryService.create(data)
-      res.status(201).json(category)
-    } catch (error) {
-      next(error)
-    }
+  public async create(req: AuthRequest, res: Response) {
+    const data: CreateCategoryDto = req.body
+    const category = await this.categoryService.create(data)
+    res.status(201).json(category)
   }
 
   public async getActiveCategories(
@@ -46,17 +43,10 @@ class CategoryController {
     }
   }
 
-  public async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data: CreateCategoryDto = req.body
-      const category = await this.categoryService.update(
-        Number(req.params.id),
-        data
-      )
-      res.status(200).json(category)
-    } catch (error) {
-      next(error)
-    }
+  public async update(req: AuthRequest, res: Response) {
+    const data: UpdateCategoryDto = req.body
+    const category = await this.categoryService.update(data)
+    res.status(200).json(category)
   }
 
   public async delete(req: Request, res: Response, next: NextFunction) {
