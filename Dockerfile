@@ -73,7 +73,9 @@ COPY --from=build /usr/src/app/apps/server/build ./apps/server/build
 
 # Generate Prisma client (doesn't need database connection)
 RUN bunx prisma generate --schema=apps/server/prisma/schema.prisma
-RUN bunx prisma migrate deploy --schema=apps/server/prisma/schema.prisma
+
+# Copy entrypoint script for migrations
+COPY apps/server/docker-entrypoint.sh ./apps/server/
 
 
 ###############################
@@ -108,12 +110,13 @@ CMD ["node", "apps/web/server.js"]
 ###############################
 # EXPRESS SERVER FINAL RUNTIME
 ###############################
-FROM node:20-slim AS server
+FROM oven/bun:1-slim AS server
 ARG NODE_ENV=production
 ARG PORT=8000
 WORKDIR /app
 
 # Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=deploy-server /tmp/server ./
 
@@ -123,7 +126,8 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Run migrations at startup, then start server
-CMD ["sh", "-c", "node apps/server/build/src/index.js"]
+ENTRYPOINT ["sh", "apps/server/docker-entrypoint.sh"]
+CMD ["bun", "run", "apps/server/build/src/index.js"]
 
 
 ###############################
