@@ -71,10 +71,7 @@ RUN bun install --production --frozen-lockfile
 # Copy built assets
 COPY --from=build /usr/src/app/apps/server/build ./apps/server/build
 
-# Prisma migration + generate
-RUN --mount=type=secret,id=database_url,env=DATABASE_URL \
-    bunx prisma migrate deploy
-
+# Generate Prisma client (doesn't need database connection)
 RUN bunx prisma generate
 
 
@@ -115,13 +112,18 @@ ARG NODE_ENV=production
 ARG PORT=8000
 WORKDIR /app
 
+# Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
 COPY --from=deploy-server /tmp/server ./
 
 ENV NODE_ENV=${NODE_ENV}
 ENV PORT=${PORT}
 
 EXPOSE ${PORT}
-CMD ["node", "apps/server/build/src/index.js"]
+
+# Run migrations at startup, then start server
+CMD ["sh", "-c", "npx prisma migrate deploy && node apps/server/build/src/index.js"]
 
 
 ###############################
