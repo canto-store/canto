@@ -2,7 +2,7 @@
 set -e
 
 echo "Running database migrations..."
-cd apps/server && bunx prisma migrate deploy
+cd /app/apps/server && bunx prisma migrate deploy
 
 echo "Starting server..."
 cd /app

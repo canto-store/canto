@@ -63,6 +63,7 @@ COPY apps/web/package.json ./apps/web/
 COPY apps/server/package.json ./apps/server/
 COPY apps/dashboard/package.json ./apps/dashboard/
 COPY apps/server/prisma ./apps/server/prisma/
+COPY apps/server/prisma.config.ts ./apps/server/
 COPY modules ./modules
 
 # Install only production deps
@@ -72,7 +73,7 @@ RUN bun install --production --frozen-lockfile
 COPY --from=build /usr/src/app/apps/server/build ./apps/server/build
 
 # Generate Prisma client (doesn't need database connection)
-RUN bunx prisma generate --schema=apps/server/prisma/schema.prisma
+RUN cd apps/server && bunx prisma generate
 
 # Copy entrypoint script for migrations
 COPY apps/server/docker-entrypoint.sh ./apps/server/
@@ -133,16 +134,18 @@ CMD ["bun", "run", "apps/server/build/src/index.js"]
 ###############################
 # DASHBOARD (Vite) PRODUCTION
 ###############################
-FROM nginx:alpine AS dashboard
+FROM oven/bun:1-slim AS dashboard
 ARG NODE_ENV=production
 ARG PORT=5173
 
 WORKDIR /app
 
 # Copy built static site from Bun's build
-COPY --from=build /usr/src/app/apps/dashboard/dist /usr/share/nginx/html
+COPY --from=build /usr/src/app/apps/dashboard/dist ./dist
 
 ENV NODE_ENV=${NODE_ENV}
+ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD ["nginx", "-g", "daemon off;"]
+# Use Bun's built-in static file server with SPA fallback
+CMD ["sh", "-c", "bun --bun x serve dist -l tcp://0.0.0.0:${PORT} -s"]
