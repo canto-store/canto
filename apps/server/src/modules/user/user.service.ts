@@ -1,11 +1,9 @@
-import { PrismaClient, User, UserRole } from '@prisma/client'
+import { prisma, User, UserRole } from '../../utils/db'
 import AppError from '../../utils/appError'
 
 export default class UserService {
-  private readonly prisma = new PrismaClient()
-
   async getById(id: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
     })
     if (!user) throw new AppError('User not found', 404)
@@ -13,7 +11,7 @@ export default class UserService {
   }
 
   async checkProductAccess(userId: number, productId: number) {
-    const product = await this.prisma.product.findFirst({
+    const product = await prisma.product.findFirst({
       where: {
         id: productId,
         brand: {
@@ -26,7 +24,7 @@ export default class UserService {
   }
 
   async createGuest(): Promise<User> {
-    const user = await this.prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         role: [UserRole.GUEST],
         name: this.generateName(),
@@ -66,13 +64,13 @@ export default class UserService {
   }
 
   async deleteUserById(id: number) {
-    await this.prisma.user.delete({
+    await prisma.user.delete({
       where: { id },
     })
   }
 
   async updateUser(id: number, data: Partial<User>) {
-    const user = await this.prisma.user.update({
+    const user = await prisma.user.update({
       where: { id },
       data,
     })

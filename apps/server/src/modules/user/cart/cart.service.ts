@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../utils/db'
 import AppError from '../../../utils/appError'
 import { Cart } from '@canto/types/cart'
 import ProductService from '../../product/product.service'
 import UserService from '../user.service'
 class CartService {
-  private readonly prisma = new PrismaClient()
   private readonly productService: ProductService
   private readonly userService: UserService
 
@@ -14,15 +13,15 @@ class CartService {
   }
 
   private async getOrCreateCart(userId: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     })
     if (!user) throw new AppError('User not found', 404)
-    let cart = await this.prisma.cart.findUnique({
+    let cart = await prisma.cart.findUnique({
       where: { userId },
     })
     if (!cart) {
-      cart = await this.prisma.cart.create({
+      cart = await prisma.cart.create({
         data: { userId },
       })
     }
@@ -30,7 +29,7 @@ class CartService {
   }
 
   async createCart(userId: number) {
-    return await this.prisma.cart.create({
+    return await prisma.cart.create({
       data: { userId },
     })
   }
@@ -62,7 +61,7 @@ class CartService {
   }
 
   async getCartByUserId(userId: number) {
-    return await this.prisma.cart.findUnique({
+    return await prisma.cart.findUnique({
       where: { userId },
       include: {
         items: {
@@ -77,24 +76,24 @@ class CartService {
   }
 
   async clearCart(userId: number) {
-    const cart = await this.prisma.cart.findUnique({ where: { userId } })
+    const cart = await prisma.cart.findUnique({ where: { userId } })
     if (!cart) throw new AppError('Cart not found', 404)
 
-    await this.prisma.cartItem.deleteMany({
+    await prisma.cartItem.deleteMany({
       where: { cartId: cart.id },
     })
   }
   async getCartItem(cartId: number, variantId: number) {
-    return this.prisma.cartItem.findFirst({
+    return prisma.cartItem.findFirst({
       where: { cartId, variantId },
     })
   }
   async getOrCreateCartItem(cartId: number, variantId: number) {
-    const item = await this.prisma.cartItem.findFirst({
+    const item = await prisma.cartItem.findFirst({
       where: { cartId, variantId },
     })
     if (!item)
-      return await this.prisma.cartItem.create({
+      return await prisma.cartItem.create({
         data: { cartId, variantId, quantity: 0 },
       })
     return item
@@ -113,11 +112,11 @@ class CartService {
     const cart = await this.getOrCreateCart(userId)
     const item = await this.getOrCreateCartItem(cart.id, variantId)
     if (quantity === 0) {
-      await this.prisma.cartItem.delete({ where: { id: item.id } })
+      await prisma.cartItem.delete({ where: { id: item.id } })
       return
     }
 
-    return this.prisma.cartItem.update({
+    return prisma.cartItem.update({
       where: { id: item.id },
       data: { quantity },
     })
@@ -125,7 +124,7 @@ class CartService {
 
   /** Remove one cart item */
   async deleteItem(variantId: number, userId: number) {
-    const found = await this.prisma.cartItem.findFirst({
+    const found = await prisma.cartItem.findFirst({
       where: {
         variantId,
         cart: {
@@ -134,11 +133,11 @@ class CartService {
       },
     })
     if (!found) throw new AppError('Cart item not found', 404)
-    return this.prisma.cartItem.delete({ where: { id: found.id } })
+    return prisma.cartItem.delete({ where: { id: found.id } })
   }
 
   async deleteItemById(cartItemId: number) {
-    return await this.prisma.cartItem.delete({
+    return await prisma.cartItem.delete({
       where: { id: cartItemId },
     })
   }
@@ -148,12 +147,12 @@ class CartService {
     const userCart = await this.getCartByUserId(userId)
 
     if (guestCart && userCart) {
-      const guestCartItems = await this.prisma.cartItem.findMany({
+      const guestCartItems = await prisma.cartItem.findMany({
         where: { cartId: guestCart.id },
       })
 
       for (const guestItem of guestCartItems) {
-        const existingUserItem = await this.prisma.cartItem.findFirst({
+        const existingUserItem = await prisma.cartItem.findFirst({
           where: {
             cartId: userCart.id,
             variantId: guestItem.variantId,
@@ -175,21 +174,21 @@ class CartService {
   }
 
   async updateItemQuantity(cartItemId: number, quantity: number) {
-    return this.prisma.cartItem.update({
+    return prisma.cartItem.update({
       where: { id: cartItemId },
       data: { quantity },
     })
   }
 
   async updateCartUserId(oldUserId: number, newUserId: number) {
-    return this.prisma.cart.update({
+    return prisma.cart.update({
       where: { userId: oldUserId },
       data: { userId: newUserId },
     })
   }
 
   async updateCartId(cartItemId: number, cartId: number) {
-    return this.prisma.cartItem.update({
+    return prisma.cartItem.update({
       where: { id: cartItemId },
       data: { cartId },
     })

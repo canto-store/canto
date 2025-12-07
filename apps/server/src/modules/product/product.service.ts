@@ -1,10 +1,10 @@
 import {
+  prisma,
   CartItem,
   Prisma,
-  PrismaClient,
   Product,
   ProductVariant,
-} from '@prisma/client'
+} from '../../utils/db'
 import AppError from '../../utils/appError'
 import {
   CreateProductDto,
@@ -28,8 +28,6 @@ import { PRODUCT_INDEX } from '../search/productIndex'
 import { esClient, isElasticsearchConfigured } from '../search'
 
 class ProductService {
-  private readonly prisma = new PrismaClient()
-
   async createProduct(dto: CreateProductDto) {
     if (!dto.name?.trim()) throw new AppError('name is required', 400)
     if (!dto.slug?.trim()) throw new AppError('slug is required', 400)
@@ -37,17 +35,17 @@ class ProductService {
     await this.ensureBrandExists(dto.brandId)
     await this.ensureCategoryExists(dto.categoryId)
 
-    const existingProductWithSlug = await this.prisma.product.findUnique({
+    const existingProductWithSlug = await prisma.product.findUnique({
       where: { slug: dto.slug },
     })
     if (existingProductWithSlug)
       throw new AppError('Product with this slug already exists', 409)
 
-    return this.prisma.product.create({ data: dto })
+    return prisma.product.create({ data: dto })
   }
 
   async findAllProducts() {
-    return this.prisma.product.findMany({
+    return prisma.product.findMany({
       include: { brand: true, category: true },
       orderBy: { id: 'desc' },
     })
@@ -195,7 +193,7 @@ class ProductService {
 
     // 5) Fetch matching products + total count
     const [products, total] = await Promise.all([
-      this.prisma.product.findMany({
+      prisma.product.findMany({
         where,
         include: {
           brand: true,
@@ -219,7 +217,7 @@ class ProductService {
         skip,
         take: limitNum,
       }),
-      this.prisma.product.count({ where }),
+      prisma.product.count({ where }),
     ])
 
     // 6) Sort products - prioritize Elasticsearch scores for search, then other criteria
@@ -305,7 +303,7 @@ class ProductService {
 
   async updateProduct(id: number, dto: UpdateProductDto) {
     const { rejectionReason, ...updateProductData } = dto
-    return await this.prisma.$transaction(async tx => {
+    return await prisma.$transaction(async tx => {
       const product = await tx.product.update({
         where: { id },
         data: updateProductData,
@@ -337,40 +335,40 @@ class ProductService {
   }
 
   async deleteProduct(id: number) {
-    return this.prisma.product.delete({ where: { id } })
+    return prisma.product.delete({ where: { id } })
   }
 
   async createOption(dto: CreateProductOptionDto) {
     if (!dto.name?.trim()) throw new AppError('name is required', 400)
 
-    const existingOptionWithName = await this.prisma.productOption.findUnique({
+    const existingOptionWithName = await prisma.productOption.findUnique({
       where: { name: dto.name },
     })
     if (existingOptionWithName)
       throw new AppError('Option with this name already exists', 409)
 
-    return this.prisma.productOption.create({ data: dto })
+    return prisma.productOption.create({ data: dto })
   }
 
   async getOptions() {
-    return this.prisma.productOption.findMany({ include: { values: true } })
+    return prisma.productOption.findMany({ include: { values: true } })
   }
 
   async deleteOption(id: number) {
     await this.ensureOptionExists(id)
-    return this.prisma.productOption.delete({ where: { id } })
+    return prisma.productOption.delete({ where: { id } })
   }
 
   async createOptionValue(dto: CreateProductOptionValueDto) {
     if (!dto.value?.trim()) throw new AppError('value is required', 400)
 
-    const existingOptionValue = await this.prisma.productOptionValue.findFirst({
+    const existingOptionValue = await prisma.productOptionValue.findFirst({
       where: { productOptionId: dto.productOptionId, value: dto.value.trim() },
     })
     if (existingOptionValue)
       throw new AppError('Value already exists under this option', 409)
 
-    return this.prisma.productOption.update({
+    return prisma.productOption.update({
       where: { id: dto.productOptionId },
       data: {
         values: {
@@ -384,7 +382,7 @@ class ProductService {
 
   async deleteOptionValue(id: number) {
     await this.ensureOptionValueExists(id)
-    return this.prisma.productOptionValue.delete({ where: { id } })
+    return prisma.productOptionValue.delete({ where: { id } })
   }
 
   async createVariant(dto: CreateProductVariantDto) {
@@ -395,7 +393,7 @@ class ProductService {
     if (dto.stock == null || dto.stock < 0)
       throw new AppError('stock must be >= 0', 400)
 
-    const existingVariantSku = await this.prisma.productVariant.findUnique({
+    const existingVariantSku = await prisma.productVariant.findUnique({
       where: { sku: dto.sku },
     })
     if (existingVariantSku)
@@ -407,7 +405,7 @@ class ProductService {
       )
     }
 
-    return this.prisma.$transaction(async tx => {
+    return prisma.$transaction(async tx => {
       const variantRecord = await tx.productVariant.create({
         data: {
           productId: dto.productId,
@@ -473,7 +471,7 @@ class ProductService {
     const existingVariant = await this.ensureVariantExists(id)
 
     if (dto.sku && dto.sku !== existingVariant.sku) {
-      const existingVariantSku = await this.prisma.productVariant.findUnique({
+      const existingVariantSku = await prisma.productVariant.findUnique({
         where: { sku: dto.sku },
       })
       if (existingVariantSku) throw new AppError('SKU already in use', 409)
@@ -489,7 +487,7 @@ class ProductService {
     if (dto.stock != null) updateData.stock = dto.stock
     if (dto.sale_id != null) updateData.sale = { connect: { id: dto.sale_id } }
 
-    const variantRecord = await this.prisma.productVariant.update({
+    const variantRecord = await prisma.productVariant.update({
       where: { id },
       data: updateData,
       include: {
@@ -499,7 +497,7 @@ class ProductService {
     })
 
     if (dto.optionValueIds || dto.images) {
-      return this.prisma.$transaction(async tx => {
+      return prisma.$transaction(async tx => {
         if (dto.optionValueIds) {
           await tx.variantOptionValue.deleteMany({ where: { variantId: id } })
           if (dto.optionValueIds.length) {
@@ -537,11 +535,11 @@ class ProductService {
 
   async deleteVariant(id: number) {
     await this.ensureVariantExists(id)
-    return this.prisma.productVariant.delete({ where: { id } })
+    return prisma.productVariant.delete({ where: { id } })
   }
 
   async getProductBySlug(slug: string) {
-    const productRecord = await this.prisma.product.findUnique({
+    const productRecord = await prisma.product.findUnique({
       where: { slug },
       include: {
         brand: { select: { name: true, slug: true } },
@@ -608,7 +606,7 @@ class ProductService {
       }
     })
 
-    const relatedRaw = await this.prisma.product.findMany({
+    const relatedRaw = await prisma.product.findMany({
       where: {
         categoryId: productRecord.categoryId,
         id: { not: productRecord.id },
@@ -654,7 +652,7 @@ class ProductService {
   }
 
   async getHomeProducts() {
-    const allProducts = await this.prisma.product.findMany({
+    const allProducts = await prisma.product.findMany({
       where: { status: ProductStatus.ACTIVE },
       select: {
         name: true,
@@ -669,10 +667,10 @@ class ProductService {
     const products = allProducts.filter(
       p => p.variants.map(v => v.stock).reduce((a, b) => a + b, 0) > 0
     )
-    const colorVariantOption = await this.prisma.productOption.findUnique({
+    const colorVariantOption = await prisma.productOption.findUnique({
       where: { name: 'Color' },
     })
-    const colorVariantValues = await this.prisma.variantOptionValue.findMany({
+    const colorVariantValues = await prisma.variantOptionValue.findMany({
       where: {
         productOptionId: colorVariantOption.id,
         variant: {
@@ -818,7 +816,7 @@ class ProductService {
   }
 
   async updateProductForm(dto: UpdateProductFormDto, userId: number) {
-    return this.prisma.$transaction(async tx => {
+    return prisma.$transaction(async tx => {
       const productUpdateData: Record<string, any> = {}
 
       if (dto.name !== undefined) {
@@ -1001,7 +999,7 @@ class ProductService {
   }
 
   async submitProductForm(dto: SubmitProductFormDto, userId: number) {
-    return this.prisma.$transaction(async tx => {
+    return prisma.$transaction(async tx => {
       const newProduct = await tx.product.create({
         data: {
           name: dto.name,
@@ -1071,7 +1069,7 @@ class ProductService {
   }
 
   async getProductsByBrand(brandId: number) {
-    const products = await this.prisma.product.findMany({
+    const products = await prisma.product.findMany({
       where: { brandId: Number(brandId) },
       include: {
         variants: { include: { images: true } },
@@ -1094,7 +1092,7 @@ class ProductService {
   async autocompleteProducts(query: string) {
     // If Elasticsearch is not configured, fall back to database search
     if (!isElasticsearchConfigured() || !esClient) {
-      const products = await this.prisma.product.findMany({
+      const products = await prisma.product.findMany({
         where: {
           name: { contains: query.trim(), mode: 'insensitive' },
           status: ProductStatus.ACTIVE,
@@ -1148,7 +1146,7 @@ class ProductService {
     const productIds = results.hits.hits.map((hit: any) => +hit._id)
 
     // Fetch products from database
-    const products = await this.prisma.product.findMany({
+    const products = await prisma.product.findMany({
       where: { id: { in: productIds }, status: ProductStatus.ACTIVE },
       include: { brand: true, category: true },
     })
@@ -1164,7 +1162,7 @@ class ProductService {
   }
 
   async getProductById(id: number) {
-    const productRecord = await this.prisma.product.findUnique({
+    const productRecord = await prisma.product.findUnique({
       where: { id },
       select: {
         id: true,
@@ -1213,7 +1211,7 @@ class ProductService {
     return transformedProductRecord
   }
   private async ensureVariantExists(id: number) {
-    const variantRecord = await this.prisma.productVariant.findUnique({
+    const variantRecord = await prisma.productVariant.findUnique({
       where: { id },
     })
     if (!variantRecord) throw new AppError('Variant not found', 404)
@@ -1221,13 +1219,13 @@ class ProductService {
   }
 
   private async ensureBrandExists(id: number) {
-    const brandRecord = await this.prisma.brand.findUnique({ where: { id } })
+    const brandRecord = await prisma.brand.findUnique({ where: { id } })
     if (!brandRecord)
       throw new AppError('brandId does not reference an existing brand', 400)
   }
 
   private async ensureCategoryExists(id: number) {
-    const categoryRecord = await this.prisma.category.findUnique({
+    const categoryRecord = await prisma.category.findUnique({
       where: { id },
     })
     if (!categoryRecord)
@@ -1238,14 +1236,14 @@ class ProductService {
   }
 
   private async ensureOptionExists(id: number) {
-    const optionRecord = await this.prisma.productOption.findUnique({
+    const optionRecord = await prisma.productOption.findUnique({
       where: { id },
     })
     if (!optionRecord) throw new AppError('Option not found', 404)
   }
 
   private async ensureOptionValueExists(id: number) {
-    const optionValueRecord = await this.prisma.productOptionValue.findUnique({
+    const optionValueRecord = await prisma.productOptionValue.findUnique({
       where: { id },
     })
     if (!optionValueRecord) throw new AppError('Option value not found', 404)
@@ -1254,7 +1252,7 @@ class ProductService {
   async getProductFilters() {
     // Get all available filter options
     const [categories, brands, priceRange] = await Promise.all([
-      this.prisma.category.findMany({
+      prisma.category.findMany({
         select: {
           id: true,
           name: true,
@@ -1264,7 +1262,7 @@ class ProductService {
           },
         },
       }),
-      this.prisma.brand.findMany({
+      prisma.brand.findMany({
         select: {
           id: true,
           name: true,
@@ -1274,19 +1272,19 @@ class ProductService {
           },
         },
       }),
-      this.prisma.productVariant.aggregate({
+      prisma.productVariant.aggregate({
         _min: { price: true },
         _max: { price: true },
       }),
     ])
 
     // Get available colors and sizes from product options
-    const colorOption = await this.prisma.productOption.findFirst({
+    const colorOption = await prisma.productOption.findFirst({
       where: { name: { equals: 'Color', mode: 'insensitive' } },
       include: { values: true },
     })
 
-    const sizeOption = await this.prisma.productOption.findFirst({
+    const sizeOption = await prisma.productOption.findFirst({
       where: { name: { equals: 'Size', mode: 'insensitive' } },
       include: { values: true },
     })
@@ -1312,7 +1310,7 @@ class ProductService {
   }
 
   async getPriceRange() {
-    const priceRange = await this.prisma.productVariant.aggregate({
+    const priceRange = await prisma.productVariant.aggregate({
       _min: { price: true },
       _max: { price: true },
     })
@@ -1320,7 +1318,7 @@ class ProductService {
   }
 
   async getProductVariantById(id: number) {
-    return await this.prisma.productVariant.findUnique({
+    return await prisma.productVariant.findUnique({
       where: { id },
     })
   }
@@ -1340,7 +1338,7 @@ class ProductService {
   }
 
   async validateCartItems(userId: number) {
-    const cartItems = await this.prisma.cartItem.findMany({
+    const cartItems = await prisma.cartItem.findMany({
       where: { cart: { userId } },
       select: {
         id: true,
@@ -1353,9 +1351,9 @@ class ProductService {
       const newQuantity = await this.resolveCartItemQuantity(cartItem)
       const isActive = await this.isVariantProductActive(cartItem.variant)
       if (newQuantity <= 0 || !isActive) {
-        await this.prisma.cartItem.delete({ where: { id: cartItem.id } })
+        await prisma.cartItem.delete({ where: { id: cartItem.id } })
       } else if (newQuantity !== cartItem.quantity) {
-        await this.prisma.cartItem.update({
+        await prisma.cartItem.update({
           where: { id: cartItem.id },
           data: { quantity: newQuantity },
         })

@@ -1,10 +1,16 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './prisma/generated/prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
+function createPrismaClient() {
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+  return new PrismaClient({ adapter })
+}
+
 async function seedCategories() {
-  const prisma = new PrismaClient()
+  const prisma = createPrismaClient()
 
   console.log('Starting category seeding...')
 

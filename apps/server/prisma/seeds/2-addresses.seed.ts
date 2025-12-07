@@ -1,13 +1,19 @@
-import { PrismaClient, AddressType } from '@prisma/client'
+import { PrismaClient, AddressType } from '../generated/prisma/client'
 
 export const name = 'addresses'
 export const description = 'Seed for user addresses'
 
 export async function run(prisma: PrismaClient): Promise<void> {
   // Fetch users
-  const admin = await prisma.user.findUnique({ where: { email: 'admin@example.com' } })
-  const seller = await prisma.user.findUnique({ where: { email: 'seller@example.com' } })
-  const customer = await prisma.user.findUnique({ where: { email: 'customer@example.com' } })
+  const admin = await prisma.user.findUnique({
+    where: { email: 'admin@example.com' },
+  })
+  const seller = await prisma.user.findUnique({
+    where: { email: 'seller@example.com' },
+  })
+  const customer = await prisma.user.findUnique({
+    where: { email: 'customer@example.com' },
+  })
 
   if (!admin || !seller || !customer) {
     throw new Error('Users not found! Run 01-users.seed.ts first.')

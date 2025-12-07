@@ -1,8 +1,10 @@
 import { execSync } from 'child_process'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './generated/prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { runAllPendingSeeds } from './seeds/index'
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log('🚨 Resetting database...')

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { verifyJwt, JwtPayload } from '../utils/jwt'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '../utils/db'
 import AppError from '../utils/appError'
 import UserService from '../modules/user/user.service'
 import z from 'zod'

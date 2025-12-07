@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from '@prisma/client'
+import { PrismaClient, UserRole } from '../generated/prisma/client'
 import Bcrypt from '../../src/utils/bcrypt'
 
 export const name = 'users'
@@ -37,5 +37,7 @@ export async function run(prisma: PrismaClient): Promise<void> {
     },
   })
 
-  console.log(`Users seeded: admin=${admin.id}, seller=${seller.id}, customer=${customer.id}`)
+  console.log(
+    `Users seeded: admin=${admin.id}, seller=${seller.id}, customer=${customer.id}`
+  )
 }

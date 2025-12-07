@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../generated/prisma/client'
 
 export const name = 'categories'
 export const description = 'Seed for 10 top-level categories + subcategories'

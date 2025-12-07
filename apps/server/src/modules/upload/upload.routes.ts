@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { s3Client } from '../../utils/s3'
 import AuthMiddleware from '../../middlewares/auth.middleware'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '../../utils/db'
 import { catchAsync } from '../../utils/catchAsync'
 import AppError from '../../utils/appError'
 

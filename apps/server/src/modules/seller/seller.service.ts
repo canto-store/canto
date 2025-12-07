@@ -1,20 +1,14 @@
-import { PrismaClient, User, UserRole } from '@prisma/client'
+import { prisma, User, UserRole } from '../../utils/db'
 import AppError from '../../utils/appError'
 import Bcrypt from '../../utils/bcrypt'
 
 class SellerService {
-  private prisma: PrismaClient
-
-  constructor() {
-    this.prisma = new PrismaClient()
-  }
-
   async getAllSellers() {
-    return await this.prisma.user.findMany({})
+    return await prisma.user.findMany({})
   }
 
   async getSellerById(id: number) {
-    const seller = await this.prisma.user.findUnique({
+    const seller = await prisma.user.findUnique({
       where: { id },
     })
     if (!seller) {
@@ -24,7 +18,7 @@ class SellerService {
   }
 
   async createSeller(data: User) {
-    const existingSeller = await this.prisma.user.findUnique({
+    const existingSeller = await prisma.user.findUnique({
       where: { email: data.email },
     })
     if (existingSeller) {
@@ -34,7 +28,7 @@ class SellerService {
 
     data.role = [UserRole.USER, UserRole.SELLER]
 
-    const seller = await this.prisma.$transaction(async t => {
+    const seller = await prisma.$transaction(async t => {
       const seller = await t.user.create({
         data,
       })
@@ -48,20 +42,20 @@ class SellerService {
       return seller
     })
 
-    const { password, ...sellerWithoutPassword } = seller
+    const { password: _, ...sellerWithoutPassword } = seller
 
     return sellerWithoutPassword
   }
 
   async updateSeller(id: number, data: User) {
-    const existingSeller = await this.prisma.user.findUnique({
+    const existingSeller = await prisma.user.findUnique({
       where: { id },
     })
     if (!existingSeller) {
       throw new AppError('Seller not found', 404)
     }
 
-    return await this.prisma.user.update({
+    return await prisma.user.update({
       where: { id },
       data,
     })

@@ -1,15 +1,13 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../utils/db'
 import AppError from '../../../utils/appError'
 import { WishlistItem } from '@canto/types/wishlist'
 export default class WishlistService {
-  private readonly prisma = new PrismaClient()
-
   async getWishlistItems(userId: number): Promise<{ data: WishlistItem[] }> {
     // Get user's wishlist, create if it doesn't exist
     const wishlist = await this.getOrCreateWishlist(userId)
 
     // Get all items in the wishlist with product details
-    const wishlistItems = await this.prisma.wishlistItem.findMany({
+    const wishlistItems = await prisma.wishlistItem.findMany({
       where: { wishlistId: wishlist.id },
       include: {
         product: {
@@ -40,12 +38,12 @@ export default class WishlistService {
   }
 
   private async getOrCreateWishlist(userId: number) {
-    let wishlist = await this.prisma.wishlist.findFirst({
+    let wishlist = await prisma.wishlist.findFirst({
       where: { userId },
     })
 
     if (!wishlist) {
-      wishlist = await this.prisma.wishlist.create({
+      wishlist = await prisma.wishlist.create({
         data: { userId },
       })
     }
@@ -55,7 +53,7 @@ export default class WishlistService {
 
   async toggleWishlistItem(userId: number, productId: number) {
     // Verify product exists
-    const product = await this.prisma.product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id: productId },
     })
 
@@ -66,7 +64,7 @@ export default class WishlistService {
     const wishlist = await this.getOrCreateWishlist(userId)
 
     // Check if item already exists in wishlist
-    const existingItem = await this.prisma.wishlistItem.findFirst({
+    const existingItem = await prisma.wishlistItem.findFirst({
       where: {
         wishlistId: wishlist.id,
         productId,
@@ -75,13 +73,13 @@ export default class WishlistService {
 
     if (existingItem) {
       // If item exists, remove it
-      await this.prisma.wishlistItem.delete({
+      await prisma.wishlistItem.delete({
         where: { id: existingItem.id },
       })
       return { added: false, removed: true }
     } else {
       // If item doesn't exist, add it
-      await this.prisma.wishlistItem.create({
+      await prisma.wishlistItem.create({
         data: {
           wishlistId: wishlist.id,
           productId,
@@ -95,7 +93,7 @@ export default class WishlistService {
     const wishlist = await this.getOrCreateWishlist(userId)
 
     // Find the wishlist item
-    const wishlistItem = await this.prisma.wishlistItem.findFirst({
+    const wishlistItem = await prisma.wishlistItem.findFirst({
       where: {
         wishlistId: wishlist.id,
         productId,
@@ -107,7 +105,7 @@ export default class WishlistService {
     }
 
     // Delete the wishlist item
-    await this.prisma.wishlistItem.delete({
+    await prisma.wishlistItem.delete({
       where: { id: wishlistItem.id },
     })
 

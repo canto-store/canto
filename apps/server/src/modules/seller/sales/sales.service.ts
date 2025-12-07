@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../utils/db'
 
 export class SalesService {
-  private readonly prisma = new PrismaClient()
-
   async getSales(userId: number): Promise<number> {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { sales: true },
     })

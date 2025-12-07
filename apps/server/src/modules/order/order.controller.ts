@@ -2,7 +2,7 @@ import { Response } from 'express'
 import { OrderService } from './order.service'
 import AppError from '../../utils/appError'
 import { AuthRequest } from '../../middlewares/auth.middleware'
-import { OrderStatus } from '@prisma/client'
+import { OrderStatus } from '../../utils/db'
 
 export class OrderController {
   private orderService: OrderService

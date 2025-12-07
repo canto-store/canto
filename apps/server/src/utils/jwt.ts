@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client'
+import { UserRole } from './db'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret'

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import CategoryController from './category.controller'
 import AuthMiddleware from '../../../middlewares/auth.middleware'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '../../../utils/db'
 import { catchAsync } from '../../../utils/catchAsync'
 import { CategoryValidator } from './category.validator'
 

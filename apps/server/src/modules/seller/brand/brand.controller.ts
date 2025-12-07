@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import BrandService from './brand.service'
-import { Brand } from '@prisma/client'
+import { Brand } from '../../../utils/db'
 import { AuthRequest } from '../../../middlewares/auth.middleware'
 import AppError from '../../../utils/appError'
 

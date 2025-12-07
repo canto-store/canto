@@ -1,4 +1,4 @@
-import { Order, OrderStatus, PrismaClient } from '@prisma/client'
+import { prisma, Order, OrderStatus } from '../../utils/db'
 import AppError from '../../utils/appError'
 import { CreateOrderInput } from './order.types'
 import DeliveryService from '../delivery/delivery.service'
@@ -7,12 +7,10 @@ import CartService from '../user/cart/cart.service'
 export class OrderService {
   private deliveryService: DeliveryService
   private cartService: CartService
-  private prisma: PrismaClient
 
   constructor() {
     this.deliveryService = new DeliveryService()
     this.cartService = new CartService()
-    this.prisma = new PrismaClient()
   }
   private generateOrderCode(): string {
     const timestamp = Date.now()
@@ -26,14 +24,14 @@ export class OrderService {
   async createOrder(input: CreateOrderInput) {
     const { userId, addressId } = input
 
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     })
     if (!user) {
       throw new AppError('User not found', 404)
     }
 
-    const address = await this.prisma.address.findUnique({
+    const address = await prisma.address.findUnique({
       where: { id: addressId },
     })
     if (!address) {
@@ -62,7 +60,7 @@ export class OrderService {
 
     const orderCode = this.generateOrderCode()
 
-    const newOrder = await this.prisma.$transaction(async tx => {
+    const newOrder = await prisma.$transaction(async tx => {
       const order = await tx.order.create({
         data: {
           userId,
@@ -122,12 +120,12 @@ export class OrderService {
     skip: number,
     status?: OrderStatus
   ) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } })
+    const user = await prisma.user.findUnique({ where: { id: userId } })
     if (!user) {
       throw new AppError('User not found', 404)
     }
 
-    const orders = await this.prisma.order.findMany({
+    const orders = await prisma.order.findMany({
       where: { userId, ...(status && { status }) },
       orderBy: {
         createdAt: 'desc',
@@ -146,7 +144,7 @@ export class OrderService {
       skip,
     })
 
-    const total = await this.prisma.order.count({ where: { userId } })
+    const total = await prisma.order.count({ where: { userId } })
 
     const orderRes = orders.map(o => ({
       id: o.id.toString(),
@@ -179,7 +177,7 @@ export class OrderService {
   }
 
   async getOrders() {
-    const orders = await this.prisma.order.findMany({
+    const orders = await prisma.order.findMany({
       include: {
         items: {
           include: {
@@ -200,7 +198,7 @@ export class OrderService {
   }
 
   async updateOrder(orderId: number, data: Partial<Order>) {
-    const order = await this.prisma.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: { id: orderId },
       select: {
         items: { select: { id: true, variant: { select: { product: true } } } },
@@ -215,7 +213,7 @@ export class OrderService {
       data['deliveredAt'] = new Date()
 
       for (const item of order.items) {
-        await this.prisma.orderItem.update({
+        await prisma.orderItem.update({
           where: { id: item.id },
           data: {
             returnDeadline: new Date(
@@ -227,7 +225,7 @@ export class OrderService {
       }
     }
 
-    const updatedOrder = await this.prisma.order.update({
+    const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data,
     })
@@ -236,7 +234,7 @@ export class OrderService {
   }
 
   async getOrderById(orderId: number, userId: number) {
-    const order = await this.prisma.order.findFirst({
+    const order = await prisma.order.findFirst({
       where: {
         id: orderId,
         userId: userId,
@@ -284,7 +282,7 @@ export class OrderService {
   }
 
   async deleteOrder(orderId: number): Promise<string> {
-    const order = await this.prisma.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: {
         id: orderId,
       },
@@ -311,7 +309,7 @@ export class OrderService {
     }
 
     if (order.status === 'PROCESSING') {
-      await this.prisma.$transaction(async tx => {
+      await prisma.$transaction(async tx => {
         const order = await tx.order.update({
           where: {
             id: orderId,
@@ -341,7 +339,7 @@ export class OrderService {
   }
 
   async canDeleteOrder(orderId: number, userId: number): Promise<void> {
-    const order = await this.prisma.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: {
         id: orderId,
       },

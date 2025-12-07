@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import DashboardController from './dashboard.controller'
 import AuthMiddleware from '../../middlewares/auth.middleware'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '../../utils/db'
 
 const router = Router()
 const authMiddleware = new AuthMiddleware()

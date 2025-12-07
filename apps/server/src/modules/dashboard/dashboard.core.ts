@@ -1,4 +1,4 @@
-import { Activity, ActivityType } from '@prisma/client'
+import { Activity, ActivityType } from '../../utils/db'
 import { formatDate } from '../../utils/helper'
 
 const ACTIVITY_MESSAGES: Record<ActivityType, (activity: Activity) => string> =

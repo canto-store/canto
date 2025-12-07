@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../generated/prisma/client'
 
 export const name = 'product-options'
 export const description = 'Seed for product options: Size and Color'

@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from '@prisma/client'
+import { prisma, UserRole } from '../../utils/db'
 import { CreateUserDto, LoginDto } from './auth.types'
 import {
   JwtPayload,
@@ -16,10 +16,8 @@ import { MailService } from '../mail/mail.service'
 import { ForgotPasswordMail } from '../mail/mail.types'
 import crypto from 'crypto'
 export class AuthServiceV1 {
-  private readonly prisma = new PrismaClient()
-
   async registerGuest(req: AuthRequest, res: Response) {
-    const guest = await this.prisma.user.create({
+    const guest = await prisma.user.create({
       data: {
         role: [UserRole.GUEST],
       },
@@ -33,7 +31,7 @@ export class AuthServiceV1 {
   }
 
   async register(dto: CreateUserDto) {
-    const exists = await this.prisma.user.findFirst({
+    const exists = await prisma.user.findFirst({
       where: { OR: [{ email: dto.email }, { phone_number: dto.phone_number }] },
     })
 
@@ -42,7 +40,7 @@ export class AuthServiceV1 {
 
     const { guestId, ...userInput } = dto
     userInput.password = await Bcrypt.hash(dto.password)
-    const user = await this.prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: guestId },
       data: { ...userInput, role: [UserRole.USER] },
     })
@@ -51,7 +49,7 @@ export class AuthServiceV1 {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email: dto.email },
     })
     if (!user) throw new AppError('User not found', 404)
@@ -59,22 +57,22 @@ export class AuthServiceV1 {
     const valid = await Bcrypt.compare(dto.password, user.password)
     if (!valid) throw new AppError('Invalid credentials', 401)
 
-    const guestCart = await this.prisma.cart.findUnique({
+    const guestCart = await prisma.cart.findUnique({
       where: { userId: dto.guestId },
     })
-    const userCart = await this.prisma.cart.findUnique({
+    const userCart = await prisma.cart.findUnique({
       where: { userId: user.id },
     })
     if (guestCart && userCart) {
       // Get all guest cart items
-      const guestCartItems = await this.prisma.cartItem.findMany({
+      const guestCartItems = await prisma.cartItem.findMany({
         where: { cartId: guestCart.id },
       })
 
       // Process each guest cart item
       for (const guestItem of guestCartItems) {
         // Check if user cart already has this variant
-        const existingUserItem = await this.prisma.cartItem.findFirst({
+        const existingUserItem = await prisma.cartItem.findFirst({
           where: {
             cartId: userCart.id,
             variantId: guestItem.variantId,
@@ -83,32 +81,32 @@ export class AuthServiceV1 {
 
         if (existingUserItem) {
           // Update existing item quantity
-          await this.prisma.cartItem.update({
+          await prisma.cartItem.update({
             where: { id: existingUserItem.id },
             data: { quantity: existingUserItem.quantity + guestItem.quantity },
           })
         } else {
           // Move guest item to user cart
-          await this.prisma.cartItem.update({
+          await prisma.cartItem.update({
             where: { id: guestItem.id },
             data: { cartId: userCart.id },
           })
         }
       }
 
-      await this.prisma.cart.delete({
+      await prisma.cart.delete({
         where: { id: guestCart.id },
       })
     } else if (guestCart && !userCart) {
-      await this.prisma.cart.update({
+      await prisma.cart.update({
         where: { id: guestCart.id },
         data: { userId: user.id },
       })
     }
-    await this.prisma.user.deleteMany({
+    await prisma.user.deleteMany({
       where: { id: dto.guestId, role: { has: UserRole.GUEST } },
     })
-    await this.prisma.user.update({
+    await prisma.user.update({
       where: { id: user.id },
       data: { last_login: new Date() },
     })
@@ -118,7 +116,7 @@ export class AuthServiceV1 {
   }
 
   async getById(id: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
@@ -132,23 +130,23 @@ export class AuthServiceV1 {
   async createRefreshToken(id: number, role: UserRole[], name?: string) {
     const token = signRefreshToken({ id, role, name })
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    await this.prisma.refreshToken.create({ data: { token, expiresAt } })
+    await prisma.refreshToken.create({ data: { token, expiresAt } })
     return token
   }
 
   async logout(token: string) {
-    const stored = await this.prisma.refreshToken.findUnique({
+    const stored = await prisma.refreshToken.findUnique({
       where: { token },
     })
     if (!stored) throw new AppError('Invalid refresh', 401)
-    await this.prisma.refreshToken.update({
+    await prisma.refreshToken.update({
       where: { id: stored.id },
       data: { isRevoked: true },
     })
   }
 
   async checkProductAccess(userId: number, productId: number) {
-    const product = await this.prisma.product.findFirst({
+    const product = await prisma.product.findFirst({
       where: {
         id: productId,
         brand: {
@@ -192,14 +190,14 @@ export class AuthServiceV1 {
   ) {
     try {
       const verifiedUser = verifyJwt<JwtPayload>(oldToken)
-      const stored = await this.prisma.refreshToken.findUnique({
+      const stored = await prisma.refreshToken.findUnique({
         where: { token: oldToken },
       })
       if (!stored || stored.isRevoked || stored.expiresAt < new Date()) {
         res.clearCookie('token').clearCookie('refreshToken')
         return next(new AppError('Invalid refresh', 401))
       }
-      await this.prisma.refreshToken.update({
+      await prisma.refreshToken.update({
         where: { id: stored.id },
         data: { isRevoked: true },
       })
@@ -229,12 +227,11 @@ export class AuthServiceV1 {
 }
 
 export class AuthServiceV2 {
-  private readonly prisma = new PrismaClient()
   private readonly userService = new UserService()
   private readonly mailService = new MailService()
 
   async login(dto: LoginDtoV2): Promise<AuthResponse> {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email: dto.email },
     })
 
@@ -254,7 +251,7 @@ export class AuthServiceV2 {
   }
 
   async register(dto: CreateUserDto): Promise<AuthResponse> {
-    const existingUser = await this.prisma.user.findFirst({
+    const existingUser = await prisma.user.findFirst({
       where: { OR: [{ email: dto.email }, { phone_number: dto.phone_number }] },
     })
 
@@ -273,7 +270,7 @@ export class AuthServiceV2 {
       }
     }
 
-    const user = await this.prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name: dto.name,
         email: dto.email,
@@ -299,7 +296,7 @@ export class AuthServiceV2 {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    const user = await this.prisma.user.findUnique({ where: { email } })
+    const user = await prisma.user.findUnique({ where: { email } })
 
     if (!user) {
       return
@@ -338,7 +335,7 @@ export class AuthServiceV2 {
   }
 
   async resetPassword(resetToken: string, newPassword: string): Promise<void> {
-    const user = await this.prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         resetToken,
         resetTokenExpiry: {

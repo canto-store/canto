@@ -1,19 +1,17 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../utils/db'
 import { CreateCategoryDto, UpdateCategoryDto } from '@canto/types/category'
 import AppError from '../../../utils/appError'
 import { slugify } from '../../../utils/helper'
 
 class CategoryService {
-  private readonly prisma = new PrismaClient()
-
   async create(dto: CreateCategoryDto): Promise<boolean> {
     const slug = slugify(dto.name)
-    await this.prisma.category.create({ data: { ...dto, slug } })
+    await prisma.category.create({ data: { ...dto, slug } })
     return true
   }
 
   async findAll() {
-    return await this.prisma.category.findMany({
+    return await prisma.category.findMany({
       where: {
         parentId: null,
       },
@@ -38,7 +36,7 @@ class CategoryService {
     })
   }
   async findActiveCategories() {
-    return await this.prisma.category.findMany({
+    return await prisma.category.findMany({
       where: {
         parentId: null,
         OR: [
@@ -79,7 +77,7 @@ class CategoryService {
   }
 
   async findOne(id: number) {
-    const category = await this.prisma.category.findUnique({
+    const category = await prisma.category.findUnique({
       where: { id },
       include: {
         parent: { select: { id: true, name: true, slug: true } },
@@ -92,22 +90,22 @@ class CategoryService {
   }
 
   async update(dto: UpdateCategoryDto) {
-    const category = await this.prisma.category.findUnique({
+    const category = await prisma.category.findUnique({
       where: { id: dto.id },
     })
     if (!category) throw new AppError('Category not found', 404)
 
-    return await this.prisma.category.update({
+    return await prisma.category.update({
       where: { id: dto.id },
       data: dto,
     })
   }
 
   async delete(id: number) {
-    const category = await this.prisma.category.findUnique({ where: { id } })
+    const category = await prisma.category.findUnique({ where: { id } })
     if (!category) throw new AppError('Category not found', 404)
 
-    return await this.prisma.category.delete({ where: { id } })
+    return await prisma.category.delete({ where: { id } })
   }
 }
 

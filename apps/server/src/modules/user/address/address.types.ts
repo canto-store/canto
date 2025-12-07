@@ -1,4 +1,4 @@
-import { AddressType } from '@prisma/client'
+import { AddressType } from '../../../utils/db'
 
 export type CreateAddressDto = {
   user_id: number

@@ -1,11 +1,14 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../generated/prisma/client'
 
 export const name = 'brands'
 export const description = 'Seed for brands'
 
 export async function run(prisma: PrismaClient): Promise<void> {
-  const seller = await prisma.user.findFirst({ where: { email: 'seller@example.com' } })
-  if (!seller) throw new Error('Seller user not found! Run users.seed.ts first.')
+  const seller = await prisma.user.findFirst({
+    where: { email: 'seller@example.com' },
+  })
+  if (!seller)
+    throw new Error('Seller user not found! Run users.seed.ts first.')
 
   await prisma.brand.create({
     data: {

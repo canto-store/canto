@@ -1,4 +1,4 @@
-import { Sale } from '@prisma/client'
+import { Sale } from './db'
 import { nanoid } from 'nanoid'
 
 export function slugify(text: string): string {
