@@ -73,6 +73,7 @@ COPY --from=build /usr/src/app/apps/server/build ./apps/server/build
 
 # Generate Prisma client (doesn't need database connection)
 RUN bunx prisma generate --schema=apps/server/prisma/schema.prisma
+RUN bunx prisma migrate deploy --schema=apps/server/prisma/schema.prisma
 
 
 ###############################
@@ -113,7 +114,6 @@ ARG PORT=8000
 WORKDIR /app
 
 # Install OpenSSL for Prisma
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=deploy-server /tmp/server ./
 
@@ -123,7 +123,7 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Run migrations at startup, then start server
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=apps/server/prisma/schema.prisma && node apps/server/build/src/index.js"]
+CMD ["sh", "-c", "node apps/server/build/src/index.js"]
 
 
 ###############################
