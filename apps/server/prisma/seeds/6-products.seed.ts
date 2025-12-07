@@ -1,4 +1,4 @@
-import { PrismaClient, ProductStatus } from '@prisma/client'
+import { PrismaClient, ProductStatus } from '../generated/prisma/client'
 
 export const name = 'products'
 export const description = 'Seed for products'

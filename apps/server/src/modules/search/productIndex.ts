@@ -1,8 +1,13 @@
-import { esClient } from '.'
+import { esClient, isElasticsearchConfigured } from '.'
 
 const PRODUCT_INDEX = 'products'
 
 export const createProductIndex = async () => {
+  if (!isElasticsearchConfigured() || !esClient) {
+    console.log('⚠️  Elasticsearch not configured. Skipping index creation.')
+    return
+  }
+
   try {
     const indexExists = await esClient.indices.exists({ index: PRODUCT_INDEX })
 

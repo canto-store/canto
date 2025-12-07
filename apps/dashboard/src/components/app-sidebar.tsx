@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   Receipt,
   HomeIcon,
+  FolderTree,
 } from 'lucide-react'
 import { Link, useRouter } from '@tanstack/react-router'
 import {
@@ -45,6 +46,11 @@ const menuItems = [
     title: 'Brands',
     url: '/dashboard/brands',
     icon: Building2,
+  },
+  {
+    title: 'Categories',
+    url: '/dashboard/categories',
+    icon: FolderTree,
   },
   {
     title: 'Sellers',

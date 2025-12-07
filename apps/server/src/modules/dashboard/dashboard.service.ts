@@ -1,10 +1,8 @@
-import { PrismaClient, ProductStatus, UserRole } from '@prisma/client'
+import { prisma, ProductStatus, UserRole } from '../../utils/db'
 import { stringifyActivities } from './dashboard.core'
 class DashboardService {
-  private readonly prisma = new PrismaClient()
-
   async getLatestActivities() {
-    const activities = await this.prisma.activity.findMany({
+    const activities = await prisma.activity.findMany({
       orderBy: { createdAt: 'desc' },
       take: 5,
     })
@@ -12,7 +10,7 @@ class DashboardService {
   }
 
   async getDashboardCounts() {
-    const products = await this.prisma.product.findMany()
+    const products = await prisma.product.findMany()
 
     const totalProducts = products.length
 
@@ -24,8 +22,8 @@ class DashboardService {
       p => p.status === ProductStatus.PENDING
     ).length
 
-    const totalBrands = await this.prisma.brand.count()
-    const totalUsers = await this.prisma.user.findMany()
+    const totalBrands = await prisma.brand.count()
+    const totalUsers = await prisma.user.findMany()
 
     const totalSellers = totalUsers.filter(u =>
       u.role.includes(UserRole.SELLER)
@@ -50,7 +48,7 @@ class DashboardService {
   }
 
   async getUsers() {
-    const users = await this.prisma.user.findMany()
+    const users = await prisma.user.findMany()
     return users.map(user => ({
       ...user,
       password: null,

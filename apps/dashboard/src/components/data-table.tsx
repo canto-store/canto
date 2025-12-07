@@ -27,6 +27,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   searchKey?: string
   searchPlaceholder?: string
+  initialPageIndex?: number
+  onPageChange?: (pageIndex: number) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -34,9 +36,15 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
   searchPlaceholder = 'Search...',
+  initialPageIndex = 0,
+  onPageChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [{ pageIndex, pageSize }, setPagination] = useState({
+    pageIndex: initialPageIndex,
+    pageSize: 10,
+  })
 
   const table = useReactTable({
     data,
@@ -47,9 +55,17 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: updater => {
+      setPagination(old => {
+        const newState = typeof updater === 'function' ? updater(old) : updater
+        onPageChange?.(newState.pageIndex)
+        return newState
+      })
+    },
     state: {
       sorting,
       columnFilters,
+      pagination: { pageIndex, pageSize },
     },
   })
 

@@ -1,11 +1,14 @@
 // src/services/elasticsearch/productSync.ts
-import { PrismaClient } from '@prisma/client'
-import { esClient } from '.'
+import { prisma } from '../../utils/db'
+import { esClient, isElasticsearchConfigured } from '.'
 import { PRODUCT_INDEX } from './productIndex'
 
-const prisma = new PrismaClient()
-
 export const syncProductsToES = async () => {
+  if (!isElasticsearchConfigured() || !esClient) {
+    console.log('⚠️  Elasticsearch not configured. Skipping product sync.')
+    return
+  }
+
   try {
     console.log('Starting product sync to Elasticsearch...')
 

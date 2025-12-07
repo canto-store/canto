@@ -1,16 +1,16 @@
-import { Sale } from '@prisma/client'
+import { Sale } from './db'
+import { nanoid } from 'nanoid'
 
 export function slugify(text: string): string {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
+  const trimmed = text.toString().toLowerCase().trim()
+  return trimmed
     .replace(/\s+/g, '-') // Replace spaces with hyphens
     .replace(/&/g, '-and-') // Replace & with 'and'
     .replace(/[^\w\-]+/g, '') // Remove all non-word characters except hyphens
     .replace(/\-\-+/g, '-') // Replace multiple hyphens with single hyphen
     .replace(/^-+/, '') // Trim hyphens from start
     .replace(/-+$/, '') // Trim hyphens from end
+    .concat('-', nanoid(6)) // Append a unique identifier
 }
 
 export function getColorStatus(status: string): string {

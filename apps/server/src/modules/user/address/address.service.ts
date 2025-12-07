@@ -1,12 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../utils/db'
 import { CreateAddressDto } from './address.types'
 import AppError from '../../../utils/appError'
 
 class AddressService {
-  private readonly prisma = new PrismaClient()
-
   async create(dto: CreateAddressDto) {
-    const existingAddress = await this.prisma.address.findFirst({
+    const existingAddress = await prisma.address.findFirst({
       where: {
         user_id: dto.user_id,
         type: dto.type,
@@ -21,7 +19,7 @@ class AddressService {
     }
     const address_string = `${dto.apartment_number}, ${dto.street_name}, ${dto.sector_name}`
 
-    const address = await this.prisma.address.create({
+    const address = await prisma.address.create({
       data: {
         address_string,
         user: {
@@ -44,7 +42,7 @@ class AddressService {
   }
 
   async findAll() {
-    return await this.prisma.address.findMany({
+    return await prisma.address.findMany({
       select: {
         id: true,
         user_id: true,
@@ -62,25 +60,25 @@ class AddressService {
   }
 
   async findOne(id: number) {
-    const address = await this.prisma.address.findUnique({ where: { id } })
+    const address = await prisma.address.findUnique({ where: { id } })
     if (!address) throw new AppError('Address not found', 404)
     return address
   }
 
   async update(id: number, dto: CreateAddressDto) {
-    const address = await this.prisma.address.findUnique({ where: { id } })
+    const address = await prisma.address.findUnique({ where: { id } })
     if (!address) throw new AppError('Address not found', 404)
-    return await this.prisma.address.update({ where: { id }, data: dto })
+    return await prisma.address.update({ where: { id }, data: dto })
   }
 
   async delete(id: number) {
-    const address = await this.prisma.address.findUnique({ where: { id } })
+    const address = await prisma.address.findUnique({ where: { id } })
     if (!address) throw new AppError('Address not found', 404)
-    return await this.prisma.address.delete({ where: { id } })
+    return await prisma.address.delete({ where: { id } })
   }
 
   async findByUserId(userId: number) {
-    return await this.prisma.address.findMany({
+    return await prisma.address.findMany({
       where: { user_id: userId },
       orderBy: { createdAt: 'desc' },
     })

@@ -1,14 +1,8 @@
-import { PrismaClient, ProductOptionValue } from '@prisma/client'
+import { prisma, ProductOptionValue } from '../../../utils/db'
 
 export class OptionService {
-  private readonly prisma: PrismaClient
-
-  constructor() {
-    this.prisma = new PrismaClient()
-  }
-
   async getSizeOptions(): Promise<ProductOptionValue[]> {
-    return this.prisma.productOptionValue.findMany({
+    return prisma.productOptionValue.findMany({
       where: { productOption: { name: 'Size' } },
     })
   }

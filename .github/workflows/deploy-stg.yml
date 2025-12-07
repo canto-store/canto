@@ -6,20 +6,37 @@ on:
     branches:
       - testing
     paths:
-      - "apps/**"
-      - "modules/**"
-      - "Dockerfile"
+      - 'apps/**'
+      - 'modules/**'
+      - 'Dockerfile'
       - deploy-stg.yml
-      - "pnpm-lock.yaml"
-      - "package.json"
-      - "pnpm-workspace.yaml"
+      - 'bun.lock'
+      - 'package.json'
+      - 'bunfig.toml'
 
 permissions:
   contents: read
   packages: write
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run server tests
+        run: bun run --cwd apps/server test
+
   build-web:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -58,6 +75,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=web-testing
 
   build-server:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -97,6 +115,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=server-testing
 
   build-dashboard:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -173,8 +192,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "docker-compose.staging.yml,.env.staging"
-          target: "/home/omar/staging"
+          source: 'docker-compose.staging.yml,.env.staging'
+          target: '/home/omar/staging'
           overwrite: true
 
       - name: Deploy to Staging

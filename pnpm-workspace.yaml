@@ -1,8 +1,0 @@
-packages:
-  - apps/*
-  - modules/*
-
-injectWorkspacePackages: true
-
-syncInjectedDepsAfterScripts:
-  - build

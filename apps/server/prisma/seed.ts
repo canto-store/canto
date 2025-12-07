@@ -1,11 +1,17 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './generated/prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { runAllPendingSeeds, runSpecificSeeds, listSeeds } from './seeds/index'
+
+function createPrismaClient() {
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+  return new PrismaClient({ adapter })
+}
 
 /**
  * Main function to process command line arguments and run seeds
  */
 async function main() {
-  const prisma = new PrismaClient()
+  const prisma = createPrismaClient()
 
   try {
     const args = process.argv.slice(2)

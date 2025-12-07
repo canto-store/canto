@@ -35,6 +35,49 @@ export function useBrands() {
   })
 }
 
+// Categories hook
+export function useCategories() {
+  return useQuery({
+    queryKey: ['categories'],
+    queryFn: api.getCategories,
+  })
+}
+
+// Create category mutation
+export function useCreateCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: api.createCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+  })
+}
+
+// Update category mutation
+export function useUpdateCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number
+      data: {
+        name?: string
+        aspect?: 'SQUARE' | 'RECTANGLE'
+        description?: string
+        image?: string
+        parentId?: number | null
+        coming_soon?: boolean
+      }
+    }) => api.updateCategory(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+  })
+}
+
 // Sellers hook
 export function useSellers() {
   return useQuery({

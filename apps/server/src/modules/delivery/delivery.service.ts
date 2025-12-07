@@ -1,12 +1,11 @@
 import axios from 'axios'
 import { delivericDataInput, DelivericDataOutput } from './delivery.types'
-import { DelivericOrders, PrismaClient } from '@prisma/client'
+import { prisma, DelivericOrders } from '../../utils/db'
 
 class DeliveryService {
   private readonly DELIVERIC_API: string
   private readonly DELIVERIC_USER: string
   private readonly DELIVERIC_PASSWORD: string
-  private readonly prisma = new PrismaClient()
 
   constructor() {
     this.DELIVERIC_API = process.env.DELIVERIC_API
@@ -36,7 +35,7 @@ class DeliveryService {
 
     const createdDeliveryOrders = await Promise.all(
       response.map(item =>
-        this.prisma.delivericOrders.create({
+        prisma.delivericOrders.create({
           data: {
             id: item.id,
             waybill: item.waybill,
@@ -48,7 +47,7 @@ class DeliveryService {
     )
     const updatedDeliveryOrders = createdDeliveryOrders.map(async order => {
       const status = await this.getDeliveryStatus(order.waybill)
-      return await this.prisma.delivericOrders.update({
+      return await prisma.delivericOrders.update({
         where: { id: order.id },
         data: { deliveryStatus: status },
       })
@@ -65,13 +64,13 @@ class DeliveryService {
   }
 
   public async getAllDeliveries(userId: number) {
-    const orders = await this.prisma.order.findMany({
+    const orders = await prisma.order.findMany({
       where: { userId },
       select: { id: true },
     })
     const orderIds = orders.map(order => order.id)
 
-    const delivericOrders = await this.prisma.delivericOrders.findMany({
+    const delivericOrders = await prisma.delivericOrders.findMany({
       where: { orderId: { in: orderIds } },
       select: { waybill: true },
     })
@@ -81,13 +80,13 @@ class DeliveryService {
     )
   }
   public async getDelivericOrder(orderId: number) {
-    return this.prisma.delivericOrders.findFirst({
+    return prisma.delivericOrders.findFirst({
       where: { orderId: orderId },
     })
   }
 
   public async getDeliveryStatusByOrderId(orderId: string) {
-    const delivericOrder = await this.prisma.delivericOrders.findFirst({
+    const delivericOrder = await prisma.delivericOrders.findFirst({
       where: { orderId: +orderId },
       select: { waybill: true },
     })
@@ -99,7 +98,7 @@ class DeliveryService {
     const delivericOrder = await this.getDelivericOrder(orderId)
     const { waybill } = delivericOrder
     const status = await this.getDeliveryStatus(waybill)
-    return await this.prisma.delivericOrders.update({
+    return await prisma.delivericOrders.update({
       where: { waybill },
       data: { deliveryStatus: status },
     })

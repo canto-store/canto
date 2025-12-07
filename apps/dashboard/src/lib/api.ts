@@ -53,6 +53,33 @@ export const api = {
     return response.data
   },
 
+  createCategory: async (data: {
+    name: string
+    aspect: 'SQUARE' | 'RECTANGLE'
+    description?: string
+    image?: string
+    parentId?: number
+    coming_soon?: boolean
+  }) => {
+    const response = await apiClient.post('/categories', data)
+    return response.data
+  },
+
+  updateCategory: async (
+    id: number,
+    data: {
+      name?: string
+      aspect?: 'SQUARE' | 'RECTANGLE'
+      description?: string
+      image?: string
+      parentId?: number | null
+      coming_soon?: boolean
+    }
+  ) => {
+    const response = await apiClient.put(`/categories/${id}`, data)
+    return response.data
+  },
+
   getBrands: async () => {
     const response = await apiClient.get('/brand')
     return response.data
@@ -165,6 +192,18 @@ export const api = {
   },
   getSectionProducts: async (sectionId: number) => {
     const response = await apiClient.get(`/home/sections/${sectionId}/products`)
+    return response.data
+  },
+  uploadImage: async (
+    file: File
+  ): Promise<{ success: boolean; fileUrl: string }> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await apiClient.post('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     return response.data
   },
 }

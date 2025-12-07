@@ -59,6 +59,8 @@ const reverseStatusMapping = {
   REJECTED: 'Rejected',
 } as const
 
+const PRODUCTS_PAGE_KEY = 'products_page_index'
+
 // Action cell component with router navigation
 function ActionCell({ productId }: { productId: number }) {
   const router = useRouter()
@@ -198,6 +200,15 @@ function ProductsPage() {
   const { data: products = [], isLoading, error } = useProducts()
   const showSkeleton = useDelayedLoading(isLoading)
 
+  const initialPageIndex = (() => {
+    const stored = sessionStorage.getItem(PRODUCTS_PAGE_KEY)
+    return stored ? parseInt(stored, 10) : 0
+  })()
+
+  const handlePageChange = (pageIndex: number) => {
+    sessionStorage.setItem(PRODUCTS_PAGE_KEY, pageIndex.toString())
+  }
+
   if (showSkeleton) {
     return <ProductsTableSkeleton />
   }
@@ -221,6 +232,8 @@ function ProductsPage() {
         data={products}
         searchKey="name"
         searchPlaceholder="Search products..."
+        initialPageIndex={initialPageIndex}
+        onPageChange={handlePageChange}
       />
     </div>
   )

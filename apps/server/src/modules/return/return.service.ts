@@ -1,22 +1,16 @@
-import { PrismaClient, Return } from '@prisma/client'
+import { prisma, Return } from '../../utils/db'
 import AppError from '../../utils/appError'
 
 export class ReturnService {
-  private prisma: PrismaClient
-
-  constructor() {
-    this.prisma = new PrismaClient()
-  }
-
   async canReturnOrderItem(orderItemId: number, userId: number): Promise<void> {
-    const orderItem = await this.prisma.orderItem.findUnique({
+    const orderItem = await prisma.orderItem.findUnique({
       where: { id: orderItemId },
       include: {
         order: true,
       },
     })
 
-    const returnRequest = await this.prisma.return.findFirst({
+    const returnRequest = await prisma.return.findFirst({
       where: { orderItemId },
     })
 
@@ -38,7 +32,7 @@ export class ReturnService {
   }
 
   async createReturn(orderItemId: number, reason: string) {
-    const returnRequest = await this.prisma.return.create({
+    const returnRequest = await prisma.return.create({
       data: {
         orderItemId,
         reason,
@@ -50,7 +44,7 @@ export class ReturnService {
   }
 
   async getReturnsByUser(userId: number) {
-    const returnRequests = await this.prisma.return.findMany({
+    const returnRequests = await prisma.return.findMany({
       where: {
         orderItem: {
           order: {
@@ -79,7 +73,7 @@ export class ReturnService {
   }
 
   async getAllReturns() {
-    const returnRequests = await this.prisma.return.findMany({
+    const returnRequests = await prisma.return.findMany({
       include: {
         orderItem: {
           include: {
@@ -101,7 +95,7 @@ export class ReturnService {
   }
 
   async updateReturns(id: number, data: Partial<Return>) {
-    const returnRequest = await this.prisma.return.findUnique({
+    const returnRequest = await prisma.return.findUnique({
       where: { id },
       include: {
         orderItem: {
@@ -116,7 +110,7 @@ export class ReturnService {
       },
     })
     if (returnRequest.status === 'PENDING' && data.status === 'REFUNDED') {
-      await this.prisma.user.update({
+      await prisma.user.update({
         where: { id: returnRequest.orderItem.order.user.id },
         data: {
           balance: {
@@ -128,7 +122,7 @@ export class ReturnService {
       returnRequest.status === 'REFUNDED' &&
       data.status !== undefined
     ) {
-      await this.prisma.user.update({
+      await prisma.user.update({
         where: { id: returnRequest.orderItem.order.user.id },
         data: {
           balance: Math.max(
@@ -140,7 +134,7 @@ export class ReturnService {
       })
     }
 
-    const updatedReturn = await this.prisma.return.update({
+    const updatedReturn = await prisma.return.update({
       where: { id },
       data,
     })

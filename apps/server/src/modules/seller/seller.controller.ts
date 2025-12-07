@@ -2,7 +2,7 @@ import sellerService from './seller.service'
 
 import { Request, Response, NextFunction } from 'express'
 
-import { User } from '@prisma/client'
+import { User } from '../../utils/db'
 
 class SellerController {
   private sellerService: sellerService

@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../utils/db'
 import AppError from '../utils/appError'
 import { AuthRequest } from './auth.middleware'
 import { MailService } from '../modules/mail/mail.service'
@@ -7,10 +7,8 @@ import { formatDate } from '../utils/helper'
 import { ErrorContext } from '../types/error.types'
 
 export class ErrorHandler {
-  prisma: PrismaClient
   mailService: MailService
   constructor() {
-    this.prisma = new PrismaClient()
     this.mailService = new MailService()
     this.handle = this.handle.bind(this)
   }
@@ -67,7 +65,7 @@ export class ErrorHandler {
     })
 
     try {
-      await this.prisma.errorLog.create({
+      await prisma.errorLog.create({
         data: {
           message: ctx.error.message,
           stack: ctx.error.stack ?? 'No stack trace',

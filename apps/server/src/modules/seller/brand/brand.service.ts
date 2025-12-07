@@ -1,15 +1,9 @@
-import { PrismaClient, Brand, UserRole } from '@prisma/client'
+import { prisma, Brand, UserRole } from '../../../utils/db'
 import AppError from '../../../utils/appError'
 import { slugify } from '../../../utils/helper'
 class BrandService {
-  private prisma: PrismaClient
-
-  constructor() {
-    this.prisma = new PrismaClient()
-  }
-
   async getAllBrands(category?: string) {
-    return await this.prisma.brand.findMany({
+    return await prisma.brand.findMany({
       where: {
         Product: {
           some: {
@@ -32,7 +26,7 @@ class BrandService {
   }
 
   async getBrandById(id: number): Promise<Brand> {
-    const brand = await this.prisma.brand.findUnique({
+    const brand = await prisma.brand.findUnique({
       where: { id },
     })
     if (!brand) {
@@ -45,7 +39,7 @@ class BrandService {
     data: Omit<Brand, 'sellerId' | 'id' | 'created_at' | 'updated_at'>,
     sellerId: number
   ): Promise<Brand> {
-    const user = await this.prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: sellerId },
       data: {
         role: { push: UserRole.SELLER },
@@ -56,7 +50,7 @@ class BrandService {
       throw new AppError('User not found', 404)
     }
 
-    const existingBrand = await this.prisma.brand.findFirst({
+    const existingBrand = await prisma.brand.findFirst({
       where: { email: data.email },
     })
 
@@ -66,7 +60,7 @@ class BrandService {
 
     const slug = slugify(data.name)
 
-    const brand = await this.prisma.$transaction(async t => {
+    const brand = await prisma.$transaction(async t => {
       const brand = await t.brand.create({
         data: {
           ...data,
@@ -87,40 +81,40 @@ class BrandService {
   }
 
   async updateBrand(id: number, data: Brand): Promise<Brand> {
-    const existing = await this.prisma.brand.findUnique({
+    const existing = await prisma.brand.findUnique({
       where: { id },
     })
     if (!existing) {
       throw new AppError('Brand not found', 404)
     }
     if (data.email && data.email !== existing.email) {
-      const emailTaken = await this.prisma.brand.findUnique({
+      const emailTaken = await prisma.brand.findUnique({
         where: { email: data.email },
       })
       if (emailTaken) {
         throw new AppError('Email is already in use by another brand', 400)
       }
     }
-    return await this.prisma.brand.update({
+    return await prisma.brand.update({
       where: { id },
       data,
     })
   }
 
   async deleteBrand(id: number): Promise<Brand> {
-    const existing = await this.prisma.brand.findUnique({
+    const existing = await prisma.brand.findUnique({
       where: { id },
     })
     if (!existing) {
       throw new AppError('Brand not found', 404)
     }
-    return await this.prisma.brand.delete({
+    return await prisma.brand.delete({
       where: { id },
     })
   }
 
   async getMyBrand(sellerId: number): Promise<Brand> {
-    const brand = await this.prisma.brand.findFirst({
+    const brand = await prisma.brand.findFirst({
       where: { sellerId },
     })
     return brand

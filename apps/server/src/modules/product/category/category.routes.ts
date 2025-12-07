@@ -1,14 +1,32 @@
 import { Router } from 'express'
-import CategoryController from './cateogry.controller'
+import CategoryController from './category.controller'
+import AuthMiddleware from '../../../middlewares/auth.middleware'
+import { UserRole } from '../../../utils/db'
+import { catchAsync } from '../../../utils/catchAsync'
+import { CategoryValidator } from './category.validator'
 
 const router = Router()
 const categoryController = new CategoryController()
+const authMiddleware = new AuthMiddleware()
 
-router.post('/', categoryController.create.bind(categoryController))
 router.get('/', categoryController.getActiveCategories.bind(categoryController))
 router.get('/all', categoryController.getAll.bind(categoryController))
 router.get('/:id', categoryController.getOne.bind(categoryController))
-router.put('/:id', categoryController.update.bind(categoryController))
-router.delete('/:id', categoryController.delete.bind(categoryController))
+
+router.post(
+  '/',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN),
+  CategoryValidator.validateCreate,
+  catchAsync(categoryController.create.bind(categoryController))
+)
+
+router.put(
+  '/',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN),
+  CategoryValidator.validateUpdate,
+  catchAsync(categoryController.update.bind(categoryController))
+)
 
 export default router

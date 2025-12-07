@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../utils/db'
 import {
   AddProductToSectionDto,
   HomepageSectionDto,
@@ -6,14 +6,8 @@ import {
 } from './home.types'
 
 export class HomeService {
-  private prismaClient: PrismaClient
-
-  constructor() {
-    this.prismaClient = new PrismaClient()
-  }
-
   public async getHomeProducts(): Promise<HomeProducts[]> {
-    const sections = await this.prismaClient.homepageSection.findMany({
+    const sections = await prisma.homepageSection.findMany({
       include: {
         products: {
           include: {
@@ -56,23 +50,23 @@ export class HomeService {
   }
 
   public async addProductToSection(data: AddProductToSectionDto) {
-    return this.prismaClient.homepageProduct.create({
+    return prisma.homepageProduct.create({
       data,
     })
   }
 
   public async getHomeSections() {
-    return this.prismaClient.homepageSection.findMany()
+    return prisma.homepageSection.findMany()
   }
 
   public async createHomeProductSection(data: HomepageSectionDto) {
-    return this.prismaClient.homepageSection.create({
+    return prisma.homepageSection.create({
       data,
     })
   }
 
   public async updateHomeSection(id: number, data: HomepageSectionDto) {
-    return this.prismaClient.homepageSection.update({
+    return prisma.homepageSection.update({
       where: { id },
       data,
     })
@@ -80,18 +74,18 @@ export class HomeService {
 
   public async deleteHomeSection(id: number) {
     // First delete all products in this section
-    await this.prismaClient.homepageProduct.deleteMany({
+    await prisma.homepageProduct.deleteMany({
       where: { homepageSectionId: id },
     })
 
     // Then delete the section
-    return this.prismaClient.homepageSection.delete({
+    return prisma.homepageSection.delete({
       where: { id },
     })
   }
 
   public async getSectionProducts(sectionId: number) {
-    return this.prismaClient.homepageProduct.findMany({
+    return prisma.homepageProduct.findMany({
       where: { homepageSectionId: sectionId },
       include: {
         product: {
@@ -109,7 +103,7 @@ export class HomeService {
   }
 
   public async removeProductFromSection(id: number) {
-    return this.prismaClient.homepageProduct.deleteMany({
+    return prisma.homepageProduct.deleteMany({
       where: {
         productId: id,
       },
