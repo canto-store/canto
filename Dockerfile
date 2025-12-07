@@ -72,7 +72,7 @@ RUN bun install --production --frozen-lockfile
 COPY --from=build /usr/src/app/apps/server/build ./apps/server/build
 
 # Generate Prisma client (doesn't need database connection)
-RUN bunx prisma generate
+RUN bunx prisma generate --schema=apps/server/prisma/schema.prisma
 
 
 ###############################
@@ -123,7 +123,7 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Run migrations at startup, then start server
-CMD ["sh", "-c", "npx prisma migrate deploy && node apps/server/build/src/index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=apps/server/prisma/schema.prisma && node apps/server/build/src/index.js"]
 
 
 ###############################
