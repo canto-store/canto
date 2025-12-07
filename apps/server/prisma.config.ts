@@ -1,4 +1,5 @@
-import { defineConfig, env } from 'prisma/config'
+/// <reference types="@types/bun" />
+import { defineConfig } from 'prisma/config'
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -7,6 +8,6 @@ export default defineConfig({
     seed: 'bun prisma/seed.ts',
   },
   datasource: {
-    url: env('DATABASE_URL'),
+    url: Bun.env.DATABASE_URL ?? '',
   },
 })
