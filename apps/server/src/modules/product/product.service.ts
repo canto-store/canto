@@ -25,7 +25,7 @@ import {
   calculateDiscountPercentage,
 } from '../../utils/helper'
 import { PRODUCT_INDEX } from '../search/productIndex'
-import { esClient } from '../search'
+import { esClient, isElasticsearchConfigured } from '../search'
 
 class ProductService {
   private readonly prisma = new PrismaClient()
@@ -78,52 +78,61 @@ class ProductService {
     const elasticsearchOrder: number[] = []
 
     if (search) {
-      const results = await esClient.search({
-        index: PRODUCT_INDEX,
-        query: {
-          bool: {
-            should: [
-              // 1. Exact phrase match (highest priority)
-              {
-                match_phrase: {
-                  name: {
-                    query: search.trim(),
+      // Use Elasticsearch if configured, otherwise fall back to database search
+      if (isElasticsearchConfigured() && esClient) {
+        const results = await esClient.search({
+          index: PRODUCT_INDEX,
+          query: {
+            bool: {
+              should: [
+                // 1. Exact phrase match (highest priority)
+                {
+                  match_phrase: {
+                    name: {
+                      query: search.trim(),
+                    },
                   },
                 },
-              },
-              // 2. Exact keyword match
-              {
-                term: {
-                  'name.exact': {
-                    value: search.trim(),
+                // 2. Exact keyword match
+                {
+                  term: {
+                    'name.exact': {
+                      value: search.trim(),
+                    },
                   },
                 },
-              },
-              // 3. Fuzzy matching on name
-              {
-                match: {
-                  name: {
-                    query: search.trim(),
-                    fuzziness: '1',
+                // 3. Fuzzy matching on name
+                {
+                  match: {
+                    name: {
+                      query: search.trim(),
+                      fuzziness: '1',
+                    },
                   },
                 },
-              },
-            ],
-            minimum_should_match: 1,
+              ],
+              minimum_should_match: 1,
+            },
           },
-        },
-        size: +limit,
-      })
+          size: +limit,
+        })
 
-      // Extract product IDs, scores, and preserve order from Elasticsearch
-      const productIds: number[] = []
-      results.hits.hits.forEach((hit: any) => {
-        const productId = +hit._id
-        productIds.push(productId)
-        elasticsearchScores.set(productId, hit._score)
-        elasticsearchOrder.push(productId)
-      })
-      where.id = { in: productIds }
+        // Extract product IDs, scores, and preserve order from Elasticsearch
+        const productIds: number[] = []
+        results.hits.hits.forEach((hit: any) => {
+          const productId = +hit._id
+          productIds.push(productId)
+          elasticsearchScores.set(productId, hit._score)
+          elasticsearchOrder.push(productId)
+        })
+        where.id = { in: productIds }
+      } else {
+        // Fallback to database search when Elasticsearch is not configured
+        where.OR = [
+          { name: { contains: search.trim(), mode: 'insensitive' } },
+          { description: { contains: search.trim(), mode: 'insensitive' } },
+        ]
+      }
     }
 
     if (categorySlug) where.category = { slug: categorySlug }
@@ -1083,6 +1092,19 @@ class ProductService {
   }
 
   async autocompleteProducts(query: string) {
+    // If Elasticsearch is not configured, fall back to database search
+    if (!isElasticsearchConfigured() || !esClient) {
+      const products = await this.prisma.product.findMany({
+        where: {
+          name: { contains: query.trim(), mode: 'insensitive' },
+          status: ProductStatus.ACTIVE,
+        },
+        include: { brand: true, category: true },
+        take: 10,
+      })
+      return products
+    }
+
     const results = await esClient.search({
       index: PRODUCT_INDEX,
       query: {

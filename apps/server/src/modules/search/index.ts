@@ -5,39 +5,50 @@ const ELASTICSEARCH_NODE = process.env.ELASTICSEARCH_NODE
 const ELASTICSEARCH_USERNAME = process.env.ELASTICSEARCH_USERNAME
 const ELASTICSEARCH_PASSWORD = process.env.ELASTICSEARCH_PASSWORD
 
+// --- Check if Elasticsearch is configured ---
+const isElasticsearchConfigured = (): boolean => {
+  return !!ELASTICSEARCH_NODE
+}
+
 // --- Client Configuration Object ---
-const clientConfig: ClientOptions = {
-  node: ELASTICSEARCH_NODE,
-  tls: {
-    rejectUnauthorized: false,
-  },
-}
+let esClient: Client | null = null
 
-if (ELASTICSEARCH_USERNAME && ELASTICSEARCH_PASSWORD) {
-  clientConfig.auth = {
-    username: ELASTICSEARCH_USERNAME,
-    password: ELASTICSEARCH_PASSWORD,
+if (isElasticsearchConfigured()) {
+  const clientConfig: ClientOptions = {
+    node: ELASTICSEARCH_NODE,
+    tls: {
+      rejectUnauthorized: false,
+    },
   }
-}
 
-const esClient: Client = new Client(clientConfig)
+  if (ELASTICSEARCH_USERNAME && ELASTICSEARCH_PASSWORD) {
+    clientConfig.auth = {
+      username: ELASTICSEARCH_USERNAME,
+      password: ELASTICSEARCH_PASSWORD,
+    }
+  }
+
+  esClient = new Client(clientConfig)
+}
 
 async function checkESConnection(): Promise<boolean> {
+  if (!esClient) {
+    console.log(
+      '⚠️  Elasticsearch not configured (ELASTICSEARCH_NODE not set). Search features will be disabled.'
+    )
+    return false
+  }
+
   try {
     await esClient.cluster.health()
     return true
-  } catch (error: any) {
-    console.error(
-      'Elasticsearch connection error. Please check configuration and ES status.'
+  } catch {
+    console.log(
+      '⚠️  Elasticsearch connection failed. Search features will use database fallback.'
     )
-    if (error.meta && error.meta.body) {
-      console.error('Error details:', error.meta.body)
-    } else {
-      console.error('Error details:', error)
-    }
     return false
   }
 }
 
 // --- Export Client and Connection Check ---
-export { esClient, checkESConnection }
+export { esClient, checkESConnection, isElasticsearchConfigured }

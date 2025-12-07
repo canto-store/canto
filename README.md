@@ -166,14 +166,6 @@ bun run dev
 # Build all applications
 bun run build
 
-# Lint all packages
-bun run lint
-
-# Format all code
-bun run format
-
-# Type check all packages
-bun run type-check
 ```
 
 ### Package-Specific Commands
