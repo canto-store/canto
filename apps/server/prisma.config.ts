@@ -1,5 +1,6 @@
-/// <reference types="@types/bun" />
 import { defineConfig } from 'prisma/config'
+
+declare const process: { env: Record<string, string | undefined> }
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -8,6 +9,6 @@ export default defineConfig({
     seed: 'bun prisma/seed.ts',
   },
   datasource: {
-    url: Bun.env.DATABASE_URL ?? '',
+    url: process.env.DATABASE_URL ?? '',
   },
 })
