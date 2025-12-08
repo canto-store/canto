@@ -29,10 +29,7 @@ export class CategoryValidator {
     _res: Response,
     next: NextFunction
   ) => {
-    const result = updateCategorySchema.safeParse({
-      ...req.body,
-      id: Number(req.params.id),
-    })
+    const result = updateCategorySchema.safeParse(req.body)
     if (!result.success) {
       throw new AppError(
         result.error.issues
