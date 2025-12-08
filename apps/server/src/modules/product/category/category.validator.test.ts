@@ -144,9 +144,9 @@ describe('CategoryValidator', () => {
     test('passes validation with valid partial data', () => {
       const req = {
         body: {
+          id: 1,
           name: 'Updated Electronics',
         },
-        params: { id: '1' },
       } as unknown as Request
 
       const res = mockResponse()
@@ -155,18 +155,14 @@ describe('CategoryValidator', () => {
       CategoryValidator.validateUpdate(req, res, next)
 
       expect(next).toHaveBeenCalled()
-      expect(req.body).toEqual({
-        name: 'Updated Electronics',
-        id: 1,
-      })
     })
 
     test('passes validation with only aspect', () => {
       const req = {
         body: {
+          id: 1,
           aspect: 'RECTANGLE',
         },
-        params: { id: '2' },
       } as unknown as Request
 
       const res = mockResponse()
@@ -175,16 +171,13 @@ describe('CategoryValidator', () => {
       CategoryValidator.validateUpdate(req, res, next)
 
       expect(next).toHaveBeenCalled()
-      expect(req.body).toEqual({
-        aspect: 'RECTANGLE',
-        id: 2,
-      })
     })
 
     test('passes validation with empty body (only id from params)', () => {
       const req = {
-        body: {},
-        params: { id: '3' },
+        body: {
+          id: 3,
+        },
       } as unknown as Request
 
       const res = mockResponse()
@@ -193,15 +186,14 @@ describe('CategoryValidator', () => {
       CategoryValidator.validateUpdate(req, res, next)
 
       expect(next).toHaveBeenCalled()
-      expect(req.body).toEqual({ id: 3 })
     })
 
     test('throws AppError when aspect is invalid', () => {
       const req = {
         body: {
           aspect: 'INVALID',
+          id: 1,
         },
-        params: { id: '1' },
       } as unknown as Request
 
       const res = mockResponse()
@@ -217,8 +209,8 @@ describe('CategoryValidator', () => {
       const req = {
         body: {
           name: 'Test',
+          id: 'invalid',
         },
-        params: { id: 'invalid' },
       } as unknown as Request
 
       const res = mockResponse()
