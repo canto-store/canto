@@ -65,18 +65,16 @@ export const api = {
     return response.data
   },
 
-  updateCategory: async (
-    id: number,
-    data: {
-      name?: string
-      aspect?: 'SQUARE' | 'RECTANGLE'
-      description?: string
-      image?: string
-      parentId?: number | null
-      coming_soon?: boolean
-    }
-  ) => {
-    const response = await apiClient.put(`/categories/${id}`, data)
+  updateCategory: async (data: {
+    id: number
+    name?: string
+    aspect?: 'SQUARE' | 'RECTANGLE'
+    description?: string
+    image?: string
+    parentId?: number | null
+    coming_soon?: boolean
+  }) => {
+    const response = await apiClient.put(`/categories`, data)
     return response.data
   },
 

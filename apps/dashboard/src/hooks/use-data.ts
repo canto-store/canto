@@ -59,11 +59,10 @@ export function useUpdateCategory() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({
-      id,
       data,
     }: {
-      id: number
       data: {
+        id: number
         name?: string
         aspect?: 'SQUARE' | 'RECTANGLE'
         description?: string
@@ -71,7 +70,7 @@ export function useUpdateCategory() {
         parentId?: number | null
         coming_soon?: boolean
       }
-    }) => api.updateCategory(id, data),
+    }) => api.updateCategory(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
     },

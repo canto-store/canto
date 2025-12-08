@@ -203,8 +203,8 @@ function CategoriesPage() {
       if (editingCategory) {
         // Update existing category
         await updateCategoryMutation.mutateAsync({
-          id: editingCategory.id,
           data: {
+            id: editingCategory.id,
             ...data,
             description: data.description || undefined,
             image: data.image || undefined,
