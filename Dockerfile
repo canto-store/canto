@@ -79,7 +79,7 @@ COPY apps/server/docker-entrypoint.sh ./apps/server/
 ###############################
 # WEB PRODUCTION (Next.js)
 ###############################
-FROM oven/bun:1-slim AS web
+FROM node:20-slim AS web
 ARG NODE_ENV=production
 ARG PORT=3000
 
@@ -102,7 +102,7 @@ ENV PORT=${PORT}
 ENV HOSTNAME="0.0.0.0"
 
 EXPOSE ${PORT}
-CMD ["bun", "apps/web/server.js"]
+CMD ["node", "apps/web/server.js"]
 
 
 ###############################
