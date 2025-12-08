@@ -69,9 +69,6 @@ COPY modules ./modules
 # Install only production deps
 RUN bun install --production --frozen-lockfile
 
-# Copy built assets
-COPY --from=build /usr/src/app/apps/server/build ./apps/server/build
-
 # Generate Prisma client (doesn't need database connection)
 RUN cd apps/server && bunx prisma generate
 
@@ -82,7 +79,7 @@ COPY apps/server/docker-entrypoint.sh ./apps/server/
 ###############################
 # WEB PRODUCTION (Next.js)
 ###############################
-FROM node:20-slim AS web
+FROM oven/bun:1-slim
 ARG NODE_ENV=production
 ARG PORT=3000
 
@@ -105,7 +102,7 @@ ENV PORT=${PORT}
 ENV HOSTNAME="0.0.0.0"
 
 EXPOSE ${PORT}
-CMD ["node", "apps/web/server.js"]
+CMD ["bun", "apps/web/server.js"]
 
 
 ###############################
@@ -128,7 +125,7 @@ EXPOSE ${PORT}
 
 # Run migrations at startup, then start server
 ENTRYPOINT ["sh", "apps/server/docker-entrypoint.sh"]
-CMD ["bun", "run", "apps/server/build/src/index.js"]
+CMD ["bun", "run", "apps/server/src/index.ts"]
 
 
 ###############################
