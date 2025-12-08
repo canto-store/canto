@@ -60,10 +60,8 @@ WORKDIR /tmp/server
 # Copy all workspace manifests (must match deps stage for frozen lockfile)
 COPY bunfig.toml bun.lock package.json ./
 COPY apps/web/package.json ./apps/web/
-COPY apps/server/package.json ./apps/server/
+COPY apps/server/ ./apps/server/
 COPY apps/dashboard/package.json ./apps/dashboard/
-COPY apps/server/prisma ./apps/server/prisma/
-COPY apps/server/prisma.config.ts ./apps/server/
 COPY modules ./modules
 
 # Install only production deps
