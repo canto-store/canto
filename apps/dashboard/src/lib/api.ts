@@ -1,5 +1,9 @@
 import { useUserStore } from '@/stores/useUserStore'
 import type { ProductFormValues } from '@/types/product'
+import type {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from '@canto/types/category'
 import axios from 'axios'
 
 const BACKEND_URL =
@@ -53,27 +57,12 @@ export const api = {
     return response.data
   },
 
-  createCategory: async (data: {
-    name: string
-    aspect: 'SQUARE' | 'RECTANGLE'
-    description?: string
-    image?: string
-    parentId?: number
-    coming_soon?: boolean
-  }) => {
+  createCategory: async (data: CreateCategoryDto) => {
     const response = await apiClient.post('/categories', data)
     return response.data
   },
 
-  updateCategory: async (data: {
-    id: number
-    name?: string
-    aspect?: 'SQUARE' | 'RECTANGLE'
-    description?: string
-    image?: string
-    parentId?: number | null
-    coming_soon?: boolean
-  }) => {
+  updateCategory: async (data: UpdateCategoryDto) => {
     const response = await apiClient.put(`/categories`, data)
     return response.data
   },

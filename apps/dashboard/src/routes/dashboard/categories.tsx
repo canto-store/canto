@@ -208,7 +208,7 @@ function CategoriesPage() {
             ...data,
             description: data.description || undefined,
             image: data.image || undefined,
-            parentId: data.parentId || null,
+            parentId: data.parentId || undefined,
           },
         })
       } else {

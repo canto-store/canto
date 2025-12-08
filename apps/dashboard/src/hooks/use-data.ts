@@ -2,6 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { ProductFormValues, ProductOption } from '@/types/product'
 import type { Return } from '@/types/return'
+import type {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from '@canto/types/category'
 
 // Products hook
 export function useProducts() {
@@ -47,7 +51,7 @@ export function useCategories() {
 export function useCreateCategory() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: api.createCategory,
+    mutationFn: (data: CreateCategoryDto) => api.createCategory(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
     },
@@ -58,19 +62,8 @@ export function useCreateCategory() {
 export function useUpdateCategory() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({
-      data,
-    }: {
-      data: {
-        id: number
-        name?: string
-        aspect?: 'SQUARE' | 'RECTANGLE'
-        description?: string
-        image?: string
-        parentId?: number | null
-        coming_soon?: boolean
-      }
-    }) => api.updateCategory(data),
+    mutationFn: ({ data }: { data: UpdateCategoryDto }) =>
+      api.updateCategory(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
     },
