@@ -13,7 +13,9 @@ const upload = multer()
 router.post(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware
+    .checkRoles([UserRole.ADMIN, UserRole.SELLER])
+    .bind(authMiddleware),
   upload.single('file'),
   catchAsync(uploadController.upload.bind(uploadController))
 )

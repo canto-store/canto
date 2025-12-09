@@ -39,7 +39,7 @@ class AuthMiddleware {
   }
 
   checkRole(role: UserRole) {
-    return async (req: AuthRequest, res: Response, next: NextFunction) => {
+    return async (req: AuthRequest, _res: Response, next: NextFunction) => {
       const user = await this.userService.getById(req.user?.id)
       if (!user || !user.role || !user.role.includes(role)) {
         throw new AppError("You don't have permission to do this action", 403)
@@ -48,8 +48,22 @@ class AuthMiddleware {
     }
   }
 
+  checkRoles(roles: UserRole[]) {
+    return async (req: AuthRequest, _res: Response, next: NextFunction) => {
+      const user = await this.userService.getById(req.user?.id)
+      if (
+        !user ||
+        !user.role ||
+        !roles.some(role => user.role.includes(role))
+      ) {
+        throw new AppError("You don't have permission to do this action", 403)
+      }
+      next()
+    }
+  }
+
   checkProductAccess() {
-    return async (req: AuthRequest, res: Response, next: NextFunction) => {
+    return async (req: AuthRequest, _res: Response, next: NextFunction) => {
       const userId = req.user?.id
       const roles = req.user?.role
       const productId = Number(req.params.id)

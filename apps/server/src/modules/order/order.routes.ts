@@ -2,6 +2,7 @@ import express from 'express'
 import { OrderController } from './order.controller'
 import AuthMiddleware from '../../middlewares/auth.middleware'
 import { catchAsync } from '../../utils/catchAsync'
+import { UserRole } from '../../utils/db'
 
 const router = express.Router()
 const authMiddleware = new AuthMiddleware()
@@ -22,14 +23,14 @@ router.delete(
 router.get(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   catchAsync(orderController.getOrders.bind(orderController))
 )
 
 router.put(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   catchAsync(orderController.updateOrder.bind(orderController))
 )
 

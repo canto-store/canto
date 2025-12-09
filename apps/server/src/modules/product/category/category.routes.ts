@@ -16,7 +16,7 @@ router.get('/:id', categoryController.getOne.bind(categoryController))
 router.post(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   CategoryValidator.validateCreate,
   catchAsync(categoryController.create.bind(categoryController))
 )
@@ -24,7 +24,7 @@ router.post(
 router.put(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   CategoryValidator.validateUpdate,
   catchAsync(categoryController.update.bind(categoryController))
 )
