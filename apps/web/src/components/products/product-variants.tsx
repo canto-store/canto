@@ -28,6 +28,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { SelectedVariant } from "@/types/product";
 import { Input } from "../ui/input";
+import { useUploadMutation } from "@/hooks/useUpload";
 
 // Types for local file storage
 interface LocalImageFile {
@@ -55,6 +56,7 @@ import {
 
 const ProductVariants = forwardRef<ProductVariantsRef>((props, ref) => {
   const form = useFormContext();
+  const uploadMutation = useUploadMutation();
   const [variantSets, setVariantSets] = useState<SelectedVariant[]>(() => {
     const initialVariants = form.getValues("variants");
     if (!initialVariants || initialVariants.length === 0) {
@@ -209,20 +211,10 @@ const ProductVariants = forwardRef<ProductVariantsRef>((props, ref) => {
 
   const uploadToS3 = async (file: File): Promise<string> => {
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
+      return await uploadMutation.mutateAsync({
+        file,
+        folder: "product-images",
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to upload image");
-      }
-      return data.fileUrl;
     } catch (error) {
       console.error("Error uploading to S3:", error);
       toast.error(

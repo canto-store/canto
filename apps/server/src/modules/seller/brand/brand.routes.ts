@@ -17,7 +17,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   controller.getBrandById.bind(controller)
 )
 router.post(

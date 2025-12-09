@@ -1,11 +1,9 @@
 import { PrismaClient } from './prisma/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
-import dotenv from 'dotenv'
-
-dotenv.config()
+import Bun from 'bun'
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+  const adapter = new PrismaPg({ connectionString: Bun.env.DATABASE_URL })
   return new PrismaClient({ adapter })
 }
 

@@ -60,17 +60,12 @@ WORKDIR /tmp/server
 # Copy all workspace manifests (must match deps stage for frozen lockfile)
 COPY bunfig.toml bun.lock package.json ./
 COPY apps/web/package.json ./apps/web/
-COPY apps/server/package.json ./apps/server/
+COPY apps/server/ ./apps/server/
 COPY apps/dashboard/package.json ./apps/dashboard/
-COPY apps/server/prisma ./apps/server/prisma/
-COPY apps/server/prisma.config.ts ./apps/server/
 COPY modules ./modules
 
 # Install only production deps
 RUN bun install --production --frozen-lockfile
-
-# Copy built assets
-COPY --from=build /usr/src/app/apps/server/build ./apps/server/build
 
 # Generate Prisma client (doesn't need database connection)
 RUN cd apps/server && bunx prisma generate
@@ -128,7 +123,7 @@ EXPOSE ${PORT}
 
 # Run migrations at startup, then start server
 ENTRYPOINT ["sh", "apps/server/docker-entrypoint.sh"]
-CMD ["bun", "run", "apps/server/build/src/index.js"]
+CMD ["bun", "run", "apps/server/src/index.ts"]
 
 
 ###############################

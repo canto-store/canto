@@ -3,12 +3,6 @@ services:
     image: ${WEB_IMAGE}
     container_name: staging-web
     environment:
-      - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
-      - SPACES_KEY=${SPACES_KEY}
-      - SPACES_SECRET=${SPACES_SECRET}
-      - SPACES_REGION=${SPACES_REGION}
-      - SPACES_BUCKET=${SPACES_BUCKET}
-      - JWT_SECRET=${JWT_SECRET}
       - PORT=5000
       - HOSTNAME=0.0.0.0
       - NODE_ENV=test
@@ -35,6 +29,10 @@ services:
       - DOMAIN=${DOMAIN}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASS=${EMAIL_PASS}
+      - SPACES_KEY=${SPACES_KEY}
+      - SPACES_SECRET=${SPACES_SECRET}
+      - SPACES_REGION=${SPACES_REGION}
+      - SPACES_BUCKET=${SPACES_BUCKET}
       - PORT=9000
       - NODE_ENV=test
 

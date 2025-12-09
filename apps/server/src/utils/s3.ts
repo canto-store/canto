@@ -1,13 +1,12 @@
-import { S3 } from '@aws-sdk/client-s3'
+import { S3Client } from 'bun'
 
-const s3Client = new S3({
-  forcePathStyle: false,
-  endpoint: `https://${process.env.SPACES_REGION || 'fra1'}.digitaloceanspaces.com`,
-  region: process.env.SPACES_REGION || 'fra1',
-  credentials: {
-    accessKeyId: process.env.SPACES_KEY || '',
-    secretAccessKey: process.env.SPACES_SECRET || '',
-  },
+const s3Client = new S3Client({
+  endpoint: `https://${Bun.env.SPACES_REGION || 'fra1'}.digitaloceanspaces.com`,
+  region: Bun.env.SPACES_REGION || 'fra1',
+  accessKeyId: Bun.env.SPACES_KEY || '',
+  secretAccessKey: Bun.env.SPACES_SECRET || '',
+  bucket: Bun.env.SPACES_BUCKET || 'canto-storage',
+  acl: 'public-read',
 })
 
 export { s3Client }

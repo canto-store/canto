@@ -11,7 +11,7 @@ const authMiddleware = new AuthMiddleware()
 router.get(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   productController.getAllProducts.bind(productController)
 )
 router.get('/search', productController.searchProducts.bind(productController))
@@ -47,39 +47,39 @@ router.get('/options', productController.getOptions.bind(productController))
 router.post(
   '/options',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   productController.createOption.bind(productController)
 )
 router.post(
   '/options/values',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   productController.createOptionValue.bind(productController)
 )
 router.delete(
   '/options/values/:id',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.ADMIN),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   productController.deleteOptionValue.bind(productController)
 )
 router.post(
   '/submit',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.SELLER),
+  authMiddleware.checkRole(UserRole.SELLER).bind(authMiddleware),
   catchAsync(productController.submitProductForm.bind(productController))
 )
 
 router.put(
   '/update-form',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.SELLER),
+  authMiddleware.checkRole(UserRole.SELLER).bind(authMiddleware),
   catchAsync(productController.updateProductForm.bind(productController))
 )
 
 router.get(
   '/brands/:brandId',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.SELLER),
+  authMiddleware.checkRole(UserRole.SELLER).bind(authMiddleware),
   productController.getProductsByBrand.bind(productController)
 )
 export default router

@@ -1,5 +1,9 @@
 import { useUserStore } from '@/stores/useUserStore'
 import type { ProductFormValues } from '@/types/product'
+import type {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from '@canto/types/category'
 import axios from 'axios'
 
 const BACKEND_URL =
@@ -53,30 +57,18 @@ export const api = {
     return response.data
   },
 
-  createCategory: async (data: {
-    name: string
-    aspect: 'SQUARE' | 'RECTANGLE'
-    description?: string
-    image?: string
-    parentId?: number
-    coming_soon?: boolean
-  }) => {
+  createCategory: async (data: CreateCategoryDto) => {
     const response = await apiClient.post('/categories', data)
     return response.data
   },
 
-  updateCategory: async (
-    id: number,
-    data: {
-      name?: string
-      aspect?: 'SQUARE' | 'RECTANGLE'
-      description?: string
-      image?: string
-      parentId?: number | null
-      coming_soon?: boolean
-    }
-  ) => {
-    const response = await apiClient.put(`/categories/${id}`, data)
+  updateCategory: async (data: UpdateCategoryDto) => {
+    const response = await apiClient.put(`/categories`, data)
+    return response.data
+  },
+
+  deleteCategory: async (id: number) => {
+    const response = await apiClient.delete(`/categories/${id}`)
     return response.data
   },
 
@@ -195,10 +187,12 @@ export const api = {
     return response.data
   },
   uploadImage: async (
-    file: File
+    file: File,
+    folder: string = 'uploads'
   ): Promise<{ success: boolean; fileUrl: string }> => {
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('folder', folder)
     const response = await apiClient.post('/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

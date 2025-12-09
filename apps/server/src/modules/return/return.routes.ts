@@ -2,6 +2,7 @@ import express from 'express'
 import { ReturnController } from './return.controller'
 import AuthMiddleware from '../../middlewares/auth.middleware'
 import { catchAsync } from '../../utils/catchAsync'
+import { UserRole } from '../../utils/db'
 
 const router = express.Router()
 const authMiddleware = new AuthMiddleware()
@@ -16,14 +17,14 @@ router.post(
 router.get(
   '/all',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   catchAsync(returnController.getAllReturns.bind(returnController))
 )
 
 router.put(
   '/',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole('ADMIN').bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
   catchAsync(returnController.updateReturn.bind(returnController))
 )
 

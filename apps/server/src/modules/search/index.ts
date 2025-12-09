@@ -1,9 +1,9 @@
-import { Client, ClientOptions } from '@elastic/elasticsearch'
+import { Client, ClientOptions, HttpConnection } from '@elastic/elasticsearch'
 
 // --- Configuration from Environment Variables ---
-const ELASTICSEARCH_NODE = process.env.ELASTICSEARCH_NODE
-const ELASTICSEARCH_USERNAME = process.env.ELASTICSEARCH_USERNAME
-const ELASTICSEARCH_PASSWORD = process.env.ELASTICSEARCH_PASSWORD
+const ELASTICSEARCH_NODE = Bun.env.ELASTICSEARCH_NODE
+const ELASTICSEARCH_USERNAME = Bun.env.ELASTICSEARCH_USERNAME
+const ELASTICSEARCH_PASSWORD = Bun.env.ELASTICSEARCH_PASSWORD
 
 // --- Check if Elasticsearch is configured ---
 const isElasticsearchConfigured = (): boolean => {
@@ -19,6 +19,7 @@ if (isElasticsearchConfigured()) {
     tls: {
       rejectUnauthorized: false,
     },
+    Connection: HttpConnection,
   }
 
   if (ELASTICSEARCH_USERNAME && ELASTICSEARCH_PASSWORD) {
@@ -42,9 +43,10 @@ async function checkESConnection(): Promise<boolean> {
   try {
     await esClient.cluster.health()
     return true
-  } catch {
+  } catch (error) {
     console.log(
-      '⚠️  Elasticsearch connection failed. Search features will use database fallback.'
+      '⚠️  Elasticsearch connection failed. Search features will use database fallback.',
+      error
     )
     return false
   }
