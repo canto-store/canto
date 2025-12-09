@@ -5,12 +5,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
-      - SPACES_KEY=${SPACES_KEY}
-      - SPACES_SECRET=${SPACES_SECRET}
-      - SPACES_REGION=${SPACES_REGION}
-      - SPACES_BUCKET=${SPACES_BUCKET}
-      - JWT_SECRET=${JWT_SECRET}
       - NEXT_PUBLIC_BACKEND_URL=https://api.canto-store.com/api
     networks:
       - canto-network
@@ -33,7 +27,11 @@ services:
       - DOMAIN=${DOMAIN}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASS=${EMAIL_PASS}
-      
+      - SPACES_KEY=${SPACES_KEY}
+      - SPACES_SECRET=${SPACES_SECRET}
+      - SPACES_REGION=${SPACES_REGION}
+      - SPACES_BUCKET=${SPACES_BUCKET}
+
     networks:
       - canto-network
     restart: unless-stopped
