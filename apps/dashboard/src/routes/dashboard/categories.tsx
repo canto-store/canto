@@ -154,7 +154,7 @@ function CategoriesPage() {
       setIsUploading(true)
 
       try {
-        const result = await api.uploadImage(file)
+        const result = await api.uploadImage(file, 'category-images')
         setValue('image', result.fileUrl)
       } catch (uploadError) {
         console.error('Failed to upload image:', uploadError)

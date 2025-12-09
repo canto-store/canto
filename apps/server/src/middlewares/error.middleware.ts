@@ -96,6 +96,8 @@ export class ErrorHandler {
     '/balance': 'BalanceService',
     '/sales': 'SalesService',
     '/wishlist': 'WishlistService',
+    '/upload': 'UploadService',
+    '/home': 'HomeService',
   }
 
   private detectService(req: AuthRequest): string {
