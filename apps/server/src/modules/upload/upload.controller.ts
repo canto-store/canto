@@ -30,7 +30,7 @@ export class UploadController {
     const folder = (req.body.folder as string) || 'uploads'
 
     this.validator.validate(file)
-    const fileUrl = await this.service.upload(file!, folder)
+    const fileUrl = await this.service.upload(file, folder)
     res.status(200).json({ success: true, fileUrl })
   }
 }

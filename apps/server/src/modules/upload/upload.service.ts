@@ -10,6 +10,6 @@ export class UploadService {
       type: file.type,
     })
 
-    return `https://${Bun.env.SPACES_BUCKET}.${Bun.env.SPACES_REGION}.digitaloceanspaces.com/${fileName}`
+    return `https://${Bun.env.SPACES_BUCKET}.${Bun.env.SPACES_REGION}.cdn.digitaloceanspaces.com/${fileName}`
   }
 }
