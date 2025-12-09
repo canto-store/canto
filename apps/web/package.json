@@ -9,7 +9,6 @@
     "start": "bun --bun next start"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.888.0",
     "@canto/types": "workspace:^",
     "@heroui/react": "^2.8.5",
     "@heroui/theme": "^2.4.23",
@@ -30,23 +29,18 @@
     "@tanstack/react-query": "^5.87.4",
     "@tanstack/react-query-devtools": "^5.87.4",
     "@tanstack/react-table": "^8.21.3",
-    "@types/js-cookie": "^3.0.6",
     "axios": "^1.12.2",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.24",
-    "jose": "^6.1.0",
-    "js-cookie": "^3.0.5",
-    "jwt-decode": "^4.0.0",
     "libphonenumber-js": "^1.12.26",
     "lucide-react": "^0.544.0",
     "next": "16.0.8",
     "next-intl": "^4.3.9",
     "next-themes": "^0.4.6",
     "react": "^19.1.1",
-    "react-cookie": "^8.0.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
     "simple-icons": "^15.15.0",
@@ -70,8 +64,6 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "react-icons": "^5.5.0",
-    "sharp": "^0.34.3",
-    "tailwindcss": "^4.1.13",
-    "ts-jest": "^29.4.1"
+    "tailwindcss": "^4.1.13"
   }
 }
