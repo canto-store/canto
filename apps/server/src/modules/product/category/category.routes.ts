@@ -29,4 +29,11 @@ router.put(
   catchAsync(categoryController.update.bind(categoryController))
 )
 
+router.delete(
+  '/:id',
+  authMiddleware.checkAuth.bind(authMiddleware),
+  authMiddleware.checkRole(UserRole.ADMIN).bind(authMiddleware),
+  catchAsync(categoryController.delete.bind(categoryController))
+)
+
 export default router

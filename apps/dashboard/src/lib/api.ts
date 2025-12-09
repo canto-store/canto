@@ -67,6 +67,11 @@ export const api = {
     return response.data
   },
 
+  deleteCategory: async (id: number) => {
+    const response = await apiClient.delete(`/categories/${id}`)
+    return response.data
+  },
+
   getBrands: async () => {
     const response = await apiClient.get('/brand')
     return response.data

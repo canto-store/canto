@@ -25,7 +25,7 @@ class CategoryController {
     }
   }
 
-  public async getAll(req: Request, res: Response, next: NextFunction) {
+  public async getAll(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const categories = await this.categoryService.findAll()
       res.status(200).json(categories)
@@ -49,13 +49,9 @@ class CategoryController {
     res.status(200).json(category)
   }
 
-  public async delete(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = await this.categoryService.delete(Number(req.params.id))
-      res.status(200).json({ message: 'Category deleted', result })
-    } catch (error) {
-      next(error)
-    }
+  public async delete(req: AuthRequest, res: Response) {
+    const result = await this.categoryService.delete(Number(req.params.id))
+    res.status(200).json({ message: 'Category deleted', result })
   }
 }
 

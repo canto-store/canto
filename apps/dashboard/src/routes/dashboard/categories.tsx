@@ -8,6 +8,7 @@ import {
   Upload,
   X,
   Pencil,
+  Trash2,
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import {
   useCategories,
   useCreateCategory,
   useUpdateCategory,
+  useDeleteCategory,
 } from '@/hooks/use-data'
 import {
   Card,
@@ -101,6 +103,7 @@ function CategoriesPage() {
   const { data: categories = [], isLoading, error } = useCategories()
   const createCategoryMutation = useCreateCategory()
   const updateCategoryMutation = useUpdateCategory()
+  const deleteCategoryMutation = useDeleteCategory()
   const showSkeleton = useDelayedLoading(isLoading)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
@@ -225,6 +228,17 @@ function CategoriesPage() {
       setIsFormOpen(false)
     } catch (error) {
       console.error('Failed to save category:', error)
+    }
+  }
+
+  const handleDelete = async (category: Category) => {
+    if (confirm(`Are you sure you want to delete "${category.name}"?`)) {
+      try {
+        await deleteCategoryMutation.mutateAsync(category.id)
+      } catch (error) {
+        console.error('Failed to delete category:', error)
+        alert('Failed to delete category. Please try again.')
+      }
     }
   }
 
@@ -389,13 +403,23 @@ function CategoriesPage() {
       cell: ({ row }) => {
         const category = row.original
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => startEditing(category)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => startEditing(category)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDelete(category)}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         )
       },
     },

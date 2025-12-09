@@ -70,6 +70,17 @@ export function useUpdateCategory() {
   })
 }
 
+// Delete category mutation
+export function useDeleteCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => api.deleteCategory(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+  })
+}
+
 // Sellers hook
 export function useSellers() {
   return useQuery({
