@@ -8,11 +8,12 @@ on:
     paths:
       - 'apps/**'
       - 'modules/**'
-      - 'Dockerfile'
-      - deploy-stg.yml
+      - 'Caddyfile'
       - 'bun.lock'
       - 'package.json'
       - 'bunfig.toml'
+      - 'Dockerfile'
+      - 'docker-compose*.yml'
 
 permissions:
   contents: read

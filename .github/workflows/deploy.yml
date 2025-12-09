@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'apps/**'
+      - 'modules/**'
       - 'Caddyfile'
       - 'bun.lock'
       - 'package.json'
