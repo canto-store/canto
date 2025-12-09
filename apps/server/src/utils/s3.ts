@@ -6,6 +6,7 @@ const s3Client = new S3Client({
   accessKeyId: Bun.env.SPACES_KEY || '',
   secretAccessKey: Bun.env.SPACES_SECRET || '',
   bucket: Bun.env.SPACES_BUCKET || 'canto-storage',
+  acl: 'public-read',
 })
 
 export { s3Client }
