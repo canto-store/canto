@@ -127,6 +127,14 @@ export default function MobileCategoryDrawer() {
               }
             >
               <div className="ml-6 flex flex-col gap-1 pt-1">
+                <a
+                  href={`/shop?category=${category.slug}`}
+                  className="flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 shadow-sm transition hover:shadow-md active:scale-[0.98]"
+                >
+                  <span className="font-sans text-xs font-light text-gray-700">
+                    All
+                  </span>
+                </a>
                 {category.children!.map((subcategory) => {
                   const SubcategoryIcon =
                     subcategoryIconMap[subcategory.slug] || Tags;

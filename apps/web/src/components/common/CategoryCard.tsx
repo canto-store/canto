@@ -13,12 +13,14 @@ interface CategoryCardProps {
   category: Category;
   variant?: "square" | "rectangle";
   type?: "category" | "banner";
+  displaySubcategories?: boolean;
 }
 
 export function CategoryCard({
   category,
   variant = "square",
   type = "category",
+  displaySubcategories = false,
 }: CategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const hasSubcategories = category.children && category.children.length > 0;
@@ -59,7 +61,7 @@ export function CategoryCard({
   );
 
   // If category has subcategories and is not coming soon, use dropdown
-  if (hasSubcategories && !category.coming_soon) {
+  if (hasSubcategories && !category.coming_soon && displaySubcategories) {
     const dropdownItems = [
       {
         key: category.slug,

@@ -12,7 +12,7 @@ export function HomeCategoriesBanner() {
   }
 
   const sortedCategories = categories.sort((a, b) =>
-    a.coming_soon === b.coming_soon ? 0 : a.coming_soon ? 1 : -1
+    a.coming_soon === b.coming_soon ? 0 : a.coming_soon ? 1 : -1,
   );
 
   return (
@@ -23,6 +23,7 @@ export function HomeCategoriesBanner() {
           category={category}
           variant={category.aspect === "RECTANGLE" ? "rectangle" : "square"}
           type="banner"
+          displaySubcategories={true}
         />
       ))}
     </div>
