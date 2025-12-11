@@ -18,6 +18,7 @@ import {
 import { useProductOptions } from '@/hooks/use-data'
 import { type SelectedVariant } from '@/types/product'
 import { Input } from '../ui/input'
+import { Plus, X } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -29,6 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { api } from '@/lib/api'
 
 export default function ProductVariants() {
   const form = useFormContext()
@@ -48,6 +50,82 @@ export default function ProductVariants() {
   })
   const { data: options } = useProductOptions()
   const [showUploadModal, setShowUploadModal] = useState(false)
+  const [currentUploadVariantIndex, setCurrentUploadVariantIndex] = useState<
+    number | null
+  >(null)
+
+  const updateVariantSet = (index: number, updatedVariant: SelectedVariant) => {
+    const newVariants = [...variantSets]
+    newVariants[index] = updatedVariant
+    setVariantSets(newVariants)
+    form.setValue('variants', newVariants)
+  }
+
+  const removeImage = (variantIndex: number, imageIndex: number) => {
+    const variant = variantSets[variantIndex]
+    const newImages = [...(variant.images || [])]
+    newImages.splice(imageIndex, 1)
+    updateVariantSet(variantIndex, {
+      ...variant,
+      images: newImages,
+    })
+  }
+
+  const handleFileChange = async (
+    variantIndex: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files
+    if (!files || files.length === 0) return
+
+    try {
+      const uploadPromises = Array.from(files).map(async file => {
+        // Validate file type
+        const allowedTypes = [
+          'image/jpeg',
+          'image/png',
+          'image/webp',
+          'image/gif',
+        ]
+        if (!allowedTypes.includes(file.type)) {
+          alert(
+            `Invalid file type for ${file.name}. Please upload JPG, PNG, WebP, or GIF.`
+          )
+          return null
+        }
+
+        // Validate file size (4MB)
+        if (file.size > 4 * 1024 * 1024) {
+          alert(`File ${file.name} exceeds 4MB limit.`)
+          return null
+        }
+
+        const result = await api.uploadImage(file, 'variants')
+        return result.fileUrl
+      })
+
+      const uploadedUrls = (await Promise.all(uploadPromises)).filter(
+        Boolean
+      ) as string[]
+
+      if (uploadedUrls.length > 0) {
+        const variant = variantSets[variantIndex]
+        const newImages = [...(variant.images || []), ...uploadedUrls]
+        updateVariantSet(variantIndex, {
+          ...variant,
+          images: newImages,
+        })
+      }
+    } catch (error) {
+      console.error('Failed to upload images:', error)
+      alert('Failed to upload images. Please try again.')
+    } finally {
+      // Clear the input
+      if (fileInputRefs.current[variantIndex]) {
+        fileInputRefs.current[variantIndex].value = ''
+      }
+    }
+  }
   const [newVariantIndex, setNewVariantIndex] = useState<number | null>(null)
 
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -70,13 +148,6 @@ export default function ProductVariants() {
     }
   }, [newVariantIndex])
 
-  const updateVariantSet = (index: number, variant: SelectedVariant) => {
-    const newVariantSets = [...variantSets]
-    newVariantSets[index] = variant
-    setVariantSets(newVariantSets)
-    form.setValue('variants', newVariantSets)
-  }
-
   return (
     <div>
       <p className="font-xs font-medium mb-2">Variants</p>
@@ -96,11 +167,68 @@ export default function ProductVariants() {
                       <img
                         src={image}
                         alt={`Variant image ${imageIndex + 1}`}
-                        className="rounded-lg object-cover"
+                        className="w-full h-full rounded-lg object-cover"
                       />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(setIndex, imageIndex)}
+                        className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
                     </div>
                   )
                 )}
+                <div className="flex aspect-square rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+                  <div
+                    className="flex h-full w-full cursor-pointer flex-col items-center justify-center text-center"
+                    onClick={() => {
+                      setCurrentUploadVariantIndex(setIndex)
+                      setShowUploadModal(true)
+                    }}
+                  >
+                    <Plus className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                    <p className="text-sm text-gray-500">Add images</p>
+                  </div>
+                  <input
+                    ref={el => {
+                      fileInputRefs.current[setIndex] = el
+                    }}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={e => handleFileChange(setIndex, e)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          {(variant.images || []).length === 0 && (
+            <div className="flex-1">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                <div className="flex aspect-square rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+                  <div
+                    className="flex h-full w-full cursor-pointer flex-col items-center justify-center text-center"
+                    onClick={() => {
+                      setCurrentUploadVariantIndex(setIndex)
+                      setShowUploadModal(true)
+                    }}
+                  >
+                    <Plus className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                    <p className="text-sm text-gray-500">Add images</p>
+                  </div>
+                  <input
+                    ref={el => {
+                      fileInputRefs.current[setIndex] = el
+                    }}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={e => handleFileChange(setIndex, e)}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -217,8 +345,16 @@ export default function ProductVariants() {
               </FormItem>
             ))}
           </div>
-          <AlertDialog open={showUploadModal} onOpenChange={setShowUploadModal}>
-            <AlertDialogContent className="bg-white">
+          <AlertDialog
+            open={showUploadModal}
+            onOpenChange={open => {
+              setShowUploadModal(open)
+              if (!open) {
+                setCurrentUploadVariantIndex(null)
+              }
+            }}
+          >
+            <AlertDialogContent className="">
               <AlertDialogHeader>
                 <AlertDialogTitle>Image Upload Guidelines</AlertDialogTitle>
                 <AlertDialogDescription className="text-left">
@@ -226,7 +362,7 @@ export default function ProductVariants() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <div className="space-y-4">
-                <ul className="list-disc pl-5 text-sm text-gray-600">
+                <ul className="list-disc pl-5 text-sm">
                   <li>Square aspect ratio (1:1)</li>
                   <li>High quality images (minimum 800x800px)</li>
                   <li>Maximum file size (4MB per image)</li>
@@ -236,7 +372,11 @@ export default function ProductVariants() {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => fileInputRefs.current[setIndex]?.click()}
+                  onClick={() => {
+                    if (currentUploadVariantIndex !== null) {
+                      fileInputRefs.current[currentUploadVariantIndex]?.click()
+                    }
+                  }}
                 >
                   Continue
                 </AlertDialogAction>

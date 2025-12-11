@@ -19,6 +19,7 @@ export interface SubmitProductFormDto {
   brandId: number
   name: string
   category: number
+  image: string
   description: string
   returnWindow: number
   variants: SelectedVariant[]
@@ -28,6 +29,7 @@ export interface UpdateProductFormDto {
   name: string
   slug: string
   returnWindow?: number
+  image: string
   category?: number
   subcategories?: number[]
   description?: string

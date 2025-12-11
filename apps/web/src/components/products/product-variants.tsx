@@ -441,6 +441,28 @@ const ProductVariants = forwardRef<ProductVariantsRef>((props, ref) => {
                     </div>
                   ),
                 )}
+                <div className="flex aspect-square rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+                  <div
+                    className="flex h-full w-full cursor-pointer flex-col items-center justify-center text-center"
+                    onClick={() => {
+                      setCurrentUploadVariantIndex(setIndex);
+                      setShowUploadModal(true);
+                    }}
+                  >
+                    <PlusIcon className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                    <p className="text-sm text-gray-500">Add more images</p>
+                  </div>
+                  <input
+                    ref={(el) => {
+                      fileInputRefs.current[setIndex] = el;
+                    }}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleFileChange(setIndex, e)}
+                  />
+                </div>
               </div>
             </div>
           ) : (

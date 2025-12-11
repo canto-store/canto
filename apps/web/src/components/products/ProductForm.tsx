@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Check } from "lucide-react";
+import { Check, Plus, X, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,8 @@ import {
 import { useMyBrand } from "@/lib/brand";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
+import Image from "next/image";
+import { useUploadMutation } from "@/hooks/useUpload";
 
 export default function ProductForm({
   products,
@@ -59,6 +61,12 @@ export default function ProductForm({
     useState<ProductFormValues | null>(null);
   const successRef = useRef<HTMLDivElement | null>(null);
   const productVariantsRef = useRef<ProductVariantsRef>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [localImageFile, setLocalImageFile] = useState<{
+    file: File;
+    preview: string;
+  } | null>(null);
+  const uploadMutation = useUploadMutation();
 
   const isUpdateMode = !!products?.id;
   const isPending = isCreating || isUpdating || isUploadingImages;
@@ -68,6 +76,7 @@ export default function ProductForm({
     defaultValues: {
       id: products?.id,
       name: products?.name ?? "",
+      image: products?.image ?? "",
       category: products?.category ?? 0,
       description: products?.description ?? "",
       variants: products?.variants ?? [],
@@ -118,6 +127,15 @@ export default function ProductForm({
     }
   }, [showSuccess]);
 
+  // Cleanup local image file on unmount
+  useEffect(() => {
+    return () => {
+      if (localImageFile) {
+        URL.revokeObjectURL(localImageFile.preview);
+      }
+    };
+  }, [localImageFile]);
+
   // Function to detect changes in form values
   const getChangedFields = (
     currentValues: ProductFormValues,
@@ -144,6 +162,11 @@ export default function ProductForm({
     }
     if (currentValues.returnWindow !== originalValues.returnWindow) {
       changes.returnWindow = currentValues.returnWindow;
+      hasChanges = true;
+    }
+
+    if (currentValues.image !== originalValues.image) {
+      changes.image = currentValues.image;
       hasChanges = true;
     }
 
@@ -217,8 +240,69 @@ export default function ProductForm({
     return hasChanges ? changes : null;
   };
 
+  const uploadMainImage = async () => {
+    if (!localImageFile) return;
+
+    try {
+      const uploadedUrl = await uploadMutation.mutateAsync({
+        file: localImageFile.file,
+        folder: "products",
+      });
+
+      // Update the form with the uploaded URL
+      form.setValue("image", uploadedUrl);
+
+      // Clean up the local file
+      URL.revokeObjectURL(localImageFile.preview);
+      setLocalImageFile(null);
+    } catch (error) {
+      console.error("Error uploading main image:", error);
+      throw error;
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (4MB)
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("File size must be less than 4MB");
+      return;
+    }
+
+    const preview = URL.createObjectURL(file);
+    setLocalImageFile({ file, preview });
+
+    // Clear the input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const removeMainImage = () => {
+    if (localImageFile) {
+      URL.revokeObjectURL(localImageFile.preview);
+      setLocalImageFile(null);
+    }
+    form.setValue("image", "");
+  };
+
   const onSubmit = async () => {
     try {
+      // Upload main image first
+      if (localImageFile) {
+        setIsUploadingImages(true);
+        await uploadMainImage();
+        setIsUploadingImages(false);
+      }
+
       // Upload any pending images first
       if (productVariantsRef.current) {
         setIsUploadingImages(true);
@@ -228,6 +312,26 @@ export default function ProductForm({
 
       // Get fresh form data after image uploads
       const freshData = form.getValues();
+
+      // Validate required fields for create mode
+      if (!isUpdateMode) {
+        if (!freshData.image || freshData.image.trim() === "") {
+          toast.error("Product image is required");
+          return;
+        }
+        if (!freshData.name || freshData.name.trim() === "") {
+          toast.error("Product name is required");
+          return;
+        }
+        if (!freshData.category || freshData.category === 0) {
+          toast.error("Category is required");
+          return;
+        }
+        if (!freshData.returnWindow && freshData.returnWindow !== 0) {
+          toast.error("Return window is required");
+          return;
+        }
+      }
 
       if (isUpdateMode && products?.id) {
         const changedFields = getChangedFields(freshData);
@@ -249,6 +353,7 @@ export default function ProductForm({
           category: freshData.category!,
           description: freshData.description,
           returnWindow: freshData.returnWindow!,
+          image: freshData.image!,
           variants: freshData.variants!.map((variant) => ({
             price: variant.price!,
             stock: variant.stock!,
@@ -382,6 +487,83 @@ export default function ProductForm({
                 </FormItem>
               )}
             />
+
+            {/* Product Image */}
+            <div className="space-y-2">
+              <FormLabel className="text-base">
+                Product Image <span className="text-red-500">*</span>
+              </FormLabel>
+              {localImageFile ? (
+                <div className="relative inline-block">
+                  <Image
+                    src={localImageFile.preview}
+                    alt="Product image"
+                    width={200}
+                    height={200}
+                    className="rounded-lg object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeMainImage}
+                    className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : form.watch("image") ? (
+                <div className="relative inline-block">
+                  <Image
+                    src={form.watch("image")!}
+                    alt="Product image"
+                    width={200}
+                    height={200}
+                    className="rounded-lg object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeMainImage}
+                    className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex aspect-square w-48 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+                  <div
+                    className="flex h-full w-full cursor-pointer flex-col items-center justify-center text-center"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {isUploadingImages ? (
+                      <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin text-gray-400" />
+                    ) : (
+                      <>
+                        <Plus className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                        <p className="text-sm text-gray-500">
+                          Add product image
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </div>
+              )}
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <>
+                    <FormMessage />
+                  </>
+                )}
+              />
+            </div>
+
             <FormField
               control={form.control}
               name="returnWindow"

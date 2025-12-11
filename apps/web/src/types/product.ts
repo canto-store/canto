@@ -129,6 +129,7 @@ export const selectedVariantSchema = z.object({
 export const productFormSchema = z.object({
   id: z.number().optional(),
   name: z.string().optional(),
+  image: z.string().optional(),
   slug: z.string().optional(),
   category: z
     .number()
@@ -160,6 +161,7 @@ export type UpdateProductFormValues = {
   slug: string;
   category?: number;
   description?: string;
+  image?: string;
   returnWindow?: number;
   variants?: Array<{
     id?: number; // Optional for new variants
@@ -178,6 +180,7 @@ export type CreateProductFormValues = {
   category: number;
   description?: string;
   returnWindow: number;
+  image: string;
   variants: Array<{
     price: number;
     stock: number;

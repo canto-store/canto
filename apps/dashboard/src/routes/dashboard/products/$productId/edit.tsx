@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { api } from '@/lib/api'
@@ -34,7 +34,14 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 
-import { AlertCircleIcon, ArrowLeft, ArrowRight } from 'lucide-react'
+import {
+  AlertCircleIcon,
+  ArrowLeft,
+  ArrowRight,
+  Plus,
+  X,
+  Loader2,
+} from 'lucide-react'
 import { productFormSchema, type ProductFormValues } from '@/types/product'
 import { useProductOptions, useUpdateProduct } from '@/hooks/use-data'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -89,6 +96,11 @@ export default function EditProduct() {
   const [changedFields, setChangedFields] = useState<
     Record<string, { old: any; new: any }>
   >({})
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    product.image || null
+  )
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const {
     mutateAsync: updateProduct,
@@ -105,6 +117,7 @@ export default function EditProduct() {
       id: product.id,
       name: product.name,
       description: product.description || '',
+      image: product.image || '',
       category: product.category,
       subcategories: product.subcategories || [],
       status: product.status,
@@ -163,6 +176,52 @@ export default function EditProduct() {
     }
   }
 
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Please upload JPG, PNG, WebP, or GIF.')
+      return
+    }
+
+    // Validate file size (4MB)
+    if (file.size > 4 * 1024 * 1024) {
+      alert('File size exceeds 4MB limit.')
+      return
+    }
+
+    // Show preview immediately
+    setImagePreview(URL.createObjectURL(file))
+    setIsUploadingImage(true)
+
+    try {
+      const result = await api.uploadImage(file, 'products')
+      form.setValue('image', result.fileUrl)
+    } catch (uploadError) {
+      console.error('Failed to upload image:', uploadError)
+      alert('Failed to upload image. Please try again.')
+      setImagePreview(product.image || null)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
+
+  const removeImage = () => {
+    setImagePreview(null)
+    form.setValue('image', '')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const getChangedFields = (data: ProductFormValues) => {
     const changes: Record<string, { old: any; new: any }> = {}
 
@@ -173,6 +232,12 @@ export default function EditProduct() {
       changes.description = {
         old: product.description || '',
         new: data.description,
+      }
+    }
+    if (data.image !== (product.image || '')) {
+      changes.image = {
+        old: 'Image will be updated',
+        new: 'Image will be updated',
       }
     }
     if (data.category !== product.category) {
@@ -303,6 +368,29 @@ export default function EditProduct() {
           }
         }
       }
+
+      // Check for variant image changes
+      const oldImages = oldVariant?.images || []
+      const newImages = variant.images || []
+      const imagesChanged =
+        oldImages.length !== newImages.length ||
+        oldImages.some((img: string) => !newImages.includes(img)) ||
+        newImages.some((img: string) => !oldImages.includes(img))
+
+      if (imagesChanged) {
+        const oldCount = oldImages.length
+        const newCount = newImages.length
+        changes[`variant_${variant.id}_images`] = {
+          old:
+            oldCount === 0
+              ? 'No images'
+              : `${oldCount} image${oldCount > 1 ? 's' : ''}`,
+          new:
+            newCount === 0
+              ? 'No images'
+              : `${newCount} image${newCount > 1 ? 's' : ''}`,
+        }
+      }
     }
 
     return changes
@@ -388,6 +476,64 @@ export default function EditProduct() {
                 <FormControl>
                   <Textarea {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="image"
+            render={() => (
+              <FormItem>
+                <FormLabel>Product Image</FormLabel>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+                {imagePreview ? (
+                  <div className="relative w-48 h-48">
+                    <img
+                      src={imagePreview}
+                      alt="Product image"
+                      className="w-full h-full object-cover rounded-lg border"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-48 h-48 border-dashed"
+                    disabled={isUploadingImage}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      {isUploadingImage ? (
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Plus className="h-8 w-8 text-muted-foreground" />
+                      )}
+                      <span className="text-sm text-muted-foreground">
+                        {isUploadingImage
+                          ? 'Uploading...'
+                          : 'Click to upload image'}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        JPG, PNG, WebP, GIF (max 4MB)
+                      </span>
+                    </div>
+                  </Button>
+                )}
                 <FormMessage />
               </FormItem>
             )}

@@ -834,7 +834,9 @@ class ProductService {
       if (dto.returnWindow !== undefined) {
         productUpdateData.returnWindow = dto.returnWindow
       }
-
+      if (dto.image !== undefined) {
+        productUpdateData.image = dto.image
+      }
       let updatedProduct: Product
       if (Object.keys(productUpdateData).length > 0) {
         updatedProduct = await tx.product.update({
@@ -919,33 +921,13 @@ class ProductService {
             }
 
             if (variant.images) {
-              const allVariants = await tx.productVariant.findMany({
-                where: { productId: dto.id },
-                select: { id: true },
-                orderBy: { id: 'asc' },
-              })
-              const isFirstVariant = allVariants[0]?.id === variant.id
-
               await tx.productVariantImage.deleteMany({
                 where: { variantId: variant.id },
               })
 
               if (variant.images.length > 0) {
-                let imagesToSave = variant.images
-                if (isFirstVariant) {
-                  const product = await tx.product.findUnique({
-                    where: { id: dto.id, image: { not: null } },
-                    select: { image: true },
-                  })
-                  if (product) {
-                    imagesToSave = Array.from(
-                      new Set([product.image, ...variant.images])
-                    )
-                  }
-                }
-
                 await tx.productVariantImage.createMany({
-                  data: imagesToSave.map(image => ({
+                  data: variant.images.map(image => ({
                     variantId: variant.id,
                     url: image,
                     alt_text: dto.name,
@@ -1028,7 +1010,7 @@ class ProductService {
           status: ProductStatus.PENDING,
           brand: { connect: { id: dto.brandId } },
           category: { connect: { id: dto.category } },
-          image: dto.variants[0].images[0] || '/placeholder-image.jpg',
+          image: dto.image,
           returnWindow: dto.returnWindow,
         },
         include: {
@@ -1100,10 +1082,7 @@ class ProductService {
       id: product.id,
       name: product.name,
       description: product.description,
-      image:
-        product.variants
-          .find(v => v.images.length > 0)
-          .images.find(img => img.url)?.url ?? '/placeholder-image.jpg',
+      image: product.image,
       category: product.category.name,
       status: product.status,
     }))
@@ -1189,6 +1168,7 @@ class ProductService {
         name: true,
         description: true,
         slug: true,
+        image: true,
         category: { select: { id: true } },
         categories: {
           select: { categoryId: true },

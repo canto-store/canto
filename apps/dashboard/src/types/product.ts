@@ -19,6 +19,7 @@ export const productFormSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
+  image: z.string().optional(),
   category: z.number().min(1, 'Category is required'),
   subcategories: z.array(z.number()).optional(),
   status: z.enum(['PENDING', 'ACTIVE', 'INACTIVE', 'REJECTED'] as const),
@@ -37,8 +38,13 @@ export type Product = {
   id: number
   name: string
   description: string | null
+  image: string | null
+  category: number
+  subcategories: number[]
   status: 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'REJECTED'
   rejectionReason: string | null
+  variants: SelectedVariant[]
+  returnWindow: number
 }
 export interface ProductOption {
   id: number
