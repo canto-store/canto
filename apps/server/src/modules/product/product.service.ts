@@ -919,13 +919,33 @@ class ProductService {
             }
 
             if (variant.images) {
+              const allVariants = await tx.productVariant.findMany({
+                where: { productId: dto.id },
+                select: { id: true },
+                orderBy: { id: 'asc' },
+              })
+              const isFirstVariant = allVariants[0]?.id === variant.id
+
               await tx.productVariantImage.deleteMany({
                 where: { variantId: variant.id },
               })
 
               if (variant.images.length > 0) {
+                let imagesToSave = variant.images
+                if (isFirstVariant) {
+                  const product = await tx.product.findUnique({
+                    where: { id: dto.id, image: { not: null } },
+                    select: { image: true },
+                  })
+                  if (product) {
+                    imagesToSave = Array.from(
+                      new Set([product.image, ...variant.images])
+                    )
+                  }
+                }
+
                 await tx.productVariantImage.createMany({
-                  data: variant.images.map(image => ({
+                  data: imagesToSave.map(image => ({
                     variantId: variant.id,
                     url: image,
                     alt_text: dto.name,
