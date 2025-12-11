@@ -26,6 +26,7 @@ import {
 } from '../../utils/helper'
 import { PRODUCT_INDEX } from '../search/productIndex'
 import { esClient, isElasticsearchConfigured } from '../search'
+import { syncProductsToES } from '../search/productSync'
 
 class ProductService {
   async createProduct(dto: CreateProductDto) {
@@ -816,7 +817,7 @@ class ProductService {
   }
 
   async updateProductForm(dto: UpdateProductFormDto, userId: number) {
-    return prisma.$transaction(async tx => {
+    const transaction = await prisma.$transaction(async tx => {
       const productUpdateData: Record<string, any> = {}
 
       if (dto.name !== undefined) {
@@ -998,6 +999,12 @@ class ProductService {
 
       return true
     })
+
+    void syncProductsToES().then(() => {
+      console.log('Product sync to Elasticsearch completed.')
+    })
+
+    return transaction
   }
 
   async submitProductForm(dto: SubmitProductFormDto, userId: number) {
