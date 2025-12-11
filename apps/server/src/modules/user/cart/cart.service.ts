@@ -38,6 +38,10 @@ class CartService {
     await this.productService.validateCartItems(userId)
     const cart = await this.getCartByUserId(userId)
 
+    if (!cart) {
+      return { items: [], count: 0, price: 0 }
+    }
+
     const items = cart.items.map(item => {
       return {
         name: item.variant.product.name,
