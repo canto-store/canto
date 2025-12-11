@@ -65,14 +65,18 @@ router.delete(
 router.post(
   '/submit',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.SELLER).bind(authMiddleware),
+  authMiddleware
+    .checkRoles([UserRole.SELLER, UserRole.ADMIN])
+    .bind(authMiddleware),
   catchAsync(productController.submitProductForm.bind(productController))
 )
 
 router.put(
   '/update-form',
   authMiddleware.checkAuth.bind(authMiddleware),
-  authMiddleware.checkRole(UserRole.SELLER).bind(authMiddleware),
+  authMiddleware
+    .checkRoles([UserRole.SELLER, UserRole.ADMIN])
+    .bind(authMiddleware),
   catchAsync(productController.updateProductForm.bind(productController))
 )
 
