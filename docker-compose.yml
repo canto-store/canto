@@ -31,6 +31,7 @@ services:
       - SPACES_SECRET=${SPACES_SECRET}
       - SPACES_REGION=${SPACES_REGION}
       - SPACES_BUCKET=${SPACES_BUCKET}
+      - ERROR_EMAIL_RECIPIENT=${ERROR_EMAIL_RECIPIENT}
 
     networks:
       - canto-network

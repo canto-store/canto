@@ -14,7 +14,7 @@ export class ErrorHandler {
   }
 
   handle: ErrorRequestHandler = async (
-    err: any,
+    err: unknown,
     req: AuthRequest,
     res,
     _next
@@ -30,7 +30,7 @@ export class ErrorHandler {
     })
   }
 
-  private buildErrorContext(err: any, req: AuthRequest): ErrorContext {
+  private buildErrorContext(err: unknown, req: AuthRequest): ErrorContext {
     return {
       error: err,
       service: this.detectService(req),
@@ -52,7 +52,7 @@ export class ErrorHandler {
     }
   }
 
-  private getHttpStatus(err: any): number {
+  private getHttpStatus(err: unknown): number {
     return err instanceof AppError ? err.statusCode : 500
   }
 

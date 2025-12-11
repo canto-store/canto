@@ -40,11 +40,13 @@ export class MailService {
       const html = await render(
         React.createElement(ErrorNotificationEmail, ctx)
       )
-      await this.sendMail({
-        to: '0xsoubky@gmail.com',
-        subject: 'Canto — Application Error Logged',
-        html,
-      })
+      if (process.env.ERROR_EMAIL_RECIPIENT) {
+        await this.sendMail({
+          to: process.env.ERROR_EMAIL_RECIPIENT,
+          subject: 'Canto — Application Error Logged',
+          html,
+        })
+      }
     } catch (err) {
       console.error('Failed to send error email:', err)
     }
